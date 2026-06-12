@@ -1,5 +1,13 @@
 import Link from "next/link";
+import { BookOpenText, FileText, ShieldAlert } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
+
+const footerLinks = [
+  { label: "用户协议", href: "/terms", icon: FileText },
+  { label: "隐私政策", href: "/privacy", icon: ShieldAlert },
+  { label: "举报中心", href: "/report", icon: ShieldAlert },
+  { label: "帮助中心", href: "/help", icon: BookOpenText },
+];
 
 export function SiteFooter() {
   return (
@@ -11,19 +19,17 @@ export function SiteFooter() {
           <p className="mt-2 text-sm leading-6">让世界通过一个链接认识你。</p>
         </div>
         <div className="grid gap-4">
-          <nav className="flex flex-wrap gap-x-5 gap-y-2 font-bold text-[#14532D]">
-            <Link href="/terms" className="hover:text-[#16A34A]">
-              用户协议
-            </Link>
-            <Link href="/privacy" className="hover:text-[#16A34A]">
-              隐私政策
-            </Link>
-            <Link href="/report" className="hover:text-[#16A34A]">
-              举报中心
-            </Link>
-            <Link href="/#help" className="hover:text-[#16A34A]">
-              帮助中心
-            </Link>
+          <nav className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            {footerLinks.map(({ label, href, icon: Icon }) => (
+              <Link
+                key={label}
+                href={href}
+                className="link168-card-hover link168-button-press link168-wiggle-on-hover flex items-center gap-2 rounded-2xl border border-[#DDE8CF] bg-white px-3 py-2 font-black text-[#14532D] shadow-sm"
+              >
+                <Icon aria-hidden className="size-4 text-[#16A34A]" />
+                {label}
+              </Link>
+            ))}
           </nav>
           <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs">
             <a href="#" className="hover:text-[#16A34A]">
