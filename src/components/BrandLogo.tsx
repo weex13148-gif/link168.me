@@ -19,7 +19,7 @@ export function BrandLogo({ size = "header", className = "" }: BrandLogoProps) {
     <Link
       href="/"
       aria-label="Link168 链接一路发"
-      className={`inline-flex shrink-0 items-center ${sizeClasses[size]} ${className}`}
+      className={`inline-flex shrink-0 cursor-pointer items-center transition duration-200 hover:scale-[1.025] hover:brightness-105 active:scale-[0.98] ${sizeClasses[size]} ${className}`}
     >
       <Image
         src="/brand/link168-logo.png"
