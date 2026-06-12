@@ -103,6 +103,10 @@ input {
   animation: link168-soft-wiggle 420ms ease-in-out;
 }
 
+.link168-card-hover:hover .link168-card-icon {
+  animation: link168-soft-wiggle 420ms ease-in-out;
+}
+
 .link168-aurora {
   background-size: 220% 220%;
   animation: link168-aurora 9s ease-in-out infinite;

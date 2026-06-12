@@ -19,14 +19,16 @@ export function SiteFooter() {
           <p className="mt-2 text-sm leading-6">让世界通过一个链接认识你。</p>
         </div>
         <div className="grid gap-4">
-          <nav className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          <nav className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {footerLinks.map(({ label, href, icon: Icon }) => (
               <Link
                 key={label}
                 href={href}
-                className="link168-card-hover link168-button-press link168-wiggle-on-hover flex items-center gap-2 rounded-2xl border border-[#DDE8CF] bg-white px-3 py-2 font-black text-[#14532D] shadow-sm"
+                className="link168-card-hover link168-button-press group flex min-h-14 items-center gap-3 rounded-2xl border border-[#DDE8CF] bg-white px-4 py-3 text-sm font-black text-[#14532D] shadow-sm"
               >
-                <Icon aria-hidden className="size-4 text-[#16A34A]" />
+                <span className="link168-card-icon link168-wiggle-on-hover grid size-9 shrink-0 place-items-center rounded-xl bg-[#ECFDF3] text-[#16A34A] transition group-hover:bg-[#FACC15] group-hover:text-[#113A1D]">
+                  <Icon aria-hidden className="size-5" />
+                </span>
                 {label}
               </Link>
             ))}
