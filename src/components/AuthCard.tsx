@@ -136,13 +136,13 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
             <div className="mt-10 max-w-md">
               <p className="inline-flex items-center gap-2 rounded-full bg-[#ECFDF3] px-3 py-1.5 text-xs font-black text-[#0B6B2B]">
                 <Sparkles aria-hidden className="size-4 text-[#F6C343]" />
-                {isRegister ? "抢占你的专属主页" : "欢迎回来"}
+                {isRegister ? "创建主页" : "欢迎回来"}
               </p>
               <h1 className="mt-4 text-4xl font-black tracking-tight text-[#113A1D]">
-                {isRegister ? "先抢 link168.me/用户名" : "登录 Link168"}
+                {isRegister ? "创建你的 Link168" : "登录 Link168"}
               </h1>
               <p className="mt-3 text-base leading-7 text-[#52624A]">
-                {isRegister ? "注册成功后自动进入后台，不需要再登录一次。" : "一个链接，聚合、分享你的全部"}
+                {isRegister ? "领取你的专属主页，一个链接连接全网" : "一个链接，聚合、分享你的全部"}
               </p>
             </div>
 

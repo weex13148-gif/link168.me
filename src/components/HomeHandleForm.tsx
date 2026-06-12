@@ -28,7 +28,7 @@ export function HomeHandleForm() {
           <input
             value={handle}
             onChange={(event) => setHandle(normalizeHandle(event.target.value))}
-            placeholder="abao"
+            placeholder="yourname"
             aria-label="Link168 主页后缀"
             className="min-w-0 flex-1 bg-transparent px-3 text-base font-black text-[#113A1D] outline-none placeholder:text-[#8FA083]"
           />
@@ -37,7 +37,7 @@ export function HomeHandleForm() {
           type="submit"
           className="link168-button-press inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,#FACC15,#F6C343)] px-6 font-black text-[#113A1D] shadow-xl shadow-[#FACC15]/30 transition hover:-translate-y-0.5 hover:brightness-105"
         >
-          立即创建你的 Link168
+          免费使用
           <ArrowRight aria-hidden className="size-5" />
         </button>
       </div>

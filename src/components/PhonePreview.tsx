@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowUpRight, Globe } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 
@@ -113,7 +114,7 @@ export function PhonePreview({
             ))}
           </div>
 
-          {poweredLogoClickable ? <a href="/">{footer}</a> : footer}
+          {poweredLogoClickable ? <Link href="/">{footer}</Link> : footer}
         </div>
       </div>
     </div>

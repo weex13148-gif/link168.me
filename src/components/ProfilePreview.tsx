@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PhonePreview } from "@/components/PhonePreview";
 import { BrandLogo } from "@/components/BrandLogo";
 
@@ -17,7 +18,7 @@ export function BrandFooter({ clickable = true }: { clickable?: boolean }) {
     </div>
   );
 
-  return clickable ? <a href="/">{content}</a> : content;
+  return clickable ? <Link href="/">{content}</Link> : content;
 }
 
 export function ProfilePreview({

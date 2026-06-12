@@ -105,16 +105,14 @@ export default function Home() {
           <div className="mx-auto grid w-full max-w-7xl gap-12 lg:grid-cols-[minmax(0,1fr)_430px] lg:items-center">
             <div className="max-w-3xl pt-4 text-white">
               <h1 className="text-5xl font-black leading-tight sm:text-6xl lg:text-7xl">
-                Link168.me
-                <span className="mt-3 block text-3xl text-[#FACC15] sm:text-4xl lg:text-5xl">链接一路发</span>
-                <span className="mt-2 block text-2xl text-white/92 sm:text-3xl lg:text-4xl">一个人，一个链接，连接全网</span>
+                一个人，一个链接，连接全网
               </h1>
               <p className="mt-6 max-w-2xl text-base leading-8 text-white/78 sm:text-lg">
-                把微信公众号、小红书、抖音、视频号、网站、商品和预约咨询整理成一个主页，让客户只记住你的一个链接。
+                用一个 Link168 主页，聚合微信公众号、小红书、抖音、视频号、网站链接、商品橱窗和预约咨询，让客户只记住你的一个链接。
               </p>
               <HomeHandleForm />
               <div className="mt-6 grid gap-2 text-sm font-black text-white/86 sm:grid-cols-2">
-                {["三分钟创建主页", "一个入口承接全平台", "适合主页、海报、社群和名片", "让客户少找一步"].map((item) => (
+                {["一个页面，展示全部", "一个链接，连接全网", "分享给主页、视频、文章末尾、群聊和名片二维码", "让流量价值翻倍，只要一分钟"].map((item) => (
                   <span key={item} className="inline-flex items-center gap-2">
                     <CheckCircle2 aria-hidden className="size-4 text-[#FACC15]" />
                     {item}
