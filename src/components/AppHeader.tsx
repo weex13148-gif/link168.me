@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { LogoMark } from "@/components/LogoMark";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export function AppHeader() {
   return (
     <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-      <LogoMark />
+      <BrandLogo size="header" />
       <nav className="flex items-center gap-2 text-sm font-semibold">
         <Link
           href="/login"

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { Eye, Link2, Loader2, LogOut, Pencil, Plus, Save, Trash2, X } from "lucide-react";
-import { LogoMark } from "@/components/LogoMark";
+import { BrandLogo } from "@/components/BrandLogo";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import type { Profile, ProfileLink } from "@/lib/link168-types";
 
@@ -294,7 +294,7 @@ export default function DashboardPage() {
     <main className="mx-auto grid min-h-dvh w-full max-w-7xl gap-6 px-4 py-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_410px] lg:px-8">
       <section>
         <header className="flex items-center justify-between">
-          <LogoMark />
+          <BrandLogo size="header" />
           <button onClick={signOut} className="grid size-10 place-items-center rounded-lg bg-white text-[#4A4A4A] shadow-sm">
             <LogOut aria-label="退出登录" className="size-5" />
           </button>

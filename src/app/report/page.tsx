@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { Suspense } from "react";
 import { Loader2, Send } from "lucide-react";
-import { LogoMark } from "@/components/LogoMark";
+import { BrandLogo } from "@/components/BrandLogo";
 import { SiteFooter } from "@/components/SiteFooter";
 
 const reportTypes = ["诈骗", "赌博", "色情", "侵权", "黑灰产", "违法违规", "其他"];
@@ -57,7 +57,7 @@ function ReportForm() {
     <>
       <main className="mx-auto min-h-dvh w-full max-w-2xl px-4 py-8 sm:px-6">
         <div className="flex items-center justify-between">
-          <LogoMark />
+          <BrandLogo size="header" />
           <Link href="/" className="text-sm font-bold text-[#5B6FFF]">
             返回首页
           </Link>
@@ -147,7 +147,7 @@ export default function ReportPage() {
     <Suspense
       fallback={
         <main className="mx-auto min-h-dvh w-full max-w-2xl px-4 py-8 sm:px-6">
-          <LogoMark />
+          <BrandLogo size="header" />
         </main>
       }
     >

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Eye, Loader2, ShieldAlert, Trash2 } from "lucide-react";
-import { LogoMark } from "@/components/LogoMark";
+import { BrandLogo } from "@/components/BrandLogo";
 
 type ReportRow = {
   id: string;
@@ -87,7 +87,7 @@ export default function AdminReportsPage() {
   return (
     <main className="mx-auto min-h-dvh w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
       <header className="flex items-center justify-between">
-        <LogoMark />
+        <BrandLogo size="header" />
         <Link href="/" className="text-sm font-bold text-[#5B6FFF]">
           返回首页
         </Link>

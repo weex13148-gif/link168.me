@@ -1,4 +1,5 @@
 import { ArrowUpRight, Globe } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export type PreviewLink = {
   id?: string;
@@ -10,13 +11,10 @@ export type PreviewLink = {
 
 export function BrandFooter() {
   return (
-    <a
-      href="https://link168.me"
-      className="mx-auto mt-5 flex w-fit items-center gap-2 rounded-lg bg-white px-4 py-2 text-xs font-black text-[#4A4A4A] shadow-sm transition hover:text-[#5B6FFF]"
-    >
-      <span className="grid size-6 place-items-center rounded-md bg-[#5B6FFF] text-[10px] text-white">L</span>
-      Powered by Link168
-    </a>
+    <div className="mx-auto mt-5 flex w-fit items-center gap-2 rounded-lg bg-white px-4 py-2 text-xs font-black text-[#4A4A4A] shadow-sm">
+      <span>Powered by</span>
+      <BrandLogo size="footer" />
+    </div>
   );
 }
 

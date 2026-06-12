@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogoMark } from "@/components/LogoMark";
+import { BrandLogo } from "@/components/BrandLogo";
 import { SiteFooter } from "@/components/SiteFooter";
 
 type LegalPageProps = {
@@ -12,7 +12,7 @@ export function LegalPage({ title, children }: LegalPageProps) {
     <>
       <main className="mx-auto min-h-dvh w-full max-w-3xl px-4 py-8 sm:px-6">
         <div className="flex items-center justify-between">
-          <LogoMark />
+          <BrandLogo size="header" />
           <Link href="/" className="text-sm font-bold text-[#5B6FFF]">
             返回首页
           </Link>

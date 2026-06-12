@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { ArrowRight, Loader2 } from "lucide-react";
-import { LogoMark } from "@/components/LogoMark";
+import { BrandLogo } from "@/components/BrandLogo";
 
 type AuthMode = "login" | "register";
 
@@ -74,7 +74,7 @@ export function AuthCard({ mode }: { mode: AuthMode }) {
   return (
     <main className="flex min-h-dvh items-center justify-center px-5 py-8">
       <section className="w-full max-w-md">
-        <LogoMark />
+        <BrandLogo size="header" />
         <div className="mt-6 rounded-lg border border-[#E0E0E0] bg-white p-5 shadow-xl shadow-neutral-900/10 sm:p-7">
           <div>
             <p className="text-sm font-bold text-[#5B6FFF]">{isRegister ? "创建账号" : "欢迎回来"}</p>
