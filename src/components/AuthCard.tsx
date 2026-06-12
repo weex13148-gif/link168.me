@@ -79,7 +79,7 @@ export function AuthCard({ mode }: { mode: AuthMode }) {
           <div>
             <p className="text-sm font-bold text-[#5B6FFF]">{isRegister ? "创建账号" : "欢迎回来"}</p>
             <h1 className="mt-2 text-3xl font-black tracking-tight">
-              {isRegister ? "注册 Link1688" : "登录你的主页"}
+              {isRegister ? "注册 Link168" : "登录你的主页"}
             </h1>
             <p className="mt-3 text-sm leading-6 text-[#4A4A4A]">
               {isRegister

@@ -302,7 +302,7 @@ export default function DashboardPage() {
 
         <div className="mt-7">
           <p className="text-sm font-bold text-[#5B6FFF]">用户后台</p>
-          <h1 className="mt-2 text-4xl font-black tracking-tight">管理你的 Link1688 主页</h1>
+          <h1 className="mt-2 text-4xl font-black tracking-tight">管理你的 Link168 主页</h1>
           <p className="mt-3 max-w-xl text-sm leading-6 text-[#4A4A4A]">
             保存资料后生成公开主页；添加、编辑和删除链接会写入 PostgreSQL。
           </p>

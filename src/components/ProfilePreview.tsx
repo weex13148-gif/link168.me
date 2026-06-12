@@ -15,7 +15,7 @@ export function BrandFooter() {
       className="mx-auto mt-5 flex w-fit items-center gap-2 rounded-lg bg-white px-4 py-2 text-xs font-black text-[#4A4A4A] shadow-sm transition hover:text-[#5B6FFF]"
     >
       <span className="grid size-6 place-items-center rounded-md bg-[#5B6FFF] text-[10px] text-white">L</span>
-      Powered by Link1688
+      Powered by Link168
     </a>
   );
 }

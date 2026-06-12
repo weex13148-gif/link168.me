@@ -24,10 +24,10 @@ export default function Home() {
                 link168.me
               </div>
               <h1 className="mt-5 max-w-4xl text-4xl font-black leading-tight text-[#1A1A1A] sm:text-5xl lg:text-6xl">
-                Link1688，把你的链接放进一个主页
+                Link168，把你的链接放进一个主页
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-8 text-[#4A4A4A] sm:text-lg">
-                V0.1 支持注册、登录、创建主页、添加链接和公开访问主页。免费版可创建一个主页和一个用户名，并固定显示 Link1688 品牌入口。
+                V0.1 支持注册、登录、创建主页、添加链接和公开访问主页。免费版可创建一个主页和一个用户名，并固定显示 Link168 品牌入口。
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <Link

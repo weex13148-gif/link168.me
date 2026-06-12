@@ -5,7 +5,7 @@ export default function TermsPage() {
     <LegalPage title="用户协议">
       <section>
         <h2 className="font-black text-[#1A1A1A]">一、服务说明</h2>
-        <p>Link1688 为用户提供个人链接主页创建、展示和管理服务。用户应确保提交的信息真实、合法、有效。</p>
+        <p>Link168 为用户提供个人链接主页创建、展示和管理服务。用户应确保提交的信息真实、合法、有效。</p>
       </section>
       <section>
         <h2 className="font-black text-[#1A1A1A]">二、账号使用</h2>

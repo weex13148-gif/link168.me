@@ -33,13 +33,13 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
 
   if (!profile) {
     return {
-      title: `@${username} | Link1688`,
+      title: `@${username} | Link168`,
       description: `访问 @${username} 的 link168.me 主页。`,
     };
   }
 
   return {
-    title: `${profile.displayName || `@${profile.username}`} | Link1688`,
+    title: `${profile.displayName || `@${profile.username}`} | Link168`,
     description: profile.bio || `访问 @${profile.username} 的 link168.me 主页。`,
   };
 }
