@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 
 export const SESSION_COOKIE_NAME = "link168_session";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
+const SESSION_COOKIE_SECURE = process.env.COOKIE_SECURE === "true";
 
 export type CurrentUser = {
   id: string;
@@ -41,7 +42,7 @@ export function setSessionCookie(response: NextResponse, token: string, expiresA
     name: SESSION_COOKIE_NAME,
     value: token,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: SESSION_COOKIE_SECURE,
     sameSite: "lax",
     path: "/",
     expires: expiresAt,
@@ -53,7 +54,7 @@ export function clearSessionCookie(response: NextResponse) {
     name: SESSION_COOKIE_NAME,
     value: "",
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: SESSION_COOKIE_SECURE,
     sameSite: "lax",
     path: "/",
     maxAge: 0,
