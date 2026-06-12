@@ -1,4 +1,4 @@
-# Link1688
+# Link168
 
 Mobile-first personal links app for `link168.me`.
 
@@ -28,10 +28,10 @@ V0.1 only supports the core path:
 
 ## Product Rules
 
-- Brand name: Link1688
+- Brand name: Link168
 - Official URL: `https://link168.me`
 - Free plan: one profile and one username
-- Free public profiles must show a clickable `Powered by Link1688` brand footer
+- Free public profiles must show a clickable `Powered by Link168` brand footer
 - V0.1 does not include membership, payment, analytics, theme marketplace, or admin pages
 
 ## Local Setup
