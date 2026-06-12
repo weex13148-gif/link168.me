@@ -3,9 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
+import type { MutableRefObject, ReactNode } from "react";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  ArrowRight,
   BarChart3,
   Check,
   ChevronDown,
@@ -22,6 +23,7 @@ import {
   LogOut,
   MapPin,
   MessageCircle,
+  Monitor,
   MoreHorizontal,
   Palette,
   Pencil,
@@ -29,23 +31,31 @@ import {
   QrCode,
   Save,
   Share2,
+  ShieldCheck,
   ShoppingBag,
+  Smartphone,
   Sparkles,
   Trash2,
   Type,
+  User,
   Video,
   Wand2,
   X,
   Zap,
 } from "lucide-react";
-import { PhonePreview, type PhonePreviewLink } from "@/components/PhonePreview";
+import { PhonePreview, type PhonePreviewAppearance, type PhonePreviewLink } from "@/components/PhonePreview";
 import type { Profile, ProfileLink } from "@/lib/link168-types";
+
+type DashboardTab = "制作" | "外观" | "数据" | "我的";
+type AppearanceTab = "主题" | "自定义" | "系统配置";
+type ModalState = "share" | "modules" | "vip" | null;
 
 type DashboardState = {
   loading: boolean;
   saving: boolean;
   error: string;
   userId: string | null;
+  userEmail: string | null;
   profile: Profile | null;
   links: BuilderLink[];
 };
@@ -75,18 +85,47 @@ type LinkResponse = {
   link?: ProfileLink;
 };
 
-type ModalState = "share" | "modules" | "vip" | null;
+type CustomStyle = {
+  backgroundMode: "solid" | "gradient1" | "gradient2" | "image";
+  backgroundColor: string;
+  buttonBg: string;
+  buttonText: string;
+  buttonBorder: string;
+  nameColor: string;
+  bioColor: string;
+  buttonShape: "square" | "rounded";
+  buttonAlign: "left" | "center" | "right";
+};
+
+type SystemConfig = {
+  showPowered: boolean;
+  showSearch: boolean;
+  linkIcon: "share" | "arrow" | "hidden";
+};
 
 const initialState: DashboardState = {
   loading: true,
   saving: false,
   error: "",
   userId: null,
+  userEmail: null,
   profile: null,
   links: [],
 };
 
-const navItems = ["制作", "外观", "数据", "我的"];
+const navItems: DashboardTab[] = ["制作", "外观", "数据", "我的"];
+const appearanceTabs: AppearanceTab[] = ["主题", "自定义", "系统配置"];
+
+const freeThemes = [
+  { name: "Link168 绿金默认", surface: "bg-[#F7F6EA]", card: "bg-white", link: "bg-white text-[#113A1D]" },
+  { name: "简约白", surface: "bg-white", card: "bg-[#F8FAFC]", link: "bg-white text-[#111827]" },
+  { name: "商务黑", surface: "bg-[#111827]", card: "bg-[#1F2937] text-white", link: "bg-[#F9FAFB] text-[#111827]" },
+  { name: "蓝色科技", surface: "bg-[#EAF3FF]", card: "bg-white", link: "bg-[#2563EB] text-white border-[#2563EB]" },
+  { name: "橙色活力", surface: "bg-[#FFF3E6]", card: "bg-white", link: "bg-[#F97316] text-white border-[#F97316]" },
+  { name: "浅绿清新", surface: "bg-[#ECFDF3]", card: "bg-white", link: "bg-[#DCFCE7] text-[#14532D] border-[#BBF7D0]" },
+];
+
+const vipThemes = ["黑金高级", "星空", "森林", "海边", "渐变艺术", "极简玻璃"];
 
 const moduleGroups = [
   {
@@ -164,10 +203,68 @@ function createDraftLink(position: number, profileId = ""): BuilderLink {
   };
 }
 
+function buildAppearance(themeName: string, custom: CustomStyle, system: SystemConfig): PhonePreviewAppearance {
+  const theme = freeThemes.find((item) => item.name === themeName);
+  if (theme) {
+    return {
+      surfaceClassName: theme.surface,
+      cardClassName: theme.card,
+      linkClassName: theme.link,
+      linkIcon: system.linkIcon,
+      showSearch: system.showSearch,
+      showPowered: system.showPowered,
+    };
+  }
+
+  return {
+    surfaceClassName: "",
+    cardClassName: "bg-white/90",
+    linkClassName: custom.buttonShape === "square" ? "rounded-lg" : "rounded-2xl",
+    nameStyle: { color: custom.nameColor },
+    bioStyle: { color: custom.bioColor },
+    linkStyle: {
+      background: custom.buttonBg,
+      color: custom.buttonText,
+      borderColor: custom.buttonBorder,
+      borderRadius: custom.buttonShape === "square" ? 8 : 18,
+    },
+    linkAlign: custom.buttonAlign,
+    linkIcon: system.linkIcon,
+    showSearch: system.showSearch,
+    showPowered: system.showPowered,
+  };
+}
+
+function customSurfaceStyle(custom: CustomStyle) {
+  if (custom.backgroundMode === "solid") return { background: custom.backgroundColor };
+  if (custom.backgroundMode === "gradient1") return { background: "linear-gradient(160deg,#ECFDF3 0%,#FEF3C7 100%)" };
+  if (custom.backgroundMode === "gradient2") return { background: "linear-gradient(160deg,#DBEAFE 0%,#FCE7F3 100%)" };
+  return { background: "linear-gradient(160deg,#102E1B 0%,#0B6B2B 45%,#FACC15 140%)" };
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const titleInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const [state, setState] = useState<DashboardState>(initialState);
+  const [activeTab, setActiveTab] = useState<DashboardTab>("制作");
+  const [appearanceTab, setAppearanceTab] = useState<AppearanceTab>("主题");
+  const [selectedTheme, setSelectedTheme] = useState("Link168 绿金默认");
+  const [customStyle, setCustomStyle] = useState<CustomStyle>({
+    backgroundMode: "solid",
+    backgroundColor: "#F7F6EA",
+    buttonBg: "#FFFFFF",
+    buttonText: "#113A1D",
+    buttonBorder: "#DDE8CF",
+    nameColor: "#113A1D",
+    bioColor: "#52624A",
+    buttonShape: "rounded",
+    buttonAlign: "left",
+  });
+  const [systemConfig, setSystemConfig] = useState<SystemConfig>({
+    showPowered: true,
+    showSearch: false,
+    linkIcon: "arrow",
+  });
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
@@ -177,7 +274,7 @@ export default function DashboardPage() {
   const [activeFlash, setActiveFlash] = useState("");
   const [addingFlash, setAddingFlash] = useState(false);
 
-  const publicUrl = username ? `link168.me/${username}` : "保存资料后生成公开地址";
+  const publicUrl = username ? `link168.me/${username}` : "link168.me/yourname";
   const previewUrl = username ? `/${username}` : "/dashboard";
 
   const previewLinks: PhonePreviewLink[] = useMemo(
@@ -196,10 +293,11 @@ export default function DashboardPage() {
   );
 
   const activeLinks = useMemo(() => state.links.filter((link) => link.is_active), [state.links]);
+  const previewAppearance = useMemo(() => buildAppearance(selectedTheme, customStyle, systemConfig), [customStyle, selectedTheme, systemConfig]);
 
   const showToast = useCallback((message: string) => {
     setToast(message);
-    window.setTimeout(() => setToast(""), 2200);
+    window.setTimeout(() => setToast(""), 1800);
   }, []);
 
   const flash = useCallback((key: string) => {
@@ -231,6 +329,7 @@ export default function DashboardPage() {
         saving: false,
         error: "",
         userId: result.user.id,
+        userEmail: result.user.email,
         profile,
         links,
       });
@@ -258,14 +357,12 @@ export default function DashboardPage() {
 
   async function saveProfile(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     if (!username) {
       setState((current) => ({ ...current, error: "请先完成注册生成公开地址。" }));
       return;
     }
 
     setState((current) => ({ ...current, saving: true, error: "" }));
-
     const response = await fetch("/api/dashboard", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -286,12 +383,7 @@ export default function DashboardPage() {
     setUsername(result.profile.username);
     setDisplayName(result.profile.display_name || "");
     setBio(result.profile.bio || "");
-    setState((current) => ({
-      ...current,
-      saving: false,
-      profile: result.profile || null,
-      error: "",
-    }));
+    setState((current) => ({ ...current, saving: false, profile: result.profile || null, error: "" }));
     showToast("保存成功");
   }
 
@@ -306,10 +398,7 @@ export default function DashboardPage() {
     setAddingFlash(true);
     window.setTimeout(() => setAddingFlash(false), 300);
     const draft = createDraftLink(state.links.length, state.profile?.id || "");
-    setState((current) => ({
-      ...current,
-      links: [...current.links, draft],
-    }));
+    setState((current) => ({ ...current, links: [...current.links, draft] }));
     showToast("添加成功");
     window.setTimeout(() => {
       titleInputRefs.current[draft.id]?.focus();
@@ -324,14 +413,12 @@ export default function DashboardPage() {
       showToast("请先填写标题和链接");
       return;
     }
-
     if (!state.profile) {
       showToast("请先保存主页资料");
       return;
     }
 
     setState((current) => ({ ...current, saving: true, error: "" }));
-
     const response = await fetch(link.isDraft ? "/api/dashboard/links" : `/api/dashboard/links/${link.id}`, {
       method: link.isDraft ? "POST" : "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -352,9 +439,7 @@ export default function DashboardPage() {
     setState((current) => ({
       ...current,
       saving: false,
-      links: current.links
-        .map((item) => (item.id === link.id ? toBuilderLink(result.link as ProfileLink) : item))
-        .sort((a, b) => a.position - b.position),
+      links: current.links.map((item) => (item.id === link.id ? toBuilderLink(result.link as ProfileLink) : item)).sort((a, b) => a.position - b.position),
     }));
     showToast("保存成功");
   }
@@ -382,11 +467,7 @@ export default function DashboardPage() {
       return;
     }
 
-    setState((current) => ({
-      ...current,
-      saving: false,
-      links: current.links.filter((item) => item.id !== link.id),
-    }));
+    setState((current) => ({ ...current, saving: false, links: current.links.filter((item) => item.id !== link.id) }));
     showToast("已删除");
   }
 
@@ -423,8 +504,8 @@ export default function DashboardPage() {
             {navItems.map((item) => (
               <button
                 key={item}
-                onClick={() => (item === "制作" ? undefined : showToast(`${item}功能即将开放`))}
-                className={`rounded-full px-4 py-2 transition ${item === "制作" ? "bg-[#0B6B2B] text-white shadow-sm" : "hover:bg-[#ECFDF3] hover:text-[#0B6B2B]"}`}
+                onClick={() => setActiveTab(item)}
+                className={`rounded-full px-4 py-2 transition ${activeTab === item ? "bg-[#0B6B2B] text-white shadow-sm" : "hover:bg-[#ECFDF3] hover:text-[#0B6B2B]"}`}
               >
                 {item}
               </button>
@@ -439,13 +520,8 @@ export default function DashboardPage() {
               <Crown aria-hidden className="size-4" />
               升级VIP
             </button>
-            <span className="hidden max-w-[260px] truncate rounded-full bg-[#ECFDF3] px-4 py-2 text-xs font-black text-[#0B6B2B] lg:inline">
-              永久专属链接：{publicUrl}
-            </span>
-            <button
-              onClick={() => setModal("share")}
-              className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#113A1D] px-4 text-sm font-black text-white shadow-sm"
-            >
+            <span className="hidden max-w-[260px] truncate rounded-full bg-[#ECFDF3] px-4 py-2 text-xs font-black text-[#0B6B2B] lg:inline">永久专属链接：{publicUrl}</span>
+            <button onClick={() => setModal("share")} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#113A1D] px-4 text-sm font-black text-white shadow-sm">
               <Share2 aria-hidden className="size-4" />
               分享
             </button>
@@ -460,141 +536,66 @@ export default function DashboardPage() {
         <section className="grid gap-5">
           {state.error ? <p className="rounded-2xl border border-[#FF4D4F]/20 bg-[#FFF1F0] px-4 py-3 text-sm font-bold text-[#B42318]">{state.error}</p> : null}
 
-          <section className="rounded-[26px] border border-[#DDE8CF] bg-white p-5 shadow-sm">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <div>
-                <p className="text-sm font-black text-[#0B6B2B]">公开主页地址</p>
-                <h1 className="mt-2 text-3xl font-black">{publicUrl}</h1>
-                <p className="mt-2 text-sm text-[#52624A]">当前版本暂不开放随意修改公开地址，避免旧链接和二维码失效。</p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <button onClick={() => void copyText(`https://${publicUrl}`)} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#ECFDF3] px-4 text-sm font-black text-[#0B6B2B]">
-                  <Copy aria-hidden className="size-4" />
-                  复制链接
-                </button>
-                <Link href={previewUrl} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-white px-4 text-sm font-black text-[#14532D] ring-1 ring-[#DDE8CF]">
-                  <Eye aria-hidden className="size-4" />
-                  预览主页
-                </Link>
-                <button onClick={() => setModal("share")} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#113A1D] px-4 text-sm font-black text-white">
-                  <Share2 aria-hidden className="size-4" />
-                  分享主页
-                </button>
-                <button onClick={changeAddressNotice} className="link168-button-press inline-flex min-h-10 items-center rounded-full bg-[#FFF7D6] px-4 text-sm font-black text-[#AD6800]">
-                  修改主页地址（后续开放）
-                </button>
-              </div>
-            </div>
-          </section>
+          {activeTab === "制作" ? (
+            <BuilderPanel
+              publicUrl={publicUrl}
+              previewUrl={previewUrl}
+              state={state}
+              username={username}
+              displayName={displayName}
+              bio={bio}
+              profileOpen={profileOpen}
+              activeLinks={activeLinks}
+              addingFlash={addingFlash}
+              activeFlash={activeFlash}
+              titleInputRefs={titleInputRefs}
+              setDisplayName={setDisplayName}
+              setBio={setBio}
+              setProfileOpen={setProfileOpen}
+              saveProfile={saveProfile}
+              addDraftLink={addDraftLink}
+              setModal={setModal}
+              copyText={copyText}
+              changeAddressNotice={changeAddressNotice}
+              updateLocalLink={updateLocalLink}
+              saveLink={saveLink}
+              deleteLink={deleteLink}
+              showToast={showToast}
+              flash={flash}
+            />
+          ) : null}
 
-          <section className="rounded-[26px] border border-[#DDE8CF] bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-sm font-black text-[#0B6B2B]">主页资料卡片</p>
-                <h2 className="mt-1 text-2xl font-black">编辑主页展示内容</h2>
-              </div>
-              <button onClick={() => setProfileOpen((open) => !open)} className="grid size-10 place-items-center rounded-full bg-[#F7F6EA] text-[#52624A]">
-                {profileOpen ? <ChevronUp aria-label="收起资料区" className="size-5" /> : <ChevronDown aria-label="展开资料区" className="size-5" />}
-              </button>
-            </div>
+          {activeTab === "外观" ? (
+            <AppearancePanel
+              activeTab={appearanceTab}
+              selectedTheme={selectedTheme}
+              customStyle={customStyle}
+              systemConfig={systemConfig}
+              setActiveTab={setAppearanceTab}
+              setSelectedTheme={setSelectedTheme}
+              setCustomStyle={setCustomStyle}
+              setSystemConfig={setSystemConfig}
+              showToast={showToast}
+              openVip={() => setModal("vip")}
+            />
+          ) : null}
 
-            {profileOpen ? (
-              <form onSubmit={saveProfile} className="mt-5 grid gap-4">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                  <div className="grid size-20 place-items-center overflow-hidden rounded-full bg-[linear-gradient(135deg,#16A34A,#FACC15)] text-2xl font-black text-white">
-                    {displayName ? displayName.slice(0, 1).toUpperCase() : "L"}
-                  </div>
-                  <button type="button" onClick={() => showToast("头像上传功能即将开放")} className="link168-button-press inline-flex min-h-10 w-fit items-center gap-2 rounded-full bg-[#ECFDF3] px-4 text-sm font-black text-[#0B6B2B]">
-                    <ImageIcon aria-hidden className="size-4" />
-                    上传头像
-                  </button>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="block">
-                    <span className="text-sm font-black text-[#14532D]">昵称</span>
-                    <input
-                      className="mt-2 h-12 w-full rounded-2xl border border-[#DDE8CF] bg-[#FCFFF7] px-4 outline-none focus:border-[#16A34A]"
-                      value={displayName}
-                      onChange={(event) => setDisplayName(event.target.value)}
-                      placeholder="例如：阿宝"
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="text-sm font-black text-[#14532D]">公开地址</span>
-                    <input className="mt-2 h-12 w-full rounded-2xl border border-[#DDE8CF] bg-[#F7F6EA] px-4 text-[#8FA083]" value={publicUrl} readOnly />
-                  </label>
-                </div>
-                <label className="block">
-                  <span className="text-sm font-black text-[#14532D]">简介</span>
-                  <textarea
-                    className="mt-2 min-h-24 w-full resize-none rounded-2xl border border-[#DDE8CF] bg-[#FCFFF7] px-4 py-3 outline-none focus:border-[#16A34A]"
-                    value={bio}
-                    onChange={(event) => setBio(event.target.value)}
-                    placeholder="一句话介绍你自己"
-                  />
-                </label>
-                <button type="submit" disabled={state.saving} className="link168-button-press inline-flex min-h-11 w-fit items-center gap-2 rounded-full bg-[#0B6B2B] px-5 text-sm font-black text-white disabled:opacity-60">
-                  {state.saving ? <Loader2 aria-hidden className="size-4 animate-spin" /> : <Save aria-hidden className="size-4" />}
-                  保存资料
-                </button>
-              </form>
-            ) : null}
-          </section>
+          {activeTab === "数据" ? <DataPanel links={state.links} openVip={() => setModal("vip")} /> : null}
 
-          <section className="rounded-[26px] border border-[#DDE8CF] bg-white p-5 shadow-sm">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <div>
-                <p className="text-sm font-black text-[#0B6B2B]">链接卡片</p>
-                <h2 className="mt-1 text-2xl font-black">管理主页按钮</h2>
-                <p className="mt-1 text-sm text-[#52624A]">当前 {state.links.length} 个链接，公开显示 {activeLinks.length} 个。</p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={addDraftLink}
-                  className={`link168-button-press inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-sm font-black transition ${addingFlash ? "bg-[#FACC15] text-[#113A1D]" : "bg-[#0B6B2B] text-white"}`}
-                >
-                  <Plus aria-hidden className="size-4" />
-                  添加新链接
-                </button>
-                <button onClick={() => setModal("modules")} className="link168-button-press inline-flex min-h-11 items-center gap-2 rounded-full bg-[#ECFDF3] px-5 text-sm font-black text-[#0B6B2B]">
-                  <Wand2 aria-hidden className="size-4" />
-                  添加更多模块
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-5 grid gap-4">
-              {state.links.length === 0 ? (
-                <div className="rounded-3xl border border-dashed border-[#DDE8CF] bg-[#FCFFF7] px-4 py-10 text-center">
-                  <p className="text-sm font-black">还没有链接</p>
-                  <p className="mt-1 text-sm text-[#52624A]">点击“添加新链接”创建第一个主页按钮。</p>
-                </div>
-              ) : null}
-              {state.links
-                .slice()
-                .sort((a, b) => a.position - b.position)
-                .map((link) => (
-                  <LinkCard
-                    key={link.id}
-                    link={link}
-                    saving={state.saving}
-                    flashActive={activeFlash}
-                    setTitleRef={(node) => {
-                      titleInputRefs.current[link.id] = node;
-                    }}
-                    onChange={(patch) => updateLocalLink(link.id, patch)}
-                    onSave={() => void saveLink(link)}
-                    onDelete={() => void deleteLink(link)}
-                    onCopy={() => void copyText(link.url || `https://${publicUrl}`, "复制成功")}
-                    onVip={(label) => {
-                      flash(label);
-                      setModal("vip");
-                    }}
-                    onFlash={flash}
-                  />
-                ))}
-            </div>
-          </section>
+          {activeTab === "我的" ? (
+            <AccountPanel
+              email={state.userEmail}
+              displayName={displayName}
+              bio={bio}
+              publicUrl={publicUrl}
+              previewUrl={previewUrl}
+              copyText={copyText}
+              openVip={() => setModal("vip")}
+              onAddressNotice={changeAddressNotice}
+              signOut={signOut}
+              showToast={showToast}
+            />
+          ) : null}
         </section>
 
         <aside className="lg:sticky lg:top-24 lg:h-fit">
@@ -606,16 +607,19 @@ export default function DashboardPage() {
               </div>
               <Palette aria-hidden className="size-5 text-[#16A34A]" />
             </div>
-            <PhonePreview
-              variant="public"
-              poweredLogoClickable
-              username={username}
-              displayName={displayName}
-              bio={bio}
-              avatarUrl={state.profile?.avatar_url}
-              links={previewLinks}
-              className="max-w-[360px]"
-            />
+            <div style={selectedTheme === "自定义" ? customSurfaceStyle(customStyle) : undefined} className={selectedTheme === "自定义" ? "rounded-[34px] p-2" : ""}>
+              <PhonePreview
+                variant="public"
+                poweredLogoClickable
+                username={username}
+                displayName={displayName}
+                bio={bio}
+                avatarUrl={state.profile?.avatar_url}
+                links={previewLinks}
+                appearance={previewAppearance}
+                className="max-w-[360px]"
+              />
+            </div>
           </div>
         </aside>
       </div>
@@ -647,12 +651,600 @@ export default function DashboardPage() {
   );
 }
 
+function BuilderPanel({
+  publicUrl,
+  previewUrl,
+  state,
+  displayName,
+  bio,
+  profileOpen,
+  activeLinks,
+  addingFlash,
+  activeFlash,
+  titleInputRefs,
+  setDisplayName,
+  setBio,
+  setProfileOpen,
+  saveProfile,
+  addDraftLink,
+  setModal,
+  copyText,
+  changeAddressNotice,
+  updateLocalLink,
+  saveLink,
+  deleteLink,
+  showToast,
+  flash,
+}: {
+  publicUrl: string;
+  previewUrl: string;
+  state: DashboardState;
+  username: string;
+  displayName: string;
+  bio: string;
+  profileOpen: boolean;
+  activeLinks: BuilderLink[];
+  addingFlash: boolean;
+  activeFlash: string;
+  titleInputRefs: MutableRefObject<Record<string, HTMLInputElement | null>>;
+  setDisplayName: (value: string) => void;
+  setBio: (value: string) => void;
+  setProfileOpen: (value: boolean | ((open: boolean) => boolean)) => void;
+  saveProfile: (event: FormEvent<HTMLFormElement>) => void;
+  addDraftLink: () => void;
+  setModal: (modal: ModalState) => void;
+  copyText: (value: string, message?: string) => Promise<void>;
+  changeAddressNotice: () => void;
+  updateLocalLink: (linkId: string, patch: Partial<BuilderLink>) => void;
+  saveLink: (link: BuilderLink) => Promise<void>;
+  deleteLink: (link: BuilderLink) => Promise<void>;
+  showToast: (message: string) => void;
+  flash: (label: string) => void;
+}) {
+  return (
+    <>
+      <section className="rounded-[26px] border border-[#DDE8CF] bg-white p-5 shadow-sm">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div>
+            <p className="text-sm font-black text-[#0B6B2B]">公开主页地址</p>
+            <h1 className="mt-2 text-3xl font-black">{publicUrl}</h1>
+            <p className="mt-2 text-sm text-[#52624A]">当前版本暂不开放随意修改公开地址，避免旧链接和二维码失效。</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => void copyText(`https://${publicUrl}`)} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#ECFDF3] px-4 text-sm font-black text-[#0B6B2B]">
+              <Copy aria-hidden className="size-4" />
+              复制链接
+            </button>
+            <Link href={previewUrl} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-white px-4 text-sm font-black text-[#14532D] ring-1 ring-[#DDE8CF]">
+              <Eye aria-hidden className="size-4" />
+              预览主页
+            </Link>
+            <button onClick={() => setModal("share")} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#113A1D] px-4 text-sm font-black text-white">
+              <Share2 aria-hidden className="size-4" />
+              分享主页
+            </button>
+            <button onClick={changeAddressNotice} className="link168-button-press inline-flex min-h-10 items-center rounded-full bg-[#FFF7D6] px-4 text-sm font-black text-[#AD6800]">
+              修改主页地址（后续开放）
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-[26px] border border-[#DDE8CF] bg-white p-5 shadow-sm">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-black text-[#0B6B2B]">主页资料卡片</p>
+            <h2 className="mt-1 text-2xl font-black">编辑主页展示内容</h2>
+          </div>
+          <button onClick={() => setProfileOpen((open) => !open)} className="grid size-10 place-items-center rounded-full bg-[#F7F6EA] text-[#52624A]">
+            {profileOpen ? <ChevronUp aria-label="收起资料区" className="size-5" /> : <ChevronDown aria-label="展开资料区" className="size-5" />}
+          </button>
+        </div>
+
+        {profileOpen ? (
+          <form onSubmit={saveProfile} className="mt-5 grid gap-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <div className="grid size-20 place-items-center overflow-hidden rounded-full bg-[linear-gradient(135deg,#16A34A,#FACC15)] text-2xl font-black text-white">
+                {displayName ? displayName.slice(0, 1).toUpperCase() : "L"}
+              </div>
+              <button type="button" onClick={() => showToast("头像上传功能即将开放")} className="link168-button-press inline-flex min-h-10 w-fit items-center gap-2 rounded-full bg-[#ECFDF3] px-4 text-sm font-black text-[#0B6B2B]">
+                <ImageIcon aria-hidden className="size-4" />
+                上传头像
+              </button>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block">
+                <span className="text-sm font-black text-[#14532D]">昵称</span>
+                <input className="mt-2 h-12 w-full rounded-2xl border border-[#DDE8CF] bg-[#FCFFF7] px-4 outline-none focus:border-[#16A34A]" value={displayName} onChange={(event) => setDisplayName(event.target.value)} placeholder="例如：阿宝" />
+              </label>
+              <label className="block">
+                <span className="text-sm font-black text-[#14532D]">公开地址</span>
+                <input className="mt-2 h-12 w-full rounded-2xl border border-[#DDE8CF] bg-[#F7F6EA] px-4 text-[#8FA083]" value={publicUrl} readOnly />
+              </label>
+            </div>
+            <label className="block">
+              <span className="text-sm font-black text-[#14532D]">简介</span>
+              <textarea className="mt-2 min-h-24 w-full resize-none rounded-2xl border border-[#DDE8CF] bg-[#FCFFF7] px-4 py-3 outline-none focus:border-[#16A34A]" value={bio} onChange={(event) => setBio(event.target.value)} placeholder="一句话介绍你自己" />
+            </label>
+            <button type="submit" disabled={state.saving} className="link168-button-press inline-flex min-h-11 w-fit items-center gap-2 rounded-full bg-[#0B6B2B] px-5 text-sm font-black text-white disabled:opacity-60">
+              {state.saving ? <Loader2 aria-hidden className="size-4 animate-spin" /> : <Save aria-hidden className="size-4" />}
+              保存资料
+            </button>
+          </form>
+        ) : null}
+      </section>
+
+      <section className="rounded-[26px] border border-[#DDE8CF] bg-white p-5 shadow-sm">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div>
+            <p className="text-sm font-black text-[#0B6B2B]">链接卡片</p>
+            <h2 className="mt-1 text-2xl font-black">管理主页按钮</h2>
+            <p className="mt-1 text-sm text-[#52624A]">当前 {state.links.length} 个链接，公开显示 {activeLinks.length} 个。</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button onClick={addDraftLink} className={`link168-button-press inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-sm font-black transition ${addingFlash ? "bg-[#FACC15] text-[#113A1D]" : "bg-[#0B6B2B] text-white"}`}>
+              <Plus aria-hidden className="size-4" />
+              添加新链接
+            </button>
+            <button onClick={() => setModal("modules")} className="link168-button-press inline-flex min-h-11 items-center gap-2 rounded-full bg-[#ECFDF3] px-5 text-sm font-black text-[#0B6B2B]">
+              <Wand2 aria-hidden className="size-4" />
+              添加更多模块
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-4">
+          {state.links.length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-[#DDE8CF] bg-[#FCFFF7] px-4 py-10 text-center">
+              <p className="text-sm font-black">还没有链接</p>
+              <p className="mt-1 text-sm text-[#52624A]">点击“添加新链接”创建第一个主页按钮。</p>
+            </div>
+          ) : null}
+          {state.links
+            .slice()
+            .sort((a, b) => a.position - b.position)
+            .map((link) => (
+              <LinkCard
+                key={link.id}
+                link={link}
+                saving={state.saving}
+                flashActive={activeFlash}
+                setTitleRef={(node) => {
+                  titleInputRefs.current[link.id] = node;
+                }}
+                onChange={(patch) => updateLocalLink(link.id, patch)}
+                onToggle={() => {
+                  updateLocalLink(link.id, { is_active: !link.is_active });
+                  showToast(link.is_active ? "已隐藏" : "已公开");
+                }}
+                onSave={() => void saveLink(link)}
+                onDelete={() => void deleteLink(link)}
+                onCopy={() => void copyText(link.url || `https://${publicUrl}`, "复制成功")}
+                onVip={(label) => {
+                  flash(label);
+                  setModal("vip");
+                }}
+                onFlash={flash}
+              />
+            ))}
+        </div>
+      </section>
+    </>
+  );
+}
+
+function AppearancePanel({
+  activeTab,
+  selectedTheme,
+  customStyle,
+  systemConfig,
+  setActiveTab,
+  setSelectedTheme,
+  setCustomStyle,
+  setSystemConfig,
+  showToast,
+  openVip,
+}: {
+  activeTab: AppearanceTab;
+  selectedTheme: string;
+  customStyle: CustomStyle;
+  systemConfig: SystemConfig;
+  setActiveTab: (tab: AppearanceTab) => void;
+  setSelectedTheme: (theme: string) => void;
+  setCustomStyle: (style: CustomStyle | ((style: CustomStyle) => CustomStyle)) => void;
+  setSystemConfig: (config: SystemConfig | ((config: SystemConfig) => SystemConfig)) => void;
+  showToast: (message: string) => void;
+  openVip: () => void;
+}) {
+  return (
+    <section className="rounded-[26px] border border-[#DDE8CF] bg-white p-5 shadow-sm">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <p className="text-sm font-black text-[#0B6B2B]">外观设置</p>
+          <h1 className="mt-1 text-3xl font-black">调整主页视觉风格</h1>
+        </div>
+        <div className="flex rounded-full bg-[#F7F6EA] p-1">
+          {appearanceTabs.map((tab) => (
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`rounded-full px-4 py-2 text-sm font-black transition ${activeTab === tab ? "bg-[#0B6B2B] text-white" : "text-[#52624A] hover:text-[#0B6B2B]"}`}>
+              {tab}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {activeTab === "主题" ? (
+        <div className="mt-5 grid gap-5">
+          <ThemeGrid title="免费主题" themes={freeThemes.map((theme) => theme.name)} selectedTheme={selectedTheme} onSelect={(name) => {
+            setSelectedTheme(name);
+            showToast("修改成功");
+          }} />
+          <ThemeGrid title="VIP 主题" themes={vipThemes} vip selectedTheme={selectedTheme} onSelect={openVip} />
+        </div>
+      ) : null}
+
+      {activeTab === "自定义" ? (
+        <div className="mt-5 grid gap-5">
+          <div className="grid gap-3 rounded-3xl bg-[#FCFFF7] p-4">
+            <h2 className="text-xl font-black">背景</h2>
+            <div className="grid gap-2 sm:grid-cols-4">
+              {(["solid", "gradient1", "gradient2", "image"] as CustomStyle["backgroundMode"][]).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => {
+                    setSelectedTheme("自定义");
+                    setCustomStyle((style) => ({ ...style, backgroundMode: mode }));
+                    showToast(mode === "image" ? "图片背景上传后续开放" : "修改成功");
+                  }}
+                  className={`rounded-2xl px-4 py-3 text-sm font-black ring-1 ring-[#DDE8CF] ${customStyle.backgroundMode === mode ? "bg-[#0B6B2B] text-white" : "bg-white text-[#14532D]"}`}
+                >
+                  {mode === "solid" ? "纯色" : mode === "gradient1" ? "渐变1" : mode === "gradient2" ? "渐变2" : "图片"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4 rounded-3xl bg-[#FCFFF7] p-4 sm:grid-cols-2">
+            {[
+              ["背景色", "backgroundColor"],
+              ["按钮背景色", "buttonBg"],
+              ["按钮文字色", "buttonText"],
+              ["按钮边框色", "buttonBorder"],
+              ["昵称颜色", "nameColor"],
+              ["简介颜色", "bioColor"],
+            ].map(([label, key]) => (
+              <label key={key} className="flex items-center justify-between gap-3 rounded-2xl bg-white px-4 py-3">
+                <span className="text-sm font-black text-[#14532D]">{label}</span>
+                <input
+                  type="color"
+                  value={customStyle[key as keyof CustomStyle] as string}
+                  onChange={(event) => {
+                    setSelectedTheme("自定义");
+                    setCustomStyle((style) => ({ ...style, [key]: event.target.value }));
+                  }}
+                  className="size-10 rounded-xl border-0 bg-transparent"
+                />
+              </label>
+            ))}
+          </div>
+
+          <div className="grid gap-4 rounded-3xl bg-[#FCFFF7] p-4 sm:grid-cols-2">
+            <Segmented title="按钮形状" options={["直角", "圆角"]} value={customStyle.buttonShape === "square" ? "直角" : "圆角"} onChange={(value) => {
+              setSelectedTheme("自定义");
+              setCustomStyle((style) => ({ ...style, buttonShape: value === "直角" ? "square" : "rounded" }));
+              showToast("修改成功");
+            }} />
+            <Segmented title="按钮对齐" options={["左对齐", "居中", "右对齐"]} value={customStyle.buttonAlign === "left" ? "左对齐" : customStyle.buttonAlign === "center" ? "居中" : "右对齐"} onChange={(value) => {
+              setSelectedTheme("自定义");
+              setCustomStyle((style) => ({ ...style, buttonAlign: value === "左对齐" ? "left" : value === "居中" ? "center" : "right" }));
+              showToast("修改成功");
+            }} />
+          </div>
+
+          <button onClick={() => showToast("修改成功")} className="link168-button-press inline-flex min-h-11 w-fit items-center gap-2 rounded-full bg-[#0B6B2B] px-5 text-sm font-black text-white">
+            <Save aria-hidden className="size-4" />
+            保存外观
+          </button>
+        </div>
+      ) : null}
+
+      {activeTab === "系统配置" ? (
+        <div className="mt-5 grid gap-3">
+          <ConfigSwitch label="是否显示你的 Link168 链接" checked={systemConfig.showPowered} onClick={() => {
+            setSystemConfig((config) => ({ ...config, showPowered: !config.showPowered }));
+            showToast(systemConfig.showPowered ? "已隐藏" : "已公开");
+          }} />
+          <ConfigSwitch label="是否显示搜索按钮" checked={systemConfig.showSearch} onClick={() => {
+            setSystemConfig((config) => ({ ...config, showSearch: !config.showSearch }));
+            showToast("修改成功");
+          }} />
+          <div className="rounded-3xl bg-[#FCFFF7] p-4">
+            <p className="text-sm font-black text-[#14532D]">链接右侧图标风格</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {[
+                ["share", "分享"],
+                ["arrow", "箭头"],
+                ["hidden", "隐藏"],
+              ].map(([value, label]) => (
+                <button
+                  key={value}
+                  onClick={() => {
+                    setSystemConfig((config) => ({ ...config, linkIcon: value as SystemConfig["linkIcon"] }));
+                    showToast("修改成功");
+                  }}
+                  className={`rounded-full px-4 py-2 text-sm font-black ${systemConfig.linkIcon === value ? "bg-[#0B6B2B] text-white" : "bg-white text-[#14532D] ring-1 ring-[#DDE8CF]"}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          {["是否显示分享按钮", "隐藏 Link168 图标", "蓝V认证", "提示到浏览器打开", "随机链接 / 动态链接", "初始弹窗提示"].map((label) => (
+            <button key={label} onClick={openVip} className="link168-button-press flex items-center justify-between rounded-3xl bg-[#FFF7D6] px-4 py-4 text-left text-sm font-black text-[#AD6800]">
+              <span>{label}</span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 text-xs">
+                升级会员 <Lock aria-hidden className="size-3" />
+              </span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function ThemeGrid({ title, themes, selectedTheme, vip, onSelect }: { title: string; themes: string[]; selectedTheme: string; vip?: boolean; onSelect: (name: string) => void }) {
+  return (
+    <div>
+      <h2 className="text-xl font-black">{title}</h2>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {themes.map((theme) => (
+          <button key={theme} onClick={() => onSelect(theme)} className={`link168-button-press group relative rounded-3xl border p-3 text-left transition hover:-translate-y-1 hover:shadow-lg ${selectedTheme === theme ? "border-[#0B6B2B] bg-[#ECFDF3]" : "border-[#DDE8CF] bg-[#FCFFF7]"}`}>
+            {vip ? <span className="absolute right-3 top-3 rounded-full bg-[#FACC15] px-2 py-1 text-[11px] font-black text-[#113A1D]">VIP</span> : null}
+            <div className="mx-auto aspect-[9/16] w-20 rounded-[20px] bg-[#102E1B] p-1.5">
+              <div className="h-full rounded-[16px] bg-[linear-gradient(160deg,#ECFDF3,#FEF3C7)] p-2">
+                <div className="mx-auto size-8 rounded-full bg-[#16A34A]" />
+                <div className="mt-3 h-3 rounded-full bg-white" />
+                <div className="mt-2 h-3 rounded-full bg-white" />
+                <div className="mt-2 h-3 rounded-full bg-white" />
+              </div>
+            </div>
+            <p className="mt-3 text-center text-sm font-black">{theme}</p>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Segmented({ title, options, value, onChange }: { title: string; options: string[]; value: string; onChange: (value: string) => void }) {
+  return (
+    <div>
+      <p className="text-sm font-black text-[#14532D]">{title}</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {options.map((option) => (
+          <button key={option} onClick={() => onChange(option)} className={`rounded-full px-4 py-2 text-sm font-black ${value === option ? "bg-[#0B6B2B] text-white" : "bg-white text-[#14532D] ring-1 ring-[#DDE8CF]"}`}>
+            {option}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ConfigSwitch({ label, checked, onClick }: { label: string; checked: boolean; onClick: () => void }) {
+  return (
+    <button onClick={onClick} className="flex items-center justify-between rounded-3xl bg-[#FCFFF7] px-4 py-4 text-left">
+      <span className="text-sm font-black text-[#14532D]">{label}</span>
+      <span className={`h-7 w-12 rounded-full p-1 transition ${checked ? "bg-[#0B6B2B]" : "bg-[#CBD5E1]"}`}>
+        <span className={`block size-5 rounded-full bg-white transition ${checked ? "translate-x-5" : ""}`} />
+      </span>
+    </button>
+  );
+}
+
+function DataPanel({ links, openVip }: { links: BuilderLink[]; openVip: () => void }) {
+  const metrics = [
+    ["今日访问", "0"],
+    ["昨日访问", "0"],
+    ["总访问", "0"],
+    ["总点击", "0"],
+    ["点击率", "0%"],
+  ];
+
+  return (
+    <section className="rounded-[26px] border border-[#DDE8CF] bg-white p-5 shadow-sm">
+      <div>
+        <p className="text-sm font-black text-[#0B6B2B]">数据中心</p>
+        <h1 className="mt-1 text-3xl font-black">查看主页访问与点击</h1>
+      </div>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        {metrics.map(([label, value]) => (
+          <div key={label} className="rounded-3xl bg-[#FCFFF7] p-4">
+            <p className="text-xs font-black text-[#6B7A5F]">{label}</p>
+            <p className="mt-2 text-3xl font-black">{value}</p>
+          </div>
+        ))}
+      </div>
+      <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_260px]">
+        <section className="rounded-3xl bg-[#FCFFF7] p-5">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-black">最近 7 天访问趋势</h2>
+            <BarChart3 aria-hidden className="size-5 text-[#16A34A]" />
+          </div>
+          <div className="mt-6 flex h-40 items-end gap-3">
+            {Array.from({ length: 7 }).map((_, index) => (
+              <div key={index} className="flex flex-1 flex-col items-center gap-2">
+                <div className="w-full rounded-t-2xl bg-[#DDE8CF]" style={{ height: `${18 + index * 3}px` }} />
+                <span className="text-[11px] font-bold text-[#8FA083]">D{index + 1}</span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-[#52624A]">暂无足够数据，分享你的 Link168 主页后即可查看访问变化。</p>
+        </section>
+        <section className="rounded-3xl bg-[#FCFFF7] p-5">
+          <h2 className="text-xl font-black">设备来源</h2>
+          <div className="mt-4 grid gap-3">
+            <div className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-sm font-black">
+              <span className="inline-flex items-center gap-2"><Smartphone aria-hidden className="size-4 text-[#16A34A]" />手机</span>
+              <span>0</span>
+            </div>
+            <div className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-sm font-black">
+              <span className="inline-flex items-center gap-2"><Monitor aria-hidden className="size-4 text-[#16A34A]" />电脑</span>
+              <span>0</span>
+            </div>
+          </div>
+        </section>
+      </div>
+      <section className="mt-5 rounded-3xl bg-[#FCFFF7] p-5">
+        <h2 className="text-xl font-black">链接点击排行 Top 5</h2>
+        <div className="mt-4 grid gap-2">
+          {links.length ? links.slice(0, 5).map((link, index) => (
+            <div key={link.id} className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-sm">
+              <span className="font-black">{index + 1}. {link.title || "未命名链接"}</span>
+              <span className="text-[#6B7A5F]">0 次</span>
+            </div>
+          )) : <p className="rounded-2xl bg-white px-4 py-4 text-sm font-bold text-[#52624A]">暂无链接点击数据。</p>}
+        </div>
+      </section>
+      <section className="mt-5 rounded-3xl bg-[#FFF7D6] p-5">
+        <h2 className="text-xl font-black text-[#AD6800]">高级数据</h2>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {["365 天数据", "来源分析", "地区分析", "设备 / 浏览器分析", "导出数据", "每条链接详细趋势"].map((label) => (
+            <button key={label} onClick={openVip} className="link168-button-press flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-left text-sm font-black text-[#AD6800]">
+              {label}
+              <Lock aria-hidden className="size-4" />
+            </button>
+          ))}
+        </div>
+      </section>
+    </section>
+  );
+}
+
+function AccountPanel({
+  email,
+  displayName,
+  bio,
+  publicUrl,
+  previewUrl,
+  copyText,
+  openVip,
+  onAddressNotice,
+  signOut,
+  showToast,
+}: {
+  email: string | null;
+  displayName: string;
+  bio: string;
+  publicUrl: string;
+  previewUrl: string;
+  copyText: (value: string, message?: string) => Promise<void>;
+  openVip: () => void;
+  onAddressNotice: () => void;
+  signOut: () => Promise<void>;
+  showToast: (message: string) => void;
+}) {
+  return (
+    <section className="grid gap-5">
+      <div className="rounded-[26px] border border-[#DDE8CF] bg-white p-5 shadow-sm">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-4">
+            <div className="grid size-16 place-items-center rounded-full bg-[linear-gradient(135deg,#16A34A,#FACC15)] text-2xl font-black text-white">{displayName ? displayName.slice(0, 1).toUpperCase() : "L"}</div>
+            <div>
+              <h1 className="text-2xl font-black">{displayName || "Link168 用户"}</h1>
+              <p className="mt-1 text-sm text-[#52624A]">{email || "未读取到邮箱"}</p>
+              <p className="mt-1 text-sm font-black text-[#0B6B2B]">当前版本：免费版</p>
+            </div>
+          </div>
+          <button onClick={openVip} className="link168-button-press inline-flex min-h-11 w-fit items-center gap-2 rounded-full bg-[#FACC15] px-5 text-sm font-black text-[#113A1D]">
+            <Crown aria-hidden className="size-4" />
+            升级会员
+          </button>
+        </div>
+        {bio ? <p className="mt-4 rounded-2xl bg-[#FCFFF7] px-4 py-3 text-sm text-[#52624A]">{bio}</p> : null}
+      </div>
+
+      <AccountSection title="账号信息" icon={<User aria-hidden className="size-5" />}>
+        <InfoRow label="邮箱账号" value={email || "-"} />
+        <InfoRow label="手机号绑定" value="未绑定" />
+        <ActionRow label="修改密码" onClick={() => showToast("功能即将开放")} />
+        <InfoRow label="登录设备" value="后续开放" />
+        <ActionRow label="账号安全" onClick={() => showToast("功能即将开放")} />
+      </AccountSection>
+
+      <AccountSection title="主页信息" icon={<ShieldCheck aria-hidden className="size-5" />}>
+        <InfoRow label="公开主页地址" value={publicUrl} />
+        <ActionRow label="复制链接" onClick={() => void copyText(`https://${publicUrl}`)} />
+        <LinkRow label="预览主页" href={previewUrl} />
+        <ActionRow label="修改主页地址：后续开放" onClick={onAddressNotice} />
+      </AccountSection>
+
+      <AccountSection title="会员与服务" icon={<Crown aria-hidden className="size-5" />}>
+        <InfoRow label="当前套餐" value="免费版" />
+        <ActionRow label="会员权益" onClick={openVip} />
+        <ActionRow label="开通会员" onClick={openVip} />
+        <InfoRow label="订单记录" value="后续开放" />
+      </AccountSection>
+
+      <AccountSection title="帮助与支持" icon={<MessageCircle aria-hidden className="size-5" />}>
+        <LinkRow label="使用指南" href="/help" />
+        <LinkRow label="帮助中心" href="/help" />
+        <ActionRow label="联系我们" onClick={() => showToast("功能即将开放")} />
+        <ActionRow label="更新日志" onClick={() => showToast("功能即将开放")} />
+        <LinkRow label="举报中心" href="/report" />
+      </AccountSection>
+
+      <AccountSection title="危险操作" icon={<LogOut aria-hidden className="size-5" />}>
+        <ActionRow label="退出登录" danger onClick={() => void signOut()} />
+        <InfoRow label="注销账号" value="后续开放" />
+      </AccountSection>
+    </section>
+  );
+}
+
+function AccountSection({ title, icon, children }: { title: string; icon: ReactNode; children: ReactNode }) {
+  return (
+    <section className="rounded-[26px] border border-[#DDE8CF] bg-white p-5 shadow-sm">
+      <h2 className="flex items-center gap-2 text-xl font-black text-[#113A1D]">{icon}{title}</h2>
+      <div className="mt-4 grid gap-2">{children}</div>
+    </section>
+  );
+}
+
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-2xl bg-[#FCFFF7] px-4 py-3 text-sm">
+      <span className="font-black text-[#14532D]">{label}</span>
+      <span className="text-right text-[#52624A]">{value}</span>
+    </div>
+  );
+}
+
+function ActionRow({ label, onClick, danger }: { label: string; onClick: () => void; danger?: boolean }) {
+  return (
+    <button onClick={onClick} className={`link168-button-press flex items-center justify-between rounded-2xl px-4 py-3 text-left text-sm font-black ${danger ? "bg-[#FFF1F0] text-[#B42318]" : "bg-[#FCFFF7] text-[#14532D]"}`}>
+      {label}
+      <ArrowRight aria-hidden className="size-4" />
+    </button>
+  );
+}
+
+function LinkRow({ label, href }: { label: string; href: string }) {
+  return (
+    <Link href={href} className="link168-button-press flex items-center justify-between rounded-2xl bg-[#FCFFF7] px-4 py-3 text-left text-sm font-black text-[#14532D]">
+      {label}
+      <ArrowRight aria-hidden className="size-4" />
+    </Link>
+  );
+}
+
 function LinkCard({
   link,
   saving,
   flashActive,
   setTitleRef,
   onChange,
+  onToggle,
   onSave,
   onDelete,
   onCopy,
@@ -664,6 +1256,7 @@ function LinkCard({
   flashActive: string;
   setTitleRef: (node: HTMLInputElement | null) => void;
   onChange: (patch: Partial<BuilderLink>) => void;
+  onToggle: () => void;
   onSave: () => void;
   onDelete: () => void;
   onCopy: () => void;
@@ -683,53 +1276,28 @@ function LinkCard({
       <div className="grid gap-3 lg:grid-cols-[24px_minmax(0,1fr)_auto] lg:items-start">
         <GripVertical aria-hidden className="mt-3 hidden size-5 cursor-grab text-[#8FA083] lg:block" />
         <div className="grid gap-3">
-          <input
-            ref={setTitleRef}
-            value={link.title}
-            onChange={(event) => onChange({ title: event.target.value })}
-            placeholder="点此输入标题"
-            className="h-11 rounded-2xl border border-[#DDE8CF] bg-white px-4 text-sm font-black outline-none focus:border-[#16A34A]"
-          />
-          <input
-            value={link.url}
-            onChange={(event) => onChange({ url: event.target.value })}
-            placeholder="点此输入链接"
-            className="h-11 rounded-2xl border border-[#DDE8CF] bg-white px-4 text-sm outline-none focus:border-[#16A34A]"
-          />
-          <input
-            value={link.description || ""}
-            onChange={(event) => onChange({ description: event.target.value })}
-            placeholder="描述，可选"
-            className="h-11 rounded-2xl border border-[#DDE8CF] bg-white px-4 text-sm outline-none focus:border-[#16A34A]"
-          />
+          <input ref={setTitleRef} value={link.title} onChange={(event) => onChange({ title: event.target.value })} placeholder="点此输入标题" className="h-11 rounded-2xl border border-[#DDE8CF] bg-white px-4 text-sm font-black outline-none focus:border-[#16A34A]" />
+          <input value={link.url} onChange={(event) => onChange({ url: event.target.value })} placeholder="点此输入链接" className="h-11 rounded-2xl border border-[#DDE8CF] bg-white px-4 text-sm outline-none focus:border-[#16A34A]" />
+          <input value={link.description || ""} onChange={(event) => onChange({ description: event.target.value })} placeholder="描述，可选" className="h-11 rounded-2xl border border-[#DDE8CF] bg-white px-4 text-sm outline-none focus:border-[#16A34A]" />
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
-          <button
-            onClick={() => onChange({ is_active: !link.is_active })}
-            className={`link168-button-press rounded-full px-3 py-2 text-xs font-black ${link.is_active ? "bg-[#ECFDF3] text-[#0B6B2B]" : "bg-[#F1F5F9] text-[#64748B]"}`}
-          >
+          <button onClick={onToggle} className={`link168-button-press rounded-full px-3 py-2 text-xs font-black ${link.is_active ? "bg-[#ECFDF3] text-[#0B6B2B]" : "bg-[#F1F5F9] text-[#64748B]"}`}>
             {link.is_active ? "公开" : "隐藏"}
           </button>
           <button onClick={onSave} disabled={saving} className="grid size-10 place-items-center rounded-full bg-white text-[#0B6B2B] shadow-sm disabled:opacity-60">
-            <Pencil aria-label="编辑/保存链接" className="size-4" />
+            <Pencil aria-label="编辑或保存链接" className="size-4" />
           </button>
           <button onClick={onDelete} disabled={saving} className="grid size-10 place-items-center rounded-full bg-white text-[#B42318] shadow-sm disabled:opacity-60">
             <Trash2 aria-label="删除链接" className="size-4" />
           </button>
           <button onClick={onCopy} className="grid size-10 place-items-center rounded-full bg-white text-[#52624A] shadow-sm">
-            <Copy aria-label="复制/分享链接" className="size-4" />
+            <Copy aria-label="复制或分享链接" className="size-4" />
           </button>
         </div>
       </div>
       <div className="mt-4 flex flex-wrap gap-2 border-t border-[#DDE8CF] pt-3">
         {toolItems.map(({ label, icon: Icon, action }) => (
-          <button
-            key={label}
-            onClick={action}
-            title={label}
-            className={`link168-tooltip link168-button-press grid size-9 place-items-center rounded-full bg-white text-[#52624A] shadow-sm transition hover:bg-[#111827] hover:text-white ${flashActive === label ? "bg-[#FACC15] text-[#113A1D]" : ""}`}
-            data-tooltip={label}
-          >
+          <button key={label} onClick={action} title={label} className={`link168-tooltip link168-button-press grid size-9 place-items-center rounded-full bg-white text-[#52624A] shadow-sm transition hover:bg-[#111827] hover:text-white ${flashActive === label ? "bg-[#FACC15] text-[#113A1D]" : ""}`} data-tooltip={label}>
             <Icon aria-label={label} className="size-4" />
           </button>
         ))}
@@ -783,38 +1351,32 @@ function ShareModal({ url, previewUrl, onClose, onCopy, onSoon }: { url: string;
   );
 }
 
-function ModulePickerModal({
-  onClose,
-  onAddLink,
-  onSoon,
-  onFlash,
-  activeFlash,
-}: {
-  onClose: () => void;
-  onAddLink: () => void;
-  onSoon: (message: string) => void;
-  onFlash: (label: string) => void;
-  activeFlash: string;
-}) {
+function ModulePickerModal({ onClose, onAddLink, onSoon, onFlash, activeFlash }: { onClose: () => void; onAddLink: () => void; onSoon: (message: string) => void; onFlash: (label: string) => void; activeFlash: string }) {
   return (
     <ModalShell title="添加更多模块" onClose={onClose}>
       <div className="mt-5 grid gap-5">
         {moduleGroups.map((group) => (
           <section key={group.title}>
-            <p className="mb-3 text-sm font-black text-[#0B6B2B]">{group.title}</p>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {group.modules.map((item) => (
+            <h3 className="text-sm font-black text-[#0B6B2B]">{group.title}</h3>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              {group.modules.map(({ label, icon: Icon, type, enabled }) => (
                 <button
-                  key={item.label}
+                  key={label}
                   onClick={() => {
-                    onFlash(item.label);
-                    if (item.type === "link") onAddLink();
-                    else onSoon(item.label.includes("链接") || item.label.includes("客服") || item.label.includes("咨询") ? "会员功能" : "即将开放");
+                    onFlash(label);
+                    if (enabled && type === "link") {
+                      window.setTimeout(onAddLink, 120);
+                    } else {
+                      onSoon(label.includes("二维码") || label.includes("封面") ? "该功能为会员功能" : "功能即将开放");
+                    }
                   }}
-                  className={`link168-button-press grid min-h-24 place-items-center rounded-3xl border border-[#DDE8CF] bg-[#FCFFF7] px-3 text-center text-sm font-black text-[#14532D] transition hover:-translate-y-1 hover:shadow-lg ${activeFlash === item.label ? "bg-[#FACC15]" : ""}`}
+                  className={`link168-button-press flex items-center justify-between rounded-2xl border border-[#DDE8CF] px-4 py-3 text-left text-sm font-black transition ${activeFlash === label ? "bg-[#FACC15] text-[#113A1D]" : "bg-[#FCFFF7] text-[#14532D]"}`}
                 >
-                  <item.icon aria-hidden className="mb-2 size-7 text-[#16A34A]" />
-                  {item.label}
+                  <span className="inline-flex items-center gap-3">
+                    <Icon aria-hidden className="size-5 text-[#16A34A]" />
+                    {label}
+                  </span>
+                  {enabled ? <Check aria-hidden className="size-4" /> : <Lock aria-hidden className="size-4 text-[#8FA083]" />}
                 </button>
               ))}
             </div>
@@ -833,25 +1395,24 @@ function VipModal({ onClose, onPay }: { onClose: () => void; onPay: () => void }
           {vipPlans.map((plan) => (
             <div key={plan.name} className="rounded-3xl border border-[#DDE8CF] bg-[#FCFFF7] p-4 text-center">
               <p className="text-sm font-black text-[#0B6B2B]">{plan.name}</p>
-              <p className="mt-2 text-3xl font-black text-[#113A1D]">{plan.price}</p>
+              <p className="mt-2 text-3xl font-black">¥{plan.price}</p>
             </div>
           ))}
         </div>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {vipBenefits.map((benefit) => (
-            <span key={benefit} className="inline-flex items-center gap-2 rounded-2xl bg-[#ECFDF3] px-3 py-2 text-sm font-black text-[#0B6B2B]">
-              <Check aria-hidden className="size-4" />
-              {benefit}
-            </span>
-          ))}
+        <div className="rounded-3xl bg-[#FFF7D6] p-4">
+          <p className="text-sm font-black text-[#AD6800]">会员权益</p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {vipBenefits.map((item) => (
+              <span key={item} className="inline-flex items-center gap-2 rounded-2xl bg-white px-3 py-2 text-sm font-bold">
+                <Crown aria-hidden className="size-4 text-[#F59E0B]" />
+                {item}
+              </span>
+            ))}
+          </div>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <button onClick={onPay} className="link168-button-press inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#16A34A] px-5 text-sm font-black text-white">
-            微信支付
-          </button>
-          <button onClick={onPay} className="link168-button-press inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#FACC15] px-5 text-sm font-black text-[#113A1D]">
-            支付宝支付
-          </button>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <button onClick={onPay} className="link168-button-press min-h-12 rounded-full bg-[#22C55E] px-5 text-sm font-black text-white">微信支付</button>
+          <button onClick={onPay} className="link168-button-press min-h-12 rounded-full bg-[#1677FF] px-5 text-sm font-black text-white">支付宝支付</button>
         </div>
       </div>
     </ModalShell>
@@ -859,5 +1420,5 @@ function VipModal({ onClose, onPay }: { onClose: () => void; onPay: () => void }
 }
 
 function Toast({ message }: { message: string }) {
-  return <div className="fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-[#113A1D] px-5 py-3 text-sm font-black text-white shadow-2xl">{message}</div>;
+  return <div className="fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-[#111827] px-5 py-3 text-sm font-black text-white shadow-xl">{message}</div>;
 }

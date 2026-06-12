@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowUpRight, Globe } from "lucide-react";
+import type { CSSProperties } from "react";
+import { ArrowUpRight, Globe, Search, Share2 } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 
 export type PhonePreviewVariant = "marketing" | "auth" | "public";
@@ -12,6 +13,19 @@ export type PhonePreviewLink = {
   isActive?: boolean;
 };
 
+export type PhonePreviewAppearance = {
+  surfaceClassName?: string;
+  cardClassName?: string;
+  linkClassName?: string;
+  nameStyle?: CSSProperties;
+  bioStyle?: CSSProperties;
+  linkStyle?: CSSProperties;
+  linkAlign?: "left" | "center" | "right";
+  linkIcon?: "arrow" | "share" | "hidden";
+  showSearch?: boolean;
+  showPowered?: boolean;
+};
+
 type PhonePreviewProps = {
   variant?: PhonePreviewVariant;
   poweredLogoClickable?: boolean;
@@ -20,6 +34,7 @@ type PhonePreviewProps = {
   bio?: string | null;
   avatarUrl?: string | null;
   links?: PhonePreviewLink[];
+  appearance?: PhonePreviewAppearance;
   className?: string;
 };
 
@@ -41,6 +56,12 @@ const shellByVariant: Record<PhonePreviewVariant, string> = {
   public: "shadow-[0_20px_70px_rgba(17,58,29,0.2)]",
 };
 
+const alignByValue: Record<NonNullable<PhonePreviewAppearance["linkAlign"]>, string> = {
+  left: "text-left",
+  center: "text-center",
+  right: "text-right",
+};
+
 export function PhonePreview({
   variant = "marketing",
   poweredLogoClickable = true,
@@ -49,12 +70,15 @@ export function PhonePreview({
   bio,
   avatarUrl,
   links = defaultLinks,
+  appearance,
   className = "",
 }: PhonePreviewProps) {
   const activeLinks = links.filter((link) => link.isActive !== false);
   const name = displayName || "Link168 名片";
   const initial = name.slice(0, 1).toUpperCase();
   const profileBio = bio || "一个人，一个链接，连接全网";
+  const linkAlign = appearance?.linkAlign || "left";
+  const showPowered = appearance?.showPowered !== false;
 
   const footer = (
     <div className="mx-auto mt-4 flex w-fit items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 text-[11px] font-black text-[#52624A] shadow-sm">
@@ -67,15 +91,22 @@ export function PhonePreview({
     <div
       className={`phone-preview mx-auto aspect-[390/760] w-full max-w-[390px] rounded-[32px] border border-[#0B6B2B]/20 bg-[#102E1B] p-3 ${shellByVariant[variant]} ${className}`}
     >
-      <div className="flex h-full flex-col overflow-hidden rounded-[24px] bg-[#F7F6EA]">
-        <div className="flex shrink-0 items-center justify-between border-b border-[#DDE8CF] px-4 py-3 text-[#113A1D]">
+      <div className={`flex h-full flex-col overflow-hidden rounded-[24px] ${appearance?.surfaceClassName || "bg-[#F7F6EA]"}`}>
+        <div className="flex shrink-0 items-center justify-between border-b border-white/40 px-4 py-3 text-[#113A1D]">
           <span className="text-xs font-black">9:41</span>
-          <div className="h-1.5 w-20 rounded-full bg-[#DDE8CF]" />
+          <div className="h-1.5 w-20 rounded-full bg-black/10" />
           <span className="text-xs font-black">5G</span>
         </div>
 
         <div className="phone-preview-scroll flex-1 overflow-y-auto px-4 pb-5 pt-6 text-[#113A1D]">
-          <section className="rounded-3xl bg-white p-4 shadow-sm">
+          {appearance?.showSearch ? (
+            <div className="mb-3 flex min-h-10 items-center gap-2 rounded-2xl bg-white/80 px-3 text-xs font-bold text-[#6B7A5F] shadow-sm">
+              <Search aria-hidden className="size-4 text-[#16A34A]" />
+              搜索主页内容
+            </div>
+          ) : null}
+
+          <section className={`rounded-3xl p-4 shadow-sm ${appearance?.cardClassName || "bg-white"}`}>
             <div className="flex items-start gap-4">
               {avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -86,9 +117,13 @@ export function PhonePreview({
                 </div>
               )}
               <div className="min-w-0 pt-1">
-                <h2 className="truncate text-2xl font-black">{name}</h2>
+                <h2 className="truncate text-2xl font-black" style={appearance?.nameStyle}>
+                  {name}
+                </h2>
                 <p className="mt-0.5 text-xs font-bold text-[#6B7A5F]">@{username || "yourname"}</p>
-                <p className="mt-2 text-sm leading-5 text-[#52624A]">{profileBio}</p>
+                <p className="mt-2 text-sm leading-5 text-[#52624A]" style={appearance?.bioStyle}>
+                  {profileBio}
+                </p>
               </div>
             </div>
           </section>
@@ -98,23 +133,28 @@ export function PhonePreview({
               <a
                 key={id || label}
                 href={href || "#"}
-                className="link168-card-hover flex min-h-14 items-center justify-between rounded-2xl border border-[#DDE8CF] bg-white px-3.5 py-3 shadow-sm active:scale-[0.99]"
+                className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#DDE8CF] bg-white px-3.5 py-3 shadow-sm active:scale-[0.99] ${appearance?.linkClassName || ""}`}
+                style={appearance?.linkStyle}
               >
-                <span className="flex min-w-0 items-center gap-3">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#F7F6EA]">
+                <span className={`flex min-w-0 flex-1 items-center gap-3 ${linkAlign === "right" ? "justify-end" : linkAlign === "center" ? "justify-center" : ""}`}>
+                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-black/5">
                     <Globe aria-hidden className="size-5 text-[#16A34A]" />
                   </span>
-                  <span className="min-w-0">
+                  <span className={`min-w-0 ${alignByValue[linkAlign]}`}>
                     <span className="block truncate font-black">{label}</span>
-                    {caption ? <span className="mt-0.5 block truncate text-xs text-[#6B7A5F]">{caption}</span> : null}
+                    {caption ? <span className="mt-0.5 block truncate text-xs opacity-70">{caption}</span> : null}
                   </span>
                 </span>
-                <ArrowUpRight aria-hidden className="size-4 shrink-0 text-[#6B7A5F]" />
+                {appearance?.linkIcon === "hidden" ? null : appearance?.linkIcon === "share" ? (
+                  <Share2 aria-hidden className="size-4 shrink-0 opacity-70" />
+                ) : (
+                  <ArrowUpRight aria-hidden className="size-4 shrink-0 opacity-70" />
+                )}
               </a>
             ))}
           </div>
 
-          {poweredLogoClickable ? <Link href="/">{footer}</Link> : footer}
+          {showPowered ? poweredLogoClickable ? <Link href="/">{footer}</Link> : footer : null}
         </div>
       </div>
     </div>
