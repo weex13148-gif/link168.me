@@ -129,3 +129,22 @@ input {
   background: rgb(22 163 74 / 35%);
   border-radius: 999px;
 }
+
+.legal-content ul {
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.legal-content li {
+  padding-left: 0.15rem;
+}
+
+.legal-content a {
+  color: #0b6b2b;
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
