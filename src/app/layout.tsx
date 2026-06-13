@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { UiThemeSwitcher } from "@/components/UiThemeSwitcher";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <body>{children}</body>
+      <body>
+        {children}
+        <UiThemeSwitcher />
+      </body>
     </html>
   );
 }

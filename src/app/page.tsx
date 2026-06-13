@@ -253,13 +253,22 @@ export default function Home() {
               <p className="text-sm font-black text-[#FACC15]">开始你的主页</p>
               <h2 className="mt-3 max-w-2xl text-4xl font-black leading-tight sm:text-5xl">三分钟，把客户入口整理清楚</h2>
             </div>
-            <Link
-              href="/help"
-              className="link168-button-press inline-flex min-h-12 w-fit items-center justify-center gap-2 rounded-full bg-white px-6 font-black text-[#113A1D] shadow-xl shadow-black/20 transition hover:-translate-y-0.5"
-            >
-              帮助中心
-              <BookOpenText aria-hidden className="size-5" />
-            </Link>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/register"
+                className="link168-button-press inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#FACC15] px-6 font-black text-[#113A1D] shadow-xl shadow-black/20 transition hover:-translate-y-0.5"
+              >
+                免费创建我的 Link168
+                <ArrowRight aria-hidden className="size-5" />
+              </Link>
+              <Link
+                href="/help"
+                className="link168-button-press inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-white px-6 font-black text-[#113A1D] shadow-xl shadow-black/20 transition hover:-translate-y-0.5"
+              >
+                查看帮助中心
+                <BookOpenText aria-hidden className="size-5" />
+              </Link>
+            </div>
           </div>
         </section>
       </main>

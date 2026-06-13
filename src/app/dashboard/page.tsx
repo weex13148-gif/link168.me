@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { MutableRefObject, ReactNode } from "react";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import QRCode from "react-qr-code";
 import {
   ArrowRight,
   BarChart3,
@@ -630,7 +631,7 @@ export default function DashboardPage() {
           previewUrl={previewUrl}
           onClose={() => setModal(null)}
           onCopy={() => void copyText(`https://${publicUrl}`)}
-          onSoon={() => showToast("二维码保存功能即将开放")}
+          onSave={() => showToast("二维码已生成，可右键或长按保存")}
         />
       ) : null}
       {modal === "modules" ? (
@@ -912,32 +913,32 @@ function AppearancePanel({
               ["昵称颜色", "nameColor"],
               ["简介颜色", "bioColor"],
             ].map(([label, key]) => (
-              <label key={key} className="flex items-center justify-between gap-3 rounded-2xl bg-white px-4 py-3">
+              <button key={key} onClick={openVip} className="link168-button-press flex items-center justify-between gap-3 rounded-2xl bg-white px-4 py-3 text-left">
                 <span className="text-sm font-black text-[#14532D]">{label}</span>
-                <input
-                  type="color"
-                  value={customStyle[key as keyof CustomStyle] as string}
-                  onChange={(event) => {
-                    setSelectedTheme("自定义");
-                    setCustomStyle((style) => ({ ...style, [key]: event.target.value }));
-                  }}
-                  className="size-10 rounded-xl border-0 bg-transparent"
-                />
-              </label>
+                <span className="inline-flex items-center gap-2">
+                  <span className="block size-8 rounded-xl border border-[#DDE8CF]" style={{ background: customStyle[key as keyof CustomStyle] as string }} />
+                  <span className="rounded-full bg-[#FFF7D6] px-2 py-1 text-[11px] font-black text-[#AD6800]">VIP</span>
+                </span>
+              </button>
             ))}
           </div>
 
           <div className="grid gap-4 rounded-3xl bg-[#FCFFF7] p-4 sm:grid-cols-2">
-            <Segmented title="按钮形状" options={["直角", "圆角"]} value={customStyle.buttonShape === "square" ? "直角" : "圆角"} onChange={(value) => {
-              setSelectedTheme("自定义");
-              setCustomStyle((style) => ({ ...style, buttonShape: value === "直角" ? "square" : "rounded" }));
-              showToast("修改成功");
+            <Segmented title="按钮形状" options={["直角", "圆角"]} value={customStyle.buttonShape === "square" ? "直角" : "圆角"} onChange={() => {
+              openVip();
             }} />
-            <Segmented title="按钮对齐" options={["左对齐", "居中", "右对齐"]} value={customStyle.buttonAlign === "left" ? "左对齐" : customStyle.buttonAlign === "center" ? "居中" : "右对齐"} onChange={(value) => {
-              setSelectedTheme("自定义");
-              setCustomStyle((style) => ({ ...style, buttonAlign: value === "左对齐" ? "left" : value === "居中" ? "center" : "right" }));
-              showToast("修改成功");
+            <Segmented title="按钮对齐" options={["左对齐", "居中", "右对齐"]} value={customStyle.buttonAlign === "left" ? "左对齐" : customStyle.buttonAlign === "center" ? "居中" : "右对齐"} onChange={() => {
+              openVip();
             }} />
+          </div>
+
+          <div className="grid gap-3 rounded-3xl bg-[#FFF7D6] p-4 sm:grid-cols-2">
+            {["自定义背景图片上传", "自定义封面图", "隐藏底部 Link168 Logo", "高级主题保存"].map((label) => (
+              <button key={label} onClick={openVip} className="link168-button-press flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-left text-sm font-black text-[#AD6800]">
+                {label}
+                <Lock aria-hidden className="size-4" />
+              </button>
+            ))}
           </div>
 
           <button onClick={() => showToast("修改成功")} className="link168-button-press inline-flex min-h-11 w-fit items-center gap-2 rounded-full bg-[#0B6B2B] px-5 text-sm font-black text-white">
@@ -950,8 +951,8 @@ function AppearancePanel({
       {activeTab === "系统配置" ? (
         <div className="mt-5 grid gap-3">
           <ConfigSwitch label="是否显示你的 Link168 链接" checked={systemConfig.showPowered} onClick={() => {
-            setSystemConfig((config) => ({ ...config, showPowered: !config.showPowered }));
-            showToast(systemConfig.showPowered ? "已隐藏" : "已公开");
+            setSystemConfig((config) => ({ ...config, showPowered: true }));
+            showToast("免费版默认保留 Powered by Link168");
           }} />
           <ConfigSwitch label="是否显示搜索按钮" checked={systemConfig.showSearch} onClick={() => {
             setSystemConfig((config) => ({ ...config, showSearch: !config.showSearch }));
@@ -992,25 +993,58 @@ function AppearancePanel({
   );
 }
 
+function themeLook(theme: string, vip?: boolean) {
+  if (vip) {
+    if (theme === "黑金高级") return { surface: "bg-[#111827]", button: "bg-[#FACC15] text-[#111827]", avatar: "bg-[#FACC15]", text: "text-[#FDE68A]" };
+    if (theme === "星空") return { surface: "bg-[radial-gradient(circle_at_30%_20%,#6366F1,#111827_55%)]", button: "bg-white/15 text-white border-white/20", avatar: "bg-[#A5B4FC]", text: "text-white" };
+    if (theme === "森林") return { surface: "bg-[linear-gradient(160deg,#052E16,#166534)]", button: "bg-[#DCFCE7] text-[#14532D]", avatar: "bg-[#86EFAC]", text: "text-[#DCFCE7]" };
+    if (theme === "海边") return { surface: "bg-[linear-gradient(160deg,#0EA5E9,#ECFEFF)]", button: "bg-white text-[#075985]", avatar: "bg-[#BAE6FD]", text: "text-white" };
+    if (theme === "渐变艺术") return { surface: "bg-[linear-gradient(160deg,#A78BFA,#F9A8D4,#FDE68A)]", button: "bg-white/85 text-[#581C87]", avatar: "bg-white", text: "text-white" };
+    return { surface: "bg-white/35 backdrop-blur", button: "bg-white/55 text-[#111827] border-white/60", avatar: "bg-white/70", text: "text-white" };
+  }
+  if (theme === "简约白") return { surface: "bg-white", button: "bg-[#F8FAFC] text-[#111827]", avatar: "bg-[#E5E7EB]", text: "text-[#111827]" };
+  if (theme === "商务黑") return { surface: "bg-[#111827]", button: "bg-[#F9FAFB] text-[#111827]", avatar: "bg-[#374151]", text: "text-white" };
+  if (theme === "蓝色科技") return { surface: "bg-[#DBEAFE]", button: "bg-[#2563EB] text-white", avatar: "bg-[#60A5FA]", text: "text-[#1E3A8A]" };
+  if (theme === "橙色活力") return { surface: "bg-[#FFEDD5]", button: "bg-[#F97316] text-white", avatar: "bg-[#FDBA74]", text: "text-[#9A3412]" };
+  if (theme === "浅绿清新") return { surface: "bg-[#DCFCE7]", button: "bg-white text-[#14532D]", avatar: "bg-[#86EFAC]", text: "text-[#14532D]" };
+  return { surface: "bg-[#F7F6EA]", button: "bg-white text-[#113A1D]", avatar: "bg-[linear-gradient(135deg,#16A34A,#FACC15)]", text: "text-[#113A1D]" };
+}
+
 function ThemeGrid({ title, themes, selectedTheme, vip, onSelect }: { title: string; themes: string[]; selectedTheme: string; vip?: boolean; onSelect: (name: string) => void }) {
   return (
     <div>
       <h2 className="text-xl font-black">{title}</h2>
-      <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {themes.map((theme) => (
-          <button key={theme} onClick={() => onSelect(theme)} className={`link168-button-press group relative rounded-3xl border p-3 text-left transition hover:-translate-y-1 hover:shadow-lg ${selectedTheme === theme ? "border-[#0B6B2B] bg-[#ECFDF3]" : "border-[#DDE8CF] bg-[#FCFFF7]"}`}>
-            {vip ? <span className="absolute right-3 top-3 rounded-full bg-[#FACC15] px-2 py-1 text-[11px] font-black text-[#113A1D]">VIP</span> : null}
-            <div className="mx-auto aspect-[9/16] w-20 rounded-[20px] bg-[#102E1B] p-1.5">
-              <div className="h-full rounded-[16px] bg-[linear-gradient(160deg,#ECFDF3,#FEF3C7)] p-2">
-                <div className="mx-auto size-8 rounded-full bg-[#16A34A]" />
-                <div className="mt-3 h-3 rounded-full bg-white" />
-                <div className="mt-2 h-3 rounded-full bg-white" />
-                <div className="mt-2 h-3 rounded-full bg-white" />
+      <div className="mt-3 grid gap-4 lg:grid-cols-3">
+        {themes.map((theme) => {
+          const look = themeLook(theme, vip);
+          return (
+            <button key={theme} onClick={() => onSelect(theme)} className={`link168-button-press group relative rounded-[28px] border p-4 text-left transition hover:-translate-y-1 hover:shadow-lg ${selectedTheme === theme ? "border-[#0B6B2B] bg-[#ECFDF3] shadow-[0_18px_45px_rgba(11,107,43,0.16)]" : "border-[#DDE8CF] bg-[#FCFFF7]"}`}>
+              {vip ? <span className="absolute right-3 top-3 z-10 rounded-full bg-[#FACC15] px-2 py-1 text-[11px] font-black text-[#113A1D]">VIP</span> : null}
+              {selectedTheme === theme ? (
+                <span className="absolute left-3 top-3 z-10 grid size-7 place-items-center rounded-full bg-[#0B6B2B] text-white">
+                  <Check aria-hidden className="size-4" />
+                </span>
+              ) : null}
+              <div className="mx-auto aspect-[9/16] w-full max-w-[148px] rounded-[26px] bg-[#102E1B] p-2 shadow-xl shadow-[#113A1D]/15">
+                <div className={`h-full overflow-hidden rounded-[20px] p-3 ${look.surface}`}>
+                  <div className={`mx-auto size-11 rounded-full ${look.avatar}`} />
+                  <div className={`mx-auto mt-2 h-3 w-20 rounded-full bg-current/70 ${look.text}`} />
+                  <div className={`mx-auto mt-2 h-2 w-24 rounded-full bg-current/30 ${look.text}`} />
+                  <div className="mt-4 grid gap-2">
+                    {[0, 1, 2].map((index) => (
+                      <div key={index} className={`min-h-8 rounded-xl border border-black/5 px-2 py-1.5 text-[10px] font-black ${look.button}`}>
+                        {index === 0 ? "微信公众号" : index === 1 ? "小红书" : "预约咨询"}
+                      </div>
+                    ))}
+                  </div>
+                  <div className={`mx-auto mt-4 h-3 w-24 rounded-full bg-current/40 ${look.text}`} />
+                </div>
               </div>
-            </div>
-            <p className="mt-3 text-center text-sm font-black">{theme}</p>
-          </button>
-        ))}
+              <p className="mt-3 text-center text-sm font-black">{theme}</p>
+              {vip ? <p className="mt-1 text-center text-xs font-bold text-[#AD6800]">会员主题，点击升级</p> : <p className="mt-1 text-center text-xs font-bold text-[#52624A]">点击同步右侧预览</p>}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -1109,7 +1143,7 @@ function DataPanel({ links, openVip }: { links: BuilderLink[]; openVip: () => vo
       <section className="mt-5 rounded-3xl bg-[#FFF7D6] p-5">
         <h2 className="text-xl font-black text-[#AD6800]">高级数据</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {["365 天数据", "来源分析", "地区分析", "设备 / 浏览器分析", "导出数据", "每条链接详细趋势"].map((label) => (
+          {["365 天数据", "自定义日期筛选", "来源分析", "地区分析", "设备 / 浏览器分析", "二维码扫码数据", "每条链接每日趋势", "导出数据", "高峰访问时间"].map((label) => (
             <button key={label} onClick={openVip} className="link168-button-press flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-left text-sm font-black text-[#AD6800]">
               {label}
               <Lock aria-hidden className="size-4" />
@@ -1322,14 +1356,15 @@ function ModalShell({ title, onClose, children }: { title: string; onClose: () =
   );
 }
 
-function ShareModal({ url, previewUrl, onClose, onCopy, onSoon }: { url: string; previewUrl: string; onClose: () => void; onCopy: () => void; onSoon: () => void }) {
+function ShareModal({ url, previewUrl, onClose, onCopy, onSave }: { url: string; previewUrl: string; onClose: () => void; onCopy: () => void; onSave: () => void }) {
   return (
     <ModalShell title="分享你的 Link168 主页" onClose={onClose}>
       <div className="mt-5 grid gap-5 sm:grid-cols-[220px_minmax(0,1fr)]">
-        <div className="grid aspect-square place-items-center rounded-[26px] border border-dashed border-[#0B6B2B]/30 bg-[#ECFDF3]">
-          <div className="grid size-32 place-items-center rounded-3xl bg-white text-[#0B6B2B] shadow-sm">
-            <QrCode aria-hidden className="size-16" />
+        <div className="grid aspect-square place-items-center rounded-[26px] border border-[#0B6B2B]/20 bg-[radial-gradient(circle_at_30%_20%,rgba(250,204,21,0.22),transparent_36%),#ECFDF3] p-4">
+          <div className="grid size-40 place-items-center rounded-3xl bg-white p-4 text-[#0B6B2B] shadow-sm">
+            <QRCode value={url} size={132} bgColor="#FFFFFF" fgColor="#113A1D" level="M" />
           </div>
+          <p className="mt-3 text-xs font-black text-[#0B6B2B]">Link168 真实主页二维码</p>
         </div>
         <div className="grid content-center gap-3">
           <p className="rounded-2xl bg-[#F7F6EA] px-4 py-3 text-sm font-black text-[#0B6B2B]">{url}</p>
@@ -1337,7 +1372,7 @@ function ShareModal({ url, previewUrl, onClose, onCopy, onSoon }: { url: string;
             <Copy aria-hidden className="size-4" />
             复制链接
           </button>
-          <button onClick={onSoon} className="link168-button-press inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#ECFDF3] px-5 text-sm font-black text-[#0B6B2B]">
+          <button onClick={onSave} className="link168-button-press inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#ECFDF3] px-5 text-sm font-black text-[#0B6B2B]">
             <Download aria-hidden className="size-4" />
             保存二维码
           </button>
