@@ -153,23 +153,23 @@ function HelpCard({ title, description, href, icon: Icon }: HelpEntry) {
   return (
     <Link
       href={href}
-      className="link168-card-hover link168-button-press group flex min-h-28 items-center gap-4 rounded-[26px] border border-[#DDE8CF] bg-white px-4 py-4 text-left shadow-sm"
+      className="link168-card-hover link168-button-press group flex min-h-28 items-center gap-4 rounded-[26px] border border-[#E7E4D8] bg-white px-4 py-4 text-left shadow-sm"
     >
       <span className="link168-card-icon link168-wiggle-on-hover grid size-12 shrink-0 place-items-center rounded-2xl bg-[#ECFDF3] text-[#16A34A] transition group-hover:bg-[#FACC15] group-hover:text-[#113A1D]">
-        <Icon aria-hidden className="size-6" />
+        <Icon aria-hidden className="link168-feature-icon" />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-base font-black text-[#113A1D]">{title}</span>
         <span className="mt-1 block text-sm leading-6 text-[#52624A]">{description}</span>
       </span>
-      <ArrowRight aria-hidden className="size-5 shrink-0 text-[#8FA083] transition group-hover:translate-x-1 group-hover:text-[#0B6B2B]" />
+      <ArrowRight aria-hidden className="link168-feature-icon shrink-0 text-[#8FA083] transition group-hover:translate-x-1 group-hover:text-[#0B7A58]" />
     </Link>
   );
 }
 
 export default function HelpPage() {
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-[#F7F6EA] text-[#113A1D]">
+    <div className="min-h-dvh overflow-x-hidden bg-[#FFFEF8] text-[#113A1D]">
       <main>
         <section className="relative isolate overflow-hidden px-4 pb-16 pt-6 sm:px-6 lg:px-8">
           <div className="absolute inset-0 -z-20 bg-[linear-gradient(135deg,#092B17_0%,#0B6B2B_42%,#F7F6EA_100%)]" />
@@ -183,10 +183,10 @@ export default function HelpPage() {
               <BrandLogo size="header" />
               <Link
                 href="/register"
-                className="link168-button-press hidden min-h-11 items-center justify-center gap-2 rounded-full bg-white px-5 text-sm font-black text-[#113A1D] shadow-xl shadow-black/10 transition hover:-translate-y-0.5 sm:inline-flex"
+                className="link168-button-press hidden min-h-11 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-[15px] font-semibold text-[#113A1D] shadow-xl shadow-black/10 transition hover:-translate-y-0.5 sm:inline-flex"
               >
                 创建主页
-                <Rocket aria-hidden className="size-4" />
+                <Rocket aria-hidden className="link168-nav-icon" />
               </Link>
             </header>
 

@@ -484,9 +484,9 @@ export default function DashboardPage() {
 
   if (state.loading) {
     return (
-      <main className="grid min-h-dvh place-items-center bg-[#F7F6EA] px-4">
+      <main className="grid min-h-dvh place-items-center bg-[#FFFEF8] px-4">
         <div className="flex items-center gap-3 rounded-2xl bg-white px-5 py-4 text-sm font-black text-[#113A1D] shadow-sm">
-          <Loader2 aria-hidden className="size-5 animate-spin text-[#16A34A]" />
+          <Loader2 aria-hidden className="link168-feature-icon animate-spin text-[#16A34A]" />
           正在读取制作器...
         </div>
       </main>
@@ -494,19 +494,19 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="min-h-dvh bg-[#F7F6EA] text-[#113A1D]">
-      <header className="sticky top-0 z-40 border-b border-[#DDE8CF] bg-white/90 px-4 py-3 backdrop-blur sm:px-6 lg:px-8">
+    <main className="min-h-dvh bg-[#FFFEF8] text-[#113A1D]">
+      <header className="sticky top-0 z-40 border-b border-[#E7E4D8]/90 bg-[#FFFEF8]/90 px-4 py-3 backdrop-blur sm:px-6 lg:px-8">
         <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3">
-          <Link href="/dashboard" className="inline-flex w-[132px] max-w-[38vw] items-center">
+          <Link href="/dashboard" className="inline-flex w-[118px] max-w-[34vw] items-center opacity-95">
             <Image src="/brand/link168-logo.png" alt="Link168 链接一路发" width={1536} height={864} priority className="h-auto w-full object-contain" />
           </Link>
 
-          <nav className="order-3 flex w-full justify-center gap-2 text-sm font-black text-[#52624A] md:order-none md:w-auto">
+          <nav className="order-3 flex w-full justify-center gap-2 overflow-x-auto text-[16px] font-semibold text-[#52624A] md:order-none md:w-auto">
             {navItems.map((item) => (
               <button
                 key={item}
                 onClick={() => setActiveTab(item)}
-                className={`rounded-full px-4 py-2 transition ${activeTab === item ? "bg-[#0B6B2B] text-white shadow-sm" : "hover:bg-[#ECFDF3] hover:text-[#0B6B2B]"}`}
+                className={`min-h-11 rounded-2xl px-4 transition ${activeTab === item ? "bg-[#113A1D] text-white shadow-sm" : "hover:bg-[#ECFDF3] hover:text-[#0B7A58]"}`}
               >
                 {item}
               </button>
@@ -516,18 +516,18 @@ export default function DashboardPage() {
           <div className="flex flex-wrap items-center justify-end gap-2">
             <button
               onClick={() => setModal("vip")}
-              className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#FACC15] px-4 text-sm font-black text-[#113A1D] shadow-sm hover:brightness-105"
+              className="link168-button-press inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[#FACC15] px-4 text-[15px] font-semibold text-[#113A1D] shadow-sm hover:brightness-105"
             >
-              <Crown aria-hidden className="size-4" />
+              <Crown aria-hidden className="link168-nav-icon" />
               升级VIP
             </button>
-            <span className="hidden max-w-[260px] truncate rounded-full bg-[#ECFDF3] px-4 py-2 text-xs font-black text-[#0B6B2B] lg:inline">永久专属链接：{publicUrl}</span>
-            <button onClick={() => setModal("share")} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#113A1D] px-4 text-sm font-black text-white shadow-sm">
-              <Share2 aria-hidden className="size-4" />
+            <span className="hidden max-w-[260px] truncate rounded-2xl bg-[#ECFDF3] px-4 py-2 text-xs font-semibold text-[#0B7A58] lg:inline">永久专属链接：{publicUrl}</span>
+            <button onClick={() => setModal("share")} className="link168-button-press inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[#113A1D] px-4 text-[15px] font-semibold text-white shadow-sm">
+              <Share2 aria-hidden className="link168-nav-icon" />
               分享
             </button>
-            <button onClick={signOut} className="grid size-10 place-items-center rounded-full bg-[#F7F6EA] text-[#52624A]">
-              <LogOut aria-label="退出登录" className="size-5" />
+            <button onClick={signOut} className="grid size-11 place-items-center rounded-2xl bg-[#F6F4EC] text-[#52624A]">
+              <LogOut aria-label="退出登录" className="link168-nav-icon" />
             </button>
           </div>
         </div>
@@ -600,13 +600,13 @@ export default function DashboardPage() {
         </section>
 
         <aside className="lg:sticky lg:top-24 lg:h-fit">
-          <div className="rounded-[30px] border border-[#DDE8CF] bg-white p-4 shadow-sm">
+          <div className="rounded-[28px] border border-[#E7E4D8] bg-white p-4 shadow-[0_18px_55px_rgba(17,58,29,0.08)]">
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <p className="text-sm font-black text-[#0B6B2B]">实时预览</p>
                 <p className="text-xs text-[#52624A]">左侧改动会同步到手机</p>
               </div>
-              <Palette aria-hidden className="size-5 text-[#16A34A]" />
+              <Palette aria-hidden className="link168-feature-icon text-[#0B7A58]" />
             </div>
             <div style={selectedTheme === "自定义" ? customSurfaceStyle(customStyle) : undefined} className={selectedTheme === "自定义" ? "rounded-[34px] p-2" : ""}>
               <PhonePreview
@@ -704,7 +704,7 @@ function BuilderPanel({
 }) {
   return (
     <>
-      <section className="rounded-[26px] border border-[#DDE8CF] bg-white p-5 shadow-sm">
+      <section className="rounded-[28px] border border-[#E7E4D8] bg-white p-5 shadow-[0_16px_46px_rgba(17,58,29,0.07)]">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <p className="text-sm font-black text-[#0B6B2B]">公开主页地址</p>
@@ -713,15 +713,15 @@ function BuilderPanel({
           </div>
           <div className="flex flex-wrap gap-2">
             <button onClick={() => void copyText(`https://${publicUrl}`)} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#ECFDF3] px-4 text-sm font-black text-[#0B6B2B]">
-              <Copy aria-hidden className="size-4" />
+              <Copy aria-hidden className="link168-nav-icon" />
               复制链接
             </button>
             <Link href={previewUrl} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-white px-4 text-sm font-black text-[#14532D] ring-1 ring-[#DDE8CF]">
-              <Eye aria-hidden className="size-4" />
+              <Eye aria-hidden className="link168-nav-icon" />
               预览主页
             </Link>
             <button onClick={() => setModal("share")} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#113A1D] px-4 text-sm font-black text-white">
-              <Share2 aria-hidden className="size-4" />
+              <Share2 aria-hidden className="link168-nav-icon" />
               分享主页
             </button>
             <button onClick={changeAddressNotice} className="link168-button-press inline-flex min-h-10 items-center rounded-full bg-[#FFF7D6] px-4 text-sm font-black text-[#AD6800]">
@@ -731,14 +731,14 @@ function BuilderPanel({
         </div>
       </section>
 
-      <section className="rounded-[26px] border border-[#DDE8CF] bg-white p-5 shadow-sm">
+      <section className="rounded-[28px] border border-[#E7E4D8] bg-white p-5 shadow-[0_16px_46px_rgba(17,58,29,0.07)]">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-sm font-black text-[#0B6B2B]">主页资料卡片</p>
             <h2 className="mt-1 text-2xl font-black">编辑主页展示内容</h2>
           </div>
-          <button onClick={() => setProfileOpen((open) => !open)} className="grid size-10 place-items-center rounded-full bg-[#F7F6EA] text-[#52624A]">
-            {profileOpen ? <ChevronUp aria-label="收起资料区" className="size-5" /> : <ChevronDown aria-label="展开资料区" className="size-5" />}
+          <button onClick={() => setProfileOpen((open) => !open)} className="grid size-11 place-items-center rounded-2xl bg-[#F6F4EC] text-[#52624A]">
+            {profileOpen ? <ChevronUp aria-label="收起资料区" className="link168-nav-icon" /> : <ChevronDown aria-label="展开资料区" className="link168-nav-icon" />}
           </button>
         </div>
 
@@ -749,7 +749,7 @@ function BuilderPanel({
                 {displayName ? displayName.slice(0, 1).toUpperCase() : "L"}
               </div>
               <button type="button" onClick={() => showToast("头像上传功能即将开放")} className="link168-button-press inline-flex min-h-10 w-fit items-center gap-2 rounded-full bg-[#ECFDF3] px-4 text-sm font-black text-[#0B6B2B]">
-                <ImageIcon aria-hidden className="size-4" />
+                <ImageIcon aria-hidden className="link168-feature-icon" />
                 上传头像
               </button>
             </div>
@@ -768,14 +768,14 @@ function BuilderPanel({
               <textarea className="mt-2 min-h-24 w-full resize-none rounded-2xl border border-[#DDE8CF] bg-[#FCFFF7] px-4 py-3 outline-none focus:border-[#16A34A]" value={bio} onChange={(event) => setBio(event.target.value)} placeholder="一句话介绍你自己" />
             </label>
             <button type="submit" disabled={state.saving} className="link168-button-press inline-flex min-h-11 w-fit items-center gap-2 rounded-full bg-[#0B6B2B] px-5 text-sm font-black text-white disabled:opacity-60">
-              {state.saving ? <Loader2 aria-hidden className="size-4 animate-spin" /> : <Save aria-hidden className="size-4" />}
+              {state.saving ? <Loader2 aria-hidden className="link168-nav-icon animate-spin" /> : <Save aria-hidden className="link168-nav-icon" />}
               保存资料
             </button>
           </form>
         ) : null}
       </section>
 
-      <section className="rounded-[26px] border border-[#DDE8CF] bg-white p-5 shadow-sm">
+      <section className="rounded-[28px] border border-[#E7E4D8] bg-white p-5 shadow-[0_16px_46px_rgba(17,58,29,0.07)]">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <p className="text-sm font-black text-[#0B6B2B]">链接卡片</p>
@@ -784,11 +784,11 @@ function BuilderPanel({
           </div>
           <div className="flex flex-wrap gap-2">
             <button onClick={addDraftLink} className={`link168-button-press inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-sm font-black transition ${addingFlash ? "bg-[#FACC15] text-[#113A1D]" : "bg-[#0B6B2B] text-white"}`}>
-              <Plus aria-hidden className="size-4" />
+              <Plus aria-hidden className="link168-feature-icon" />
               添加新链接
             </button>
             <button onClick={() => setModal("modules")} className="link168-button-press inline-flex min-h-11 items-center gap-2 rounded-full bg-[#ECFDF3] px-5 text-sm font-black text-[#0B6B2B]">
-              <Wand2 aria-hidden className="size-4" />
+              <Wand2 aria-hidden className="link168-feature-icon" />
               添加更多模块
             </button>
           </div>
@@ -858,15 +858,15 @@ function AppearancePanel({
   openVip: () => void;
 }) {
   return (
-    <section className="rounded-[26px] border border-[#DDE8CF] bg-white p-5 shadow-sm">
+    <section className="rounded-[28px] border border-[#E7E4D8] bg-white p-5 shadow-[0_16px_46px_rgba(17,58,29,0.07)]">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <p className="text-sm font-black text-[#0B6B2B]">外观设置</p>
           <h1 className="mt-1 text-3xl font-black">调整主页视觉风格</h1>
         </div>
-        <div className="flex rounded-full bg-[#F7F6EA] p-1">
+        <div className="flex rounded-2xl bg-[#F6F4EC] p-1">
           {appearanceTabs.map((tab) => (
-            <button key={tab} onClick={() => setActiveTab(tab)} className={`rounded-full px-4 py-2 text-sm font-black transition ${activeTab === tab ? "bg-[#0B6B2B] text-white" : "text-[#52624A] hover:text-[#0B6B2B]"}`}>
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`min-h-10 rounded-xl px-4 text-[15px] font-semibold transition ${activeTab === tab ? "bg-[#113A1D] text-white" : "text-[#52624A] hover:text-[#0B7A58]"}`}>
               {tab}
             </button>
           ))}
@@ -936,13 +936,13 @@ function AppearancePanel({
             {["自定义背景图片上传", "自定义封面图", "隐藏底部 Link168 Logo", "高级主题保存"].map((label) => (
               <button key={label} onClick={openVip} className="link168-button-press flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-left text-sm font-black text-[#AD6800]">
                 {label}
-                <Lock aria-hidden className="size-4" />
+                <Lock aria-hidden className="link168-nav-icon" />
               </button>
             ))}
           </div>
 
           <button onClick={() => showToast("修改成功")} className="link168-button-press inline-flex min-h-11 w-fit items-center gap-2 rounded-full bg-[#0B6B2B] px-5 text-sm font-black text-white">
-            <Save aria-hidden className="size-4" />
+            <Save aria-hidden className="link168-nav-icon" />
             保存外观
           </button>
         </div>
@@ -1022,11 +1022,11 @@ function ThemeGrid({ title, themes, selectedTheme, vip, onSelect }: { title: str
               {vip ? <span className="absolute right-3 top-3 z-10 rounded-full bg-[#FACC15] px-2 py-1 text-[11px] font-black text-[#113A1D]">VIP</span> : null}
               {selectedTheme === theme ? (
                 <span className="absolute left-3 top-3 z-10 grid size-7 place-items-center rounded-full bg-[#0B6B2B] text-white">
-                  <Check aria-hidden className="size-4" />
+                  <Check aria-hidden className="link168-nav-icon" />
                 </span>
               ) : null}
-              <div className="mx-auto aspect-[9/16] w-full max-w-[148px] rounded-[26px] bg-[#102E1B] p-2 shadow-xl shadow-[#113A1D]/15">
-                <div className={`h-full overflow-hidden rounded-[20px] p-3 ${look.surface}`}>
+              <div className="link168-phone-shell mx-auto w-full max-w-[150px] p-1.5 shadow-xl shadow-[#113A1D]/15">
+                <div className={`link168-phone-screen h-full overflow-hidden p-3 ${look.surface}`}>
                   <div className={`mx-auto size-11 rounded-full ${look.avatar}`} />
                   <div className={`mx-auto mt-2 h-3 w-20 rounded-full bg-current/70 ${look.text}`} />
                   <div className={`mx-auto mt-2 h-2 w-24 rounded-full bg-current/30 ${look.text}`} />
@@ -1078,32 +1078,35 @@ function ConfigSwitch({ label, checked, onClick }: { label: string; checked: boo
 
 function DataPanel({ links, openVip }: { links: BuilderLink[]; openVip: () => void }) {
   const metrics = [
-    ["今日访问", "0"],
-    ["昨日访问", "0"],
-    ["总访问", "0"],
-    ["总点击", "0"],
-    ["点击率", "0%"],
+    { label: "今日访问", value: "0", icon: Eye },
+    { label: "昨日访问", value: "0", icon: BarChart3 },
+    { label: "总访问", value: "0", icon: Monitor },
+    { label: "总点击", value: "0", icon: Link2 },
+    { label: "点击率", value: "0%", icon: Share2 },
   ];
 
   return (
-    <section className="rounded-[26px] border border-[#DDE8CF] bg-white p-5 shadow-sm">
+    <section className="rounded-[28px] border border-[#E7E4D8] bg-white p-5 shadow-[0_16px_46px_rgba(17,58,29,0.07)]">
       <div>
         <p className="text-sm font-black text-[#0B6B2B]">数据中心</p>
         <h1 className="mt-1 text-3xl font-black">查看主页访问与点击</h1>
       </div>
       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-        {metrics.map(([label, value]) => (
-          <div key={label} className="rounded-3xl bg-[#FCFFF7] p-4">
-            <p className="text-xs font-black text-[#6B7A5F]">{label}</p>
-            <p className="mt-2 text-3xl font-black">{value}</p>
+        {metrics.map(({ label, value, icon: Icon }) => (
+          <div key={label} className="rounded-[24px] border border-[#E7E4D8] bg-[#FFFEF8] p-4">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs font-semibold text-[#6B7A5F]">{label}</p>
+              <Icon aria-hidden className="link168-data-icon text-[#0B7A58]" />
+            </div>
+            <p className="mt-2 text-4xl font-black tracking-tight text-[#113A1D]">{value}</p>
           </div>
         ))}
       </div>
       <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_260px]">
-        <section className="rounded-3xl bg-[#FCFFF7] p-5">
+        <section className="rounded-[24px] border border-[#E7E4D8] bg-[#FFFEF8] p-5">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-black">最近 7 天访问趋势</h2>
-            <BarChart3 aria-hidden className="size-5 text-[#16A34A]" />
+            <BarChart3 aria-hidden className="link168-data-icon text-[#0B7A58]" />
           </div>
           <div className="mt-6 flex h-40 items-end gap-3">
             {Array.from({ length: 7 }).map((_, index) => (
@@ -1115,21 +1118,21 @@ function DataPanel({ links, openVip }: { links: BuilderLink[]; openVip: () => vo
           </div>
           <p className="mt-4 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-[#52624A]">暂无足够数据，分享你的 Link168 主页后即可查看访问变化。</p>
         </section>
-        <section className="rounded-3xl bg-[#FCFFF7] p-5">
+        <section className="rounded-[24px] border border-[#E7E4D8] bg-[#FFFEF8] p-5">
           <h2 className="text-xl font-black">设备来源</h2>
           <div className="mt-4 grid gap-3">
             <div className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-sm font-black">
-              <span className="inline-flex items-center gap-2"><Smartphone aria-hidden className="size-4 text-[#16A34A]" />手机</span>
+              <span className="inline-flex items-center gap-2"><Smartphone aria-hidden className="link168-data-icon text-[#0B7A58]" />手机</span>
               <span>0</span>
             </div>
             <div className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-sm font-black">
-              <span className="inline-flex items-center gap-2"><Monitor aria-hidden className="size-4 text-[#16A34A]" />电脑</span>
+              <span className="inline-flex items-center gap-2"><Monitor aria-hidden className="link168-data-icon text-[#0B7A58]" />电脑</span>
               <span>0</span>
             </div>
           </div>
         </section>
       </div>
-      <section className="mt-5 rounded-3xl bg-[#FCFFF7] p-5">
+      <section className="mt-5 rounded-[24px] border border-[#E7E4D8] bg-[#FFFEF8] p-5">
         <h2 className="text-xl font-black">链接点击排行 Top 5</h2>
         <div className="mt-4 grid gap-2">
           {links.length ? links.slice(0, 5).map((link, index) => (
@@ -1140,13 +1143,13 @@ function DataPanel({ links, openVip }: { links: BuilderLink[]; openVip: () => vo
           )) : <p className="rounded-2xl bg-white px-4 py-4 text-sm font-bold text-[#52624A]">暂无链接点击数据。</p>}
         </div>
       </section>
-      <section className="mt-5 rounded-3xl bg-[#FFF7D6] p-5">
+      <section className="mt-5 rounded-[24px] border border-[#F7D56B]/50 bg-[#FFF7D6] p-5">
         <h2 className="text-xl font-black text-[#AD6800]">高级数据</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {["365 天数据", "自定义日期筛选", "来源分析", "地区分析", "设备 / 浏览器分析", "二维码扫码数据", "每条链接每日趋势", "导出数据", "高峰访问时间"].map((label) => (
             <button key={label} onClick={openVip} className="link168-button-press flex items-center justify-between rounded-2xl bg-white px-4 py-3 text-left text-sm font-black text-[#AD6800]">
               {label}
-              <Lock aria-hidden className="size-4" />
+              <Lock aria-hidden className="link168-nav-icon" />
             </button>
           ))}
         </div>
@@ -1191,14 +1194,14 @@ function AccountPanel({
             </div>
           </div>
           <button onClick={openVip} className="link168-button-press inline-flex min-h-11 w-fit items-center gap-2 rounded-full bg-[#FACC15] px-5 text-sm font-black text-[#113A1D]">
-            <Crown aria-hidden className="size-4" />
+            <Crown aria-hidden className="link168-nav-icon" />
             升级会员
           </button>
         </div>
         {bio ? <p className="mt-4 rounded-2xl bg-[#FCFFF7] px-4 py-3 text-sm text-[#52624A]">{bio}</p> : null}
       </div>
 
-      <AccountSection title="账号信息" icon={<User aria-hidden className="size-5" />}>
+      <AccountSection title="账号信息" icon={<User aria-hidden className="link168-feature-icon" />}>
         <InfoRow label="邮箱账号" value={email || "-"} />
         <InfoRow label="手机号绑定" value="未绑定" />
         <ActionRow label="修改密码" onClick={() => showToast("功能即将开放")} />
@@ -1206,21 +1209,21 @@ function AccountPanel({
         <ActionRow label="账号安全" onClick={() => showToast("功能即将开放")} />
       </AccountSection>
 
-      <AccountSection title="主页信息" icon={<ShieldCheck aria-hidden className="size-5" />}>
+      <AccountSection title="主页信息" icon={<ShieldCheck aria-hidden className="link168-feature-icon" />}>
         <InfoRow label="公开主页地址" value={publicUrl} />
         <ActionRow label="复制链接" onClick={() => void copyText(`https://${publicUrl}`)} />
         <LinkRow label="预览主页" href={previewUrl} />
         <ActionRow label="修改主页地址：后续开放" onClick={onAddressNotice} />
       </AccountSection>
 
-      <AccountSection title="会员与服务" icon={<Crown aria-hidden className="size-5" />}>
+      <AccountSection title="会员与服务" icon={<Crown aria-hidden className="link168-feature-icon" />}>
         <InfoRow label="当前套餐" value="免费版" />
         <ActionRow label="会员权益" onClick={openVip} />
         <ActionRow label="开通会员" onClick={openVip} />
         <InfoRow label="订单记录" value="后续开放" />
       </AccountSection>
 
-      <AccountSection title="帮助与支持" icon={<MessageCircle aria-hidden className="size-5" />}>
+      <AccountSection title="帮助与支持" icon={<MessageCircle aria-hidden className="link168-feature-icon" />}>
         <LinkRow label="使用指南" href="/help" />
         <LinkRow label="帮助中心" href="/help" />
         <ActionRow label="联系我们" onClick={() => showToast("功能即将开放")} />
@@ -1228,7 +1231,7 @@ function AccountPanel({
         <LinkRow label="举报中心" href="/report" />
       </AccountSection>
 
-      <AccountSection title="危险操作" icon={<LogOut aria-hidden className="size-5" />}>
+      <AccountSection title="危险操作" icon={<LogOut aria-hidden className="link168-feature-icon" />}>
         <ActionRow label="退出登录" danger onClick={() => void signOut()} />
         <InfoRow label="注销账号" value="后续开放" />
       </AccountSection>
@@ -1258,7 +1261,7 @@ function ActionRow({ label, onClick, danger }: { label: string; onClick: () => v
   return (
     <button onClick={onClick} className={`link168-button-press flex items-center justify-between rounded-2xl px-4 py-3 text-left text-sm font-black ${danger ? "bg-[#FFF1F0] text-[#B42318]" : "bg-[#FCFFF7] text-[#14532D]"}`}>
       {label}
-      <ArrowRight aria-hidden className="size-4" />
+      <ArrowRight aria-hidden className="link168-nav-icon" />
     </button>
   );
 }
@@ -1267,7 +1270,7 @@ function LinkRow({ label, href }: { label: string; href: string }) {
   return (
     <Link href={href} className="link168-button-press flex items-center justify-between rounded-2xl bg-[#FCFFF7] px-4 py-3 text-left text-sm font-black text-[#14532D]">
       {label}
-      <ArrowRight aria-hidden className="size-4" />
+      <ArrowRight aria-hidden className="link168-nav-icon" />
     </Link>
   );
 }
@@ -1308,7 +1311,7 @@ function LinkCard({
   return (
     <article className={`rounded-[26px] border p-4 shadow-sm transition ${link.flash ? "border-[#FACC15] bg-[#FFFBE6]" : "border-[#DDE8CF] bg-[#FCFFF7]"}`}>
       <div className="grid gap-3 lg:grid-cols-[24px_minmax(0,1fr)_auto] lg:items-start">
-        <GripVertical aria-hidden className="mt-3 hidden size-5 cursor-grab text-[#8FA083] lg:block" />
+        <GripVertical aria-hidden className="mt-3 hidden link168-feature-icon cursor-grab text-[#8FA083] lg:block" />
         <div className="grid gap-3">
           <input ref={setTitleRef} value={link.title} onChange={(event) => onChange({ title: event.target.value })} placeholder="点此输入标题" className="h-11 rounded-2xl border border-[#DDE8CF] bg-white px-4 text-sm font-black outline-none focus:border-[#16A34A]" />
           <input value={link.url} onChange={(event) => onChange({ url: event.target.value })} placeholder="点此输入链接" className="h-11 rounded-2xl border border-[#DDE8CF] bg-white px-4 text-sm outline-none focus:border-[#16A34A]" />
@@ -1319,20 +1322,20 @@ function LinkCard({
             {link.is_active ? "公开" : "隐藏"}
           </button>
           <button onClick={onSave} disabled={saving} className="grid size-10 place-items-center rounded-full bg-white text-[#0B6B2B] shadow-sm disabled:opacity-60">
-            <Pencil aria-label="编辑或保存链接" className="size-4" />
+            <Pencil aria-label="编辑或保存链接" className="link168-nav-icon" />
           </button>
           <button onClick={onDelete} disabled={saving} className="grid size-10 place-items-center rounded-full bg-white text-[#B42318] shadow-sm disabled:opacity-60">
-            <Trash2 aria-label="删除链接" className="size-4" />
+            <Trash2 aria-label="删除链接" className="link168-nav-icon" />
           </button>
           <button onClick={onCopy} className="grid size-10 place-items-center rounded-full bg-white text-[#52624A] shadow-sm">
-            <Copy aria-label="复制或分享链接" className="size-4" />
+            <Copy aria-label="复制或分享链接" className="link168-nav-icon" />
           </button>
         </div>
       </div>
       <div className="mt-4 flex flex-wrap gap-2 border-t border-[#DDE8CF] pt-3">
         {toolItems.map(({ label, icon: Icon, action }) => (
           <button key={label} onClick={action} title={label} className={`link168-tooltip link168-button-press grid size-9 place-items-center rounded-full bg-white text-[#52624A] shadow-sm transition hover:bg-[#111827] hover:text-white ${flashActive === label ? "bg-[#FACC15] text-[#113A1D]" : ""}`} data-tooltip={label}>
-            <Icon aria-label={label} className="size-4" />
+            <Icon aria-label={label} className="link168-nav-icon" />
           </button>
         ))}
       </div>
@@ -1347,7 +1350,7 @@ function ModalShell({ title, onClose, children }: { title: string; onClose: () =
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-2xl font-black">{title}</h2>
           <button onClick={onClose} className="grid size-10 place-items-center rounded-full bg-[#F7F6EA]">
-            <X aria-label="关闭" className="size-5" />
+            <X aria-label="关闭" className="link168-nav-icon" />
           </button>
         </div>
         {children}
@@ -1369,15 +1372,15 @@ function ShareModal({ url, previewUrl, onClose, onCopy, onSave }: { url: string;
         <div className="grid content-center gap-3">
           <p className="rounded-2xl bg-[#F7F6EA] px-4 py-3 text-sm font-black text-[#0B6B2B]">{url}</p>
           <button onClick={onCopy} className="link168-button-press inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#0B6B2B] px-5 text-sm font-black text-white">
-            <Copy aria-hidden className="size-4" />
+            <Copy aria-hidden className="link168-nav-icon" />
             复制链接
           </button>
           <button onClick={onSave} className="link168-button-press inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#ECFDF3] px-5 text-sm font-black text-[#0B6B2B]">
-            <Download aria-hidden className="size-4" />
+            <Download aria-hidden className="link168-nav-icon" />
             保存二维码
           </button>
           <Link href={previewUrl} className="link168-button-press inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#FACC15] px-5 text-sm font-black text-[#113A1D]">
-            <Eye aria-hidden className="size-4" />
+            <Eye aria-hidden className="link168-nav-icon" />
             预览主页
           </Link>
         </div>
@@ -1408,10 +1411,10 @@ function ModulePickerModal({ onClose, onAddLink, onSoon, onFlash, activeFlash }:
                   className={`link168-button-press flex items-center justify-between rounded-2xl border border-[#DDE8CF] px-4 py-3 text-left text-sm font-black transition ${activeFlash === label ? "bg-[#FACC15] text-[#113A1D]" : "bg-[#FCFFF7] text-[#14532D]"}`}
                 >
                   <span className="inline-flex items-center gap-3">
-                    <Icon aria-hidden className="size-5 text-[#16A34A]" />
+                    <Icon aria-hidden className="link168-feature-icon text-[#16A34A]" />
                     {label}
                   </span>
-                  {enabled ? <Check aria-hidden className="size-4" /> : <Lock aria-hidden className="size-4 text-[#8FA083]" />}
+                  {enabled ? <Check aria-hidden className="link168-nav-icon" /> : <Lock aria-hidden className="link168-nav-icon text-[#8FA083]" />}
                 </button>
               ))}
             </div>
@@ -1439,7 +1442,7 @@ function VipModal({ onClose, onPay }: { onClose: () => void; onPay: () => void }
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
             {vipBenefits.map((item) => (
               <span key={item} className="inline-flex items-center gap-2 rounded-2xl bg-white px-3 py-2 text-sm font-bold">
-                <Crown aria-hidden className="size-4 text-[#F59E0B]" />
+                <Crown aria-hidden className="link168-nav-icon text-[#F59E0B]" />
                 {item}
               </span>
             ))}

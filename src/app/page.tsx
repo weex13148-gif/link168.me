@@ -92,29 +92,29 @@ const creatorCases = [
 
 export default function Home() {
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-[#F7F6EA] text-[#113A1D]">
+    <div className="min-h-dvh overflow-x-hidden bg-[#FFFEF8] text-[#113A1D]">
       <AppHeader />
       <main>
-        <section className="relative isolate overflow-hidden px-4 pb-20 pt-8 sm:px-6 lg:px-8">
-          <div className="absolute inset-0 -z-20 bg-[linear-gradient(135deg,#092B17_0%,#0B6B2B_38%,#E7F8DD_100%)]" />
-          <div className="link168-aurora absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_20%,rgba(250,204,21,0.42),transparent_24%),radial-gradient(circle_at_78%_28%,rgba(255,247,214,0.55),transparent_20%),radial-gradient(circle_at_58%_78%,rgba(22,163,74,0.35),transparent_24%)]" />
-          <div className="absolute -left-28 top-24 -z-10 size-72 rounded-full border border-white/20" />
-          <div className="absolute right-[-80px] top-16 -z-10 size-[340px] rounded-full bg-[#FACC15]/20 blur-3xl" />
-          <div className="absolute bottom-10 left-[36%] -z-10 h-32 w-[48rem] rotate-[-8deg] rounded-full border border-white/20" />
+        <section className="relative isolate overflow-hidden px-4 pb-20 pt-10 sm:px-6 lg:px-8">
+          <div className="absolute inset-0 -z-20 bg-[linear-gradient(135deg,#FFFEF8_0%,#F7F3E8_46%,#ECFDF3_100%)]" />
+          <div className="link168-aurora absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_20%,rgba(11,122,88,0.16),transparent_24%),radial-gradient(circle_at_78%_28%,rgba(250,204,21,0.16),transparent_20%),radial-gradient(circle_at_58%_78%,rgba(148,163,184,0.14),transparent_24%)]" />
+          <div className="absolute -left-28 top-24 -z-10 size-72 rounded-full border border-[#0B7A58]/10" />
+          <div className="absolute right-[-80px] top-16 -z-10 size-[340px] rounded-full bg-[#0B7A58]/10 blur-3xl" />
+          <div className="absolute bottom-10 left-[36%] -z-10 h-32 w-[48rem] rotate-[-8deg] rounded-full border border-[#113A1D]/10" />
 
           <div className="mx-auto grid w-full max-w-7xl gap-12 lg:grid-cols-[minmax(0,1fr)_430px] lg:items-center">
-            <div className="max-w-3xl pt-4 text-white">
-              <h1 className="text-5xl font-black leading-tight sm:text-6xl lg:text-7xl">
+            <div className="max-w-3xl pt-4 text-[#113A1D]">
+              <h1 className="text-5xl font-black leading-[1.02] tracking-[-0.01em] sm:text-6xl lg:text-7xl">
                 一个人，一个链接，连接全网
               </h1>
-              <p className="mt-6 max-w-2xl text-base leading-8 text-white/78 sm:text-lg">
+              <p className="mt-6 max-w-2xl text-base leading-8 text-[#52624A] sm:text-lg">
                 用一个 Link168 主页，聚合微信公众号、小红书、抖音、视频号、网站链接、商品橱窗和预约咨询，让客户只记住你的一个链接。
               </p>
               <HomeHandleForm />
-              <div className="mt-6 grid gap-2 text-sm font-black text-white/86 sm:grid-cols-2">
-                {["一个页面，展示全部", "一个链接，连接全网", "分享给主页、视频、文章末尾、群聊和名片二维码", "让流量价值翻倍，只要一分钟"].map((item) => (
+              <div className="mt-6 grid gap-2 text-[15px] font-semibold text-[#315243] sm:grid-cols-2">
+                {["一个页面，展示全部", "一个链接，连接全网", "分享给各平台主页、视频、文章末尾、群聊和名片二维码", "让流量价值翻倍，只要一分钟"].map((item) => (
                   <span key={item} className="inline-flex items-center gap-2">
-                    <CheckCircle2 aria-hidden className="size-4 text-[#FACC15]" />
+                    <CheckCircle2 aria-hidden className="link168-nav-icon text-[#0B7A58]" />
                     {item}
                   </span>
                 ))}
@@ -132,7 +132,7 @@ export default function Home() {
                   {label}
                 </div>
               ))}
-              <div className="absolute inset-8 -z-10 rounded-full bg-[#FACC15]/25 blur-3xl" />
+              <div className="absolute inset-8 -z-10 rounded-full bg-[#0B7A58]/12 blur-3xl" />
               <PhonePreview
                 variant="marketing"
                 poweredLogoClickable
@@ -145,22 +145,22 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="features" className="relative overflow-hidden bg-white px-4 py-16 sm:px-6 lg:px-8">
-          <div className="absolute right-0 top-10 size-56 rounded-full bg-[#FACC15]/15 blur-3xl" />
+        <section id="features" className="relative overflow-hidden bg-[#FFFEF8] px-4 py-16 sm:px-6 lg:px-8">
+          <div className="absolute right-0 top-10 size-56 rounded-full bg-[#0B7A58]/10 blur-3xl" />
           <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-            <div className="relative rounded-[32px] bg-[#0B3D1C] p-6 text-white shadow-[0_24px_80px_rgba(11,61,28,0.24)]">
-              <div className="absolute right-5 top-5 grid size-14 place-items-center rounded-2xl bg-[#FACC15] text-[#113A1D]">
-                <ChartNoAxesCombined aria-hidden className="size-7" />
+            <div className="relative rounded-[28px] border border-[#E7E4D8] bg-white p-6 text-[#113A1D] shadow-[0_22px_70px_rgba(17,58,29,0.10)]">
+              <div className="absolute right-5 top-5 grid size-14 place-items-center rounded-2xl bg-[#ECFDF3] text-[#0B7A58]">
+                <ChartNoAxesCombined aria-hidden className="link168-card-main-icon" />
               </div>
-              <p className="text-sm font-black text-[#FACC15]">核心功能</p>
+              <p className="text-sm font-semibold text-[#0B7A58]">核心功能</p>
               <h2 className="mt-4 max-w-sm text-3xl font-black leading-tight sm:text-4xl">把所有入口收进一张数字名片</h2>
-              <p className="mt-4 text-sm leading-7 text-white/72">
+              <p className="mt-4 text-sm leading-7 text-[#52624A]">
                 链条、手机、图表和平台入口组成一张清晰的行动地图，让访客从看到你到联系你更顺手。
               </p>
               <div className="mt-8 grid grid-cols-3 gap-3">
                 {[Link2, QrCode, MonitorSmartphone].map((Icon, index) => (
-                  <div key={index} className="grid aspect-square place-items-center rounded-3xl bg-white/10">
-                    <Icon aria-hidden className="size-8 text-[#FACC15]" />
+                  <div key={index} className="grid aspect-square place-items-center rounded-3xl bg-[#F6F4EC]">
+                    <Icon aria-hidden className="link168-card-main-icon text-[#0B7A58]" />
                   </div>
                 ))}
               </div>
@@ -173,7 +173,7 @@ export default function Home() {
                 >
                   <div className={`absolute -right-8 -top-8 size-28 rounded-full bg-gradient-to-br ${accent} opacity-20 blur-xl transition group-hover:opacity-30`} />
                   <div className={`grid size-12 place-items-center rounded-2xl bg-gradient-to-br ${accent} text-[#113A1D] shadow-lg shadow-[#113A1D]/10`}>
-                    <Icon aria-hidden className="size-6" />
+                    <Icon aria-hidden className="link168-feature-icon" />
                   </div>
                   <h3 className="mt-5 text-xl font-black text-[#113A1D]">{title}</h3>
                   <p className="mt-2 text-sm leading-6 text-[#52624A]">{text}</p>
@@ -183,7 +183,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-[#F7F6EA] px-4 py-16 sm:px-6 lg:px-8">
+        <section className="bg-[#F6F4EC] px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
             <div>
               <p className="text-sm font-black text-[#0B6B2B]">平台支持</p>
@@ -199,7 +199,7 @@ export default function Home() {
                   className="link168-card-hover link168-wiggle-on-hover flex min-h-24 flex-col items-center justify-center gap-2 rounded-[24px] border border-[#DDE8CF] bg-white px-3 text-center text-sm font-black text-[#14532D] shadow-sm"
                 >
                   <span className="grid size-10 place-items-center rounded-2xl bg-[#ECFDF3] text-[#16A34A]">
-                    <Icon aria-hidden className="size-5" />
+                    <Icon aria-hidden className="link168-feature-icon" />
                   </span>
                   {label}
                 </span>
@@ -220,7 +220,7 @@ export default function Home() {
                 className="link168-button-press inline-flex w-fit items-center gap-2 rounded-full bg-[#ECFDF3] px-5 py-3 text-sm font-black text-[#0B6B2B] transition hover:-translate-y-0.5"
               >
                 创建我的名片
-                <ArrowRight aria-hidden className="size-4" />
+                <ArrowRight aria-hidden className="link168-nav-icon" />
               </Link>
             </div>
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -247,7 +247,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="help" className="bg-[#0B3D1C] px-4 py-16 text-white sm:px-6 lg:px-8">
+        <section id="help" className="bg-[#113A1D] px-4 py-16 text-white sm:px-6 lg:px-8">
           <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-black text-[#FACC15]">开始你的主页</p>
@@ -259,14 +259,14 @@ export default function Home() {
                 className="link168-button-press inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#FACC15] px-6 font-black text-[#113A1D] shadow-xl shadow-black/20 transition hover:-translate-y-0.5"
               >
                 免费创建我的 Link168
-                <ArrowRight aria-hidden className="size-5" />
+                <ArrowRight aria-hidden className="link168-feature-icon" />
               </Link>
               <Link
                 href="/help"
                 className="link168-button-press inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-white px-6 font-black text-[#113A1D] shadow-xl shadow-black/20 transition hover:-translate-y-0.5"
               >
                 查看帮助中心
-                <BookOpenText aria-hidden className="size-5" />
+                <BookOpenText aria-hidden className="link168-feature-icon" />
               </Link>
             </div>
           </div>

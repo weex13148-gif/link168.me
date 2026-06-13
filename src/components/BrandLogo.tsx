@@ -9,9 +9,9 @@ type BrandLogoProps = {
 };
 
 const sizeClasses: Record<BrandLogoSize, string> = {
-  header: "w-[168px] max-w-[48vw]",
-  compact: "w-[120px] max-w-[42vw]",
-  footer: "w-[108px] max-w-[38vw]",
+  header: "w-[132px] max-w-[42vw]",
+  compact: "w-[104px] max-w-[38vw]",
+  footer: "w-[82px] max-w-[30vw]",
 };
 
 export function BrandLogo({ size = "header", className = "" }: BrandLogoProps) {
@@ -19,7 +19,7 @@ export function BrandLogo({ size = "header", className = "" }: BrandLogoProps) {
     <Link
       href="/"
       aria-label="Link168 链接一路发"
-      className={`inline-flex shrink-0 cursor-pointer items-center transition duration-200 hover:scale-[1.025] hover:brightness-105 active:scale-[0.98] ${sizeClasses[size]} ${className}`}
+      className={`inline-flex shrink-0 cursor-pointer items-center opacity-95 transition duration-200 hover:brightness-105 active:scale-[0.99] ${sizeClasses[size]} ${className}`}
     >
       <Image
         src="/brand/link168-logo.png"
@@ -27,7 +27,7 @@ export function BrandLogo({ size = "header", className = "" }: BrandLogoProps) {
         width={1536}
         height={864}
         priority={size === "header"}
-        sizes={size === "header" ? "168px" : size === "compact" ? "120px" : "108px"}
+        sizes={size === "header" ? "132px" : size === "compact" ? "104px" : "82px"}
         className="h-auto w-full object-contain"
       />
     </Link>

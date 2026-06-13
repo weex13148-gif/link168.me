@@ -3,6 +3,10 @@
 :root {
   --background: #f7f6ea;
   --foreground: #113a1d;
+  --link168-font:
+    Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans CJK JP",
+    sans-serif;
 }
 
 * {
@@ -17,7 +21,9 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--link168-font);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 a {
@@ -26,8 +32,47 @@ a {
 }
 
 button,
-input {
+input,
+textarea,
+select {
   font: inherit;
+}
+
+.link168-nav-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.link168-feature-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.link168-card-main-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.link168-data-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.link168-phone-link-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.link168-phone-shell {
+  aspect-ratio: 390 / 844;
+  border-radius: 36px;
+  border: 1px solid rgb(17 58 29 / 16%);
+  background: #18251d;
+  box-shadow: 0 24px 70px rgb(17 58 29 / 18%);
+}
+
+.link168-phone-screen {
+  border-radius: 28px;
 }
 
 ::selection {

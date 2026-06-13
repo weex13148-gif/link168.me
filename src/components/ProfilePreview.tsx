@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { PhonePreview } from "@/components/PhonePreview";
-import { BrandLogo } from "@/components/BrandLogo";
 
 export type PreviewLink = {
   id?: string;
@@ -12,9 +11,9 @@ export type PreviewLink = {
 
 export function BrandFooter({ clickable = true }: { clickable?: boolean }) {
   const content = (
-    <div className="mx-auto mt-5 flex w-fit items-center gap-2 rounded-2xl bg-white px-3 py-2 text-xs font-black text-[#52624A] shadow-sm">
-      <span>Powered by</span>
-      <BrandLogo size="footer" className="w-[92px] max-w-[32vw]" />
+    <div className="mx-auto mt-5 flex w-fit items-center gap-1.5 text-[10px] font-semibold tracking-wide text-[#7A8673]">
+      <span className="size-1.5 rounded-full bg-[#16A34A]" />
+      <span>Powered by Link168</span>
     </div>
   );
 

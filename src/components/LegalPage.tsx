@@ -26,29 +26,29 @@ const navLinks = [
 
 export function LegalPage({ title, englishTitle, subtitle, sections }: LegalPageProps) {
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-[#F7F6EA] text-[#113A1D]">
-      <header className="sticky top-0 z-30 border-b border-white/20 bg-[#F7F6EA]/88 px-4 py-4 backdrop-blur sm:px-6 lg:px-8">
+    <div className="min-h-dvh overflow-x-hidden bg-[#FFFEF8] text-[#113A1D]">
+      <header className="sticky top-0 z-30 border-b border-[#E7E4D8]/80 bg-[#FFFEF8]/88 px-4 py-3 backdrop-blur sm:px-6 lg:px-8">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4">
           <BrandLogo size="header" />
-          <nav className="hidden items-center gap-5 text-sm font-black text-[#14532D] md:flex">
+          <nav className="hidden items-center gap-5 text-[15px] font-semibold text-[#254236] md:flex">
             {navLinks.map((item) => (
-              <Link key={item.href} href={item.href} className="transition hover:text-[#16A34A]">
+              <Link key={item.href} href={item.href} className="transition hover:text-[#0B7A58]">
                 {item.label}
               </Link>
             ))}
             <Link
               href="/register"
-              className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#FACC15] px-4 text-[#113A1D] shadow-sm transition hover:-translate-y-0.5"
+              className="link168-button-press inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[#FACC15] px-4 text-[#113A1D] shadow-sm transition hover:-translate-y-0.5"
             >
               免费注册
-              <UserPlus aria-hidden className="size-4" />
+              <UserPlus aria-hidden className="link168-nav-icon" />
             </Link>
           </nav>
           <Link
             href="/login"
-            className="link168-button-press grid size-10 place-items-center rounded-full bg-white text-[#0B6B2B] shadow-sm md:hidden"
+            className="link168-button-press grid size-11 place-items-center rounded-2xl bg-white text-[#0B7A58] shadow-sm md:hidden"
           >
-            <LogIn aria-label="登录" className="size-5" />
+            <LogIn aria-label="登录" className="link168-nav-icon" />
           </Link>
         </div>
       </header>

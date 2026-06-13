@@ -5,19 +5,19 @@ import { Palette } from "lucide-react";
 import { isUiThemeId, UI_THEME_STORAGE_KEY, uiThemes, type UiThemeId } from "@/lib/uiTheme";
 
 export function UiThemeSwitcher() {
-  const [theme, setTheme] = useState<UiThemeId>("fresh");
+  const [theme, setTheme] = useState<UiThemeId>(() => {
+    if (typeof window === "undefined") return "fresh";
+    const storedTheme = window.localStorage.getItem(UI_THEME_STORAGE_KEY);
+    return isUiThemeId(storedTheme) ? storedTheme : "fresh";
+  });
 
   useEffect(() => {
-    const storedTheme = window.localStorage.getItem(UI_THEME_STORAGE_KEY);
-    const nextTheme = isUiThemeId(storedTheme) ? storedTheme : "fresh";
-    setTheme(nextTheme);
-    document.documentElement.dataset.link168UiTheme = nextTheme;
-  }, []);
+    document.documentElement.dataset.link168UiTheme = theme;
+    window.localStorage.setItem(UI_THEME_STORAGE_KEY, theme);
+  }, [theme]);
 
   function chooseTheme(nextTheme: UiThemeId) {
     setTheme(nextTheme);
-    window.localStorage.setItem(UI_THEME_STORAGE_KEY, nextTheme);
-    document.documentElement.dataset.link168UiTheme = nextTheme;
   }
 
   return (

@@ -11,7 +11,7 @@ const footerLinks = [
 
 export function SiteFooter() {
   return (
-    <footer id="about" className="border-t border-[#DDE8CF] bg-[#F7F6EA] px-4 py-8 text-sm text-[#52624A] sm:px-6 lg:px-8">
+    <footer id="about" className="border-t border-[#E7E4D8] bg-[#FFFEF8] px-4 py-8 text-sm text-[#52624A] sm:px-6 lg:px-8">
       <div className="mx-auto grid w-full max-w-7xl gap-6 md:grid-cols-[1fr_1.4fr] md:items-start">
         <div>
           <BrandLogo size="footer" />
@@ -24,10 +24,10 @@ export function SiteFooter() {
               <Link
                 key={label}
                 href={href}
-                className="link168-card-hover link168-button-press group flex min-h-14 items-center gap-3 rounded-2xl border border-[#DDE8CF] bg-white px-4 py-3 text-sm font-black text-[#14532D] shadow-sm"
+                className="link168-card-hover link168-button-press group flex min-h-14 items-center gap-3 rounded-2xl border border-[#E7E4D8] bg-white px-4 py-3 text-[15px] font-semibold text-[#254236] shadow-sm"
               >
                 <span className="link168-card-icon link168-wiggle-on-hover grid size-9 shrink-0 place-items-center rounded-xl bg-[#ECFDF3] text-[#16A34A] transition group-hover:bg-[#FACC15] group-hover:text-[#113A1D]">
-                  <Icon aria-hidden className="size-5" />
+                  <Icon aria-hidden className="link168-nav-icon" />
                 </span>
                 {label}
               </Link>

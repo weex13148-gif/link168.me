@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ArrowUpRight, Globe, Search, Share2 } from "lucide-react";
-import { BrandLogo } from "@/components/BrandLogo";
 
 export type PhonePreviewVariant = "marketing" | "auth" | "public";
 
@@ -81,17 +80,17 @@ export function PhonePreview({
   const showPowered = appearance?.showPowered !== false;
 
   const footer = (
-    <div className="mx-auto mt-4 flex w-fit items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 text-[11px] font-black text-[#52624A] shadow-sm">
-      <span>Powered by</span>
-      <BrandLogo size="footer" className="w-[92px] max-w-[32vw]" />
+    <div className="mx-auto mt-5 flex w-fit items-center gap-1.5 text-[10px] font-semibold tracking-wide text-[#7A8673]">
+      <span className="size-1.5 rounded-full bg-[#16A34A]" />
+      <span>Powered by Link168</span>
     </div>
   );
 
   return (
     <div
-      className={`phone-preview mx-auto aspect-[390/760] w-full max-w-[390px] rounded-[32px] border border-[#0B6B2B]/20 bg-[#102E1B] p-3 ${shellByVariant[variant]} ${className}`}
+      className={`phone-preview link168-phone-shell mx-auto w-full max-w-[390px] p-2.5 ${shellByVariant[variant]} ${className}`}
     >
-      <div className={`flex h-full flex-col overflow-hidden rounded-[24px] ${appearance?.surfaceClassName || "bg-[#F7F6EA]"}`}>
+      <div className={`link168-phone-screen flex h-full flex-col overflow-hidden ${appearance?.surfaceClassName || "bg-[#F7F6EA]"}`}>
         <div className="flex shrink-0 items-center justify-between border-b border-white/40 px-4 py-3 text-[#113A1D]">
           <span className="text-xs font-black">9:41</span>
           <div className="h-1.5 w-20 rounded-full bg-black/10" />
@@ -106,7 +105,7 @@ export function PhonePreview({
             </div>
           ) : null}
 
-          <section className={`rounded-3xl p-4 shadow-sm ${appearance?.cardClassName || "bg-white"}`}>
+          <section className={`rounded-[24px] p-4 shadow-sm ${appearance?.cardClassName || "bg-white"}`}>
             <div className="flex items-start gap-4">
               {avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -138,7 +137,7 @@ export function PhonePreview({
               >
                 <span className={`flex min-w-0 flex-1 items-center gap-3 ${linkAlign === "right" ? "justify-end" : linkAlign === "center" ? "justify-center" : ""}`}>
                   <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-black/5">
-                    <Globe aria-hidden className="size-5 text-[#16A34A]" />
+                    <Globe aria-hidden className="link168-phone-link-icon text-[#16A34A]" />
                   </span>
                   <span className={`min-w-0 ${alignByValue[linkAlign]}`}>
                     <span className="block truncate font-black">{label}</span>
@@ -146,9 +145,9 @@ export function PhonePreview({
                   </span>
                 </span>
                 {appearance?.linkIcon === "hidden" ? null : appearance?.linkIcon === "share" ? (
-                  <Share2 aria-hidden className="size-4 shrink-0 opacity-70" />
+                  <Share2 aria-hidden className="size-5 shrink-0 opacity-70" />
                 ) : (
-                  <ArrowUpRight aria-hidden className="size-4 shrink-0 opacity-70" />
+                  <ArrowUpRight aria-hidden className="size-5 shrink-0 opacity-70" />
                 )}
               </a>
             ))}
