@@ -243,6 +243,24 @@ function customSurfaceStyle(custom: CustomStyle) {
   return { background: "linear-gradient(160deg,#F7F1E7 0%,#FFFDF8 50%,#DDE8CD 140%)" };
 }
 
+function copyTextFallback(value: string) {
+  const textarea = document.createElement("textarea");
+  textarea.value = value;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  textarea.style.top = "0";
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+
+  try {
+    return document.execCommand("copy");
+  } finally {
+    document.body.removeChild(textarea);
+  }
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const titleInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
@@ -347,12 +365,27 @@ export default function DashboardPage() {
     return () => window.clearTimeout(timer);
   }, [loadDashboard]);
 
-  async function copyText(value: string, message = "复制成功") {
+  async function copyText(value: string, message = "?????") {
+    const text = value.trim();
+    if (!text) {
+      showToast("????????");
+      return;
+    }
+
     try {
-      await navigator.clipboard.writeText(value);
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else if (!copyTextFallback(text)) {
+        throw new Error("Clipboard fallback failed");
+      }
       showToast(message);
     } catch {
-      showToast("复制失败，请手动复制");
+      if (copyTextFallback(text)) {
+        showToast(message);
+        return;
+      }
+
+      showToast("?????????????");
     }
   }
 
@@ -748,9 +781,9 @@ function BuilderPanel({
               <div className="grid size-20 place-items-center overflow-hidden rounded-full bg-[linear-gradient(135deg,#DDE8CD,#C8A45D)] text-2xl font-black text-[#3F5F31] shadow-lg shadow-[#6F8F4E]/12">
                 {displayName ? displayName.slice(0, 1).toUpperCase() : "L"}
               </div>
-              <button type="button" onClick={() => showToast("头像上传功能即将开放")} className="link168-button-press inline-flex min-h-10 w-fit items-center gap-2 rounded-full bg-[#DDE8CD] px-4 text-sm font-black text-[#3F5F31]">
+              <button type="button" disabled className="inline-flex min-h-10 w-fit cursor-not-allowed items-center gap-2 rounded-full bg-[#EFE7DC] px-4 text-sm font-black text-[#9A8D7E]" aria-disabled="true">
                 <ImageIcon aria-hidden className="link168-feature-icon" />
-                上传头像
+                ????????
               </button>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
