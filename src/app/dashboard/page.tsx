@@ -292,9 +292,11 @@ export default function DashboardPage() {
   const [toast, setToast] = useState("");
   const [activeFlash, setActiveFlash] = useState("");
   const [addingFlash, setAddingFlash] = useState(false);
+  const [currentOrigin, setCurrentOrigin] = useState("");
 
   const publicUrl = username ? `link168.me/${username}` : "link168.me/yourname";
   const previewUrl = username ? `/${username}` : "/dashboard";
+  const shareUrl = username ? `${currentOrigin || "https://link168.me"}/${username}` : currentOrigin || "https://link168.me";
 
   const previewLinks: PhonePreviewLink[] = useMemo(
     () =>
@@ -356,6 +358,10 @@ export default function DashboardPage() {
       setState({ ...initialState, loading: false, error: "读取后台数据失败。" });
     }
   }, [router]);
+
+  useEffect(() => {
+    setCurrentOrigin(window.location.origin);
+  }, []);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -574,6 +580,7 @@ export default function DashboardPage() {
             <BuilderPanel
               publicUrl={publicUrl}
               previewUrl={previewUrl}
+              shareUrl={shareUrl}
               state={state}
               username={username}
               displayName={displayName}
@@ -623,6 +630,7 @@ export default function DashboardPage() {
               bio={bio}
               publicUrl={publicUrl}
               previewUrl={previewUrl}
+              shareUrl={shareUrl}
               copyText={copyText}
               openVip={() => setModal("vip")}
               onAddressNotice={changeAddressNotice}
@@ -660,10 +668,10 @@ export default function DashboardPage() {
 
       {modal === "share" ? (
         <ShareModal
-          url={`https://${publicUrl}`}
+          url={shareUrl}
           previewUrl={previewUrl}
           onClose={() => setModal(null)}
-          onCopy={() => void copyText(`https://${publicUrl}`)}
+          onCopy={() => void copyText(shareUrl)}
           onSave={() => showToast("二维码已生成，可右键或长按保存")}
         />
       ) : null}
@@ -688,6 +696,7 @@ export default function DashboardPage() {
 function BuilderPanel({
   publicUrl,
   previewUrl,
+  shareUrl,
   state,
   displayName,
   bio,
@@ -712,6 +721,7 @@ function BuilderPanel({
 }: {
   publicUrl: string;
   previewUrl: string;
+  shareUrl: string;
   state: DashboardState;
   username: string;
   displayName: string;
@@ -745,7 +755,7 @@ function BuilderPanel({
             <p className="mt-2 text-sm text-[#7A6D5E]">当前版本暂不开放随意修改公开地址，避免旧链接和二维码失效。</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => void copyText(`https://${publicUrl}`)} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#DDE8CD] px-4 text-sm font-black text-[#3F5F31]">
+            <button onClick={() => void copyText(shareUrl)} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#DDE8CD] px-4 text-sm font-black text-[#3F5F31]">
               <Copy aria-hidden className="link168-nav-icon" />
               复制链接
             </button>
@@ -1197,6 +1207,7 @@ function AccountPanel({
   bio,
   publicUrl,
   previewUrl,
+  shareUrl,
   copyText,
   openVip,
   onAddressNotice,
@@ -1208,6 +1219,7 @@ function AccountPanel({
   bio: string;
   publicUrl: string;
   previewUrl: string;
+  shareUrl: string;
   copyText: (value: string, message?: string) => Promise<void>;
   openVip: () => void;
   onAddressNotice: () => void;
@@ -1244,7 +1256,7 @@ function AccountPanel({
 
       <AccountSection title="主页信息" icon={<ShieldCheck aria-hidden className="link168-feature-icon" />}>
         <InfoRow label="公开主页地址" value={publicUrl} />
-        <ActionRow label="复制链接" onClick={() => void copyText(`https://${publicUrl}`)} />
+        <ActionRow label="复制链接" onClick={() => void copyText(shareUrl)} />
         <LinkRow label="预览主页" href={previewUrl} />
         <ActionRow label="修改主页地址：后续开放" onClick={onAddressNotice} />
       </AccountSection>
