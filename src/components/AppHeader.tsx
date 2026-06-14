@@ -5,9 +5,9 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-[#E8DCCB]/80 bg-[#FFFDF8]/86 px-4 py-3 backdrop-blur sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4">
-        <BrandLogo size="header" className="hidden !w-[138px] sm:inline-flex" />
-        <BrandLogo size="compact" className="!w-[108px] sm:hidden" />
-        <nav className="hidden items-center gap-7 text-[15px] font-semibold text-[#5F5347] lg:flex">
+        <BrandLogo size="header" className="hidden !w-[146px] sm:inline-flex" />
+        <BrandLogo size="compact" className="!w-[112px] sm:hidden" />
+        <nav className="hidden items-center gap-8 text-[16px] font-semibold text-[#5F5347] lg:flex">
           <a href="#features" className="transition hover:text-[#3F5F31]">
             功能介绍
           </a>
@@ -21,13 +21,13 @@ export function AppHeader() {
             关于我们
           </a>
         </nav>
-        <nav className="flex shrink-0 items-center gap-2 text-[15px] font-semibold">
-          <Link href="/login" className="inline-flex min-h-11 items-center rounded-2xl px-4 text-[#5F5347] transition hover:bg-[#F2E7D8] hover:text-[#2B241E]">
+        <nav className="flex shrink-0 items-center gap-2.5 text-[16px] font-semibold">
+          <Link href="/login" className="inline-flex min-h-11 items-center rounded-2xl px-[18px] text-[#5F5347] transition hover:bg-[#F2E7D8] hover:text-[#2B241E]">
             登录
           </Link>
           <Link
             href="/register"
-            className="inline-flex min-h-11 items-center rounded-2xl bg-[#6F8F4E] px-4 text-white shadow-sm shadow-[#6F8F4E]/20 transition hover:-translate-y-0.5 hover:bg-[#5E7F3F] active:scale-[0.98]"
+            className="inline-flex min-h-11 items-center rounded-2xl bg-[#6F8F4E] px-[18px] text-white shadow-sm shadow-[#6F8F4E]/20 transition hover:-translate-y-0.5 hover:bg-[#5E7F3F] active:scale-[0.98]"
           >
             免费注册
           </Link>
