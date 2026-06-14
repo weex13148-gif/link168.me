@@ -9,9 +9,9 @@ type BrandLogoProps = {
 };
 
 const sizeClasses: Record<BrandLogoSize, string> = {
-  header: "w-[132px] max-w-[42vw]",
-  compact: "w-[104px] max-w-[38vw]",
-  footer: "w-[82px] max-w-[30vw]",
+  header: "w-[118px] max-w-[40vw]",
+  compact: "w-[96px] max-w-[36vw]",
+  footer: "w-[76px] max-w-[30vw]",
 };
 
 export function BrandLogo({ size = "header", className = "" }: BrandLogoProps) {
@@ -19,7 +19,7 @@ export function BrandLogo({ size = "header", className = "" }: BrandLogoProps) {
     <Link
       href="/"
       aria-label="Link168 链接一路发"
-      className={`inline-flex shrink-0 cursor-pointer items-center opacity-95 transition duration-200 hover:brightness-105 active:scale-[0.99] ${sizeClasses[size]} ${className}`}
+      className={`inline-flex shrink-0 cursor-pointer items-center opacity-90 transition duration-200 hover:opacity-100 hover:brightness-105 active:scale-[0.99] ${sizeClasses[size]} ${className}`}
     >
       <Image
         src="/brand/link168-logo.png"

@@ -1,8 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f6ea;
-  --foreground: #113a1d;
+  --background: #f7f1e7;
+  --foreground: #2b241e;
+  --link168-ivory: #f7f1e7;
+  --link168-paper: #fffdf8;
+  --link168-sand: #f2e7d8;
+  --link168-line: #e8dccb;
+  --link168-green: #6f8f4e;
+  --link168-green-dark: #3f5f31;
+  --link168-green-soft: #dde8cd;
+  --link168-green-hover: #5e7f3f;
+  --link168-clay: #c9824b;
+  --link168-gold: #c8a45d;
+  --link168-ink: #2b241e;
+  --link168-muted: #7a6d5e;
+  --link168-faint: #a69a8a;
   --link168-font:
     Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
     "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans CJK JP",
@@ -66,9 +79,9 @@ select {
 .link168-phone-shell {
   aspect-ratio: 390 / 844;
   border-radius: 36px;
-  border: 1px solid rgb(17 58 29 / 16%);
-  background: #18251d;
-  box-shadow: 0 24px 70px rgb(17 58 29 / 18%);
+  border: 1px solid rgb(43 36 30 / 18%);
+  background: linear-gradient(145deg, #221b16 0%, #3b332a 46%, #16120f 100%);
+  box-shadow: 0 24px 70px rgb(86 68 46 / 18%);
 }
 
 .link168-phone-screen {
@@ -159,7 +172,7 @@ select {
 
 .phone-preview-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgb(22 163 74 / 42%) transparent;
+  scrollbar-color: rgb(111 143 78 / 42%) transparent;
 }
 
 .phone-preview-scroll::-webkit-scrollbar {
@@ -171,7 +184,7 @@ select {
 }
 
 .phone-preview-scroll::-webkit-scrollbar-thumb {
-  background: rgb(22 163 74 / 35%);
+  background: rgb(111 143 78 / 35%);
   border-radius: 999px;
 }
 

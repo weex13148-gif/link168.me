@@ -50,9 +50,9 @@ const defaultLinks: PhonePreviewLink[] = [
 ];
 
 const shellByVariant: Record<PhonePreviewVariant, string> = {
-  marketing: "shadow-[0_28px_90px_rgba(11,107,43,0.28)]",
-  auth: "shadow-[0_22px_60px_rgba(17,58,29,0.18)]",
-  public: "shadow-[0_20px_70px_rgba(17,58,29,0.2)]",
+  marketing: "shadow-[0_28px_90px_rgba(86,68,46,0.22)]",
+  auth: "shadow-[0_22px_60px_rgba(86,68,46,0.16)]",
+  public: "shadow-[0_20px_70px_rgba(86,68,46,0.18)]",
 };
 
 const alignByValue: Record<NonNullable<PhonePreviewAppearance["linkAlign"]>, string> = {
@@ -80,8 +80,8 @@ export function PhonePreview({
   const showPowered = appearance?.showPowered !== false;
 
   const footer = (
-    <div className="mx-auto mt-5 flex w-fit items-center gap-1.5 text-[10px] font-semibold tracking-wide text-[#7A8673]">
-      <span className="size-1.5 rounded-full bg-[#16A34A]" />
+    <div className="mx-auto mt-5 flex w-fit items-center gap-1.5 text-[10px] font-semibold tracking-wide text-[#A69A8A]">
+      <span className="size-1.5 rounded-full bg-[#6F8F4E]" />
       <span>Powered by Link168</span>
     </div>
   );
@@ -90,28 +90,30 @@ export function PhonePreview({
     <div
       className={`phone-preview link168-phone-shell mx-auto w-full max-w-[390px] p-2.5 ${shellByVariant[variant]} ${className}`}
     >
-      <div className={`link168-phone-screen flex h-full flex-col overflow-hidden ${appearance?.surfaceClassName || "bg-[#F7F6EA]"}`}>
-        <div className="flex shrink-0 items-center justify-between border-b border-white/40 px-4 py-3 text-[#113A1D]">
+      <div className={`link168-phone-screen flex h-full flex-col overflow-hidden ${appearance?.surfaceClassName || "bg-[#F7F1E7]"}`}>
+        <div className="flex shrink-0 items-center justify-between border-b border-[#E8DCCB]/70 px-4 py-3 text-[#2B241E]">
           <span className="text-xs font-black">9:41</span>
-          <div className="h-1.5 w-20 rounded-full bg-black/10" />
+          <div className="h-1.5 w-20 rounded-full bg-[#2B241E]/10" />
           <span className="text-xs font-black">5G</span>
         </div>
 
-        <div className="phone-preview-scroll flex-1 overflow-y-auto px-4 pb-5 pt-6 text-[#113A1D]">
+        <div className="phone-preview-scroll flex-1 overflow-y-auto px-4 pb-5 pt-6 text-[#2B241E]">
           {appearance?.showSearch ? (
-            <div className="mb-3 flex min-h-10 items-center gap-2 rounded-2xl bg-white/80 px-3 text-xs font-bold text-[#6B7A5F] shadow-sm">
-              <Search aria-hidden className="size-4 text-[#16A34A]" />
+            <div className="mb-3 flex min-h-10 items-center gap-2 rounded-2xl bg-[#FFFDF8]/86 px-3 text-xs font-bold text-[#7A6D5E] shadow-sm">
+              <Search aria-hidden className="size-4 text-[#6F8F4E]" />
               搜索主页内容
             </div>
           ) : null}
 
-          <section className={`rounded-[24px] p-4 shadow-sm ${appearance?.cardClassName || "bg-white"}`}>
+          <section className={`relative overflow-hidden rounded-[24px] p-4 shadow-sm ${appearance?.cardClassName || "bg-[#FFFDF8]"}`}>
+            <div className="pointer-events-none absolute -right-6 -top-8 size-24 rounded-full bg-[#F2E7D8]/70 blur-2xl" />
+            <div className="pointer-events-none absolute bottom-2 right-3 h-16 w-12 rounded-full border border-[#C8A45D]/20" />
             <div className="flex items-start gap-4">
               {avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={avatarUrl} alt={`${name} 的头像`} className="size-20 shrink-0 rounded-full object-cover" />
               ) : (
-                <div className="grid size-20 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#16A34A,#FACC15)] text-2xl font-black text-[#113A1D]">
+                <div className="grid size-20 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#DDE8CD,#C8A45D)] text-2xl font-black text-[#3F5F31]">
                   {initial}
                 </div>
               )}
@@ -119,8 +121,8 @@ export function PhonePreview({
                 <h2 className="truncate text-2xl font-black" style={appearance?.nameStyle}>
                   {name}
                 </h2>
-                <p className="mt-0.5 text-xs font-bold text-[#6B7A5F]">@{username || "yourname"}</p>
-                <p className="mt-2 text-sm leading-5 text-[#52624A]" style={appearance?.bioStyle}>
+                <p className="mt-0.5 text-xs font-bold text-[#7A6D5E]">@{username || "yourname"}</p>
+                <p className="mt-2 text-sm leading-5 text-[#7A6D5E]" style={appearance?.bioStyle}>
                   {profileBio}
                 </p>
               </div>
@@ -132,12 +134,12 @@ export function PhonePreview({
               <a
                 key={id || label}
                 href={href || "#"}
-                className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#DDE8CF] bg-white px-3.5 py-3 shadow-sm active:scale-[0.99] ${appearance?.linkClassName || ""}`}
+                className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3.5 py-3 shadow-sm active:scale-[0.99] ${appearance?.linkClassName || ""}`}
                 style={appearance?.linkStyle}
               >
                 <span className={`flex min-w-0 flex-1 items-center gap-3 ${linkAlign === "right" ? "justify-end" : linkAlign === "center" ? "justify-center" : ""}`}>
-                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-black/5">
-                    <Globe aria-hidden className="link168-phone-link-icon text-[#16A34A]" />
+                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#DDE8CD]">
+                    <Globe aria-hidden className="link168-phone-link-icon text-[#3F5F31]" />
                   </span>
                   <span className={`min-w-0 ${alignByValue[linkAlign]}`}>
                     <span className="block truncate font-black">{label}</span>
