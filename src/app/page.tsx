@@ -95,7 +95,7 @@ export default function Home() {
     <div className="min-h-dvh overflow-x-hidden bg-[#F7F1E7] text-[#2B241E]">
       <AppHeader />
       <main>
-        <section className="relative isolate overflow-hidden px-4 pb-20 pt-10 sm:px-6 lg:px-8">
+        <section className="relative isolate overflow-hidden px-4 pb-22 pt-12 sm:px-6 sm:pt-14 lg:px-8">
           <div className="absolute inset-0 -z-20 bg-[linear-gradient(135deg,#FFFDF8_0%,#F7F1E7_48%,#F2E7D8_100%)]" />
           <div className="link168-aurora absolute inset-0 -z-10 bg-[radial-gradient(circle_at_14%_18%,rgba(221,232,205,0.65),transparent_24%),radial-gradient(circle_at_76%_24%,rgba(200,164,93,0.14),transparent_20%),radial-gradient(circle_at_58%_78%,rgba(242,231,216,0.72),transparent_26%)]" />
           <div className="absolute -left-24 bottom-10 -z-10 h-48 w-48 rounded-full border border-[#C8A45D]/20" />
@@ -104,12 +104,12 @@ export default function Home() {
           <div className="absolute left-8 top-36 -z-10 hidden text-7xl text-[#C8A45D]/18 lg:block">♡</div>
 
           <div className="mx-auto grid w-full max-w-7xl gap-12 lg:grid-cols-[minmax(0,1fr)_430px] lg:items-center">
-            <div className="max-w-3xl pt-4 text-[#2B241E]">
+            <div className="max-w-3xl pt-5 text-[#2B241E]">
               <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#E8DCCB] bg-[#FFFDF8]/82 px-4 py-2 text-sm font-semibold text-[#3F5F31] shadow-sm">
                 <Sparkles aria-hidden className="size-4 text-[#C8A45D]" />
                 面向中文创作者、小店与个人 IP
               </p>
-              <h1 className="text-5xl font-black leading-[1.04] tracking-[-0.01em] sm:text-6xl lg:text-[72px]">
+              <h1 className="text-[52px] font-black leading-[1.03] tracking-[-0.01em] sm:text-[68px] lg:text-[76px]">
                 用一个链接，连接你的内容、服务与生意
               </h1>
               <p className="mt-6 max-w-2xl text-base leading-8 text-[#7A6D5E] sm:text-lg">

@@ -238,90 +238,6 @@ select {
   transform: translateX(-50%) translateY(0);
 }
 
-.link168-ui-switcher {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  z-index: 70;
-  width: min(310px, calc(100vw - 32px));
-  border: 1px solid rgb(221 232 207 / 82%);
-  border-radius: 22px;
-  background: rgb(255 255 255 / 92%);
-  box-shadow: 0 20px 60px rgb(17 58 29 / 18%);
-  padding: 10px;
-  color: #113a1d;
-  backdrop-filter: blur(16px);
-}
-
-.link168-ui-switcher__title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 6px 9px;
-  font-size: 12px;
-  font-weight: 900;
-  color: #0b6b2b;
-}
-
-.link168-ui-switcher__title svg {
-  width: 15px;
-  height: 15px;
-}
-
-.link168-ui-switcher__options {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-}
-
-.link168-ui-switcher button {
-  min-height: 48px;
-  border: 1px solid #dde8cf;
-  border-radius: 16px;
-  background: #fcfff7;
-  color: #14532d;
-  cursor: pointer;
-  font-weight: 900;
-  transition:
-    transform 140ms ease,
-    background 160ms ease,
-    box-shadow 160ms ease;
-}
-
-.link168-ui-switcher button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 26px rgb(17 58 29 / 12%);
-}
-
-.link168-ui-switcher button:active {
-  transform: scale(0.98);
-}
-
-.link168-ui-switcher button span,
-.link168-ui-switcher button small {
-  display: block;
-}
-
-.link168-ui-switcher button span {
-  font-size: 14px;
-}
-
-.link168-ui-switcher button small {
-  margin-top: 2px;
-  font-size: 10px;
-  color: #6b7a5f;
-}
-
-.link168-ui-switcher button.is-active {
-  border-color: #0b6b2b;
-  background: #0b6b2b;
-  color: #fff;
-}
-
-.link168-ui-switcher button.is-active small {
-  color: rgb(255 255 255 / 78%);
-}
-
 html[data-link168-ui-theme="vip"] {
   --background: #07110c;
   --foreground: #f8f1d1;
@@ -367,28 +283,6 @@ html[data-link168-ui-theme="vip"] a {
   border-radius: 14px;
 }
 
-html[data-link168-ui-theme="vip"] .link168-ui-switcher {
-  border-color: rgb(250 204 21 / 32%);
-  background: rgb(8 14 10 / 92%);
-  color: #f8f1d1;
-  box-shadow: 0 22px 80px rgb(0 0 0 / 42%);
-}
-
-html[data-link168-ui-theme="vip"] .link168-ui-switcher__title {
-  color: #facc15;
-}
-
-html[data-link168-ui-theme="vip"] .link168-ui-switcher button {
-  border-color: rgb(250 204 21 / 24%);
-  background: rgb(255 255 255 / 7%);
-  color: #f8f1d1;
-}
-
-html[data-link168-ui-theme="vip"] .link168-ui-switcher button.is-active {
-  background: #facc15;
-  color: #111827;
-}
-
 html[data-link168-ui-theme="creator"] {
   --background: #fffaf0;
   --foreground: #1f2937;
@@ -424,21 +318,6 @@ html[data-link168-ui-theme="creator"] a {
   border-radius: 999px;
 }
 
-html[data-link168-ui-theme="creator"] .link168-ui-switcher {
-  border-color: rgb(191 219 254 / 88%);
-  background: rgb(255 255 255 / 90%);
-  box-shadow: 0 22px 70px rgb(59 130 246 / 16%);
-}
-
-html[data-link168-ui-theme="creator"] .link168-ui-switcher button {
-  border-color: rgb(191 219 254 / 80%);
-  background: linear-gradient(135deg, #ecfdf3, #eff6ff);
-}
-
-html[data-link168-ui-theme="creator"] .link168-ui-switcher button.is-active {
-  background: linear-gradient(135deg, #16a34a, #60a5fa);
-}
-
 @media (max-width: 640px) {
   button,
   input,
@@ -448,14 +327,4 @@ html[data-link168-ui-theme="creator"] .link168-ui-switcher button.is-active {
     min-height: 44px;
   }
 
-  .link168-ui-switcher {
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    width: auto;
-  }
-
-  .link168-ui-switcher__options {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }

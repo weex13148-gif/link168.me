@@ -5,8 +5,8 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-[#E8DCCB]/80 bg-[#FFFDF8]/86 px-4 py-3 backdrop-blur sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4">
-        <BrandLogo size="header" className="hidden sm:inline-flex" />
-        <BrandLogo size="compact" className="sm:hidden" />
+        <BrandLogo size="header" className="hidden !w-[138px] sm:inline-flex" />
+        <BrandLogo size="compact" className="!w-[108px] sm:hidden" />
         <nav className="hidden items-center gap-7 text-[15px] font-semibold text-[#5F5347] lg:flex">
           <a href="#features" className="transition hover:text-[#3F5F31]">
             功能介绍
