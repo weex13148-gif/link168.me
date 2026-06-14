@@ -12,7 +12,10 @@ dist
 dev-server.*.log
 test-dev.*.log
 test-screenshots/
+visual-screenshots/
 outputs/
+.local-artifacts/
+.dev-server.pid
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
