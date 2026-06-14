@@ -50,6 +50,24 @@ import type { Profile, ProfileLink } from "@/lib/link168-types";
 type DashboardTab = "制作" | "外观" | "数据" | "我的";
 type AppearanceTab = "主题" | "自定义" | "系统配置";
 type ModalState = "share" | "modules" | "vip" | null;
+type ModuleType =
+  | "link"
+  | "text"
+  | "group-title"
+  | "qr"
+  | "wechat"
+  | "shop"
+  | "booking"
+  | "map"
+  | "cover"
+  | "popup"
+  | "carousel"
+  | "bilibili"
+  | "douyin-video"
+  | "channels-video"
+  | "any-video"
+  | "divider"
+  | "copy-text";
 
 type DashboardState = {
   loading: boolean;
@@ -130,43 +148,46 @@ const vipThemes = ["黑金高级", "星空", "森林", "海边", "渐变艺术",
 
 const moduleGroups = [
   {
-    title: "基础模块",
+    title: "????",
     modules: [
-      { label: "链接", icon: Link2, type: "link", enabled: true },
-      { label: "文本", icon: Type },
-      { label: "组标题", icon: Sparkles },
-      { label: "可复制文本", icon: Copy },
+      { label: "??", icon: Link2, type: "link", enabled: true },
+      { label: "??", icon: Type, type: "text", enabled: true },
+      { label: "???", icon: Sparkles, type: "group-title", enabled: true },
+      { label: "?????", icon: Copy, type: "copy-text", vip: true },
     ],
   },
   {
-    title: "图片模块",
+    title: "????",
     modules: [
-      { label: "二维码", icon: QrCode },
-      { label: "封面图", icon: ImageIcon },
-      { label: "弹出图", icon: ImageIcon },
-      { label: "轮播图", icon: ImageIcon },
+      { label: "???", icon: QrCode, type: "qr", enabled: true },
+      { label: "???", icon: ImageIcon, type: "cover", vip: true },
+      { label: "???", icon: ImageIcon, type: "popup", vip: true },
+      { label: "???", icon: ImageIcon, type: "carousel", vip: true },
     ],
   },
   {
-    title: "视频模块",
+    title: "????",
     modules: [
-      { label: "B站视频", icon: Video },
-      { label: "抖音视频链接", icon: Video },
-      { label: "视频号链接", icon: Video },
-      { label: "任意视频链接", icon: Video },
+      { label: "B???", icon: Video, type: "bilibili", vip: true },
+      { label: "??????", icon: Video, type: "douyin-video", vip: true },
+      { label: "?????", icon: Video, type: "channels-video", vip: true },
+      { label: "??????", icon: Video, type: "any-video", vip: true },
     ],
   },
   {
-    title: "其他模块",
+    title: "????",
     modules: [
-      { label: "分割线", icon: MoreHorizontal },
-      { label: "微信客服", icon: MessageCircle },
-      { label: "商品链接", icon: ShoppingBag },
-      { label: "预约咨询", icon: Sparkles },
-      { label: "地图位置", icon: MapPin },
+      { label: "???", icon: MoreHorizontal, type: "divider", vip: true },
+      { label: "????", icon: MessageCircle, type: "wechat", enabled: true },
+      { label: "????", icon: ShoppingBag, type: "shop", enabled: true },
+      { label: "????", icon: Sparkles, type: "booking", enabled: true },
+      { label: "????", icon: MapPin, type: "map", enabled: true },
     ],
   },
-];
+] satisfies Array<{
+  title: string;
+  modules: Array<{ label: string; icon: typeof Link2; type: ModuleType; enabled?: boolean; vip?: boolean }>;
+}>;
 
 const vipPlans = [
   { name: "年费", price: "188" },
@@ -186,14 +207,14 @@ function toBuilderLink(link: ProfileLink): BuilderLink {
   return { ...link, isDraft: false, flash: false };
 }
 
-function createDraftLink(position: number, profileId = ""): BuilderLink {
+function createDraftLink(position: number, profileId = "", preset: Partial<Pick<BuilderLink, "title" | "url" | "description">> = {}): BuilderLink {
   const now = new Date().toISOString();
   return {
     id: `draft-${Date.now()}`,
     profile_id: profileId,
-    title: "",
-    url: "",
-    description: "",
+    title: preset.title || "",
+    url: preset.url || "",
+    description: preset.description || "",
     icon_url: null,
     position,
     is_active: true,
@@ -202,6 +223,30 @@ function createDraftLink(position: number, profileId = ""): BuilderLink {
     isDraft: true,
     flash: true,
   };
+}
+
+function getModulePreset(type: ModuleType, shareUrl: string): Partial<Pick<BuilderLink, "title" | "url" | "description">> {
+  const presets: Record<ModuleType, Partial<Pick<BuilderLink, "title" | "url" | "description">>> = {
+    link: { title: "", url: "", description: "" },
+    text: { title: "文本说明", url: "", description: "在这里补充一段主页说明" },
+    "group-title": { title: "分组标题", url: "", description: "用于区分不同内容入口" },
+    qr: { title: "我的二维码", url: shareUrl, description: "扫码访问我的 Link168 主页" },
+    wechat: { title: "微信客服", url: "", description: "添加微信，随时咨询" },
+    shop: { title: "商品链接", url: "", description: "查看精选商品或服务" },
+    booking: { title: "预约咨询", url: "", description: "预约时间，快速沟通" },
+    map: { title: "地图位置", url: "", description: "查看门店或服务位置" },
+    cover: {},
+    popup: {},
+    carousel: {},
+    bilibili: {},
+    "douyin-video": {},
+    "channels-video": {},
+    "any-video": {},
+    divider: {},
+    "copy-text": {},
+  };
+
+  return presets[type];
 }
 
 function buildAppearance(themeName: string, custom: CustomStyle, system: SystemConfig): PhonePreviewAppearance {
@@ -434,10 +479,10 @@ export default function DashboardPage() {
     }));
   }
 
-  function addDraftLink() {
+  function addDraftLink(preset: Partial<Pick<BuilderLink, "title" | "url" | "description">> = {}) {
     setAddingFlash(true);
     window.setTimeout(() => setAddingFlash(false), 300);
-    const draft = createDraftLink(state.links.length, state.profile?.id || "");
+    const draft = createDraftLink(state.links.length, state.profile?.id || "", preset);
     setState((current) => ({ ...current, links: [...current.links, draft] }));
     showToast("添加成功");
     window.setTimeout(() => {
@@ -678,8 +723,8 @@ export default function DashboardPage() {
       {modal === "modules" ? (
         <ModulePickerModal
           onClose={() => setModal(null)}
-          onAddLink={() => {
-            addDraftLink();
+          onAddModule={(type) => {
+            addDraftLink(getModulePreset(type, shareUrl));
             setModal(null);
           }}
           onSoon={(message) => showToast(message)}
@@ -735,7 +780,7 @@ function BuilderPanel({
   setBio: (value: string) => void;
   setProfileOpen: (value: boolean | ((open: boolean) => boolean)) => void;
   saveProfile: (event: FormEvent<HTMLFormElement>) => void;
-  addDraftLink: () => void;
+  addDraftLink: (preset?: Partial<Pick<BuilderLink, "title" | "url" | "description">>) => void;
   setModal: (modal: ModalState) => void;
   copyText: (value: string, message?: string) => Promise<void>;
   changeAddressNotice: () => void;
@@ -826,7 +871,7 @@ function BuilderPanel({
             <p className="mt-1 text-sm text-[#7A6D5E]">当前 {state.links.length} 个链接，公开显示 {activeLinks.length} 个。</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button onClick={addDraftLink} className={`link168-button-press inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-sm font-black transition ${addingFlash ? "bg-[#F6E7C8] text-[#8C612E]" : "bg-[#6F8F4E] text-white hover:bg-[#5E7F3F]"}`}>
+            <button onClick={() => addDraftLink()} className={`link168-button-press inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-sm font-black transition ${addingFlash ? "bg-[#F6E7C8] text-[#8C612E]" : "bg-[#6F8F4E] text-white hover:bg-[#5E7F3F]"}`}>
               <Plus aria-hidden className="link168-feature-icon" />
               添加新链接
             </button>
@@ -1434,34 +1479,41 @@ function ShareModal({ url, previewUrl, onClose, onCopy, onSave }: { url: string;
   );
 }
 
-function ModulePickerModal({ onClose, onAddLink, onSoon, onFlash, activeFlash }: { onClose: () => void; onAddLink: () => void; onSoon: (message: string) => void; onFlash: (label: string) => void; activeFlash: string }) {
+function ModulePickerModal({ onClose, onAddModule, onSoon, onFlash, activeFlash }: { onClose: () => void; onAddModule: (type: ModuleType) => void; onSoon: (message: string) => void; onFlash: (label: string) => void; activeFlash: string }) {
   return (
-    <ModalShell title="添加更多模块" onClose={onClose}>
+    <ModalShell title="??????" onClose={onClose}>
       <div className="mt-5 grid gap-5">
         {moduleGroups.map((group) => (
           <section key={group.title}>
             <h3 className="text-sm font-black text-[#3F5F31]">{group.title}</h3>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              {group.modules.map(({ label, icon: Icon, type, enabled }) => (
-                <button
-                  key={label}
-                  onClick={() => {
-                    onFlash(label);
-                    if (enabled && type === "link") {
-                      window.setTimeout(onAddLink, 120);
-                    } else {
-                      onSoon(label.includes("二维码") || label.includes("封面") ? "该功能为会员功能" : "功能即将开放");
-                    }
-                  }}
-                  className={`link168-button-press flex items-center justify-between rounded-2xl border border-[#E8DCCB] px-4 py-3 text-left text-sm font-black transition ${activeFlash === label ? "bg-[#F6E7C8] text-[#8C612E]" : "bg-[#F7F1E7] text-[#3F5F31]"}`}
-                >
-                  <span className="inline-flex items-center gap-3">
-                    <Icon aria-hidden className="link168-feature-icon text-[#6F8F4E]" />
-                    {label}
-                  </span>
-                  {enabled ? <Check aria-hidden className="link168-nav-icon" /> : <Lock aria-hidden className="link168-nav-icon text-[#A69A8A]" />}
-                </button>
-              ))}
+              {group.modules.map((module) => {
+                const { label, icon: Icon, type } = module;
+                const enabled = "enabled" in module && module.enabled === true;
+                const vip = "vip" in module && module.vip === true;
+
+                return (
+                  <button
+                    key={label}
+                    onClick={() => {
+                      onFlash(label);
+                      if (enabled) {
+                        window.setTimeout(() => onAddModule(type), 120);
+                        return;
+                      }
+
+                      onSoon(vip ? "该功能为会员功能" : "功能即将开放");
+                    }}
+                    className={`link168-button-press flex items-center justify-between rounded-2xl border border-[#E8DCCB] px-4 py-3 text-left text-sm font-black transition ${activeFlash === label ? "bg-[#F6E7C8] text-[#8C612E]" : "bg-[#F7F1E7] text-[#3F5F31]"}`}
+                  >
+                    <span className="inline-flex items-center gap-3">
+                      <Icon aria-hidden className="link168-feature-icon text-[#6F8F4E]" />
+                      {label}
+                    </span>
+                    {enabled ? <Check aria-hidden className="link168-nav-icon" /> : <Lock aria-hidden className="link168-nav-icon text-[#A69A8A]" />}
+                  </button>
+                );
+              })}
             </div>
           </section>
         ))}
