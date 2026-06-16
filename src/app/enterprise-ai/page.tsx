@@ -37,8 +37,8 @@ export default function EnterpriseAiPage() {
               进入工作台预览
               <ArrowRight aria-hidden className="size-4" />
             </Link>
-            <a href="mailto:admin@link168.me" className="inline-flex min-h-12 items-center rounded-full border border-[#E8DCCB] bg-[#FFFDF8] px-6 text-sm font-black text-[#3F5F31]">
-              申请开通企业 AI 服务
+            <a href="mailto:business@link168.me" className="inline-flex min-h-12 items-center rounded-full border border-[#E8DCCB] bg-[#FFFDF8] px-6 text-sm font-black text-[#3F5F31]">
+              企业 AI 服务：business@link168.me
             </a>
           </div>
         </div>
