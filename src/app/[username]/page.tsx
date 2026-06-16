@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 
 type PublicProfilePageProps = {
   params: Promise<{ username: string }>;
+  searchParams?: Promise<{ preview?: string }>;
 };
 
 async function getPublicProfile(username: string) {
@@ -44,8 +45,10 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
   };
 }
 
-export default async function PublicProfilePage({ params }: PublicProfilePageProps) {
+export default async function PublicProfilePage({ params, searchParams }: PublicProfilePageProps) {
   const { username } = await params;
+  const query = searchParams ? await searchParams : {};
+  const isPreview = query.preview === "1";
   const profile = await getPublicProfile(username);
 
   if (!profile) {
@@ -57,6 +60,14 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 py-5">
+      {isPreview ? (
+        <Link
+          href="/dashboard"
+          className="mb-3 inline-flex w-fit items-center rounded-full bg-[#6F8F4E] px-4 py-2 text-sm font-black text-white shadow-sm"
+        >
+          返回操作后台
+        </Link>
+      ) : null}
       <section className="flex flex-1 flex-col overflow-hidden rounded-[28px] border border-[#1A1A1A]/15 bg-[#1A1A1A] p-3 shadow-2xl shadow-[#5B6FFF]/20">
         <div className="flex flex-1 flex-col overflow-hidden rounded-[20px] bg-[#F5F7FA]">
           <header className="flex items-center justify-between border-b border-black/10 px-4 py-3">

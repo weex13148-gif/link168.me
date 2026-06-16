@@ -309,6 +309,7 @@ function copyTextFallback(value: string) {
 export default function DashboardPage() {
   const router = useRouter();
   const titleInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const avatarInputRef = useRef<HTMLInputElement | null>(null);
   const [state, setState] = useState<DashboardState>(initialState);
   const [activeTab, setActiveTab] = useState<DashboardTab>("制作");
   const [appearanceTab, setAppearanceTab] = useState<AppearanceTab>("主题");
@@ -340,7 +341,7 @@ export default function DashboardPage() {
   const [currentOrigin, setCurrentOrigin] = useState("");
 
   const publicUrl = username ? `link168.me/${username}` : "link168.me/yourname";
-  const previewUrl = username ? `/${username}` : "/dashboard";
+  const previewUrl = username ? `/${username}?preview=1` : "/dashboard";
   const shareUrl = username ? `${currentOrigin || "https://link168.me"}/${username}` : currentOrigin || "https://link168.me";
 
   const previewLinks: PhonePreviewLink[] = useMemo(
@@ -470,6 +471,43 @@ export default function DashboardPage() {
     setBio(result.profile.bio || "");
     setState((current) => ({ ...current, saving: false, profile: result.profile || null, error: "" }));
     showToast("保存成功");
+  }
+
+  async function uploadAvatar(file: File | null) {
+    if (!file) return;
+    if (!state.profile) {
+      showToast("请先保存主页资料");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("avatar", file);
+    setState((current) => ({ ...current, saving: true, error: "" }));
+
+    try {
+      const response = await fetch("/api/dashboard/avatar", {
+        method: "POST",
+        body: formData,
+      });
+      const result = (await response.json()) as ProfileResponse;
+
+      if (response.status === 401) {
+        router.replace("/login");
+        return;
+      }
+
+      if (!response.ok || !result.success || !result.profile) {
+        setState((current) => ({ ...current, saving: false, error: result.error || "头像上传失败。" }));
+        return;
+      }
+
+      setState((current) => ({ ...current, saving: false, profile: result.profile || null, error: "" }));
+      showToast("头像已上传");
+    } catch {
+      setState((current) => ({ ...current, saving: false, error: "头像上传失败，请稍后再试。" }));
+    } finally {
+      if (avatarInputRef.current) avatarInputRef.current.value = "";
+    }
   }
 
   function updateLocalLink(linkId: string, patch: Partial<BuilderLink>) {
@@ -635,10 +673,12 @@ export default function DashboardPage() {
               addingFlash={addingFlash}
               activeFlash={activeFlash}
               titleInputRefs={titleInputRefs}
+              avatarInputRef={avatarInputRef}
               setDisplayName={setDisplayName}
               setBio={setBio}
               setProfileOpen={setProfileOpen}
               saveProfile={saveProfile}
+              uploadAvatar={uploadAvatar}
               addDraftLink={addDraftLink}
               setModal={setModal}
               copyText={copyText}
@@ -715,9 +755,9 @@ export default function DashboardPage() {
         <ShareModal
           url={shareUrl}
           previewUrl={previewUrl}
+          username={username}
           onClose={() => setModal(null)}
           onCopy={() => void copyText(shareUrl)}
-          onSave={() => showToast("二维码已生成，可右键或长按保存")}
         />
       ) : null}
       {modal === "modules" ? (
@@ -750,10 +790,12 @@ function BuilderPanel({
   addingFlash,
   activeFlash,
   titleInputRefs,
+  avatarInputRef,
   setDisplayName,
   setBio,
   setProfileOpen,
   saveProfile,
+  uploadAvatar,
   addDraftLink,
   setModal,
   copyText,
@@ -776,10 +818,12 @@ function BuilderPanel({
   addingFlash: boolean;
   activeFlash: string;
   titleInputRefs: MutableRefObject<Record<string, HTMLInputElement | null>>;
+  avatarInputRef: MutableRefObject<HTMLInputElement | null>;
   setDisplayName: (value: string) => void;
   setBio: (value: string) => void;
   setProfileOpen: (value: boolean | ((open: boolean) => boolean)) => void;
   saveProfile: (event: FormEvent<HTMLFormElement>) => void;
+  uploadAvatar: (file: File | null) => Promise<void>;
   addDraftLink: (preset?: Partial<Pick<BuilderLink, "title" | "url" | "description">>) => void;
   setModal: (modal: ModalState) => void;
   copyText: (value: string, message?: string) => Promise<void>;
@@ -834,9 +878,21 @@ function BuilderPanel({
           <form onSubmit={saveProfile} className="mt-5 grid gap-4">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <div className="grid size-20 place-items-center overflow-hidden rounded-full bg-[linear-gradient(135deg,#DDE8CD,#C8A45D)] text-2xl font-black text-[#3F5F31] shadow-lg shadow-[#6F8F4E]/12">
-                {displayName ? displayName.slice(0, 1).toUpperCase() : "L"}
+                {state.profile?.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={state.profile.avatar_url} alt="主页头像" className="size-full object-cover" />
+                ) : (
+                  displayName ? displayName.slice(0, 1).toUpperCase() : "L"
+                )}
               </div>
-              <button type="button" disabled className="inline-flex min-h-10 w-fit cursor-not-allowed items-center gap-2 rounded-full bg-[#EFE7DC] px-4 text-sm font-black text-[#9A8D7E]" aria-disabled="true">
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                className="hidden"
+                onChange={(event) => void uploadAvatar(event.target.files?.[0] || null)}
+              />
+              <button type="button" onClick={() => avatarInputRef.current?.click()} className="link168-button-press inline-flex min-h-10 w-fit items-center gap-2 rounded-full bg-[#DDE8CD] px-4 text-sm font-black text-[#3F5F31]">
                 <ImageIcon aria-hidden className="link168-feature-icon" />
                 上传头像
               </button>
@@ -1449,15 +1505,72 @@ function ModalShell({ title, onClose, children }: { title: string; onClose: () =
   );
 }
 
-function ShareModal({ url, previewUrl, onClose, onCopy, onSave }: { url: string; previewUrl: string; onClose: () => void; onCopy: () => void; onSave: () => void }) {
+function ShareModal({ url, previewUrl, username, onClose, onCopy }: { url: string; previewUrl: string; username: string; onClose: () => void; onCopy: () => void }) {
+  const qrRef = useRef<HTMLDivElement | null>(null);
+
+  function downloadQRCode() {
+    const svg = qrRef.current?.querySelector("svg");
+    if (!svg) {
+      window.alert("二维码生成失败，请稍后再试。");
+      return;
+    }
+
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const image = new window.Image();
+    const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+    const svgUrl = URL.createObjectURL(svgBlob);
+
+    image.onload = () => {
+      const padding = 32;
+      const canvas = document.createElement("canvas");
+      canvas.width = image.width + padding * 2;
+      canvas.height = image.height + padding * 2;
+      const context = canvas.getContext("2d");
+      if (!context) {
+        URL.revokeObjectURL(svgUrl);
+        window.alert("二维码下载失败，请稍后再试。");
+        return;
+      }
+
+      context.fillStyle = "#FFFDF8";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(image, padding, padding);
+      URL.revokeObjectURL(svgUrl);
+
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          window.alert("二维码下载失败，请稍后再试。");
+          return;
+        }
+
+        const downloadUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        const safeName = (username || "profile").replace(/[^a-z0-9_-]/gi, "");
+        link.href = downloadUrl;
+        link.download = `link168-${safeName || "profile"}-qrcode.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(downloadUrl);
+      }, "image/png");
+    };
+
+    image.onerror = () => {
+      URL.revokeObjectURL(svgUrl);
+      window.alert("二维码下载失败，请稍后再试。");
+    };
+
+    image.src = svgUrl;
+  }
+
   return (
     <ModalShell title="分享你的 Link168 主页" onClose={onClose}>
       <div className="mt-5 grid gap-5 sm:grid-cols-[220px_minmax(0,1fr)]">
         <div className="grid aspect-square place-items-center rounded-[28px] border border-[#E8DCCB] bg-[radial-gradient(circle_at_30%_20%,rgba(221,232,205,0.88),transparent_36%),#F7F1E7] p-4">
-          <div className="grid size-40 place-items-center rounded-3xl bg-[#FFFDF8] p-4 text-[#3F5F31] shadow-sm">
+          <div ref={qrRef} className="grid size-40 place-items-center rounded-3xl bg-[#FFFDF8] p-4 text-[#3F5F31] shadow-sm">
             <QRCode value={url} size={132} bgColor="#FFFDF8" fgColor="#2B241E" level="M" />
           </div>
-          <p className="mt-3 text-xs font-black text-[#3F5F31]">Link168 真实主页二维码</p>
+          <p className="mt-3 text-xs font-black text-[#3F5F31]">Link168 主页二维码</p>
         </div>
         <div className="grid content-center gap-3">
           <p className="rounded-2xl bg-[#F7F1E7] px-4 py-3 text-sm font-black text-[#3F5F31]">{url}</p>
@@ -1465,9 +1578,9 @@ function ShareModal({ url, previewUrl, onClose, onCopy, onSave }: { url: string;
             <Copy aria-hidden className="link168-nav-icon" />
             复制链接
           </button>
-          <button onClick={onSave} className="link168-button-press inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#DDE8CD] px-5 text-sm font-black text-[#3F5F31]">
+          <button onClick={downloadQRCode} className="link168-button-press inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#DDE8CD] px-5 text-sm font-black text-[#3F5F31]">
             <Download aria-hidden className="link168-nav-icon" />
-            保存二维码
+            下载二维码
           </button>
           <Link href={previewUrl} className="link168-button-press inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#F6E7C8] px-5 text-sm font-black text-[#8C612E]">
             <Eye aria-hidden className="link168-nav-icon" />
