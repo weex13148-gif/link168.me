@@ -246,11 +246,17 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
               </Link>
             </p>
             {!isRegister ? (
-              <p className="mt-3 max-w-md text-center text-sm">
+              <div className="mt-3 grid max-w-md gap-3 text-center text-sm">
                 <Link href="/forgot-password" className="font-black text-[#3F5F31]">
-                  忘记密码？
+                  ?????
                 </Link>
-              </p>
+                <Link
+                  href="/enterprise-ai"
+                  className="link168-button-press inline-flex min-h-10 items-center justify-center rounded-full border border-[#E8DCCB] bg-[#FFFDF8] px-4 font-black text-[#3F5F31] shadow-sm hover:bg-[#F7F1E7]"
+                >
+                  ?? AI ??
+                </Link>
+              </div>
             ) : null}
           </div>
         </div>
