@@ -148,40 +148,40 @@ const vipThemes = ["黑金高级", "星空", "森林", "海边", "渐变艺术",
 
 const moduleGroups = [
   {
-    title: "????",
+    title: "基础模块",
     modules: [
-      { label: "??", icon: Link2, type: "link", enabled: true },
-      { label: "??", icon: Type, type: "text", enabled: true },
-      { label: "???", icon: Sparkles, type: "group-title", enabled: true },
-      { label: "?????", icon: Copy, type: "copy-text", vip: true },
+      { label: "链接", icon: Link2, type: "link", enabled: true },
+      { label: "文本", icon: Type, type: "text", enabled: true },
+      { label: "组标题", icon: Sparkles, type: "group-title", enabled: true },
+      { label: "可复制文本", icon: Copy, type: "copy-text", vip: true },
     ],
   },
   {
-    title: "????",
+    title: "展示模块",
     modules: [
-      { label: "???", icon: QrCode, type: "qr", enabled: true },
-      { label: "???", icon: ImageIcon, type: "cover", vip: true },
-      { label: "???", icon: ImageIcon, type: "popup", vip: true },
-      { label: "???", icon: ImageIcon, type: "carousel", vip: true },
+      { label: "二维码", icon: QrCode, type: "qr", enabled: true },
+      { label: "封面图", icon: ImageIcon, type: "cover", vip: true },
+      { label: "弹出图", icon: ImageIcon, type: "popup", vip: true },
+      { label: "轮播图", icon: ImageIcon, type: "carousel", vip: true },
     ],
   },
   {
-    title: "????",
+    title: "视频模块",
     modules: [
-      { label: "B???", icon: Video, type: "bilibili", vip: true },
-      { label: "??????", icon: Video, type: "douyin-video", vip: true },
-      { label: "?????", icon: Video, type: "channels-video", vip: true },
-      { label: "??????", icon: Video, type: "any-video", vip: true },
+      { label: "B站视频", icon: Video, type: "bilibili", vip: true },
+      { label: "抖音视频", icon: Video, type: "douyin-video", vip: true },
+      { label: "视频号", icon: Video, type: "channels-video", vip: true },
+      { label: "任意视频", icon: Video, type: "any-video", vip: true },
     ],
   },
   {
-    title: "????",
+    title: "增强模块",
     modules: [
-      { label: "???", icon: MoreHorizontal, type: "divider", vip: true },
-      { label: "????", icon: MessageCircle, type: "wechat", enabled: true },
-      { label: "????", icon: ShoppingBag, type: "shop", enabled: true },
-      { label: "????", icon: Sparkles, type: "booking", enabled: true },
-      { label: "????", icon: MapPin, type: "map", enabled: true },
+      { label: "分割线", icon: MoreHorizontal, type: "divider", vip: true },
+      { label: "微信客服", icon: MessageCircle, type: "wechat", enabled: true },
+      { label: "商品链接", icon: ShoppingBag, type: "shop", enabled: true },
+      { label: "预约咨询", icon: Sparkles, type: "booking", enabled: true },
+      { label: "地图位置", icon: MapPin, type: "map", enabled: true },
     ],
   },
 ] satisfies Array<{
@@ -416,10 +416,10 @@ export default function DashboardPage() {
     return () => window.clearTimeout(timer);
   }, [loadDashboard]);
 
-  async function copyText(value: string, message = "?????") {
+  async function copyText(value: string, message = "已复制链接") {
     const text = value.trim();
     if (!text) {
-      showToast("????????");
+      showToast("没有可复制的链接");
       return;
     }
 
@@ -436,7 +436,7 @@ export default function DashboardPage() {
         return;
       }
 
-      showToast("?????????????");
+      showToast("复制失败，请长按或手动复制");
     }
   }
 
@@ -838,7 +838,7 @@ function BuilderPanel({
               </div>
               <button type="button" disabled className="inline-flex min-h-10 w-fit cursor-not-allowed items-center gap-2 rounded-full bg-[#EFE7DC] px-4 text-sm font-black text-[#9A8D7E]" aria-disabled="true">
                 <ImageIcon aria-hidden className="link168-feature-icon" />
-                ????????
+                上传头像
               </button>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -1481,7 +1481,7 @@ function ShareModal({ url, previewUrl, onClose, onCopy, onSave }: { url: string;
 
 function ModulePickerModal({ onClose, onAddModule, onSoon, onFlash, activeFlash }: { onClose: () => void; onAddModule: (type: ModuleType) => void; onSoon: (message: string) => void; onFlash: (label: string) => void; activeFlash: string }) {
   return (
-    <ModalShell title="??????" onClose={onClose}>
+    <ModalShell title="添加更多模块" onClose={onClose}>
       <div className="mt-5 grid gap-5">
         {moduleGroups.map((group) => (
           <section key={group.title}>
@@ -1510,7 +1510,10 @@ function ModulePickerModal({ onClose, onAddModule, onSoon, onFlash, activeFlash 
                       <Icon aria-hidden className="link168-feature-icon text-[#6F8F4E]" />
                       {label}
                     </span>
-                    {enabled ? <Check aria-hidden className="link168-nav-icon" /> : <Lock aria-hidden className="link168-nav-icon text-[#A69A8A]" />}
+                    <span className={`inline-flex items-center gap-1 text-xs font-black ${enabled ? "text-[#3F5F31]" : "text-[#8C612E]"}`}>
+                      {enabled ? "免费 · 已开放" : "会员 · 会员专属"}
+                      {enabled ? <Check aria-hidden className="link168-nav-icon" /> : <Lock aria-hidden className="link168-nav-icon text-[#A69A8A]" />}
+                    </span>
                   </button>
                 );
               })}
