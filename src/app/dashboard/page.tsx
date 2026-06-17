@@ -45,6 +45,7 @@ import {
   Zap,
 } from "lucide-react";
 import { PhonePreview, type PhonePreviewAppearance, type PhonePreviewLink } from "@/components/PhonePreview";
+import { isPlaceholderHandle, normalizeHandle } from "@/lib/handle";
 import type { Profile, ProfileLink } from "@/lib/link168-types";
 
 type DashboardTab = "制作" | "外观" | "数据" | "我的";
@@ -103,6 +104,8 @@ type LinkResponse = {
   error?: string;
   link?: ProfileLink;
 };
+
+const PUBLIC_ADDRESS_PLACEHOLDER = "link168.me/yourname";
 
 type CustomStyle = {
   backgroundMode: "solid" | "gradient1" | "gradient2" | "image";
@@ -338,11 +341,14 @@ export default function DashboardPage() {
   const [toast, setToast] = useState("");
   const [activeFlash, setActiveFlash] = useState("");
   const [addingFlash, setAddingFlash] = useState(false);
-  const [currentOrigin, setCurrentOrigin] = useState("");
+  const [currentOrigin] = useState(() => (typeof window === "undefined" ? "" : window.location.origin));
+  const savedUsername = state.profile?.username || "";
+  const hasPublicAddress = !isPlaceholderHandle(savedUsername);
+  const canCompletePublicAddress = !state.profile || isPlaceholderHandle(state.profile.username);
 
-  const publicUrl = username ? `link168.me/${username}` : "link168.me/yourname";
-  const previewUrl = username ? `/${username}?preview=1` : "/dashboard";
-  const shareUrl = username ? `${currentOrigin || "https://link168.me"}/${username}` : currentOrigin || "https://link168.me";
+  const publicUrl = hasPublicAddress ? `link168.me/${savedUsername}` : PUBLIC_ADDRESS_PLACEHOLDER;
+  const previewUrl = hasPublicAddress ? `/${savedUsername}?preview=1` : "/dashboard";
+  const shareUrl = hasPublicAddress ? `${currentOrigin || "https://link168.me"}/${savedUsername}` : currentOrigin || "https://link168.me";
 
   const previewLinks: PhonePreviewLink[] = useMemo(
     () =>
@@ -406,10 +412,6 @@ export default function DashboardPage() {
   }, [router]);
 
   useEffect(() => {
-    setCurrentOrigin(window.location.origin);
-  }, []);
-
-  useEffect(() => {
     const timer = window.setTimeout(() => {
       void loadDashboard();
     }, 0);
@@ -443,7 +445,12 @@ export default function DashboardPage() {
 
   async function saveProfile(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!username) {
+    if (!hasPublicAddress && !canCompletePublicAddress) {
+      setState((current) => ({ ...current, error: "当前账号缺少可用公开地址，请联系管理员处理。" }));
+      return;
+    }
+
+    if (canCompletePublicAddress && !normalizeHandle(username)) {
       setState((current) => ({ ...current, error: "请先完成注册生成公开地址。" }));
       return;
     }
@@ -475,7 +482,7 @@ export default function DashboardPage() {
 
   async function uploadAvatar(file: File | null) {
     if (!file) return;
-    if (!state.profile) {
+    if (!state.profile || !hasPublicAddress) {
       showToast("请先保存主页资料");
       return;
     }
@@ -536,7 +543,7 @@ export default function DashboardPage() {
       showToast("请先填写标题和链接");
       return;
     }
-    if (!state.profile) {
+    if (!state.profile || !hasPublicAddress) {
       showToast("请先保存主页资料");
       return;
     }
@@ -666,6 +673,8 @@ export default function DashboardPage() {
               shareUrl={shareUrl}
               state={state}
               username={username}
+              hasPublicAddress={hasPublicAddress}
+              canCompletePublicAddress={canCompletePublicAddress}
               displayName={displayName}
               bio={bio}
               profileOpen={profileOpen}
@@ -674,6 +683,7 @@ export default function DashboardPage() {
               activeFlash={activeFlash}
               titleInputRefs={titleInputRefs}
               avatarInputRef={avatarInputRef}
+              setUsername={setUsername}
               setDisplayName={setDisplayName}
               setBio={setBio}
               setProfileOpen={setProfileOpen}
@@ -783,6 +793,9 @@ function BuilderPanel({
   previewUrl,
   shareUrl,
   state,
+  username,
+  hasPublicAddress,
+  canCompletePublicAddress,
   displayName,
   bio,
   profileOpen,
@@ -791,6 +804,7 @@ function BuilderPanel({
   activeFlash,
   titleInputRefs,
   avatarInputRef,
+  setUsername,
   setDisplayName,
   setBio,
   setProfileOpen,
@@ -811,6 +825,8 @@ function BuilderPanel({
   shareUrl: string;
   state: DashboardState;
   username: string;
+  hasPublicAddress: boolean;
+  canCompletePublicAddress: boolean;
   displayName: string;
   bio: string;
   profileOpen: boolean;
@@ -819,6 +835,7 @@ function BuilderPanel({
   activeFlash: string;
   titleInputRefs: MutableRefObject<Record<string, HTMLInputElement | null>>;
   avatarInputRef: MutableRefObject<HTMLInputElement | null>;
+  setUsername: (value: string) => void;
   setDisplayName: (value: string) => void;
   setBio: (value: string) => void;
   setProfileOpen: (value: boolean | ((open: boolean) => boolean)) => void;
@@ -841,18 +858,34 @@ function BuilderPanel({
           <div>
             <p className="text-sm font-black text-[#3F5F31]">公开主页地址</p>
             <h1 className="mt-2 text-3xl font-black text-[#2B241E]">{publicUrl}</h1>
-            <p className="mt-2 text-sm text-[#7A6D5E]">当前版本暂不开放随意修改公开地址，避免旧链接和二维码失效。</p>
+            <p className="mt-2 text-sm text-[#7A6D5E]">
+              {canCompletePublicAddress ? "当前账号还没有正式公开地址，首次补全并保存后将立即锁定。" : "当前版本暂不开放随意修改公开地址，避免旧链接和二维码失效。"}
+            </p>
+            {canCompletePublicAddress ? (
+              <label className="mt-4 block max-w-md">
+                <span className="text-sm font-black text-[#3F5F31]">首次补全公开地址</span>
+                <div className="mt-2 flex h-12 items-center rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4">
+                  <span className="shrink-0 text-sm font-black text-[#7A6D5E]">link168.me/</span>
+                  <input
+                    value={username}
+                    onChange={(event) => setUsername(normalizeHandle(event.target.value))}
+                    placeholder="yourname"
+                    className="min-w-0 flex-1 bg-transparent pl-2 text-sm font-black text-[#2B241E] outline-none"
+                  />
+                </div>
+              </label>
+            ) : null}
           </div>
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => void copyText(shareUrl)} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#DDE8CD] px-4 text-sm font-black text-[#3F5F31]">
+            <button onClick={() => void copyText(shareUrl)} disabled={!hasPublicAddress} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#DDE8CD] px-4 text-sm font-black text-[#3F5F31] disabled:opacity-50">
               <Copy aria-hidden className="link168-nav-icon" />
               复制链接
             </button>
-            <Link href={previewUrl} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#FFFDF8] px-4 text-sm font-black text-[#3F5F31] ring-1 ring-[#E8DCCB]">
+            <Link href={previewUrl} aria-disabled={!hasPublicAddress} className={`link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full px-4 text-sm font-black ring-1 ring-[#E8DCCB] ${hasPublicAddress ? "bg-[#FFFDF8] text-[#3F5F31]" : "pointer-events-none bg-[#F7F1E7] text-[#A69A8A]"}`}>
               <Eye aria-hidden className="link168-nav-icon" />
               预览主页
             </Link>
-            <button onClick={() => setModal("share")} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#6F8F4E] px-4 text-sm font-black text-white hover:bg-[#5E7F3F]">
+            <button onClick={() => setModal("share")} disabled={!hasPublicAddress} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#6F8F4E] px-4 text-sm font-black text-white hover:bg-[#5E7F3F] disabled:cursor-not-allowed disabled:bg-[#AFC19A]">
               <Share2 aria-hidden className="link168-nav-icon" />
               分享主页
             </button>
@@ -875,37 +908,56 @@ function BuilderPanel({
         </div>
 
         {profileOpen ? (
-          <form onSubmit={saveProfile} className="mt-5 grid gap-4">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <div className="grid size-20 place-items-center overflow-hidden rounded-full bg-[linear-gradient(135deg,#DDE8CD,#C8A45D)] text-2xl font-black text-[#3F5F31] shadow-lg shadow-[#6F8F4E]/12">
-                {state.profile?.avatar_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={state.profile.avatar_url} alt="主页头像" className="size-full object-cover" />
-                ) : (
-                  displayName ? displayName.slice(0, 1).toUpperCase() : "L"
-                )}
+          <form onSubmit={saveProfile} className="mt-5 grid gap-5">
+            <div className="grid gap-5 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start">
+              <div className="flex flex-col items-start gap-3">
+                <div className="grid size-20 place-items-center overflow-hidden rounded-full bg-[linear-gradient(135deg,#DDE8CD,#C8A45D)] text-2xl font-black text-[#3F5F31] shadow-lg shadow-[#6F8F4E]/12">
+                  {state.profile?.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={state.profile.avatar_url} alt="主页头像" className="size-full object-cover" />
+                  ) : (
+                    displayName ? displayName.slice(0, 1).toUpperCase() : "L"
+                  )}
+                </div>
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  className="hidden"
+                  onChange={(event) => void uploadAvatar(event.target.files?.[0] || null)}
+                />
+                <button type="button" onClick={() => avatarInputRef.current?.click()} className="link168-button-press inline-flex min-h-10 w-fit items-center gap-2 rounded-full bg-[#DDE8CD] px-4 text-sm font-black text-[#3F5F31]">
+                  <ImageIcon aria-hidden className="link168-feature-icon" />
+                  上传头像
+                </button>
               </div>
-              <input
-                ref={avatarInputRef}
-                type="file"
-                accept="image/png,image/jpeg,image/webp,image/gif"
-                className="hidden"
-                onChange={(event) => void uploadAvatar(event.target.files?.[0] || null)}
-              />
-              <button type="button" onClick={() => avatarInputRef.current?.click()} className="link168-button-press inline-flex min-h-10 w-fit items-center gap-2 rounded-full bg-[#DDE8CD] px-4 text-sm font-black text-[#3F5F31]">
-                <ImageIcon aria-hidden className="link168-feature-icon" />
-                上传头像
-              </button>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="block">
-                <span className="text-sm font-black text-[#3F5F31]">昵称</span>
-                <input className="mt-2 h-12 w-full rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 outline-none focus:border-[#6F8F4E] focus:bg-[#FFFDF8]" value={displayName} onChange={(event) => setDisplayName(event.target.value)} placeholder="例如：阿宝" />
-              </label>
-              <label className="block">
-                <span className="text-sm font-black text-[#3F5F31]">公开地址</span>
-                <input className="mt-2 h-12 w-full rounded-2xl border border-[#E8DCCB] bg-[#F2E7D8] px-4 text-[#7A6D5E]" value={publicUrl} readOnly />
-              </label>
+              <div className="grid gap-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="text-sm font-black text-[#3F5F31]">昵称</span>
+                    <input className="mt-2 h-12 w-full rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 outline-none focus:border-[#6F8F4E] focus:bg-[#FFFDF8]" value={displayName} onChange={(event) => setDisplayName(event.target.value)} placeholder="例如：阿宝" />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-black text-[#3F5F31]">公开地址</span>
+                    {canCompletePublicAddress ? (
+                      <div className="mt-2 flex h-12 items-center rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4">
+                        <span className="shrink-0 text-sm font-black text-[#7A6D5E]">link168.me/</span>
+                        <input
+                          value={username}
+                          onChange={(event) => setUsername(normalizeHandle(event.target.value))}
+                          placeholder="yourname"
+                          className="min-w-0 flex-1 bg-transparent pl-2 text-sm font-black text-[#2B241E] outline-none"
+                        />
+                      </div>
+                    ) : (
+                      <input className="mt-2 h-12 w-full rounded-2xl border border-[#E8DCCB] bg-[#F2E7D8] px-4 text-[#7A6D5E]" value={publicUrl} readOnly />
+                    )}
+                  </label>
+                </div>
+                <p className="rounded-2xl bg-[#F7F1E7] px-4 py-3 text-sm text-[#7A6D5E]">
+                  {canCompletePublicAddress ? "首次补全成功后，公开地址将立即写入数据库并锁定。" : "公开地址已锁定，后续修改将等待单独开放。"}
+                </p>
+              </div>
             </div>
             <label className="block">
               <span className="text-sm font-black text-[#3F5F31]">简介</span>

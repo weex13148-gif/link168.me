@@ -2,8 +2,13 @@ import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getDashboardData, newId, normalizeNullableString, normalizeUsername, toProfileDto } from "@/lib/dashboard-data";
+import { HANDLE_FORMAT_ERROR, HANDLE_RESERVED_ERROR, isPlaceholderHandle, normalizeHandle, validateHandle } from "@/lib/handle";
 
 export const runtime = "nodejs";
+
+const DASHBOARD_HANDLE_FORMAT_ERROR = "公开地址只能使用小写字母、数字、下划线和短横线，长度 3-30 位";
+const DASHBOARD_HANDLE_RESERVED_ERROR = "该公开地址不可使用，请换一个";
+const DASHBOARD_HANDLE_LOCKED_ERROR = "公开地址已锁定，暂不支持修改。";
 
 type SaveProfileRequest = {
   username?: unknown;
@@ -30,14 +35,33 @@ export async function PUT(request: Request) {
     return NextResponse.json({ success: false, error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const username = normalizeUsername(body.username);
-  if (username.length < 3) {
-    return NextResponse.json({ success: false, error: "Username must be at least 3 characters." }, { status: 400 });
+  const profileByUser = await db.profile.findUnique({ where: { userId: user.id } });
+  const currentUsername = profileByUser?.username || "";
+  const requestedUsername = normalizeHandle(body.username);
+  const canCompleteUsername = !profileByUser || isPlaceholderHandle(currentUsername);
+
+  let username = currentUsername;
+
+  if (canCompleteUsername) {
+    const handleResult = validateHandle(body.username);
+    if (!handleResult.success) {
+      const error =
+        handleResult.error === HANDLE_RESERVED_ERROR
+          ? DASHBOARD_HANDLE_RESERVED_ERROR
+          : handleResult.error === HANDLE_FORMAT_ERROR
+            ? DASHBOARD_HANDLE_FORMAT_ERROR
+            : handleResult.error;
+      return NextResponse.json({ success: false, error }, { status: 400 });
+    }
+
+    username = handleResult.handle;
+  } else if (requestedUsername && requestedUsername !== normalizeUsername(currentUsername)) {
+    return NextResponse.json({ success: false, error: DASHBOARD_HANDLE_LOCKED_ERROR }, { status: 403 });
   }
 
   const existingProfile = await db.profile.findUnique({ where: { username } });
   if (existingProfile && existingProfile.userId !== user.id) {
-    return NextResponse.json({ success: false, error: "Username is already taken." }, { status: 409 });
+    return NextResponse.json({ success: false, error: "该公开地址已被占用" }, { status: 409 });
   }
 
   const profile = await db.profile.upsert({
@@ -51,10 +75,10 @@ export async function PUT(request: Request) {
       isPublic: true,
     },
     update: {
-      username,
       displayName: normalizeNullableString(body.displayName),
       bio: normalizeNullableString(body.bio),
       isPublic: true,
+      ...(canCompleteUsername ? { username } : {}),
     },
   });
 

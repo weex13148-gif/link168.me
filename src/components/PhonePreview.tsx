@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ArrowUpRight, Globe, Search, Share2 } from "lucide-react";
@@ -80,8 +81,8 @@ export function PhonePreview({
   const showPowered = appearance?.showPowered !== false;
 
   const footer = (
-    <div className="mx-auto mt-5 flex w-fit items-center gap-1.5 text-[10px] font-semibold tracking-wide text-[#A69A8A]">
-      <span className="size-1.5 rounded-full bg-[#6F8F4E]" />
+    <div className="mx-auto mt-5 flex w-fit items-center gap-2 text-[10px] font-semibold tracking-wide text-[#A69A8A]">
+      <Image src="/brand/link168-logo.png" alt="Link168" width={1536} height={864} className="h-3.5 w-auto object-contain opacity-90" />
       <span>Powered by Link168</span>
     </div>
   );

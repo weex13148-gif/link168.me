@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { PhonePreview } from "@/components/PhonePreview";
 
@@ -11,8 +12,8 @@ export type PreviewLink = {
 
 export function BrandFooter({ clickable = true }: { clickable?: boolean }) {
   const content = (
-    <div className="mx-auto mt-5 flex w-fit items-center gap-1.5 text-[10px] font-semibold tracking-wide text-[#7A8673]">
-      <span className="size-1.5 rounded-full bg-[#16A34A]" />
+    <div className="mx-auto mt-5 flex w-fit items-center gap-2 text-[10px] font-semibold tracking-wide text-[#7A8673]">
+      <Image src="/brand/link168-logo.png" alt="Link168" width={1536} height={864} className="h-3.5 w-auto object-contain opacity-90" />
       <span>Powered by Link168</span>
     </div>
   );
