@@ -1515,11 +1515,11 @@ function LinkCard({
   onFlash: (label: string) => void;
 }) {
   const toolItems = [
-    { label: "图标", icon: ImageIcon, action: () => onFlash("图标") },
-    { label: "锁定", icon: Lock, action: () => onVip("锁定") },
-    { label: "抖动", icon: Zap, action: () => onVip("抖动") },
-    { label: "重定向", icon: Share2, action: () => onVip("重定向") },
-    { label: "数据分析", icon: BarChart3, action: () => onVip("数据分析") },
+    { label: "??", icon: ImageIcon, action: () => onFlash("??") },
+    { label: "??", icon: Lock, action: () => onVip("??") },
+    { label: "??", icon: Zap, action: () => onVip("??") },
+    { label: "???", icon: Share2, action: () => onVip("???") },
+    { label: "????", icon: BarChart3, action: () => onVip("????") },
   ];
 
   return (
@@ -1527,34 +1527,34 @@ function LinkCard({
       <div className="mb-3 flex flex-wrap items-center gap-2">
         {link.isDraft ? (
           <>
-            <span className="rounded-full bg-[#F6E7C8] px-3 py-1 text-xs font-black text-[#8C612E]">未保存</span>
-            <span className="text-xs font-semibold text-[#8C612E]">这条链接还在草稿状态，只有点击“保存链接”后才会写入数据库并出现在公开主页。</span>
+            <span className="rounded-full bg-[#F6E7C8] px-3 py-1 text-xs font-black text-[#8C612E]">???</span>
+            <span className="text-xs font-semibold text-[#8C612E]">??????????????????????????????????????</span>
           </>
         ) : (
-          <span className="rounded-full bg-[#DDE8CD] px-3 py-1 text-xs font-black text-[#3F5F31]">已保存</span>
+          <span className="rounded-full bg-[#DDE8CD] px-3 py-1 text-xs font-black text-[#3F5F31]">???</span>
         )}
       </div>
       <div className="grid gap-3 lg:grid-cols-[24px_minmax(0,1fr)_auto] lg:items-start">
         <GripVertical aria-hidden className="mt-3 hidden link168-feature-icon cursor-grab text-[#A69A8A] lg:block" />
         <div className="grid gap-3">
-          <input ref={setTitleRef} value={link.title} onChange={(event) => onChange({ title: event.target.value })} placeholder="点此输入标题" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm font-black outline-none focus:border-[#6F8F4E]" />
-          <input value={link.url} onChange={(event) => onChange({ url: event.target.value })} placeholder="点此输入链接" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm outline-none focus:border-[#6F8F4E]" />
-          <input value={link.description || ""} onChange={(event) => onChange({ description: event.target.value })} placeholder="描述，可选" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm outline-none focus:border-[#6F8F4E]" />
+          <input ref={setTitleRef} value={link.title} onChange={(event) => onChange({ title: event.target.value })} placeholder="??????" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm font-black outline-none focus:border-[#6F8F4E]" />
+          <input value={link.url} onChange={(event) => onChange({ url: event.target.value })} placeholder="??????" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm outline-none focus:border-[#6F8F4E]" />
+          <input value={link.description || ""} onChange={(event) => onChange({ description: event.target.value })} placeholder="?????" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm outline-none focus:border-[#6F8F4E]" />
           {link.saveError ? <p className="text-sm font-semibold text-[#B42318]">{link.saveError}</p> : null}
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           <button onClick={onToggle} className={`link168-button-press rounded-full px-3 py-2 text-xs font-black ${link.is_active ? "bg-[#DDE8CD] text-[#3F5F31]" : "bg-[#EFE7DC] text-[#7A6D5E]"}`}>
-            {link.is_active ? "公开" : "隐藏"}
+            {link.is_active ? "??" : "??"}
           </button>
           <button onClick={onSave} disabled={saving} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#6F8F4E] px-4 text-sm font-black text-white shadow-sm disabled:opacity-60">
-            {link.isDraft ? <Save aria-label="保存链接" className="link168-nav-icon" /> : <Pencil aria-label="保存链接" className="link168-nav-icon" />}
-            {link.isDraft ? "保存链接" : "保存修改"}
+            {link.isDraft ? <Save aria-label="????" className="link168-nav-icon" /> : <Pencil aria-label="????" className="link168-nav-icon" />}
+            {link.isDraft ? "????" : "????"}
           </button>
           <button onClick={onDelete} disabled={saving} className="grid size-10 place-items-center rounded-full bg-[#FFFDF8] text-[#B42318] shadow-sm disabled:opacity-60">
-            <Trash2 aria-label="删除链接" className="link168-nav-icon" />
+            <Trash2 aria-label="????" className="link168-nav-icon" />
           </button>
           <button onClick={onCopy} className="grid size-10 place-items-center rounded-full bg-[#FFFDF8] text-[#7A6D5E] shadow-sm">
-            <Copy aria-label="复制或分享链接" className="link168-nav-icon" />
+            <Copy aria-label="????" className="link168-nav-icon" />
           </button>
         </div>
       </div>
