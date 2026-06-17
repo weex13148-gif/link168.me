@@ -83,6 +83,7 @@ type DashboardState = {
 type BuilderLink = ProfileLink & {
   isDraft?: boolean;
   flash?: boolean;
+  saveError?: string;
 };
 
 type DashboardResponse = {
@@ -106,6 +107,7 @@ type LinkResponse = {
 };
 
 const PUBLIC_ADDRESS_PLACEHOLDER = "link168.me/yourname";
+const DRAFT_LINK_PREVIEW_HINT = "右侧预览当前只显示已保存并公开的链接，草稿链接保存后才会出现在真实公开主页。";
 
 type CustomStyle = {
   backgroundMode: "solid" | "gradient1" | "gradient2" | "image";
@@ -349,10 +351,12 @@ export default function DashboardPage() {
   const publicUrl = hasPublicAddress ? `link168.me/${savedUsername}` : PUBLIC_ADDRESS_PLACEHOLDER;
   const previewUrl = hasPublicAddress ? `/${savedUsername}?preview=1` : "/dashboard";
   const shareUrl = hasPublicAddress ? `${currentOrigin || "https://link168.me"}/${savedUsername}` : currentOrigin || "https://link168.me";
+  const savedLinks = useMemo(() => state.links.filter((link) => !link.isDraft), [state.links]);
+  const draftLinks = useMemo(() => state.links.filter((link) => link.isDraft), [state.links]);
 
   const previewLinks: PhonePreviewLink[] = useMemo(
     () =>
-      state.links
+      savedLinks
         .filter((link) => link.is_active)
         .sort((a, b) => a.position - b.position)
         .map((link) => ({
@@ -362,10 +366,10 @@ export default function DashboardPage() {
           href: link.url.trim() ? normalizeUrl(link.url) : undefined,
           isActive: link.is_active,
         })),
-    [state.links],
+    [savedLinks],
   );
 
-  const activeLinks = useMemo(() => state.links.filter((link) => link.is_active), [state.links]);
+  const activeLinks = useMemo(() => savedLinks.filter((link) => link.is_active), [savedLinks]);
   const previewAppearance = useMemo(() => buildAppearance(selectedTheme, customStyle, systemConfig), [customStyle, selectedTheme, systemConfig]);
 
   const showToast = useCallback((message: string) => {
@@ -529,7 +533,7 @@ export default function DashboardPage() {
     window.setTimeout(() => setAddingFlash(false), 300);
     const draft = createDraftLink(state.links.length, state.profile?.id || "", preset);
     setState((current) => ({ ...current, links: [...current.links, draft] }));
-    showToast("添加成功");
+    showToast("已添加未保存草稿");
     window.setTimeout(() => {
       titleInputRefs.current[draft.id]?.focus();
       updateLocalLink(draft.id, { flash: false });
@@ -562,16 +566,23 @@ export default function DashboardPage() {
     }
 
     if (!response.ok || !result.success || !result.link) {
-      setState((current) => ({ ...current, saving: false, error: result.error || "链接保存失败。" }));
+      setState((current) => ({
+        ...current,
+        saving: false,
+        error: result.error || "链接保存失败。",
+        links: current.links.map((item) => (item.id === link.id ? { ...item, saveError: result.error || "链接保存失败。" } : item)),
+      }));
       return;
     }
 
     setState((current) => ({
       ...current,
       saving: false,
-      links: current.links.map((item) => (item.id === link.id ? toBuilderLink(result.link as ProfileLink) : item)).sort((a, b) => a.position - b.position),
+      links: current.links
+        .map((item) => (item.id === link.id ? { ...toBuilderLink(result.link as ProfileLink), saveError: "" } : item))
+        .sort((a, b) => a.position - b.position),
     }));
-    showToast("保存成功");
+    showToast(link.isDraft ? "链接已保存并公开" : "保存成功");
   }
 
   async function deleteLink(link: BuilderLink) {
@@ -679,6 +690,7 @@ export default function DashboardPage() {
               bio={bio}
               profileOpen={profileOpen}
               activeLinks={activeLinks}
+              draftLinks={draftLinks}
               addingFlash={addingFlash}
               activeFlash={activeFlash}
               titleInputRefs={titleInputRefs}
@@ -757,6 +769,7 @@ export default function DashboardPage() {
                 className="max-w-[360px]"
               />
             </div>
+            {draftLinks.length ? <p className="mt-3 text-center text-xs font-semibold text-[#7A6D5E]">{DRAFT_LINK_PREVIEW_HINT}</p> : null}
           </div>
         </aside>
       </div>
@@ -800,6 +813,7 @@ function BuilderPanel({
   bio,
   profileOpen,
   activeLinks,
+  draftLinks,
   addingFlash,
   activeFlash,
   titleInputRefs,
@@ -831,6 +845,7 @@ function BuilderPanel({
   bio: string;
   profileOpen: boolean;
   activeLinks: BuilderLink[];
+  draftLinks: BuilderLink[];
   addingFlash: boolean;
   activeFlash: string;
   titleInputRefs: MutableRefObject<Record<string, HTMLInputElement | null>>;
@@ -976,7 +991,8 @@ function BuilderPanel({
           <div>
             <p className="text-sm font-black text-[#3F5F31]">搭建我的主页</p>
             <h2 className="mt-1 text-2xl font-black text-[#2B241E]">管理主页按钮</h2>
-            <p className="mt-1 text-sm text-[#7A6D5E]">当前 {state.links.length} 个链接，公开显示 {activeLinks.length} 个。</p>
+            <p className="mt-1 text-sm text-[#7A6D5E]">当前 {state.links.length} 个链接，其中已保存并公开 {activeLinks.length} 个。</p>
+            {draftLinks.length ? <p className="mt-1 text-xs font-semibold text-[#8C612E]">另有 {draftLinks.length} 个未保存草稿，尚未写入数据库，也不会在公开主页显示。</p> : null}
           </div>
           <div className="flex flex-wrap gap-2">
             <button onClick={() => addDraftLink()} className={`link168-button-press inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-sm font-black transition ${addingFlash ? "bg-[#F6E7C8] text-[#8C612E]" : "bg-[#6F8F4E] text-white hover:bg-[#5E7F3F]"}`}>
@@ -1009,9 +1025,9 @@ function BuilderPanel({
                 setTitleRef={(node) => {
                   titleInputRefs.current[link.id] = node;
                 }}
-                onChange={(patch) => updateLocalLink(link.id, patch)}
+                onChange={(patch) => updateLocalLink(link.id, { ...patch, saveError: "" })}
                 onToggle={() => {
-                  updateLocalLink(link.id, { is_active: !link.is_active });
+                  updateLocalLink(link.id, { is_active: !link.is_active, saveError: "" });
                   showToast(link.is_active ? "已隐藏" : "已公开");
                 }}
                 onSave={() => void saveLink(link)}
@@ -1508,19 +1524,31 @@ function LinkCard({
 
   return (
     <article className={`rounded-[28px] border p-4 shadow-sm transition ${link.flash ? "border-[#C8A45D] bg-[#F6E7C8]" : "border-[#E8DCCB] bg-[#F7F1E7]"}`}>
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        {link.isDraft ? (
+          <>
+            <span className="rounded-full bg-[#F6E7C8] px-3 py-1 text-xs font-black text-[#8C612E]">未保存</span>
+            <span className="text-xs font-semibold text-[#8C612E]">这条链接还在草稿状态，只有点击“保存链接”后才会写入数据库并出现在公开主页。</span>
+          </>
+        ) : (
+          <span className="rounded-full bg-[#DDE8CD] px-3 py-1 text-xs font-black text-[#3F5F31]">已保存</span>
+        )}
+      </div>
       <div className="grid gap-3 lg:grid-cols-[24px_minmax(0,1fr)_auto] lg:items-start">
         <GripVertical aria-hidden className="mt-3 hidden link168-feature-icon cursor-grab text-[#A69A8A] lg:block" />
         <div className="grid gap-3">
           <input ref={setTitleRef} value={link.title} onChange={(event) => onChange({ title: event.target.value })} placeholder="点此输入标题" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm font-black outline-none focus:border-[#6F8F4E]" />
           <input value={link.url} onChange={(event) => onChange({ url: event.target.value })} placeholder="点此输入链接" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm outline-none focus:border-[#6F8F4E]" />
           <input value={link.description || ""} onChange={(event) => onChange({ description: event.target.value })} placeholder="描述，可选" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm outline-none focus:border-[#6F8F4E]" />
+          {link.saveError ? <p className="text-sm font-semibold text-[#B42318]">{link.saveError}</p> : null}
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           <button onClick={onToggle} className={`link168-button-press rounded-full px-3 py-2 text-xs font-black ${link.is_active ? "bg-[#DDE8CD] text-[#3F5F31]" : "bg-[#EFE7DC] text-[#7A6D5E]"}`}>
             {link.is_active ? "公开" : "隐藏"}
           </button>
-          <button onClick={onSave} disabled={saving} className="grid size-10 place-items-center rounded-full bg-[#FFFDF8] text-[#3F5F31] shadow-sm disabled:opacity-60">
-            <Pencil aria-label="编辑或保存链接" className="link168-nav-icon" />
+          <button onClick={onSave} disabled={saving} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#6F8F4E] px-4 text-sm font-black text-white shadow-sm disabled:opacity-60">
+            {link.isDraft ? <Save aria-label="保存链接" className="link168-nav-icon" /> : <Pencil aria-label="保存链接" className="link168-nav-icon" />}
+            {link.isDraft ? "保存链接" : "保存修改"}
           </button>
           <button onClick={onDelete} disabled={saving} className="grid size-10 place-items-center rounded-full bg-[#FFFDF8] text-[#B42318] shadow-sm disabled:opacity-60">
             <Trash2 aria-label="删除链接" className="link168-nav-icon" />
