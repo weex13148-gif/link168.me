@@ -34,14 +34,14 @@ export function SiteFooter() {
             ))}
           </nav>
           <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs">
-            <a href="#" className="hover:text-[#3F5F31]">
-              皖ICP备XXXXXXXX号
+            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer" className="hover:text-[#3F5F31]">
+              皖ICP备2026018031号-1
             </a>
             <a href="#" className="hover:text-[#3F5F31]">
               皖公网安备 XXXXXXXXXXXXXX号
             </a>
           </div>
-          <p className="text-xs">合肥市造梦哈勃文化传媒有限公司</p>
+          <p className="text-xs">合肥造梦哈勃文化传媒有限公司</p>
           <p className="text-xs">Copyright © 2026 link168.me</p>
         </div>
       </div>
