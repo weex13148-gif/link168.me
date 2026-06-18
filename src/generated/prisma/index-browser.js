@@ -124,6 +124,7 @@ exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
   passwordHash: 'passwordHash',
+  emailVerified: 'emailVerified',
   role: 'role',
   isSystem: 'isSystem',
   createdAt: 'createdAt',
@@ -161,6 +162,9 @@ exports.Prisma.SessionScalarFieldEnum = {
   userId: 'userId',
   tokenHash: 'tokenHash',
   expiresAt: 'expiresAt',
+  userAgent: 'userAgent',
+  ipAddress: 'ipAddress',
+  lastActive: 'lastActive',
   createdAt: 'createdAt'
 };
 
@@ -173,6 +177,53 @@ exports.Prisma.ReportScalarFieldEnum = {
   imageUrl: 'imageUrl',
   status: 'status',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.PasswordResetTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  used: 'used',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.EmailVerificationTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  used: 'used',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.LoginAttemptScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  ipAddress: 'ipAddress',
+  success: 'success',
+  locked: 'locked',
+  lockUntil: 'lockUntil',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AppConfigScalarFieldEnum = {
+  id: 'id',
+  configKey: 'configKey',
+  configValue: 'configValue',
+  isSensitive: 'isSensitive',
+  updatedAt: 'updatedAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AiUsageLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  assistant: 'assistant',
+  usageDate: 'usageDate',
+  callCount: 'callCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -196,7 +247,12 @@ exports.Prisma.ModelName = {
   Profile: 'Profile',
   Link: 'Link',
   Session: 'Session',
-  Report: 'Report'
+  Report: 'Report',
+  PasswordResetToken: 'PasswordResetToken',
+  EmailVerificationToken: 'EmailVerificationToken',
+  LoginAttempt: 'LoginAttempt',
+  AppConfig: 'AppConfig',
+  AiUsageLog: 'AiUsageLog'
 };
 
 /**

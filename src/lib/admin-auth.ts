@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getCurrentUserFromRequest, ROLE_SUPER_ADMIN } from "@/lib/auth";
 
 const ADMIN_SECRET_HEADER = "x-admin-secret";
 const MIN_ADMIN_SECRET_LENGTH = 32;
@@ -52,4 +53,24 @@ export function requireAdminAction(request: Request, action: string) {
   }
 
   return null;
+}
+
+export async function requireSuperAdmin(request: Request) {
+  const user = await getCurrentUserFromRequest(request);
+
+  if (!user) {
+    return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 });
+  }
+
+  if (user.role !== ROLE_SUPER_ADMIN) {
+    return NextResponse.json({ success: false, error: "Forbidden: super admin access required." }, { status: 403 });
+  }
+
+  return null;
+}
+
+export async function getCurrentSuperAdmin(request: Request) {
+  const user = await getCurrentUserFromRequest(request);
+  if (!user || user.role !== ROLE_SUPER_ADMIN) return null;
+  return user;
 }

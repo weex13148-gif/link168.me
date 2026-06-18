@@ -10,9 +10,9 @@ export type PreviewLink = {
   isActive?: boolean;
 };
 
-export function BrandFooter({ clickable = true }: { clickable?: boolean }) {
+export function BrandFooter({ clickable = true, textClass = "text-[#7A8673]" }: { clickable?: boolean; textClass?: string }) {
   const content = (
-    <div className="mx-auto mt-5 flex w-fit items-center gap-2 text-[10px] font-semibold tracking-wide text-[#7A8673]">
+    <div className={`mx-auto mt-5 flex w-fit items-center gap-2 text-[10px] font-semibold tracking-wide ${textClass}`}>
       <Image src="/brand/link168-logo.png" alt="Link168" width={1536} height={864} className="h-3.5 w-auto object-contain opacity-90" />
       <span>Powered by Link168</span>
     </div>

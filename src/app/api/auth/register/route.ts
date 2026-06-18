@@ -1,7 +1,8 @@
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
-import { createSession, setSessionCookie } from "@/lib/auth";
+import { createSession, setSessionCookie, createEmailVerificationToken } from "@/lib/auth";
+import { sendEmailVerification, getAppUrl } from "@/lib/mail";
 import { db } from "@/lib/db";
 import { validateHandle } from "@/lib/handle";
 
@@ -109,12 +110,22 @@ export async function POST(request: Request) {
       return createdUser;
     });
 
-    const { token, expiresAt } = await createSession(user.id);
+    const verifyToken = await createEmailVerificationToken(user.id);
+
+    const mailResult = await sendEmailVerification(user.email, verifyToken);
+
+    const appUrl = getAppUrl();
+    const publicVerifyUrl = `${appUrl}/verify-email?token=${verifyToken}`;
+
+    const { token, expiresAt } = await createSession(user.id, request);
     const response = NextResponse.json({
       success: true,
       redirectTo: "/dashboard",
-      user: { id: user.id, email: user.email },
+      user: { id: user.id, email: user.email, emailVerified: false },
+      emailVerificationSent: mailResult.mode,
       profile: { username: handle },
+      devVerifyUrl: process.env.NODE_ENV === "development" ? publicVerifyUrl : undefined,
+      devToken: process.env.NODE_ENV === "development" ? verifyToken : undefined,
     });
     setSessionCookie(response, token, expiresAt);
     return response;

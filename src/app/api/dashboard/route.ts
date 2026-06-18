@@ -14,6 +14,7 @@ type SaveProfileRequest = {
   username?: unknown;
   displayName?: unknown;
   bio?: unknown;
+  theme?: unknown;
 };
 
 export async function GET(request: Request) {
@@ -64,6 +65,8 @@ export async function PUT(request: Request) {
     return NextResponse.json({ success: false, error: "该公开地址已被占用" }, { status: 409 });
   }
 
+  const themeValue = (typeof body.theme === "string" && body.theme.trim()) || null;
+
   const profile = await db.profile.upsert({
     where: { userId: user.id },
     create: {
@@ -72,11 +75,13 @@ export async function PUT(request: Request) {
       username,
       displayName: normalizeNullableString(body.displayName),
       bio: normalizeNullableString(body.bio),
+      theme: themeValue || "Link168 草木默认",
       isPublic: true,
     },
     update: {
       displayName: normalizeNullableString(body.displayName),
       bio: normalizeNullableString(body.bio),
+      ...(themeValue ? { theme: themeValue } : {}),
       isPublic: true,
       ...(canCompleteUsername ? { username } : {}),
     },

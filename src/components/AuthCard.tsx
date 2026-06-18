@@ -28,6 +28,12 @@ type AuthCardProps = {
 type AuthResponse = {
   success?: boolean;
   error?: string;
+  message?: string;
+  redirectTo?: string;
+  user?: { id: string; email: string; emailVerified?: boolean };
+  emailVerificationSent?: "smtp" | "console";
+  devVerifyUrl?: string;
+  devToken?: string;
 };
 
 const previewLinks: PhonePreviewLink[] = [
@@ -59,12 +65,14 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const previewUsername = useMemo(() => normalizeHandle(handle) || "yourname", [handle]);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("");
+    setSuccessMessage("");
 
     if (isRegister) {
       const handleResult = validateHandle(handle);
@@ -103,23 +111,40 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
         return;
       }
 
-      router.push("/dashboard");
-      router.refresh();
+      const devModeHint =
+        result.emailVerificationSent === "console" && result.devVerifyUrl
+          ? `\n开发模式提示：请点击此链接完成验证 → ${result.devVerifyUrl}`
+          : "";
+
+      setSuccessMessage(
+        `🎉 注册成功！我们已向 ${result.user?.email || "你的邮箱"} 发送了验证邮件。请查收并点击邮件中的链接完成验证。${devModeHint}`,
+      );
+
+      setTimeout(() => {
+        router.push("/dashboard");
+        router.refresh();
+      }, 2800);
       return;
     }
 
     setLoading(true);
-    const response = await fetch("/api/auth/login", {
+    const loginResponse = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
-    const result = (await response.json()) as AuthResponse;
+    const loginResult = (await loginResponse.json()) as AuthResponse;
     setLoading(false);
 
-    if (!response.ok || !result.success) {
-      setMessage(result.error || "登录失败，请检查账号或密码。");
+    if (!loginResponse.ok || !loginResult.success) {
+      setMessage(loginResult.error || "登录失败，请检查账号或密码。");
       return;
+    }
+
+    if (!loginResult.user?.emailVerified) {
+      setSuccessMessage(
+        `⚠️ 登录成功，但你的邮箱尚未验证。请先完成邮箱验证以获得完整功能。`,
+      );
     }
 
     router.push("/dashboard");
@@ -238,6 +263,7 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
             </form>
 
             {message ? <p className="mt-4 max-w-md rounded-2xl bg-[#FFF1F0] px-4 py-3 text-sm font-bold text-[#B42318]">{message}</p> : null}
+            {successMessage ? <p className="mt-4 max-w-md whitespace-pre-line rounded-2xl bg-[#DDE8CD]/80 px-4 py-3 text-sm font-bold text-[#3F5F31]">{successMessage}</p> : null}
 
             <p className="mt-6 max-w-md text-center text-sm text-[#7A6D5E]">
               {isRegister ? "已经有账号？" : "还没有账号？"}
@@ -255,7 +281,7 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
                   href="/enterprise-ai"
                   className="link168-button-press inline-flex min-h-10 items-center justify-center rounded-full border border-[#E8DCCB] bg-[#FFFDF8] px-4 font-black text-[#3F5F31] shadow-sm hover:bg-[#F7F1E7]"
                 >
-                  企业 AI 服务
+                  企业 AI 服务（展示预览）
                 </Link>
               </div>
             ) : null}

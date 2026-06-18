@@ -28,6 +28,120 @@ async function getPublicProfile(username: string) {
   return profile;
 }
 
+type ThemeStyle = {
+  outer: string;
+  screen: string;
+  card: string;
+  cardText: string;
+  cardSubtle: string;
+  avatar: string;
+  avatarText: string;
+  link: string;
+  linkIcon: string;
+  linkText: string;
+  linkBorder: string;
+  footerText: string;
+  linkBorderStyle?: string;
+};
+
+function getThemeStyle(theme: string | null | undefined): ThemeStyle {
+  const name = (theme || "").trim();
+
+  switch (name) {
+    case "简约白":
+      return {
+        outer: "bg-white",
+        screen: "bg-white",
+        card: "bg-white",
+        cardText: "text-[#2B241E]",
+        cardSubtle: "text-[#7A6D5E]",
+        avatar: "bg-[#F5F7FA]",
+        avatarText: "text-[#2B241E]",
+        link: "bg-white",
+        linkIcon: "bg-[#F5F7FA] text-[#2B241E]",
+        linkText: "text-[#2B241E]",
+        linkBorder: "border-[#E0E0E0]",
+        footerText: "text-[#8C8C8C]",
+      };
+    case "商务黑":
+      return {
+        outer: "bg-[#111827]",
+        screen: "bg-[#111827]",
+        card: "bg-[#1F2937]",
+        cardText: "text-white",
+        cardSubtle: "text-[#D1D5DB]",
+        avatar: "bg-[#374151]",
+        avatarText: "text-white",
+        link: "bg-[#111827]",
+        linkIcon: "bg-[#374151] text-white",
+        linkText: "text-white",
+        linkBorder: "border-[#374151]",
+        footerText: "text-[#9CA3AF]",
+      };
+    case "蓝色科技":
+      return {
+        outer: "bg-[#EAF3FF]",
+        screen: "bg-[#EAF3FF]",
+        card: "bg-white",
+        cardText: "text-[#0F172A]",
+        cardSubtle: "text-[#64748B]",
+        avatar: "bg-[#2563EB]",
+        avatarText: "text-white",
+        link: "bg-[#2563EB]",
+        linkIcon: "bg-white/90 text-[#2563EB]",
+        linkText: "text-white",
+        linkBorder: "border-[#1D4ED8]",
+        footerText: "text-[#64748B]",
+      };
+    case "橙色活力":
+      return {
+        outer: "bg-[#FFF3E6]",
+        screen: "bg-[#FFF3E6]",
+        card: "bg-white",
+        cardText: "text-[#4A1C06]",
+        cardSubtle: "text-[#9A3412]",
+        avatar: "bg-[#F97316]",
+        avatarText: "text-white",
+        link: "bg-[#F97316]",
+        linkIcon: "bg-white/90 text-[#F97316]",
+        linkText: "text-white",
+        linkBorder: "border-[#EA580C]",
+        footerText: "text-[#9A3412]",
+      };
+    case "浅绿清新":
+      return {
+        outer: "bg-[#DDE8CD]",
+        screen: "bg-[#DDE8CD]",
+        card: "bg-[#FFFDF8]",
+        cardText: "text-[#2B241E]",
+        cardSubtle: "text-[#4A5A2F]",
+        avatar: "bg-[#6F8F4E]",
+        avatarText: "text-white",
+        link: "bg-[#FFFDF8]",
+        linkIcon: "bg-[#DDE8CD] text-[#3F5F31]",
+        linkText: "text-[#3F5F31]",
+        linkBorder: "border-[#E8DCCB]",
+        footerText: "text-[#4A5A2F]",
+      };
+    case "Link168 草木默认":
+    default:
+      return {
+        outer: "bg-[#F7F1E7]",
+        screen: "bg-[#F7F1E7]",
+        card: "bg-[#FFFDF8]",
+        cardText: "text-[#2B241E]",
+        cardSubtle: "text-[#7A6D5E]",
+        avatar: "bg-[linear-gradient(135deg,#DDE8CD,#C8A45D)]",
+        avatarText: "text-[#3F5F31]",
+        link: "bg-[#FFFDF8]",
+        linkIcon: "bg-[#DDE8CD] text-[#3F5F31]",
+        linkText: "text-[#2B241E]",
+        linkBorder: "border-[#E8DCCB]",
+        footerText: "text-[#7A6D5E]",
+      };
+  }
+}
+
 export async function generateMetadata({ params }: PublicProfilePageProps): Promise<Metadata> {
   const { username } = await params;
   const profile = await getPublicProfile(username);
@@ -55,6 +169,7 @@ export default async function PublicProfilePage({ params, searchParams }: Public
     notFound();
   }
 
+  const style = getThemeStyle(profile.theme || "Link168 草木默认");
   const displayName = profile.displayName || `@${profile.username}`;
   const initial = displayName.slice(0, 1).toUpperCase();
 
@@ -68,36 +183,38 @@ export default async function PublicProfilePage({ params, searchParams }: Public
           返回操作后台
         </Link>
       ) : null}
-      <section className="flex flex-1 flex-col overflow-hidden rounded-[28px] border border-[#1A1A1A]/15 bg-[#1A1A1A] p-3 shadow-2xl shadow-[#5B6FFF]/20">
-        <div className="flex flex-1 flex-col overflow-hidden rounded-[20px] bg-[#F5F7FA]">
-          <header className="flex items-center justify-between border-b border-black/10 px-4 py-3">
+      <section className={`flex flex-1 flex-col overflow-hidden rounded-[28px] border border-[#1A1A1A]/15 bg-[#1A1A1A] p-3 shadow-2xl shadow-[#5B6FFF]/20`}>
+        <div className={`flex flex-1 flex-col overflow-hidden rounded-[20px] ${style.screen}`}>
+          <header className="flex items-center justify-between border-b border-black/10 px-4 py-3 text-[#2B241E]">
             <span className="text-xs font-black">9:41</span>
             <span className="h-1.5 w-20 rounded-full bg-black/15" />
             <span className="text-xs font-black">5G</span>
           </header>
 
-          <div className="flex-1 px-4 pb-5 pt-6">
-            <section className="rounded-lg bg-white p-4 shadow-sm">
+          <div className="flex-1 px-4 pb-5 pt-6 text-[#2B241E]">
+            <section className={`relative overflow-hidden rounded-[24px] p-4 shadow-sm ${style.card}`}>
+              <div className="pointer-events-none absolute -right-6 -top-8 size-24 rounded-full bg-[#F2E7D8]/70 blur-2xl" />
+              <div className="pointer-events-none absolute bottom-2 right-3 h-16 w-12 rounded-full border border-[#C8A45D]/20" />
               <div className="flex items-start gap-4">
                 {profile.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={profile.avatarUrl} alt={`${displayName} 的头像`} className="size-20 shrink-0 rounded-full object-cover" />
                 ) : (
-                  <div className="grid size-20 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#5B6FFF,#FF6B35)] text-2xl font-black text-white">
+                  <div className={`grid size-20 shrink-0 place-items-center rounded-full ${style.avatar} text-2xl font-black ${style.avatarText}`}>
                     {initial}
                   </div>
                 )}
                 <div className="min-w-0 pt-1">
-                  <h1 className="truncate text-2xl font-black">{displayName}</h1>
-                  <p className="mt-0.5 text-xs font-bold text-[#8C8C8C]">@{profile.username}</p>
-                  <p className="mt-2 text-sm leading-5 text-[#4A4A4A]">{profile.bio || "这个主页还没有简介。"}</p>
+                  <h1 className={`truncate text-2xl font-black ${style.cardText}`}>{displayName}</h1>
+                  <p className={`mt-0.5 text-xs font-bold ${style.cardSubtle}`}>@{profile.username}</p>
+                  <p className={`mt-2 text-sm leading-5 ${style.cardSubtle}`}>{profile.bio || "这个主页还没有简介。"}</p>
                 </div>
               </div>
             </section>
 
             <div className="mt-4 space-y-2.5">
               {profile.links.length === 0 ? (
-                <div className="rounded-lg border border-dashed border-[#E0E0E0] bg-white px-4 py-5 text-center text-sm font-bold text-[#8C8C8C]">
+                <div className={`rounded-lg border border-dashed border-[#E0E0E0] ${style.card} px-4 py-5 text-center text-sm font-bold ${style.cardSubtle}`}>
                   暂无公开链接
                 </div>
               ) : null}
@@ -107,26 +224,26 @@ export default async function PublicProfilePage({ params, searchParams }: Public
                   href={item.url}
                   rel="noreferrer"
                   target="_blank"
-                  className="flex min-h-16 items-center justify-between rounded-lg border border-[#E0E0E0] bg-white px-3.5 py-3 text-sm shadow-sm transition active:scale-[0.99]"
+                  className={`link168-card-hover flex min-h-16 items-center justify-between gap-3 rounded-2xl border px-3.5 py-3 text-sm shadow-sm transition active:scale-[0.99] ${style.link} ${style.linkBorder}`}
                 >
-                  <span className="flex min-w-0 items-center gap-3">
-                    <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-[#F5F7FA]">
-                      <Globe aria-hidden className="size-5 text-[#5B6FFF]" />
+                  <span className="flex min-w-0 flex-1 items-center gap-3">
+                    <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${style.linkIcon}`}>
+                      <Globe aria-hidden className="size-5" />
                     </span>
                     <span className="min-w-0">
-                      <span className="block truncate font-black">{item.title}</span>
-                      {item.description ? <span className="mt-0.5 block truncate text-xs text-[#8C8C8C]">{item.description}</span> : null}
+                      <span className={`block truncate font-black ${style.linkText}`}>{item.title}</span>
+                      {item.description ? <span className={`mt-0.5 block truncate text-xs ${style.cardSubtle}`}>{item.description}</span> : null}
                     </span>
                   </span>
-                  <ArrowUpRight aria-hidden className="size-4 shrink-0 text-[#8C8C8C]" />
+                  <ArrowUpRight aria-hidden className={`size-5 shrink-0 opacity-70 ${style.linkText}`} />
                 </a>
               ))}
             </div>
 
-            <BrandFooter />
+            <BrandFooter textClass={style.footerText} />
             <Link
               href={`/report?url=${encodeURIComponent(`https://link168.me/${profile.username}`)}`}
-              className="mt-3 block text-center text-xs font-bold text-[#8C8C8C] hover:text-[#5B6FFF]"
+              className={`mt-3 block text-center text-xs font-bold hover:text-[#5B6FFF] ${style.footerText}`}
             >
               举报此主页
             </Link>

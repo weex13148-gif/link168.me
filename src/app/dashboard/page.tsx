@@ -22,6 +22,7 @@ import {
   Loader2,
   Lock,
   LogOut,
+  Mail,
   MapPin,
   MessageCircle,
   Monitor,
@@ -76,6 +77,7 @@ type DashboardState = {
   error: string;
   userId: string | null;
   userEmail: string | null;
+  emailVerified: boolean;
   profile: Profile | null;
   links: BuilderLink[];
 };
@@ -89,7 +91,7 @@ type BuilderLink = ProfileLink & {
 type DashboardResponse = {
   success?: boolean;
   error?: string;
-  user?: { id: string; email: string };
+  user?: { id: string; email: string; emailVerified?: boolean };
   profile?: Profile | null;
   links?: ProfileLink[];
 };
@@ -133,6 +135,7 @@ const initialState: DashboardState = {
   error: "",
   userId: null,
   userEmail: null,
+  emailVerified: false,
   profile: null,
   links: [],
 };
@@ -401,12 +404,16 @@ export default function DashboardPage() {
       setUsername(profile?.username || "");
       setDisplayName(profile?.display_name || "");
       setBio(profile?.bio || "");
+      if (profile?.theme) {
+        setSelectedTheme(profile.theme);
+      }
       setState({
         loading: false,
         saving: false,
         error: "",
         userId: result.user.id,
         userEmail: result.user.email,
+        emailVerified: result.user.emailVerified ?? false,
         profile,
         links,
       });
@@ -422,6 +429,35 @@ export default function DashboardPage() {
 
     return () => window.clearTimeout(timer);
   }, [loadDashboard]);
+
+  const themeSyncedRef = useRef(false);
+  useEffect(() => {
+    if (!state.userId) return;
+    if (!themeSyncedRef.current) {
+      themeSyncedRef.current = true;
+      return;
+    }
+
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const response = await fetch("/api/dashboard", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ theme: selectedTheme }),
+          signal: controller.signal,
+        });
+        const result = (await response.json()) as { success?: boolean; error?: string };
+        if (!response.ok || !result.success) {
+          console.warn("主题保存失败：", result.error);
+        }
+      } catch {
+        console.warn("主题保存请求被跳过或失败");
+      }
+    })();
+
+    return () => controller.abort();
+  }, [selectedTheme, state.userId]);
 
   async function copyText(value: string, message = "已复制链接") {
     const text = value.trim();
@@ -675,6 +711,22 @@ export default function DashboardPage() {
 
       <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_410px] lg:px-8">
         <section className="grid gap-5">
+          {!state.loading && state.userEmail && !state.emailVerified ? (
+            <div className="flex flex-col items-start gap-3 rounded-[28px] border border-[#FFB020/30 bg-[#FFF7E0] p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+            <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[#FFB020]/20 text-[#8C612E]">
+              <Mail aria-hidden className="link168-nav-icon" />
+            </div>
+            <div>
+              <p className="text-sm font-black text-[#8C612E]">请先验证你的邮箱</p>
+              <p className="mt-1 text-sm leading-6 text-[#8C612E]/90">
+                我们已向 <span className="font-bold">{state.userEmail}</span> 发送了验证链接。点击邮件中的链接即可完成验证。
+              </p>
+            </div>
+          </div>
+          </div>
+          ) : null}
+
           {state.error ? <p className="rounded-2xl border border-[#FF4D4F]/20 bg-[#FFF1F0] px-4 py-3 text-sm font-bold text-[#B42318]">{state.error}</p> : null}
 
           {activeTab === "制作" ? (
@@ -1303,6 +1355,10 @@ function DataPanel({ links, openVip }: { links: BuilderLink[]; openVip: () => vo
         <p className="text-sm font-black text-[#3F5F31]">数据中心</p>
         <h1 className="mt-1 text-3xl font-black text-[#2B241E]">查看主页访问与点击</h1>
       </div>
+      <div className="mt-5 rounded-3xl bg-[#F6E7C8] p-4">
+        <p className="text-sm font-black text-[#8C612E]">当前为展示预览</p>
+        <p className="mt-2 text-sm leading-6 text-[#8C612E]">数据统计功能暂未开放，以上数据仅为占位展示。真实访问统计将在后续版本逐步开放。</p>
+      </div>
       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         {metrics.map(({ label, value, icon: Icon }) => (
           <div key={label} className="rounded-[24px] border border-[#E8DCCB] bg-[#F7F1E7] p-4">
@@ -1328,7 +1384,7 @@ function DataPanel({ links, openVip }: { links: BuilderLink[]; openVip: () => vo
               </div>
             ))}
           </div>
-          <p className="mt-4 rounded-2xl bg-[#FFFDF8] px-4 py-3 text-sm font-bold text-[#7A6D5E]">暂无足够数据，分享你的 Link168 主页后即可查看访问变化。</p>
+          <p className="mt-4 rounded-2xl bg-[#FFFDF8] px-4 py-3 text-sm font-bold text-[#7A6D5E]">数据统计功能暂未开放，当前仅为展示预览。</p>
         </section>
         <section className="rounded-[24px] border border-[#E8DCCB] bg-[#F7F1E7] p-5">
           <h2 className="text-xl font-black text-[#2B241E]">设备来源</h2>
@@ -1356,10 +1412,10 @@ function DataPanel({ links, openVip }: { links: BuilderLink[]; openVip: () => vo
         </div>
       </section>
       <section className="mt-5 rounded-[24px] border border-[#E6CF9F] bg-[#F6E7C8] p-5">
-        <h2 className="text-xl font-black text-[#8C612E]">高级数据</h2>
+        <h2 className="text-xl font-black text-[#8C612E]">高级数据（暂未开放）</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {["365 天数据", "自定义日期筛选", "来源分析", "地区分析", "设备 / 浏览器分析", "二维码扫码数据", "每条链接每日趋势", "导出数据", "高峰访问时间"].map((label) => (
-            <button key={label} onClick={openVip} className="link168-button-press flex items-center justify-between rounded-2xl bg-[#FFFDF8] px-4 py-3 text-left text-sm font-black text-[#8C612E]">
+            <button key={label} onClick={openVip} disabled className="flex items-center justify-between rounded-2xl bg-[#FFFDF8] px-4 py-3 text-left text-sm font-black text-[#A69A8A] cursor-not-allowed">
               {label}
               <Lock aria-hidden className="link168-nav-icon" />
             </button>
@@ -1369,6 +1425,16 @@ function DataPanel({ links, openVip }: { links: BuilderLink[]; openVip: () => vo
     </section>
   );
 }
+
+type SessionInfo = {
+  id: string;
+  device: string;
+  browser: string;
+  location: string;
+  lastActive: string;
+  createdAt: string;
+  isCurrent: boolean;
+};
 
 function AccountPanel({
   email,
@@ -1395,6 +1461,161 @@ function AccountPanel({
   signOut: () => Promise<void>;
   showToast: (message: string) => void;
 }) {
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showSessions, setShowSessions] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [sessions, setSessions] = useState<SessionInfo[] | null>(null);
+  const [sessionsLoading, setSessionsLoading] = useState(false);
+  const [revokingId, setRevokingId] = useState<string | null>(null);
+
+  async function handleChangePassword(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!oldPassword || !newPassword || !confirmNewPassword) {
+      showToast("请完整填写密码信息");
+      return;
+    }
+    if (newPassword.length < 6) {
+      showToast("新密码至少需要 6 位");
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      showToast("两次输入的新密码不一致");
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      const response = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          oldPassword,
+          newPassword,
+          confirmPassword: confirmNewPassword,
+        }),
+      });
+      const result = (await response.json()) as {
+        success?: boolean;
+        error?: string;
+        message?: string;
+      };
+      setPasswordLoading(false);
+
+      if (!response.ok || !result.success) {
+        showToast(result.error || "修改失败，请稍后重试");
+        return;
+      }
+
+      showToast(result.message || "密码已修改成功");
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+      setShowChangePassword(false);
+    } catch {
+      setPasswordLoading(false);
+      showToast("网络错误，请稍后重试");
+    }
+  }
+
+  async function handleLoadSessions() {
+    setShowSessions((previous) => {
+      if (!previous) void loadSessions();
+      return !previous;
+    });
+  }
+
+  async function loadSessions() {
+    setSessionsLoading(true);
+    try {
+      const response = await fetch("/api/auth/sessions");
+      const result = (await response.json()) as {
+        success?: boolean;
+        sessions?: SessionInfo[];
+        error?: string;
+      };
+      if (response.ok && result.success && result.sessions) {
+        setSessions(result.sessions);
+      } else {
+        showToast(result.error || "加载会话失败");
+      }
+    } catch {
+      showToast("网络错误，请稍后重试");
+    } finally {
+      setSessionsLoading(false);
+    }
+  }
+
+  async function handleRevokeSession(sessionId: string) {
+    setRevokingId(sessionId);
+    try {
+      const response = await fetch("/api/auth/sessions", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId }),
+      });
+      const result = (await response.json()) as {
+        success?: boolean;
+        error?: string;
+        message?: string;
+      };
+      if (response.ok && result.success) {
+        showToast(result.message || "已退出该设备");
+        setSessions((previous) =>
+          previous ? previous.filter((session) => session.id !== sessionId) : previous,
+        );
+      } else {
+        showToast(result.error || "退出失败");
+      }
+    } catch {
+      showToast("网络错误，请稍后重试");
+    } finally {
+      setRevokingId(null);
+    }
+  }
+
+  async function handleRevokeAllOthers() {
+    setRevokingId("all-others");
+    try {
+      const response = await fetch("/api/auth/sessions?action=all-others", {
+        method: "DELETE",
+      });
+      const result = (await response.json()) as {
+        success?: boolean;
+        error?: string;
+        message?: string;
+      };
+      if (response.ok && result.success) {
+        showToast(result.message || "已退出其他设备");
+        setSessions((previous) =>
+          previous ? previous.filter((session) => session.isCurrent) : previous,
+        );
+      } else {
+        showToast(result.error || "退出失败");
+      }
+    } catch {
+      showToast("网络错误，请稍后重试");
+    } finally {
+      setRevokingId(null);
+    }
+  }
+
+  function formatDate(iso: string) {
+    try {
+      const date = new Date(iso);
+      return date.toLocaleString("zh-CN", {
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return iso;
+    }
+  }
+
   return (
     <section className="grid gap-5">
       <div className="rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8]/92 p-5 shadow-[0_18px_55px_rgba(86,68,46,0.10)]">
@@ -1418,8 +1639,101 @@ function AccountPanel({
       <AccountSection title="账号信息" icon={<User aria-hidden className="link168-feature-icon" />}>
         <InfoRow label="邮箱账号" value={email || "-"} />
         <InfoRow label="手机号绑定" value="未绑定" />
-        <ActionRow label="修改密码" onClick={() => showToast("功能即将开放")} />
-        <InfoRow label="登录设备" value="后续开放" />
+        <ActionRow label={showChangePassword ? "收起修改密码" : "修改密码"} onClick={() => setShowChangePassword((previous) => !previous)} />
+        {showChangePassword ? (
+          <form onSubmit={handleChangePassword} className="grid gap-3 rounded-2xl border border-dashed border-[#E8DCCB] bg-[#FFFDF8] p-4">
+            <label className="block">
+              <span className="text-sm font-black text-[#3F5F31]">当前密码</span>
+              <input
+                required
+                type="password"
+                value={oldPassword}
+                onChange={(event) => setOldPassword(event.target.value)}
+                placeholder="请输入当前密码"
+                className="mt-2 h-11 w-full rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 text-[#2B241E] outline-none transition placeholder:text-[#A69A8A] focus:border-[#6F8F4E] focus:bg-[#FFFDF8] focus:ring-4 focus:ring-[#6F8F4E]/12"
+              />
+            </label>
+            <label className="block">
+              <span className="text-sm font-black text-[#3F5F31]">新密码（至少 6 位）</span>
+              <input
+                required
+                minLength={6}
+                type="password"
+                value={newPassword}
+                onChange={(event) => setNewPassword(event.target.value)}
+                placeholder="请输入新密码"
+                className="mt-2 h-11 w-full rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 text-[#2B241E] outline-none transition placeholder:text-[#A69A8A] focus:border-[#6F8F4E] focus:bg-[#FFFDF8] focus:ring-4 focus:ring-[#6F8F4E]/12"
+              />
+            </label>
+            <label className="block">
+              <span className="text-sm font-black text-[#3F5F31]">再次输入新密码</span>
+              <input
+                required
+                minLength={6}
+                type="password"
+                value={confirmNewPassword}
+                onChange={(event) => setConfirmNewPassword(event.target.value)}
+                placeholder="请再次输入"
+                className="mt-2 h-11 w-full rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 text-[#2B241E] outline-none transition placeholder:text-[#A69A8A] focus:border-[#6F8F4E] focus:bg-[#FFFDF8] focus:ring-4 focus:ring-[#6F8F4E]/12"
+              />
+            </label>
+            <button
+              type="submit"
+              disabled={passwordLoading}
+              className="link168-button-press flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#6F8F4E] px-5 font-black text-white shadow-lg shadow-[#6F8F4E]/20 transition hover:-translate-y-0.5 hover:bg-[#5E7F3F] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {passwordLoading ? "提交中..." : "确认修改密码"}
+            </button>
+          </form>
+        ) : null}
+        <ActionRow label={showSessions ? "收起登录设备" : "登录设备管理"} onClick={handleLoadSessions} />
+        {showSessions ? (
+          <div className="grid gap-3 rounded-2xl border border-dashed border-[#E8DCCB] bg-[#FFFDF8] p-4">
+            {sessionsLoading ? (
+              <p className="text-center text-sm text-[#7A6D5E]">加载中...</p>
+            ) : sessions && sessions.length ? (
+              <>
+                {sessions.length > 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => void handleRevokeAllOthers()}
+                    disabled={revokingId === "all-others"}
+                    className="link168-button-press inline-flex min-h-10 w-fit items-center justify-center gap-2 rounded-full border border-[#B42318]/40 bg-[#FFF1F0] px-4 text-xs font-black text-[#B42318] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {revokingId === "all-others" ? "提交中..." : "退出所有其他设备"}
+                  </button>
+                ) : null}
+                {sessions.map((session) => (
+                  <div key={session.id} className="flex items-center justify-between gap-4 rounded-2xl bg-[#F7F1E7] px-4 py-3 text-sm">
+                    <div className="grid gap-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-black text-[#2B241E]">{session.device}</span>
+                        <span className="text-[#7A6D5E]">· {session.browser}</span>
+                        {session.isCurrent ? (
+                          <span className="inline-flex items-center rounded-full bg-[#6F8F4E]/15 px-2 py-0.5 text-xs font-black text-[#3F5F31]">当前设备</span>
+                        ) : null}
+                      </div>
+                      <p className="text-xs text-[#7A6D5E]">位置：{session.location}</p>
+                      <p className="text-xs text-[#7A6D5E]">最后活跃：{formatDate(session.lastActive)}</p>
+                    </div>
+                    {session.isCurrent ? null : (
+                      <button
+                        type="button"
+                        onClick={() => void handleRevokeSession(session.id)}
+                        disabled={revokingId === session.id}
+                        className="link168-button-press inline-flex min-h-9 items-center justify-center gap-1 rounded-full border border-[#B42318]/40 bg-[#FFF1F0] px-3 text-xs font-black text-[#B42318] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {revokingId === session.id ? "退出中..." : "退出"}
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </>
+            ) : (
+              <p className="text-center text-sm text-[#7A6D5E]">暂无登录设备信息</p>
+            )}
+          </div>
+        ) : null}
         <ActionRow label="账号安全" onClick={() => showToast("功能即将开放")} />
       </AccountSection>
 
@@ -1515,11 +1829,11 @@ function LinkCard({
   onFlash: (label: string) => void;
 }) {
   const toolItems = [
-    { label: "??", icon: ImageIcon, action: () => onFlash("??") },
-    { label: "??", icon: Lock, action: () => onVip("??") },
-    { label: "??", icon: Zap, action: () => onVip("??") },
-    { label: "???", icon: Share2, action: () => onVip("???") },
-    { label: "????", icon: BarChart3, action: () => onVip("????") },
+    { label: "添加图标", icon: ImageIcon, action: () => onFlash("添加图标") },
+    { label: "密码保护", icon: Lock, action: () => onVip("密码保护") },
+    { label: "跳转动画", icon: Zap, action: () => onVip("跳转动画") },
+    { label: "分享统计", icon: Share2, action: () => onVip("分享统计") },
+    { label: "点击数据", icon: BarChart3, action: () => onVip("点击数据") },
   ];
 
   return (
@@ -1527,34 +1841,34 @@ function LinkCard({
       <div className="mb-3 flex flex-wrap items-center gap-2">
         {link.isDraft ? (
           <>
-            <span className="rounded-full bg-[#F6E7C8] px-3 py-1 text-xs font-black text-[#8C612E]">???</span>
-            <span className="text-xs font-semibold text-[#8C612E]">??????????????????????????????????????</span>
+            <span className="rounded-full bg-[#F6E7C8] px-3 py-1 text-xs font-black text-[#8C612E]">草稿</span>
+            <span className="text-xs font-semibold text-[#8C612E]">尚未保存到数据库，仅在编辑器中可见</span>
           </>
         ) : (
-          <span className="rounded-full bg-[#DDE8CD] px-3 py-1 text-xs font-black text-[#3F5F31]">???</span>
+          <span className="rounded-full bg-[#DDE8CD] px-3 py-1 text-xs font-black text-[#3F5F31]">已保存</span>
         )}
       </div>
       <div className="grid gap-3 lg:grid-cols-[24px_minmax(0,1fr)_auto] lg:items-start">
         <GripVertical aria-hidden className="mt-3 hidden link168-feature-icon cursor-grab text-[#A69A8A] lg:block" />
         <div className="grid gap-3">
-          <input ref={setTitleRef} value={link.title} onChange={(event) => onChange({ title: event.target.value })} placeholder="??????" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm font-black outline-none focus:border-[#6F8F4E]" />
-          <input value={link.url} onChange={(event) => onChange({ url: event.target.value })} placeholder="??????" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm outline-none focus:border-[#6F8F4E]" />
-          <input value={link.description || ""} onChange={(event) => onChange({ description: event.target.value })} placeholder="?????" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm outline-none focus:border-[#6F8F4E]" />
+          <input ref={setTitleRef} value={link.title} onChange={(event) => onChange({ title: event.target.value })} placeholder="链接标题" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm font-black outline-none focus:border-[#6F8F4E]" />
+          <input value={link.url} onChange={(event) => onChange({ url: event.target.value })} placeholder="链接地址" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm outline-none focus:border-[#6F8F4E]" />
+          <input value={link.description || ""} onChange={(event) => onChange({ description: event.target.value })} placeholder="链接描述" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm outline-none focus:border-[#6F8F4E]" />
           {link.saveError ? <p className="text-sm font-semibold text-[#B42318]">{link.saveError}</p> : null}
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           <button onClick={onToggle} className={`link168-button-press rounded-full px-3 py-2 text-xs font-black ${link.is_active ? "bg-[#DDE8CD] text-[#3F5F31]" : "bg-[#EFE7DC] text-[#7A6D5E]"}`}>
-            {link.is_active ? "??" : "??"}
+            {link.is_active ? "公开" : "隐藏"}
           </button>
           <button onClick={onSave} disabled={saving} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#6F8F4E] px-4 text-sm font-black text-white shadow-sm disabled:opacity-60">
-            {link.isDraft ? <Save aria-label="????" className="link168-nav-icon" /> : <Pencil aria-label="????" className="link168-nav-icon" />}
-            {link.isDraft ? "????" : "????"}
+            {link.isDraft ? <Save aria-label="保存链接" className="link168-nav-icon" /> : <Pencil aria-label="更新链接" className="link168-nav-icon" />}
+            {link.isDraft ? "保存并公开" : "保存修改"}
           </button>
           <button onClick={onDelete} disabled={saving} className="grid size-10 place-items-center rounded-full bg-[#FFFDF8] text-[#B42318] shadow-sm disabled:opacity-60">
-            <Trash2 aria-label="????" className="link168-nav-icon" />
+            <Trash2 aria-label="删除链接" className="link168-nav-icon" />
           </button>
           <button onClick={onCopy} className="grid size-10 place-items-center rounded-full bg-[#FFFDF8] text-[#7A6D5E] shadow-sm">
-            <Copy aria-label="????" className="link168-nav-icon" />
+            <Copy aria-label="复制链接" className="link168-nav-icon" />
           </button>
         </div>
       </div>
@@ -1722,6 +2036,10 @@ function VipModal({ onClose, onPay }: { onClose: () => void; onPay: () => void }
   return (
     <ModalShell title="升级 Link168 会员" onClose={onClose}>
       <div className="mt-5 grid gap-5">
+        <div className="rounded-3xl bg-[#F6E7C8] p-4">
+          <p className="text-sm font-black text-[#8C612E]">当前为展示预览</p>
+          <p className="mt-2 text-sm leading-6 text-[#8C612E]">会员支付功能暂未开放，以上内容仅为产品展示预览。如需开通会员，请联系 Link168 官方客服。</p>
+        </div>
         <div className="grid gap-3 sm:grid-cols-3">
           {vipPlans.map((plan) => (
             <div key={plan.name} className="rounded-3xl border border-[#E8DCCB] bg-[#F7F1E7] p-4 text-center">
@@ -1742,8 +2060,8 @@ function VipModal({ onClose, onPay }: { onClose: () => void; onPay: () => void }
           </div>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
-          <button onClick={onPay} className="link168-button-press min-h-12 rounded-full bg-[#6F8F4E] px-5 text-sm font-black text-white">微信支付</button>
-          <button onClick={onPay} className="link168-button-press min-h-12 rounded-full bg-[#C9824B] px-5 text-sm font-black text-white">支付宝支付</button>
+          <button onClick={onPay} disabled className="min-h-12 rounded-full bg-[#AFC19A] px-5 text-sm font-black text-white cursor-not-allowed">微信支付（暂未开放）</button>
+          <button onClick={onPay} disabled className="min-h-12 rounded-full bg-[#D4A880] px-5 text-sm font-black text-white cursor-not-allowed">支付宝支付（暂未开放）</button>
         </div>
       </div>
     </ModalShell>
