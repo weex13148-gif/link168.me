@@ -107,17 +107,17 @@ export default function Home() {
             <div className="max-w-3xl pt-5 text-[#2B241E]">
               <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#E8DCCB] bg-[#FFFDF8]/82 px-4 py-2 text-sm font-semibold text-[#3F5F31] shadow-sm">
                 <Sparkles aria-hidden className="size-4 text-[#C8A45D]" />
-                面向中文创作者、小店与个人 IP
+                AI 经营名片平台 · 面向自媒体、小商家和一人公司
               </p>
               <h1 className="max-w-[11ch] text-[38px] font-black leading-[1.08] tracking-[-0.01em] sm:max-w-none sm:text-[56px] lg:text-[76px]">
-                用一个链接，连接你的内容、服务与生意
+                一张二维码数字名片 + 五大 AI Agent，小商家低成本获客与经营
               </h1>
               <p className="mt-6 max-w-2xl text-base leading-8 text-[#7A6D5E] sm:text-lg">
-                用一张温柔、清楚、适合分享的 Link168 数字名片，收好公众号、小红书、抖音、商品橱窗、预约咨询和微信客服，让客户从认识你到联系你更顺手。
+                用一张温柔、清楚、适合分享的 Link168 数字名片，把微信客服、商品橱窗、课程目录、社群入口、公众号、小红书、抖音集中展示，并通过二维码线下传播。AI 能力采用白名单制测试，普通用户默认不开放完整 AI。
               </p>
               <HomeHandleForm />
               <div className="mt-6 grid gap-2 text-[15px] font-semibold text-[#5F5347] sm:grid-cols-2">
-                {["小店入口、预约咨询、商品橱窗一页收齐", "适合微信、抖音、小红书和线下二维码", "注册后即可进入后台制作主页", "免费版保留 Powered by Link168"].map((item) => (
+                {["数字名片 + 链接聚合，一站式承接流量", "二维码生成与下载，适合线下物料、社群、朋友圈传播", "五大 AI Agent，辅助经营决策与内容（内测中）", "免费版保留 Powered by Link168"].map((item) => (
                   <span key={item} className="inline-flex items-center gap-2">
                     <CheckCircle2 aria-hidden className="link168-nav-icon text-[#6F8F4E]" />
                     {item}
@@ -159,7 +159,7 @@ export default function Home() {
                 <ChartNoAxesCombined aria-hidden className="link168-card-main-icon" />
               </div>
               <p className="text-sm font-semibold text-[#3F5F31]">核心功能</p>
-              <h2 className="mt-4 max-w-sm text-3xl font-black leading-tight sm:text-4xl">把所有入口收进一张数字名片</h2>
+              <h2 className="mt-4 max-w-sm text-3xl font-black leading-tight sm:text-4xl">AI 经营名片平台：承接流量 + 辅助经营</h2>
               <p className="mt-4 text-sm leading-7 text-[#7A6D5E]">
                 链接、二维码、商品、咨询和社媒入口组成一张清楚的行动地图，让访客从看到你到联系你更顺手。
               </p>

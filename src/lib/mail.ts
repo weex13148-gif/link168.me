@@ -1,32 +1,40 @@
 import nodemailer, { type Transporter } from "nodemailer";
+import { getConfig } from "@/lib/app-config";
 
 let cachedTransporter: Transporter | null = null;
 
-function getTransporter(): Transporter | null {
+async function getTransporter(): Promise<Transporter | null> {
   if (cachedTransporter) return cachedTransporter;
 
-  const host = process.env.SMTP_HOST;
-  const port = Number(process.env.SMTP_PORT || "465");
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASSWORD;
+  const config = await getConfig().catch(() => null);
+
+  const host = config?.mailEnabled && config.smtpHost ? config.smtpHost : process.env.SMTP_HOST;
+  const port = config?.mailEnabled && config.smtpPort ? config.smtpPort : Number(process.env.SMTP_PORT || "465");
+  const user = config?.mailEnabled && config.smtpUser ? config.smtpUser : process.env.SMTP_USER;
+  const pass = config?.mailEnabled && config.smtpPassword ? config.smtpPassword : process.env.SMTP_PASSWORD;
 
   if (!host || !user || !pass) {
     return null;
   }
 
-  const secure = port === 465;
+  const secureMode = config?.mailEnabled ? config.smtpSecureMode : port === 465 ? "ssl" : "none";
 
   cachedTransporter = nodemailer.createTransport({
     host,
     port,
-    secure,
+    secure: secureMode === "ssl",
+    requireTLS: secureMode === "tls",
     auth: { user, pass },
   });
 
   return cachedTransporter;
 }
 
-export function getMailFrom(): string {
+export async function getMailFrom(): Promise<string> {
+  const config = await getConfig().catch(() => null);
+  if (config?.mailEnabled && config.mailFrom) {
+    return config.mailFrom;
+  }
   return process.env.MAIL_FROM || `Link168 <${process.env.SMTP_USER || "noreply@link168.me"}>`;
 }
 
@@ -40,7 +48,7 @@ export async function sendEmail(options: {
   html: string;
   text?: string;
 }): Promise<{ success: boolean; mode: "smtp" | "console"; error?: string }> {
-  const transporter = getTransporter();
+  const transporter = await getTransporter();
 
   if (!transporter) {
     console.log(`[MAIL DEV MODE] To: ${options.to}`);
@@ -50,8 +58,9 @@ export async function sendEmail(options: {
   }
 
   try {
+    const from = await getMailFrom();
     await transporter.sendMail({
-      from: getMailFrom(),
+      from,
       to: options.to,
       subject: options.subject,
       html: options.html,

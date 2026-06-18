@@ -24,5 +24,5 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
   }
 
   await db.shortLink.delete({ where: { id } });
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ success: true });
 }

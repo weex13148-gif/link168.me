@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -14,7 +15,12 @@ function generateRandomSlug(): string {
 function isValidUrl(value: string): boolean {
   try {
     const url = new URL(value);
-    return url.protocol === "http:" || url.protocol === "https:";
+    if (url.protocol !== "http:" && url.protocol !== "https:") return false;
+    // 禁止指向常见内网地址
+    const hostname = url.hostname.toLowerCase();
+    if (["localhost", "127.0.0.1", "::1"].includes(hostname)) return false;
+    if (hostname.startsWith("192.168.") || hostname.startsWith("10.") || /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname)) return false;
+    return true;
   } catch {
     return false;
   }
@@ -33,6 +39,15 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // IP 限流：60s 内最多创建 30 个短链
+  const rl = rateLimit(request, "short-links:create", 30, 60 * 1000);
+  if (!rl.passed) {
+    return NextResponse.json(
+      { success: false, error: `请求过于频繁，请 ${Math.ceil(rl.resetMs / 1000)} 秒后重试。` },
+      { status: 429 },
+    );
+  }
+
   const { user, response } = await requireUser(request);
   if (response || !user) return response;
 
@@ -43,10 +58,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const targetUrl = typeof body.targetUrl === "string" ? body.targetUrl.trim() : "";
-  if (!targetUrl || !isValidUrl(targetUrl)) {
-    return NextResponse.json({ success: false, error: "A valid http(s) target URL is required." }, { status: 400 });
+  const rawTargetUrl = typeof body.targetUrl === "string" ? body.targetUrl.trim() : "";
+  if (!rawTargetUrl || !isValidUrl(rawTargetUrl)) {
+    return NextResponse.json({ success: false, error: "请输入合法的 http(s) 链接。" }, { status: 400 });
   }
+  const targetUrl = rawTargetUrl;
 
   let slug: string;
   const rawCustomSlug = typeof body.customSlug === "string" ? body.customSlug.trim() : "";
@@ -54,13 +70,13 @@ export async function POST(request: NextRequest) {
   if (rawCustomSlug) {
     if (!SLUG_PATTERN.test(rawCustomSlug)) {
       return NextResponse.json(
-        { success: false, error: "Custom slug must be 3-32 characters and contain only a-z, 0-9, - and _." },
+        { success: false, error: "自定义链接后缀必须是 3-32 个字符，仅限小写字母、数字、- 和 _。" },
         { status: 400 },
       );
     }
     const existing = await db.shortLink.findUnique({ where: { slug: rawCustomSlug } });
     if (existing) {
-      return NextResponse.json({ success: false, error: "Slug is already in use." }, { status: 409 });
+      return NextResponse.json({ success: false, error: "该链接后缀已被占用，请换一个。" }, { status: 409 });
     }
     slug = rawCustomSlug;
   } else {

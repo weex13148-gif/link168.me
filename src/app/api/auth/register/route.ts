@@ -5,6 +5,7 @@ import { createSession, setSessionCookie, createEmailVerificationToken } from "@
 import { sendEmailVerification, getAppUrl } from "@/lib/mail";
 import { db } from "@/lib/db";
 import { validateHandle } from "@/lib/handle";
+import { rateLimit, rateLimitByKey } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -35,14 +36,22 @@ function getUniqueTarget(error: unknown) {
 
 export async function POST(request: Request) {
   if (!process.env.DATABASE_URL) {
-    return NextResponse.json({ success: false, error: "DATABASE_URL is not configured." }, { status: 500 });
+    return NextResponse.json({ success: false, error: "服务暂不可用，请稍后重试。" }, { status: 500 });
+  }
+
+  const ipRl = rateLimit(request, "register:ip", 5, 10 * 60 * 1000);
+  if (!ipRl.passed) {
+    return NextResponse.json(
+      { success: false, error: `请求过于频繁，请 ${Math.ceil(ipRl.resetMs / 1000)} 秒后重试。` },
+      { status: 429 },
+    );
   }
 
   let body: RegisterRequest;
   try {
     body = (await request.json()) as RegisterRequest;
   } catch {
-    return NextResponse.json({ success: false, error: "Invalid JSON body." }, { status: 400 });
+    return NextResponse.json({ success: false, error: "请求格式不正确。" }, { status: 400 });
   }
 
   const email = normalizeEmail(body.email);
@@ -53,6 +62,14 @@ export async function POST(request: Request) {
 
   if (!email || !EMAIL_PATTERN.test(email)) {
     return NextResponse.json({ success: false, error: "请输入有效邮箱" }, { status: 400 });
+  }
+
+  const emailRl = rateLimitByKey(`register:email:${email}`, 3, 10 * 60 * 1000);
+  if (!emailRl.passed) {
+    return NextResponse.json(
+      { success: false, error: `该邮箱近期注册请求过多，请 ${Math.ceil(emailRl.resetMs / 1000)} 秒后重试。` },
+      { status: 429 },
+    );
   }
 
   if (!password) {

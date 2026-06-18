@@ -17,7 +17,17 @@ type SaveProfileRequest = {
   bio?: unknown;
   theme?: unknown;
   language?: unknown;
+  customTheme?: unknown;
 };
+
+const PRESET_THEMES = [
+  "Link168 草木默认",
+  "简约白",
+  "商务黑",
+  "蓝色科技",
+  "橙色活力",
+  "浅绿清新",
+];
 
 export async function GET(request: Request) {
   const { user, response } = await requireUser(request);
@@ -67,9 +77,11 @@ export async function PUT(request: Request) {
     return NextResponse.json({ success: false, error: "该公开地址已被占用" }, { status: 409 });
   }
 
-  const themeValue = (typeof body.theme === "string" && body.theme.trim()) || null;
+  const themeRaw = typeof body.theme === "string" ? body.theme.trim() : "";
+  const themeValue = PRESET_THEMES.includes(themeRaw) ? themeRaw : null;
   const languageRaw = (typeof body.language === "string" ? body.language.trim() : "") || "";
   const languageValue = languageRaw && SUPPORTED_LANGUAGES.includes(languageRaw as (typeof SUPPORTED_LANGUAGES)[number]) ? languageRaw : null;
+  const customThemeValue = typeof body.customTheme === "string" ? body.customTheme.trim() || null : null;
 
   const profile = await db.profile.upsert({
     where: { userId: user.id },
@@ -81,6 +93,7 @@ export async function PUT(request: Request) {
       bio: normalizeNullableString(body.bio),
       theme: themeValue || "Link168 草木默认",
       language: languageValue || "zh",
+      customTheme: customThemeValue,
       isPublic: true,
     },
     update: {
@@ -88,6 +101,7 @@ export async function PUT(request: Request) {
       bio: normalizeNullableString(body.bio),
       ...(themeValue ? { theme: themeValue } : {}),
       ...(languageValue ? { language: languageValue } : {}),
+      ...(customThemeValue ? { customTheme: customThemeValue } : {}),
       isPublic: true,
       ...(canCompleteUsername ? { username } : {}),
     },

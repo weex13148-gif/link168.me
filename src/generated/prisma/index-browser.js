@@ -205,6 +205,8 @@ exports.Prisma.ReportScalarFieldEnum = {
   contact: 'contact',
   imageUrl: 'imageUrl',
   status: 'status',
+  handlerNote: 'handlerNote',
+  processedAt: 'processedAt',
   createdAt: 'createdAt'
 };
 

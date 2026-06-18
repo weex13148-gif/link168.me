@@ -114,14 +114,16 @@ model Session {
 }
 
 model Report {
-  id           String   @id @db.Uuid
-  reportUrl    String   @map("report_url")
-  reportType   String   @map("report_type")
-  reportReason String   @map("report_reason")
+  id           String    @id @db.Uuid
+  reportUrl    String    @map("report_url")
+  reportType   String    @map("report_type")
+  reportReason String    @map("report_reason")
   contact      String?
-  imageUrl     String?  @map("image_url")
-  status       String   @default("待处理")
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  imageUrl     String?   @map("image_url")
+  status       String    @default("待处理")
+  handlerNote  String?   @map("handler_note")
+  processedAt  DateTime? @map("processed_at") @db.Timestamptz(6)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@map("reports")
 }

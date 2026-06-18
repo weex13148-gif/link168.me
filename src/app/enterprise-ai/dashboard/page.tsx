@@ -1,17 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ArrowLeft, Bot, BriefcaseBusiness, FileText, Palette, Scale, Send, Sparkles } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 
 const assistants = [
-  { title: "财税助理", description: "发票、成本、报税、年报提醒", icon: FileText, color: "bg-[#E6F0D8]", textColor: "text-[#3F5F31]" },
-  { title: "法务助理", description: "协议、合同、合规风险提示", icon: Scale, color: "bg-[#E8ECFB]", textColor: "text-[#4A5FAA]" },
-  { title: "市场调研助理", description: "竞品、用户画像、定价建议", icon: BriefcaseBusiness, color: "bg-[#FCE7D3]", textColor: "text-[#A0522D]" },
-  { title: "设计助理", description: "Logo、页面、海报、品牌视觉建议", icon: Palette, color: "bg-[#FDE7F2]", textColor: "text-[#A02F6B]" },
-  { title: "社媒运营助理", description: "小红书、公众号、抖音、视频号内容建议", icon: Sparkles, color: "bg-[#FFF3D6]", textColor: "text-[#8C612E]" },
+  { title: "财税 AI Agent", description: "收入、成本、税费、经营资料辅助整理和经营提醒", icon: FileText, color: "bg-[#E6F0D8]", textColor: "text-[#3F5F31]" },
+  { title: "法务 AI Agent", description: "合同风险初筛、协议条款解释、合规提醒和审阅清单生成", icon: Scale, color: "bg-[#E8ECFB]", textColor: "text-[#4A5FAA]" },
+  { title: "市场调研 AI Agent", description: "行业分析、竞品分析、城市市场判断、目标用户画像和推广建议", icon: BriefcaseBusiness, color: "bg-[#FCE7D3]", textColor: "text-[#A0522D]" },
+  { title: "设计 AI Agent", description: "主页视觉建议、海报创意、商品宣传图、品牌风格和活动物料建议", icon: Palette, color: "bg-[#FDE7F2]", textColor: "text-[#A02F6B]" },
+  { title: "社媒运营 AI Agent", description: "小红书、抖音、朋友圈、公众号内容选题、标题、脚本和发布计划", icon: Sparkles, color: "bg-[#FFF3D6]", textColor: "text-[#8C612E]" },
 ];
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
@@ -24,11 +23,11 @@ type AccessInfo = {
   userEmail?: string;
   emailVerified?: boolean;
   aiDailyLimitPerUser: number;
-  assistants?: { assistant: string; used: number; limit: number; remaining: number }[];
+  providerConfigured?: boolean;
+  assistants?: { assistant: string; title?: string; used: number; limit: number; remaining: number }[];
 };
 
 export default function EnterpriseAiDashboardPage() {
-  const router = useRouter();
   const [access, setAccess] = useState<AccessInfo | null>(null);
   const [accessError, setAccessError] = useState("");
   const [activeAssistant, setActiveAssistant] = useState<string | null>(null);
@@ -39,7 +38,7 @@ export default function EnterpriseAiDashboardPage() {
   const [usage, setUsage] = useState<{ used: number; limit: number; remaining: number } | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  async function loadAccess() {
+  const loadAccess = useCallback(async () => {
     setAccessError("");
     try {
       const response = await fetch("/api/enterprise-ai/access", { cache: "no-store" });
@@ -48,11 +47,14 @@ export default function EnterpriseAiDashboardPage() {
     } catch {
       setAccessError("无法加载 AI 服务状态。");
     }
-  }
+  }, []);
 
   useEffect(() => {
-    void loadAccess();
-  }, []);
+    const timer = window.setTimeout(() => {
+      void loadAccess();
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [loadAccess]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -140,28 +142,34 @@ export default function EnterpriseAiDashboardPage() {
         </header>
 
         <section className="mt-8">
-          <p className="inline-flex items-center gap-2 rounded-full bg-[#DDE8CD] px-3 py-1.5 text-sm font-black text-[#3F5F31]">
+          <p className="inline-flex flex-wrap items-center gap-2 rounded-full bg-[#DDE8CD] px-3 py-1.5 text-sm font-black text-[#3F5F31]">
             <Bot aria-hidden className="size-4" />
-            {access.authenticated ? (access.isTester ? `已认证：${access.userEmail}` : `内测中：${access.userEmail}`) : "内测展示工作台"}
+            {access.authenticated
+              ? access.isTester
+                ? `白名单测试：${access.userEmail} · 每账号每日上限 ${access.aiDailyLimitPerUser} 次`
+                : `内测中：${access.userEmail}`
+              : "AI 经营名片平台 · 内测工作台预览"}
           </p>
           <h1 className="mt-3 text-4xl font-black tracking-tight sm:text-5xl">企业 AI 工作台</h1>
           <p className="mt-2 text-sm text-[#7A6D5E]">
-            AI 服务：{access.aiEnabled ? "已开启" : "未启用"} · 每账号每日上限 {access.aiDailyLimitPerUser} 次
+            五大 AI Agent：财税、法务、市场调研、设计、社媒运营 · AI 能力：
+            {access.aiEnabled ? "已开启（白名单测试）" : "未启用"} · provider 配置：
+            {access.providerConfigured ? "已配置" : "未配置（缺少 API Key / Base URL / Model）"}
           </p>
         </section>
 
         {showClosedBeta ? (
           <section className="mt-8 rounded-[32px] border border-[#FFB020]/30 bg-[#FFF7E0] p-6 shadow-sm">
-            <h2 className="text-2xl font-black text-[#8C612E]">内测中 · 仅测试账号可用</h2>
+            <h2 className="text-2xl font-black text-[#8C612E]">内测中 · 五大 AI Agent 仅测试账号可用</h2>
             <p className="mt-2 text-sm leading-6 text-[#8C612E]/90">
               {!access.authenticated
                 ? "请先登录以查看你的测试资格。"
                 : access.isTester
-                  ? "你已在白名单中，但 AI 服务当前未启用，请联系管理员。"
-                  : "当前账号不在 AI 测试白名单中。如需开通，请联系平台管理员将你的邮箱加入白名单。"}
+                  ? "你已在 AI 测试白名单中，但 AI 服务当前未启用，请联系超级管理员开启。"
+                  : "当前账号不在 AI 测试白名单中。如需开通，请联系超级管理员将你的邮箱加入白名单。"}
             </p>
             <p className="mt-2 text-xs font-bold text-[#8C612E]">
-              管理员可以在 "超级管理员 → API 配置中心" 中管理测试白名单。
+              超级管理员可以在 &ldquo;超级管理员 &rarr; API 配置中心&rdquo; 中管理五大 AI Agent 测试白名单、调用额度与开关。
             </p>
             <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
               {assistants.map((a) => (
@@ -273,7 +281,7 @@ export default function EnterpriseAiDashboardPage() {
 
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-[#7A6D5E]">
                   <p>
-                    当前对话仅展示本次会话记录；AI 回复仅作参考，不构成专业建议。
+                    当前对话仅展示本次会话记录；AI 回复仅作经营参考，不替代专业税务/法律意见，不保证商业结果。
                   </p>
                   {usage ? (
                     <p className="font-bold text-[#3F5F31]">

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -15,10 +16,17 @@ export async function GET(request: NextRequest, context: RouteContext) {
     return NextResponse.redirect(new URL("/", request.url), 302);
   }
 
-  await db.shortLink.update({
-    where: { id: shortLink.id },
-    data: { totalClicks: { increment: 1 } },
-  });
+  const clickRl = rateLimit(request, `short-link-click:${slug}`, 5, 1000);
+  if (clickRl.passed) {
+    try {
+      await db.shortLink.update({
+        where: { id: shortLink.id },
+        data: { totalClicks: { increment: 1 } },
+      });
+    } catch {
+      // 静默失败：避免计数问题影响用户跳转
+    }
+  }
 
   return NextResponse.redirect(shortLink.targetUrl, 302);
 }

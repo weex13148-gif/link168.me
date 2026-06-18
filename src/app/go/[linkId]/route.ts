@@ -19,8 +19,7 @@ function parseDeviceOsBrowser(userAgent: string | null): { device: string; os: s
   }
 
   let os = "unknown";
-  if (/windows nt 10|windows nt 11/i.test(ua)) os = "windows";
-  else if (/windows/i.test(ua)) os = "windows";
+  if (/windows/i.test(ua)) os = "windows";
   else if (/mac os x|macintosh/i.test(ua)) os = "macos";
   else if (/android/i.test(ua)) os = "android";
   else if (/iphone|ipad|ipod|ios/i.test(ua)) os = "ios";

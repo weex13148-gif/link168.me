@@ -9047,6 +9047,8 @@ export namespace Prisma {
     contact: string | null
     imageUrl: string | null
     status: string | null
+    handlerNote: string | null
+    processedAt: Date | null
     createdAt: Date | null
   }
 
@@ -9058,6 +9060,8 @@ export namespace Prisma {
     contact: string | null
     imageUrl: string | null
     status: string | null
+    handlerNote: string | null
+    processedAt: Date | null
     createdAt: Date | null
   }
 
@@ -9069,6 +9073,8 @@ export namespace Prisma {
     contact: number
     imageUrl: number
     status: number
+    handlerNote: number
+    processedAt: number
     createdAt: number
     _all: number
   }
@@ -9082,6 +9088,8 @@ export namespace Prisma {
     contact?: true
     imageUrl?: true
     status?: true
+    handlerNote?: true
+    processedAt?: true
     createdAt?: true
   }
 
@@ -9093,6 +9101,8 @@ export namespace Prisma {
     contact?: true
     imageUrl?: true
     status?: true
+    handlerNote?: true
+    processedAt?: true
     createdAt?: true
   }
 
@@ -9104,6 +9114,8 @@ export namespace Prisma {
     contact?: true
     imageUrl?: true
     status?: true
+    handlerNote?: true
+    processedAt?: true
     createdAt?: true
     _all?: true
   }
@@ -9188,6 +9200,8 @@ export namespace Prisma {
     contact: string | null
     imageUrl: string | null
     status: string
+    handlerNote: string | null
+    processedAt: Date | null
     createdAt: Date
     _count: ReportCountAggregateOutputType | null
     _min: ReportMinAggregateOutputType | null
@@ -9216,6 +9230,8 @@ export namespace Prisma {
     contact?: boolean
     imageUrl?: boolean
     status?: boolean
+    handlerNote?: boolean
+    processedAt?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["report"]>
 
@@ -9227,6 +9243,8 @@ export namespace Prisma {
     contact?: boolean
     imageUrl?: boolean
     status?: boolean
+    handlerNote?: boolean
+    processedAt?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["report"]>
 
@@ -9238,6 +9256,8 @@ export namespace Prisma {
     contact?: boolean
     imageUrl?: boolean
     status?: boolean
+    handlerNote?: boolean
+    processedAt?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["report"]>
 
@@ -9249,10 +9269,12 @@ export namespace Prisma {
     contact?: boolean
     imageUrl?: boolean
     status?: boolean
+    handlerNote?: boolean
+    processedAt?: boolean
     createdAt?: boolean
   }
 
-  export type ReportOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "reportUrl" | "reportType" | "reportReason" | "contact" | "imageUrl" | "status" | "createdAt", ExtArgs["result"]["report"]>
+  export type ReportOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "reportUrl" | "reportType" | "reportReason" | "contact" | "imageUrl" | "status" | "handlerNote" | "processedAt" | "createdAt", ExtArgs["result"]["report"]>
 
   export type $ReportPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Report"
@@ -9265,6 +9287,8 @@ export namespace Prisma {
       contact: string | null
       imageUrl: string | null
       status: string
+      handlerNote: string | null
+      processedAt: Date | null
       createdAt: Date
     }, ExtArgs["result"]["report"]>
     composites: {}
@@ -9696,6 +9720,8 @@ export namespace Prisma {
     readonly contact: FieldRef<"Report", 'String'>
     readonly imageUrl: FieldRef<"Report", 'String'>
     readonly status: FieldRef<"Report", 'String'>
+    readonly handlerNote: FieldRef<"Report", 'String'>
+    readonly processedAt: FieldRef<"Report", 'DateTime'>
     readonly createdAt: FieldRef<"Report", 'DateTime'>
   }
     
@@ -15499,6 +15525,8 @@ export namespace Prisma {
     contact: 'contact',
     imageUrl: 'imageUrl',
     status: 'status',
+    handlerNote: 'handlerNote',
+    processedAt: 'processedAt',
     createdAt: 'createdAt'
   };
 
@@ -16173,6 +16201,8 @@ export namespace Prisma {
     contact?: StringNullableFilter<"Report"> | string | null
     imageUrl?: StringNullableFilter<"Report"> | string | null
     status?: StringFilter<"Report"> | string
+    handlerNote?: StringNullableFilter<"Report"> | string | null
+    processedAt?: DateTimeNullableFilter<"Report"> | Date | string | null
     createdAt?: DateTimeFilter<"Report"> | Date | string
   }
 
@@ -16184,6 +16214,8 @@ export namespace Prisma {
     contact?: SortOrderInput | SortOrder
     imageUrl?: SortOrderInput | SortOrder
     status?: SortOrder
+    handlerNote?: SortOrderInput | SortOrder
+    processedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
   }
 
@@ -16198,6 +16230,8 @@ export namespace Prisma {
     contact?: StringNullableFilter<"Report"> | string | null
     imageUrl?: StringNullableFilter<"Report"> | string | null
     status?: StringFilter<"Report"> | string
+    handlerNote?: StringNullableFilter<"Report"> | string | null
+    processedAt?: DateTimeNullableFilter<"Report"> | Date | string | null
     createdAt?: DateTimeFilter<"Report"> | Date | string
   }, "id">
 
@@ -16209,6 +16243,8 @@ export namespace Prisma {
     contact?: SortOrderInput | SortOrder
     imageUrl?: SortOrderInput | SortOrder
     status?: SortOrder
+    handlerNote?: SortOrderInput | SortOrder
+    processedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: ReportCountOrderByAggregateInput
     _max?: ReportMaxOrderByAggregateInput
@@ -16226,6 +16262,8 @@ export namespace Prisma {
     contact?: StringNullableWithAggregatesFilter<"Report"> | string | null
     imageUrl?: StringNullableWithAggregatesFilter<"Report"> | string | null
     status?: StringWithAggregatesFilter<"Report"> | string
+    handlerNote?: StringNullableWithAggregatesFilter<"Report"> | string | null
+    processedAt?: DateTimeNullableWithAggregatesFilter<"Report"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Report"> | Date | string
   }
 
@@ -17110,6 +17148,8 @@ export namespace Prisma {
     contact?: string | null
     imageUrl?: string | null
     status?: string
+    handlerNote?: string | null
+    processedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -17121,6 +17161,8 @@ export namespace Prisma {
     contact?: string | null
     imageUrl?: string | null
     status?: string
+    handlerNote?: string | null
+    processedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -17132,6 +17174,8 @@ export namespace Prisma {
     contact?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -17143,6 +17187,8 @@ export namespace Prisma {
     contact?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -17154,6 +17200,8 @@ export namespace Prisma {
     contact?: string | null
     imageUrl?: string | null
     status?: string
+    handlerNote?: string | null
+    processedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -17165,6 +17213,8 @@ export namespace Prisma {
     contact?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -17176,6 +17226,8 @@ export namespace Prisma {
     contact?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    processedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -18007,6 +18059,17 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type ReportCountOrderByAggregateInput = {
     id?: SortOrder
     reportUrl?: SortOrder
@@ -18015,6 +18078,8 @@ export namespace Prisma {
     contact?: SortOrder
     imageUrl?: SortOrder
     status?: SortOrder
+    handlerNote?: SortOrder
+    processedAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -18026,6 +18091,8 @@ export namespace Prisma {
     contact?: SortOrder
     imageUrl?: SortOrder
     status?: SortOrder
+    handlerNote?: SortOrder
+    processedAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -18037,7 +18104,23 @@ export namespace Prisma {
     contact?: SortOrder
     imageUrl?: SortOrder
     status?: SortOrder
+    handlerNote?: SortOrder
+    processedAt?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type PasswordResetTokenCountOrderByAggregateInput = {
@@ -18094,17 +18177,6 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type LoginAttemptCountOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
@@ -18133,20 +18205,6 @@ export namespace Prisma {
     locked?: SortOrder
     lockUntil?: SortOrder
     createdAt?: SortOrder
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type AppConfigCountOrderByAggregateInput = {
@@ -18640,6 +18698,10 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSessionsInput, UserUpdateWithoutSessionsInput>, UserUncheckedUpdateWithoutSessionsInput>
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type UserCreateNestedOneWithoutResetTokensInput = {
     create?: XOR<UserCreateWithoutResetTokensInput, UserUncheckedCreateWithoutResetTokensInput>
     connectOrCreate?: UserCreateOrConnectWithoutResetTokensInput
@@ -18666,10 +18728,6 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutVerifyTokensInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutVerifyTokensInput, UserUpdateWithoutVerifyTokensInput>, UserUncheckedUpdateWithoutVerifyTokensInput>
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type UserCreateNestedOneWithoutAiUsageLogsInput = {

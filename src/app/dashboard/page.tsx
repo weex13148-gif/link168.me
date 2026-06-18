@@ -820,7 +820,7 @@ export default function DashboardPage() {
 
           {activeTab === "我的" ? (
             <section className="grid gap-5">
-              <ShortLinksPanel openVip={() => setModal("vip")} showToast={showToast} />
+            <ShortLinksPanel showToast={showToast} />
               <AccountPanel
                 email={state.userEmail}
                 displayName={displayName}
@@ -1521,7 +1521,7 @@ function DataPanel({ openVip }: { openVip: () => void }) {
   );
 }
 
-function ShortLinksPanel({ openVip, showToast }: { openVip: () => void; showToast: (message: string) => void }) {
+function ShortLinksPanel({ showToast }: { showToast: (message: string) => void }) {
   const [shortLinks, setShortLinks] = useState<Array<{ id: string; slug: string; targetUrl: string; totalClicks: number; createdAt: string }> | null>(null);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -1530,7 +1530,7 @@ function ShortLinksPanel({ openVip, showToast }: { openVip: () => void; showToas
   const [targetUrl, setTargetUrl] = useState("");
   const [customSlug, setCustomSlug] = useState("");
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch("/api/dashboard/short-links", { cache: "no-store" });
@@ -1545,11 +1545,14 @@ function ShortLinksPanel({ openVip, showToast }: { openVip: () => void; showToas
     } finally {
       setLoading(false);
     }
-  }
+  }, [showToast]);
 
   useEffect(() => {
-    void load();
-  }, []);
+    const timer = window.setTimeout(() => {
+      void load();
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [load]);
 
   async function handleCreate(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -1638,7 +1641,7 @@ function ShortLinksPanel({ openVip, showToast }: { openVip: () => void; showToas
         {!loading && (!shortLinks || shortLinks.length === 0) ? (
           <div className="rounded-3xl border border-dashed border-[#E8DCCB] bg-[#F7F1E7] px-4 py-10 text-center">
             <p className="text-sm font-black text-[#2B241E]">还没有短码</p>
-            <p className="mt-1 text-sm text-[#7A6D5E]">点击"创建短码"生成第一个短链接，或继续添加你要分享的外部地址。</p>
+            <p className="mt-1 text-sm text-[#7A6D5E]">点击 &ldquo;创建短码&rdquo; 生成第一个短链接，或继续添加你要分享的外部地址。</p>
           </div>
         ) : null}
         {shortLinks && shortLinks.length

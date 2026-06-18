@@ -14,6 +14,12 @@ const allowedScreenshotTypes = new Map([
   ["image/webp", ".webp"],
 ]);
 
+// V0.1 内测版 IP 策略说明：
+// 1. 不做永久 IP 封禁
+// 2. 不因为某个主页违规就封访问者 IP
+// 3. IP 字段仅用于：记录举报来源 IP、记录登录失败 IP、未来做异常行为频率限制
+// 4. 当前 Report model 无 ipAddress 字段（不改 Schema），如需记录可在后续版本加字段
+
 function readString(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
 }

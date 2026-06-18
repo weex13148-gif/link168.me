@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createPasswordResetToken } from "@/lib/auth";
 import { sendPasswordReset, getAppUrl } from "@/lib/mail";
 import { db } from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -15,7 +16,15 @@ function normalizeEmail(value: unknown) {
 
 export async function POST(request: Request) {
   if (!process.env.DATABASE_URL) {
-    return NextResponse.json({ success: false, error: "DATABASE_URL is not configured." }, { status: 500 });
+    return NextResponse.json({ success: false, error: "服务暂不可用，请稍后重试。" }, { status: 500 });
+  }
+
+  const ipRl = rateLimit(request, "forgot-password:ip", 2, 60 * 1000);
+  if (!ipRl.passed) {
+    return NextResponse.json(
+      { success: false, error: `请求过于频繁，请 ${Math.ceil(ipRl.resetMs / 1000)} 秒后重试。` },
+      { status: 429 },
+    );
   }
 
   let body: ForgotPasswordRequest;

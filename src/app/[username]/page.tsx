@@ -22,7 +22,7 @@ async function getPublicProfile(username: string) {
     },
   });
 
-  if (!profile || !profile.isPublic) {
+  if (!profile) {
     return null;
   }
 
@@ -220,6 +220,13 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
     };
   }
 
+  if (!profile.isPublic) {
+    return {
+      title: `该主页暂不可访问 | Link168`,
+      description: `该页面可能因违反平台规则、被用户举报或由管理员处理，当前已暂停展示。`,
+    };
+  }
+
   return {
     title: `${profile.displayName || `@${profile.username}`} | Link168`,
     description: profile.bio || `访问 @${profile.username} 的 link168.me 主页。`,
@@ -234,6 +241,41 @@ export default async function PublicProfilePage({ params, searchParams }: Public
 
   if (!profile) {
     notFound();
+  }
+
+  if (!profile.isPublic) {
+    return (
+      <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center px-4 py-10">
+        <section className="w-full rounded-2xl border border-[#E0E0E0] bg-white p-8 text-center shadow-sm">
+          <div className="mx-auto grid size-14 place-items-center rounded-full bg-[#FFF7E6] text-[#AD6800]">
+            <svg viewBox="0 0 24 24" fill="none" className="size-7" aria-hidden>
+              <path d="M12 9v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <h1 className="mt-5 text-2xl font-black text-[#1A1A1A]">该主页暂不可访问</h1>
+          <p className="mt-3 text-sm leading-7 text-[#4A4A4A]">
+            该页面可能因违反平台规则、被用户举报或由管理员处理，当前已暂停展示。
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <Link
+              href="/"
+              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[#E0E0E0] bg-white px-5 text-sm font-black text-[#1A1A1A]"
+            >
+              返回首页
+            </Link>
+            <Link
+              href="/register"
+              className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#5B6FFF] px-5 text-sm font-black text-white"
+            >
+              免费创建我的主页
+            </Link>
+          </div>
+        </section>
+        <BrandFooter />
+      </main>
+    );
   }
 
   const style = getThemeStyle(profile.theme || "Link168 草木默认");

@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { getCurrentUserFromRequest } from "@/lib/auth";
-import { getConfig, getAiDailyUsage, isAiTester } from "@/lib/app-config";
+import {
+  getAiDailyUsage,
+  getConfig,
+  isAiTester,
+} from "@/lib/app-config";
+import { AI_ASSISTANT_LIST, type AiAssistantTitle } from "@/lib/ai/assistants";
+import { getProviderConfig, isProviderConfigured } from "@/lib/ai/provider";
 
 export const runtime = "nodejs";
-
-const ASSISTANT_LIST = ["财税助理", "法务助理", "市场调研助理", "设计助理", "社媒运营助理"];
 
 export async function GET(request: Request) {
   const user = await getCurrentUserFromRequest(request);
@@ -13,7 +17,7 @@ export async function GET(request: Request) {
   const baseInfo = {
     aiEnabled: config.aiEnabled,
     aiDailyLimitPerUser: config.aiDailyLimitPerUser,
-    paymentEnabled: config.paymentEnabled,
+    paymentEnabled: false, // V0.1 真实上线不接支付，后续版本规划
   };
 
   if (!user) {
@@ -22,15 +26,27 @@ export async function GET(request: Request) {
       ...baseInfo,
       authenticated: false,
       isTester: false,
+      providerConfigured: false,
       assistants: [],
+      availableAssistants: AI_ASSISTANT_LIST.map((item) => ({
+        title: item.title,
+        displayTitle: item.displayTitle,
+        category: item.category,
+      })),
     });
   }
 
   const tester = await isAiTester(user.email);
+  const sampleDefinition = AI_ASSISTANT_LIST[0];
+  const providerConfig = sampleDefinition ? await getProviderConfig(sampleDefinition) : null;
+  const providerConfigured = providerConfig ? isProviderConfigured(providerConfig) : false;
+
   const assistantUsages = await Promise.all(
-    ASSISTANT_LIST.map(async (assistant) => ({
-      assistant,
-      ...(await getAiDailyUsage(user.id, assistant)),
+    AI_ASSISTANT_LIST.map(async (assistant) => ({
+      assistant: assistant.displayTitle,
+      title: assistant.title,
+      category: assistant.category,
+      ...(await getAiDailyUsage(user.id, assistant.displayTitle)),
     })),
   );
 
@@ -41,6 +57,7 @@ export async function GET(request: Request) {
     isTester: tester,
     userEmail: user.email,
     emailVerified: user.emailVerified,
+    providerConfigured,
     assistants: assistantUsages,
   });
 }

@@ -3,11 +3,11 @@ import { ArrowRight, Bot, BriefcaseBusiness, Building2, FileText, Palette, Scale
 import { BrandLogo } from "@/components/BrandLogo";
 
 const assistants = [
-  { title: "财税助理", text: "辅助梳理发票、成本、报税提醒和经营数据。", icon: FileText },
-  { title: "法务助理", text: "辅助查看协议、合同条款和常见合规风险。", icon: Scale },
-  { title: "市场调研助理", text: "辅助整理竞品、用户画像、定价和机会判断。", icon: BriefcaseBusiness },
-  { title: "设计助理", text: "辅助提供 Logo、页面、海报和品牌视觉建议。", icon: Palette },
-  { title: "社媒运营助理", text: "辅助生成小红书、公众号、抖音、视频号内容思路。", icon: Sparkles },
+  { title: "财税 AI Agent", text: "收入、成本、税费、经营资料辅助整理和经营提醒。", icon: FileText },
+  { title: "法务 AI Agent", text: "合同风险初筛、协议条款解释、合规提醒和审阅清单生成。", icon: Scale },
+  { title: "市场调研 AI Agent", text: "行业分析、竞品分析、城市市场判断、目标用户画像和推广建议。", icon: BriefcaseBusiness },
+  { title: "设计 AI Agent", text: "主页视觉建议、海报创意、商品宣传图、品牌风格和活动物料建议。", icon: Palette },
+  { title: "社媒运营 AI Agent", text: "小红书、抖音、朋友圈、公众号内容选题、标题、脚本和发布计划。", icon: Sparkles },
 ];
 
 const enterpriseFeatures = ["团队管理", "企业资料库", "长期记忆", "使用次数管理", "专属 AI 助理配置", "企业定制服务"];
@@ -26,11 +26,11 @@ export default function EnterpriseAiPage() {
         <div>
           <p className="inline-flex items-center gap-2 rounded-full border border-[#E8DCCB] bg-[#FFFDF8]/86 px-4 py-2 text-sm font-black text-[#3F5F31]">
             <Bot aria-hidden className="size-4" />
-            内测展示版
+            AI 经营名片平台 · 内测展示版
           </p>
-          <h1 className="mt-6 text-5xl font-black leading-tight tracking-tight sm:text-6xl">企业 AI 创业助理</h1>
+          <h1 className="mt-6 text-5xl font-black leading-tight tracking-tight sm:text-6xl">一张二维码数字名片 + 五大 AI Agent，小商家低成本获客与经营</h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-[#7A6D5E]">
-            为个人创业者、小团队和企业提供财税、法务、市场调研、设计、社媒运营支持。
+            面向自媒体、小商家和一人公司，免费二维码数字名片承接流量，五大 AI Agent（财税、法务、市场调研、设计、社媒运营）辅助经营决策与内容生成。
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/enterprise-ai/dashboard" className="inline-flex min-h-12 items-center gap-2 rounded-full bg-[#6F8F4E] px-6 text-sm font-black text-white shadow-lg shadow-[#6F8F4E]/20">
@@ -56,22 +56,26 @@ export default function EnterpriseAiPage() {
             ))}
           </div>
           <p className="mt-5 rounded-2xl bg-[#F6E7C8] px-4 py-3 text-sm font-bold leading-6 text-[#8C612E]">
-            当前为内测展示版，真实 AI 服务和团队管理将在企业客户开通后逐步开放。
+            当前为 V0.1 内测版本，五大 AI Agent 采用白名单制开放（普通用户默认不开放完整 AI 能力）。AI 输出内容仅供参考，不构成正式财税、法律意见，也不保证商业结果。
           </p>
         </div>
       </section>
 
       <section className="mx-auto mt-10 grid w-full max-w-6xl gap-4 md:grid-cols-2 lg:grid-cols-5">
-        {assistants.map(({ title, text, icon: Icon }) => (
-          <article key={title} className="rounded-[26px] border border-[#E8DCCB] bg-[#FFFDF8]/92 p-5 shadow-sm">
-            <div className="grid size-11 place-items-center rounded-2xl bg-[#DDE8CD] text-[#3F5F31]">
-              <Icon aria-hidden className="size-5" />
-            </div>
-            <h3 className="mt-4 text-lg font-black">{title}</h3>
-            <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">{text}</p>
-          </article>
-        ))}
-      </section>
+          {assistants.map((item) => {
+            const Icon = item.icon;
+            return (
+              <article key={item.title} className="rounded-[26px] border border-[#E8DCCB] bg-white/92 p-5 shadow-sm">
+                <div className="grid size-11 place-items-center rounded-2xl bg-[#DDE8CD] text-[#3F5F31]">
+                  <Icon aria-hidden className="size-5" />
+                </div>
+                <h3 className="mt-4 text-lg font-black">{item.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">{item.text}</p>
+                <p className="mt-4 rounded-xl bg-[#FFF7E0] px-3 py-2 text-xs font-black text-[#8C612E]">V0.1 内测 · 白名单可用</p>
+              </article>
+            );
+          })}
+        </section>
     </main>
   );
 }

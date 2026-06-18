@@ -265,6 +265,10 @@ export async function consumeEmailVerificationToken(token: string) {
 }
 
 // ====== 登录失败限流 ======
+// IP 策略：仅用于异常行为频率限制，不做永久 IP 封禁
+// 1. 同一邮箱 15 分钟内失败 >= 5 次：锁定该邮箱 15 分钟（短期）
+// 2. 同一 IP 15 分钟内失败 >= 5 次：拒绝该 IP 的登录尝试（短期，不等同于封禁）
+// 3. 记录登录失败 IP，仅用于风控分析，不用于封禁访问者
 
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCK_WINDOW_MINUTES = 15;

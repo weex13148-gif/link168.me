@@ -16,7 +16,7 @@ function parseUserAgentInfo(ua: string | null) {
   else if (/Linux/i.test(ua)) device = "Linux 设备";
 
   let browser = "未知浏览器";
-  if (/Chrome|Edg|EdgA/i.test(ua)) browser = "Edge";
+  if (/Edg|EdgA/i.test(ua)) browser = "Edge";
   else if (/Chrome|CriOS/i.test(ua)) browser = "Chrome";
   else if (/Firefox|FxiOS/i.test(ua)) browser = "Firefox";
   else if (/Safari/i.test(ua)) browser = "Safari";

@@ -87,12 +87,15 @@ export async function GET(request: NextRequest) {
   const daily = Array.from(dailyMap.entries()).map(([date, count]) => ({ date, count }));
 
   return NextResponse.json({
-    totalClicks: totalClicksResult._sum.totalClicks || 0,
-    totalLinks,
-    clicksToday: clicksTodayCount,
-    clicksLast7Days: clicksLast7DaysCount,
-    byDevice: byDeviceResult.map((r) => ({ device: r.device || "unknown", count: r._count.device })),
-    topLinks: topLinksResult.map((l) => ({ id: l.id, title: l.title, totalClicks: l.totalClicks })),
-    daily,
+    success: true,
+    stats: {
+      totalClicks: totalClicksResult._sum.totalClicks || 0,
+      totalLinks,
+      clicksToday: clicksTodayCount,
+      clicksLast7Days: clicksLast7DaysCount,
+      byDevice: byDeviceResult.map((r) => ({ device: r.device || "unknown", count: r._count.device })),
+      topLinks: topLinksResult.map((l) => ({ id: l.id, title: l.title, totalClicks: l.totalClicks })),
+      daily,
+    },
   });
 }

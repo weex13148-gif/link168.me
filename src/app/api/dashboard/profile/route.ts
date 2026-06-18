@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { newId, normalizeNullableString, toProfileDto } from "@/lib/dashboard-data";
 import { SUPPORTED_LANGUAGES } from "@/lib/i18n";
+import { hasSensitiveContent, sanitizePublicText } from "@/lib/content-safety";
 
 export const runtime = "nodejs";
 
@@ -15,6 +16,9 @@ const PRESET_THEMES = [
   "橙色活力",
   "浅绿清新",
 ];
+
+const MAX_BIO_LENGTH = 500;
+const MAX_DISPLAY_NAME_LENGTH = 40;
 
 type SaveProfileRequest = {
   displayName?: unknown;
@@ -51,7 +55,37 @@ export async function PUT(request: Request) {
   if (body.customTheme === null) {
     customThemeValue = null;
   } else if (typeof body.customTheme === "string") {
-    customThemeValue = body.customTheme.trim() || null;
+    customThemeValue = sanitizePublicText(body.customTheme);
+  }
+
+  // UGC 内容安全：展示名 / 简介 敏感词过滤
+  const displayNameRaw = typeof body.displayName === "string" ? body.displayName : "";
+  const bioRaw = typeof body.bio === "string" ? body.bio : "";
+
+  const displayNameSafe = sanitizePublicText(displayNameRaw) ?? "";
+  if (displayNameSafe.length > MAX_DISPLAY_NAME_LENGTH) {
+    return NextResponse.json({ success: false, error: `展示名不能超过 ${MAX_DISPLAY_NAME_LENGTH} 字。` }, { status: 400 });
+  }
+  const sensitiveDisplayName = hasSensitiveContent(displayNameSafe);
+  if (sensitiveDisplayName.detected) {
+    return NextResponse.json(
+      { success: false, error: `展示名包含受限关键词（${sensitiveDisplayName.matches.slice(0, 3).join(" / ")}），请修改后再试。` },
+      { status: 400 },
+    );
+  }
+
+  const bioSafe = sanitizePublicText(bioRaw);
+  if (bioSafe && bioSafe.length > MAX_BIO_LENGTH) {
+    return NextResponse.json({ success: false, error: `简介不能超过 ${MAX_BIO_LENGTH} 字。` }, { status: 400 });
+  }
+  if (bioSafe) {
+    const sensitiveBio = hasSensitiveContent(bioSafe);
+    if (sensitiveBio.detected) {
+      return NextResponse.json(
+        { success: false, error: `简介包含受限关键词（${sensitiveBio.matches.slice(0, 3).join(" / ")}），请修改后再试。` },
+        { status: 400 },
+      );
+    }
   }
 
   const upsertData = {
@@ -60,16 +94,16 @@ export async function PUT(request: Request) {
       id: newId(),
       userId: user.id,
       username: `u_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`,
-      displayName: normalizeNullableString(body.displayName),
-      bio: normalizeNullableString(body.bio),
+      displayName: displayNameSafe || null,
+      bio: bioSafe,
       theme: themeValue || "Link168 草木默认",
       language: languageValue,
       customTheme: customThemeValue,
       isPublic: true,
     },
     update: {
-      displayName: normalizeNullableString(body.displayName),
-      bio: normalizeNullableString(body.bio),
+      displayName: displayNameSafe || null,
+      bio: bioSafe,
       ...(themeValue ? { theme: themeValue } : {}),
       language: languageValue,
       customTheme: customThemeValue,
