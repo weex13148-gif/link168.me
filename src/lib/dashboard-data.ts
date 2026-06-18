@@ -8,6 +8,8 @@ export function toProfileDto(profile: {
   bio: string | null;
   avatarUrl: string | null;
   theme: string;
+  language: string;
+  customTheme: string | null;
   isPublic: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -19,6 +21,8 @@ export function toProfileDto(profile: {
     bio: profile.bio,
     avatar_url: profile.avatarUrl,
     theme: profile.theme,
+    language: profile.language,
+    custom_theme: profile.customTheme,
     is_public: profile.isPublic,
     created_at: profile.createdAt.toISOString(),
     updated_at: profile.updatedAt.toISOString(),
@@ -31,9 +35,12 @@ export function toLinkDto(link: {
   title: string;
   url: string;
   description: string | null;
+  iconType: string;
+  iconValue: string | null;
   iconUrl: string | null;
   position: number;
   isActive: boolean;
+  totalClicks: number;
   createdAt: Date;
   updatedAt: Date;
 }) {
@@ -43,9 +50,12 @@ export function toLinkDto(link: {
     title: link.title,
     url: link.url,
     description: link.description,
+    icon_type: link.iconType,
+    icon_value: link.iconValue,
     icon_url: link.iconUrl,
     position: link.position,
     is_active: link.isActive,
+    total_clicks: link.totalClicks,
     created_at: link.createdAt.toISOString(),
     updated_at: link.updatedAt.toISOString(),
   };

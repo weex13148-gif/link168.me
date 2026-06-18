@@ -9,11 +9,16 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
+const ICON_TYPES = ["default", "emoji", "custom"] as const;
+
 type UpdateLinkRequest = {
   title?: unknown;
   url?: unknown;
   description?: unknown;
   isActive?: unknown;
+  iconType?: unknown;
+  iconValue?: unknown;
+  iconUrl?: unknown;
 };
 
 export async function PATCH(request: Request, context: RouteContext) {
@@ -38,6 +43,12 @@ export async function PATCH(request: Request, context: RouteContext) {
     return NextResponse.json({ success: false, error: "Title and URL are required." }, { status: 400 });
   }
 
+  const iconTypeRaw = typeof body.iconType === "string" ? body.iconType.trim().toLowerCase() : "";
+  const iconType = ICON_TYPES.includes(iconTypeRaw as (typeof ICON_TYPES)[number]) ? iconTypeRaw : "default";
+  const iconValue = iconType === "emoji" ? normalizeNullableString(body.iconValue) : null;
+  const iconUrlRaw = typeof body.iconUrl === "string" ? body.iconUrl.trim() : "";
+  const iconUrl = iconType === "custom" && /^https?:\/\//i.test(iconUrlRaw) ? iconUrlRaw : null;
+
   const { id } = await context.params;
   const result = await db.link.updateMany({
     where: { id, profileId: profile.id },
@@ -46,6 +57,9 @@ export async function PATCH(request: Request, context: RouteContext) {
       url,
       description: normalizeNullableString(body.description),
       isActive: body.isActive === true,
+      iconType,
+      iconValue,
+      iconUrl,
     },
   });
 

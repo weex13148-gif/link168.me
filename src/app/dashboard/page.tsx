@@ -223,9 +223,12 @@ function createDraftLink(position: number, profileId = "", preset: Partial<Pick<
     title: preset.title || "",
     url: preset.url || "",
     description: preset.description || "",
+    icon_type: "default",
+    icon_value: null,
     icon_url: null,
     position,
     is_active: true,
+    total_clicks: 0,
     created_at: now,
     updated_at: now,
     isDraft: true,
@@ -322,6 +325,7 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<DashboardTab>("制作");
   const [appearanceTab, setAppearanceTab] = useState<AppearanceTab>("主题");
   const [selectedTheme, setSelectedTheme] = useState("Link168 草木默认");
+  const [language, setLanguage] = useState("zh");
   const [customStyle, setCustomStyle] = useState<CustomStyle>({
     backgroundMode: "solid",
     backgroundColor: "#F7F1E7",
@@ -407,6 +411,9 @@ export default function DashboardPage() {
       if (profile?.theme) {
         setSelectedTheme(profile.theme);
       }
+      if (profile?.language) {
+        setLanguage(profile.language);
+      }
       setState({
         loading: false,
         saving: false,
@@ -458,6 +465,35 @@ export default function DashboardPage() {
 
     return () => controller.abort();
   }, [selectedTheme, state.userId]);
+
+  const languageSyncedRef = useRef(false);
+  useEffect(() => {
+    if (!state.userId) return;
+    if (!languageSyncedRef.current) {
+      languageSyncedRef.current = true;
+      return;
+    }
+
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const response = await fetch("/api/dashboard", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ language }),
+          signal: controller.signal,
+        });
+        const result = (await response.json()) as { success?: boolean; error?: string };
+        if (!response.ok || !result.success) {
+          console.warn("语言设置保存失败：", result.error);
+        }
+      } catch {
+        console.warn("语言保存请求被跳过或失败");
+      }
+    })();
+
+    return () => controller.abort();
+  }, [language, state.userId]);
 
   async function copyText(value: string, message = "已复制链接") {
     const text = value.trim();
@@ -592,7 +628,7 @@ export default function DashboardPage() {
     const response = await fetch(link.isDraft ? "/api/dashboard/links" : `/api/dashboard/links/${link.id}`, {
       method: link.isDraft ? "POST" : "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, url, description: link.description, isActive: link.is_active }),
+      body: JSON.stringify({ title, url, description: link.description, isActive: link.is_active, iconType: link.icon_type, iconValue: link.icon_value, iconUrl: link.icon_url }),
     });
     const result = (await response.json()) as LinkResponse;
 
@@ -780,22 +816,27 @@ export default function DashboardPage() {
             />
           ) : null}
 
-          {activeTab === "数据" ? <DataPanel links={state.links} openVip={() => setModal("vip")} /> : null}
+          {activeTab === "数据" ? <DataPanel openVip={() => setModal("vip")} /> : null}
 
           {activeTab === "我的" ? (
-            <AccountPanel
-              email={state.userEmail}
-              displayName={displayName}
-              bio={bio}
-              publicUrl={publicUrl}
-              previewUrl={previewUrl}
-              shareUrl={shareUrl}
-              copyText={copyText}
-              openVip={() => setModal("vip")}
-              onAddressNotice={changeAddressNotice}
-              signOut={signOut}
-              showToast={showToast}
-            />
+            <section className="grid gap-5">
+              <ShortLinksPanel openVip={() => setModal("vip")} showToast={showToast} />
+              <AccountPanel
+                email={state.userEmail}
+                displayName={displayName}
+                bio={bio}
+                language={language}
+                setLanguage={setLanguage}
+                publicUrl={publicUrl}
+                previewUrl={previewUrl}
+                shareUrl={shareUrl}
+                copyText={copyText}
+                openVip={() => setModal("vip")}
+                onAddressNotice={changeAddressNotice}
+                signOut={signOut}
+                showToast={showToast}
+              />
+            </section>
           ) : null}
         </section>
 
@@ -1340,13 +1381,48 @@ function ConfigSwitch({ label, checked, onClick }: { label: string; checked: boo
   );
 }
 
-function DataPanel({ links, openVip }: { links: BuilderLink[]; openVip: () => void }) {
-  const metrics = [
-    { label: "今日访问", value: "0", icon: Eye },
-    { label: "昨日访问", value: "0", icon: BarChart3 },
-    { label: "总访问", value: "0", icon: Monitor },
-    { label: "总点击", value: "0", icon: Link2 },
-    { label: "点击率", value: "0%", icon: Share2 },
+function DataPanel({ openVip }: { openVip: () => void }) {
+  const [stats, setStats] = useState<{
+    totalClicks: number;
+    totalLinks: number;
+    clicksToday: number;
+    clicksLast7Days: number;
+    byDevice: Array<{ device: string; count: number }>;
+    topLinks: Array<{ id: string; title: string; totalClicks: number }>;
+    daily: Array<{ date: string; count: number }>;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      try {
+        const response = await fetch("/api/dashboard/stats", { cache: "no-store" });
+        const result = (await response.json()) as { success?: boolean; error?: string; stats?: { totalClicks: number; totalLinks: number; clicksToday: number; clicksLast7Days: number; byDevice: Array<{ device: string; count: number }>; topLinks: Array<{ id: string; title: string; totalClicks: number }>; daily: Array<{ date: string; count: number }> } };
+        if (!response.ok || !result.success || !result.stats) {
+          if (!cancelled) setError(result.error || "读取数据失败");
+          return;
+        }
+        if (!cancelled) setStats(result.stats);
+      } catch {
+        if (!cancelled) setError("网络错误，请稍后再试");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const cards: Array<{ label: string; value: string | number; icon: typeof BarChart3 }> = [
+    { label: "今日点击", value: stats?.clicksToday ?? 0, icon: Eye },
+    { label: "近 7 天", value: stats?.clicksLast7Days ?? 0, icon: BarChart3 },
+    { label: "总点击量", value: stats?.totalClicks ?? 0, icon: Monitor },
+    { label: "链接总数", value: stats?.totalLinks ?? 0, icon: Link2 },
   ];
 
   return (
@@ -1355,12 +1431,12 @@ function DataPanel({ links, openVip }: { links: BuilderLink[]; openVip: () => vo
         <p className="text-sm font-black text-[#3F5F31]">数据中心</p>
         <h1 className="mt-1 text-3xl font-black text-[#2B241E]">查看主页访问与点击</h1>
       </div>
-      <div className="mt-5 rounded-3xl bg-[#F6E7C8] p-4">
-        <p className="text-sm font-black text-[#8C612E]">当前为展示预览</p>
-        <p className="mt-2 text-sm leading-6 text-[#8C612E]">数据统计功能暂未开放，以上数据仅为占位展示。真实访问统计将在后续版本逐步开放。</p>
-      </div>
-      <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-        {metrics.map(({ label, value, icon: Icon }) => (
+      {loading ? (
+        <div className="mt-5 rounded-2xl bg-[#F7F1E7] px-4 py-3 text-sm font-semibold text-[#7A6D5E]">正在读取数据...</div>
+      ) : null}
+      {error ? <div className="mt-5 rounded-2xl border border-[#B42318]/20 bg-[#FFF1F0] px-4 py-3 text-sm font-bold text-[#B42318]">{error}</div> : null}
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {cards.map(({ label, value, icon: Icon }) => (
           <div key={label} className="rounded-[24px] border border-[#E8DCCB] bg-[#F7F1E7] p-4">
             <div className="flex items-center justify-between gap-3">
               <p className="text-xs font-semibold text-[#7A6D5E]">{label}</p>
@@ -1373,42 +1449,61 @@ function DataPanel({ links, openVip }: { links: BuilderLink[]; openVip: () => vo
       <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_260px]">
         <section className="rounded-[24px] border border-[#E8DCCB] bg-[#F7F1E7] p-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-black text-[#2B241E]">最近 7 天访问趋势</h2>
+            <h2 className="text-xl font-black text-[#2B241E]">最近 7 天点击趋势</h2>
             <BarChart3 aria-hidden className="link168-data-icon text-[#6F8F4E]" />
           </div>
           <div className="mt-6 flex h-40 items-end gap-3">
-            {Array.from({ length: 7 }).map((_, index) => (
-              <div key={index} className="flex flex-1 flex-col items-center gap-2">
-                <div className="w-full rounded-t-2xl bg-[#DDE8CD]" style={{ height: `${18 + index * 3}px` }} />
-                <span className="text-[11px] font-bold text-[#A69A8A]">D{index + 1}</span>
-              </div>
-            ))}
+            {stats && stats.daily.length
+              ? stats.daily.map((day) => {
+                  const max = Math.max(1, ...stats.daily.map((d) => d.count));
+                  return (
+                    <div key={day.date} className="flex flex-1 flex-col items-center gap-2">
+                      <div className="w-full rounded-t-2xl bg-[#6F8F4E]" style={{ height: `${(day.count / max) * 120 + 8}px` }} />
+                      <span className="text-[11px] font-bold text-[#A69A8A]">{day.date.slice(5)}</span>
+                    </div>
+                  );
+                })
+              : Array.from({ length: 7 }).map((_, index) => (
+                  <div key={index} className="flex flex-1 flex-col items-center gap-2">
+                    <div className="w-full rounded-t-2xl bg-[#E8DCCB]" style={{ height: `18px` }} />
+                    <span className="text-[11px] font-bold text-[#A69A8A]">D{index + 1}</span>
+                  </div>
+                ))}
           </div>
-          <p className="mt-4 rounded-2xl bg-[#FFFDF8] px-4 py-3 text-sm font-bold text-[#7A6D5E]">数据统计功能暂未开放，当前仅为展示预览。</p>
+          <p className="mt-4 rounded-2xl bg-[#FFFDF8] px-4 py-3 text-sm font-bold text-[#7A6D5E]">{stats && stats.daily.length ? "按自然日聚合你的主页点击。" : "暂无点击数据，先添加链接并分享你的主页吧。"}</p>
         </section>
         <section className="rounded-[24px] border border-[#E8DCCB] bg-[#F7F1E7] p-5">
           <h2 className="text-xl font-black text-[#2B241E]">设备来源</h2>
           <div className="mt-4 grid gap-3">
-            <div className="flex items-center justify-between rounded-2xl bg-[#FFFDF8] px-4 py-3 text-sm font-black">
-              <span className="inline-flex items-center gap-2"><Smartphone aria-hidden className="link168-data-icon text-[#6F8F4E]" />手机</span>
-              <span>0</span>
-            </div>
-            <div className="flex items-center justify-between rounded-2xl bg-[#FFFDF8] px-4 py-3 text-sm font-black">
-              <span className="inline-flex items-center gap-2"><Monitor aria-hidden className="link168-data-icon text-[#6F8F4E]" />电脑</span>
-              <span>0</span>
-            </div>
+            {stats && stats.byDevice.length
+              ? stats.byDevice.map((item) => (
+                  <div key={item.device} className="flex items-center justify-between rounded-2xl bg-[#FFFDF8] px-4 py-3 text-sm font-black">
+                    <span className="inline-flex items-center gap-2">
+                      {item.device === "mobile" ? <Smartphone aria-hidden className="link168-data-icon text-[#6F8F4E]" /> : <Monitor aria-hidden className="link168-data-icon text-[#6F8F4E]" />}
+                      {item.device === "mobile" ? "手机" : item.device === "tablet" ? "平板" : "电脑"}
+                    </span>
+                    <span>{item.count}</span>
+                  </div>
+                ))
+              : (
+                <div className="text-sm font-bold text-[#7A6D5E]">暂无设备数据</div>
+              )}
           </div>
         </section>
       </div>
       <section className="mt-5 rounded-[24px] border border-[#E8DCCB] bg-[#F7F1E7] p-5">
-        <h2 className="text-xl font-black text-[#2B241E]">链接点击排行 Top 5</h2>
+        <h2 className="text-xl font-black text-[#2B241E]">热门链接 Top 5</h2>
         <div className="mt-4 grid gap-2">
-          {links.length ? links.slice(0, 5).map((link, index) => (
-            <div key={link.id} className="flex items-center justify-between rounded-2xl bg-[#FFFDF8] px-4 py-3 text-sm">
-              <span className="font-black">{index + 1}. {link.title || "未命名链接"}</span>
-              <span className="text-[#7A6D5E]">0 次</span>
-            </div>
-          )) : <p className="rounded-2xl bg-[#FFFDF8] px-4 py-4 text-sm font-bold text-[#7A6D5E]">暂无链接点击数据。</p>}
+          {stats && stats.topLinks.length ? (
+            stats.topLinks.map((link, index) => (
+              <div key={link.id} className="flex items-center justify-between rounded-2xl bg-[#FFFDF8] px-4 py-3 text-sm">
+                <span className="font-black">{index + 1}. {link.title || "未命名链接"}</span>
+                <span className="text-[#7A6D5E]">{link.totalClicks} 次</span>
+              </div>
+            ))
+          ) : (
+            <p className="rounded-2xl bg-[#FFFDF8] px-4 py-4 text-sm font-bold text-[#7A6D5E]">暂无链接点击数据。</p>
+          )}
         </div>
       </section>
       <section className="mt-5 rounded-[24px] border border-[#E6CF9F] bg-[#F6E7C8] p-5">
@@ -1422,6 +1517,165 @@ function DataPanel({ links, openVip }: { links: BuilderLink[]; openVip: () => vo
           ))}
         </div>
       </section>
+    </section>
+  );
+}
+
+function ShortLinksPanel({ openVip, showToast }: { openVip: () => void; showToast: (message: string) => void }) {
+  const [shortLinks, setShortLinks] = useState<Array<{ id: string; slug: string; targetUrl: string; totalClicks: number; createdAt: string }> | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [targetUrl, setTargetUrl] = useState("");
+  const [customSlug, setCustomSlug] = useState("");
+
+  async function load() {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/dashboard/short-links", { cache: "no-store" });
+      const result = (await response.json()) as { success?: boolean; error?: string; shortLinks?: Array<{ id: string; slug: string; targetUrl: string; totalClicks: number; createdAt: string }> };
+      if (response.ok && result.success && result.shortLinks) {
+        setShortLinks(result.shortLinks);
+      } else {
+        showToast(result.error || "读取短码失败");
+      }
+    } catch {
+      showToast("网络错误，请稍后再试");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void load();
+  }, []);
+
+  async function handleCreate(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!targetUrl.trim()) {
+      showToast("请填写目标 URL");
+      return;
+    }
+    setCreating(true);
+    try {
+      const response = await fetch("/api/dashboard/short-links", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetUrl: targetUrl.trim(), customSlug: customSlug.trim() || undefined }),
+      });
+      const result = (await response.json()) as { success?: boolean; error?: string; shortLink?: { id: string; slug: string; targetUrl: string; totalClicks: number; createdAt: string } };
+      if (!response.ok || !result.success || !result.shortLink) {
+        showToast(result.error || "创建失败，请稍后再试");
+        return;
+      }
+      setShortLinks((previous) => [result.shortLink!, ...(previous || [])]);
+      setTargetUrl("");
+      setCustomSlug("");
+      setShowCreate(false);
+      showToast("短码创建成功");
+    } catch {
+      showToast("网络错误，请稍后再试");
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function handleDelete(id: string) {
+    if (!window.confirm("确认删除这个短码吗？删除后将无法恢复。")) return;
+    setDeletingId(id);
+    try {
+      const response = await fetch(`/api/dashboard/short-links/${id}`, { method: "DELETE" });
+      const result = (await response.json()) as { success?: boolean; error?: string };
+      if (!response.ok || !result.success) {
+        showToast(result.error || "删除失败，请稍后再试");
+        return;
+      }
+      setShortLinks((previous) => (previous || []).filter((item) => item.id !== id));
+      showToast("已删除");
+    } catch {
+      showToast("网络错误，请稍后再试");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  return (
+    <section className="rounded-[30px] border border-[#E8DCCB] bg-[#FFFDF8]/92 p-5 shadow-[0_18px_55px_rgba(86,68,46,0.10)]">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <p className="text-sm font-black text-[#3F5F31]">短码服务</p>
+          <h1 className="mt-1 text-2xl font-black text-[#2B241E]">创建 /s 短链接</h1>
+          <p className="mt-1 text-sm text-[#7A6D5E]">将长链接压缩成简洁的短码，方便在社交平台或线下物料中分享。</p>
+        </div>
+        <button onClick={() => setShowCreate((previous) => !previous)} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#6F8F4E] px-4 text-sm font-black text-white hover:bg-[#5E7F3F]">
+          <Plus aria-hidden className="link168-nav-icon" />
+          {showCreate ? "收起" : "创建短码"}
+        </button>
+      </div>
+      {showCreate ? (
+        <form onSubmit={handleCreate} className="mt-5 grid gap-3 rounded-2xl border border-dashed border-[#E8DCCB] bg-[#F7F1E7] p-4">
+          <label className="block">
+            <span className="text-sm font-black text-[#3F5F31]">目标 URL</span>
+            <input value={targetUrl} onChange={(event) => setTargetUrl(event.target.value)} placeholder="https://example.com/some/very/long/path" className="mt-2 h-11 w-full rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm outline-none focus:border-[#6F8F4E]" />
+          </label>
+          <label className="block">
+            <span className="text-sm font-black text-[#3F5F31]">自定义短码（可选）</span>
+            <input value={customSlug} onChange={(event) => setCustomSlug(event.target.value)} placeholder="例如 mylink（仅允许英文字母、数字、短横线，3-32 位）" className="mt-2 h-11 w-full rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm outline-none focus:border-[#6F8F4E]" />
+          </label>
+          <div className="flex flex-wrap gap-2">
+            <button type="submit" disabled={creating} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#6F8F4E] px-4 text-sm font-black text-white disabled:opacity-60">
+              {creating ? "创建中..." : "立即创建"}
+            </button>
+            <button type="button" onClick={() => setShowCreate(false)} className="link168-button-press inline-flex min-h-10 items-center gap-2 rounded-full bg-[#F2E7D8] px-4 text-sm font-black text-[#7A6D5E]">取消</button>
+          </div>
+        </form>
+      ) : null}
+      <div className="mt-5 grid gap-3">
+        {loading ? (
+          <div className="rounded-2xl bg-[#F7F1E7] px-4 py-3 text-sm font-semibold text-[#7A6D5E]">正在读取短码...</div>
+        ) : null}
+        {!loading && (!shortLinks || shortLinks.length === 0) ? (
+          <div className="rounded-3xl border border-dashed border-[#E8DCCB] bg-[#F7F1E7] px-4 py-10 text-center">
+            <p className="text-sm font-black text-[#2B241E]">还没有短码</p>
+            <p className="mt-1 text-sm text-[#7A6D5E]">点击"创建短码"生成第一个短链接，或继续添加你要分享的外部地址。</p>
+          </div>
+        ) : null}
+        {shortLinks && shortLinks.length
+          ? shortLinks.map((link) => (
+              <div key={link.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-[#F7F1E7] p-4">
+                <div className="grid gap-1">
+                  <p className="text-xs font-black text-[#3F5F31]">
+                    <Link2 aria-hidden className="link168-nav-icon text-[#6F8F4E]" /> /s/{link.slug}
+                  </p>
+                  <p className="text-sm font-bold text-[#2B241E] break-all">→ {link.targetUrl}</p>
+                  <p className="text-xs text-[#7A6D5E]">访问 {link.totalClicks} 次 · {link.createdAt.slice(0, 10)}</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button onClick={() => void (async () => {
+                    try {
+                      await navigator.clipboard.writeText(`${window.location.origin}/s/${link.slug}`);
+                      showToast("短码链接已复制");
+                    } catch {
+                      showToast("复制失败，请手动复制");
+                    }
+                  })()} className="link168-button-press inline-flex min-h-9 items-center gap-2 rounded-full bg-[#FFFDF8] px-3 text-xs font-black text-[#3F5F31]">
+                    <Copy aria-hidden className="link168-nav-icon" />
+                    复制
+                  </button>
+                  <button onClick={() => handleDelete(link.id)} disabled={deletingId === link.id} className="link168-button-press inline-flex min-h-9 items-center gap-2 rounded-full bg-[#FFF1F0] px-3 text-xs font-black text-[#B42318] disabled:opacity-60">
+                    <Trash2 aria-hidden className="link168-nav-icon" />
+                    {deletingId === link.id ? "删除中..." : "删除"}
+                  </button>
+                </div>
+              </div>
+            ))
+          : null}
+      </div>
+      <div className="mt-5 rounded-2xl bg-[#F6E7C8] p-4">
+        <p className="text-sm font-black text-[#8C612E]">会员功能预告</p>
+        <p className="mt-1 text-sm text-[#8C612E]">自定义域名、自定义别名、短码点击溯源、访问地区分析、短码批量管理、短码二维码等高级功能将陆续开放给会员。</p>
+      </div>
     </section>
   );
 }
@@ -1440,6 +1694,8 @@ function AccountPanel({
   email,
   displayName,
   bio,
+  language,
+  setLanguage,
   publicUrl,
   previewUrl,
   shareUrl,
@@ -1452,6 +1708,8 @@ function AccountPanel({
   email: string | null;
   displayName: string;
   bio: string;
+  language: string;
+  setLanguage: (value: string) => void;
   publicUrl: string;
   previewUrl: string;
   shareUrl: string;
@@ -1639,6 +1897,20 @@ function AccountPanel({
       <AccountSection title="账号信息" icon={<User aria-hidden className="link168-feature-icon" />}>
         <InfoRow label="邮箱账号" value={email || "-"} />
         <InfoRow label="手机号绑定" value="未绑定" />
+        <div className="rounded-2xl bg-[#F7F1E7] p-3">
+          <p className="text-xs font-black text-[#3F5F31]">主页语言</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {[
+              { value: "zh", label: "中文" },
+              { value: "en", label: "English" },
+              { value: "ja", label: "日本語" },
+            ].map((item) => (
+              <button key={item.value} onClick={() => setLanguage(item.value)} className={`min-h-9 rounded-full px-3 text-xs font-black transition ${language === item.value ? "bg-[#6F8F4E] text-white" : "bg-[#FFFDF8] text-[#3F5F31]"}`}>
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
         <ActionRow label={showChangePassword ? "收起修改密码" : "修改密码"} onClick={() => setShowChangePassword((previous) => !previous)} />
         {showChangePassword ? (
           <form onSubmit={handleChangePassword} className="grid gap-3 rounded-2xl border border-dashed border-[#E8DCCB] bg-[#FFFDF8] p-4">
@@ -1828,8 +2100,12 @@ function LinkCard({
   onVip: (label: string) => void;
   onFlash: (label: string) => void;
 }) {
+  const iconTypes: Array<{ value: "default" | "emoji" | "custom"; label: string }> = [
+    { value: "default", label: "默认图标" },
+    { value: "emoji", label: "Emoji 图标" },
+    { value: "custom", label: "自定义图片" },
+  ];
   const toolItems = [
-    { label: "添加图标", icon: ImageIcon, action: () => onFlash("添加图标") },
     { label: "密码保护", icon: Lock, action: () => onVip("密码保护") },
     { label: "跳转动画", icon: Zap, action: () => onVip("跳转动画") },
     { label: "分享统计", icon: Share2, action: () => onVip("分享统计") },
@@ -1845,7 +2121,10 @@ function LinkCard({
             <span className="text-xs font-semibold text-[#8C612E]">尚未保存到数据库，仅在编辑器中可见</span>
           </>
         ) : (
-          <span className="rounded-full bg-[#DDE8CD] px-3 py-1 text-xs font-black text-[#3F5F31]">已保存</span>
+          <>
+            <span className="rounded-full bg-[#DDE8CD] px-3 py-1 text-xs font-black text-[#3F5F31]">已保存</span>
+            {link.total_clicks ? <span className="text-xs font-semibold text-[#3F5F31]">累计 {link.total_clicks} 次点击</span> : null}
+          </>
         )}
       </div>
       <div className="grid gap-3 lg:grid-cols-[24px_minmax(0,1fr)_auto] lg:items-start">
@@ -1854,6 +2133,49 @@ function LinkCard({
           <input ref={setTitleRef} value={link.title} onChange={(event) => onChange({ title: event.target.value })} placeholder="链接标题" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm font-black outline-none focus:border-[#6F8F4E]" />
           <input value={link.url} onChange={(event) => onChange({ url: event.target.value })} placeholder="链接地址" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm outline-none focus:border-[#6F8F4E]" />
           <input value={link.description || ""} onChange={(event) => onChange({ description: event.target.value })} placeholder="链接描述" className="h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm outline-none focus:border-[#6F8F4E]" />
+          <div className="rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] p-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-black text-[#3F5F31]">图标样式</span>
+              <div className="flex flex-wrap gap-2">
+                {iconTypes.map(({ value, label }) => (
+                  <button key={value} onClick={() => onChange({ icon_type: value })} title={label} className={`min-h-9 rounded-full px-3 text-xs font-black transition ${link.icon_type === value ? "bg-[#6F8F4E] text-white" : "bg-[#F7F1E7] text-[#3F5F31] hover:bg-[#EFE7DC]"}`}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="mt-3">
+              {link.icon_type === "emoji" ? (
+                <input
+                  value={link.icon_value || ""}
+                  onChange={(event) => onChange({ icon_value: event.target.value, icon_url: null })}
+                  placeholder="例如 🔗 或 🚀"
+                  className="h-11 w-full rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 text-xl outline-none focus:border-[#6F8F4E]"
+                />
+              ) : null}
+              {link.icon_type === "custom" ? (
+                <input
+                  value={link.icon_url || ""}
+                  onChange={(event) => onChange({ icon_url: event.target.value, icon_value: null })}
+                  placeholder="图标图片 URL（https://...）"
+                  className="h-11 w-full rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 text-sm outline-none focus:border-[#6F8F4E]"
+                />
+              ) : null}
+            </div>
+            <div className="mt-3 flex items-center gap-3">
+              <span className="text-xs font-semibold text-[#7A6D5E]">预览</span>
+              <div className="grid size-11 place-items-center rounded-2xl bg-[#F7F1E7] text-[#2B241E] shadow-sm">
+                {link.icon_type === "emoji" && link.icon_value ? <span className="text-2xl">{link.icon_value}</span> : null}
+                {link.icon_type === "custom" && link.icon_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={link.icon_url} alt="链接图标" className="size-7 rounded-xl object-cover" onError={(event) => {
+                    (event.currentTarget as HTMLImageElement).style.display = "none";
+                  }} />
+                ) : null}
+                {link.icon_type === "default" ? <Link2 aria-hidden className="link168-feature-icon text-[#6F8F4E]" /> : null}
+              </div>
+            </div>
+          </div>
           {link.saveError ? <p className="text-sm font-semibold text-[#B42318]">{link.saveError}</p> : null}
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
@@ -1873,6 +2195,9 @@ function LinkCard({
         </div>
       </div>
       <div className="mt-4 flex flex-wrap gap-2 border-t border-[#E8DCCB] pt-3">
+        <span className="link168-tooltip link168-button-press grid size-9 place-items-center rounded-full bg-[#FFFDF8] text-[#7A6D5E] shadow-sm" data-tooltip="添加图标已内置">
+          <ImageIcon aria-hidden className="link168-nav-icon" />
+        </span>
         {toolItems.map(({ label, icon: Icon, action }) => (
           <button key={label} onClick={action} title={label} className={`link168-tooltip link168-button-press grid size-9 place-items-center rounded-full bg-[#FFFDF8] text-[#7A6D5E] shadow-sm transition hover:bg-[#2B241E] hover:text-white ${flashActive === label ? "bg-[#F6E7C8] text-[#8C612E]" : ""}`} data-tooltip={label}>
             <Icon aria-label={label} className="link168-nav-icon" />

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowUpRight, Globe } from "lucide-react";
@@ -41,7 +42,6 @@ type ThemeStyle = {
   linkText: string;
   linkBorder: string;
   footerText: string;
-  linkBorderStyle?: string;
 };
 
 function getThemeStyle(theme: string | null | undefined): ThemeStyle {
@@ -142,6 +142,73 @@ function getThemeStyle(theme: string | null | undefined): ThemeStyle {
   }
 }
 
+type I18nText = {
+  noLinks: string;
+  bioFallback: string;
+  poweredBy: string;
+  report: string;
+  returnDashboard: string;
+};
+
+function getI18n(language: string | null | undefined): I18nText {
+  const lang = (language || "zh").trim().toLowerCase();
+  if (lang === "en") {
+    return {
+      noLinks: "No public links yet.",
+      bioFallback: "This profile has no bio.",
+      poweredBy: "Powered by Link168",
+      report: "Report this profile",
+      returnDashboard: "Back to dashboard",
+    };
+  }
+  if (lang === "ja") {
+    return {
+      noLinks: "公開リンクはまだありません。",
+      bioFallback: "このプロフィールには自己紹介がありません。",
+      poweredBy: "Link168 提供",
+      report: "このプロフィールを通報",
+      returnDashboard: "管理画面に戻る",
+    };
+  }
+  return {
+    noLinks: "暂无公开链接",
+    bioFallback: "这个主页还没有简介。",
+    poweredBy: "Powered by Link168",
+    report: "举报此主页",
+    returnDashboard: "返回操作后台",
+  };
+}
+
+function renderIcon(
+  iconType: string | null | undefined,
+  iconValue: string | null | undefined,
+  iconUrl: string | null | undefined,
+  defaultIconClass: string,
+  defaultTextClass: string,
+): ReactNode {
+  const type = (iconType || "default").toLowerCase();
+  if (type === "emoji" && iconValue) {
+    return (
+      <span className={`grid size-10 shrink-0 place-items-center rounded-xl text-2xl ${defaultIconClass}`}>
+        {iconValue}
+      </span>
+    );
+  }
+  if (type === "custom" && iconUrl) {
+    return (
+      <span className={`grid size-10 shrink-0 place-items-center overflow-hidden rounded-xl border border-black/5 ${defaultIconClass}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={iconUrl} alt="" className="size-full object-cover" />
+      </span>
+    );
+  }
+  return (
+    <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${defaultIconClass}`}>
+      <Globe aria-hidden className="size-5" />
+    </span>
+  );
+}
+
 export async function generateMetadata({ params }: PublicProfilePageProps): Promise<Metadata> {
   const { username } = await params;
   const profile = await getPublicProfile(username);
@@ -170,20 +237,21 @@ export default async function PublicProfilePage({ params, searchParams }: Public
   }
 
   const style = getThemeStyle(profile.theme || "Link168 草木默认");
+  const i18n = getI18n(profile.language);
   const displayName = profile.displayName || `@${profile.username}`;
   const initial = displayName.slice(0, 1).toUpperCase();
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 py-5">
+    <main className={`mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 py-5 ${style.outer}`}>
       {isPreview ? (
         <Link
           href="/dashboard"
           className="mb-3 inline-flex w-fit items-center rounded-full bg-[#6F8F4E] px-4 py-2 text-sm font-black text-white shadow-sm"
         >
-          返回操作后台
+          {i18n.returnDashboard}
         </Link>
       ) : null}
-      <section className={`flex flex-1 flex-col overflow-hidden rounded-[28px] border border-[#1A1A1A]/15 bg-[#1A1A1A] p-3 shadow-2xl shadow-[#5B6FFF]/20`}>
+      <section className="flex flex-1 flex-col overflow-hidden rounded-[28px] border border-[#1A1A1A]/15 bg-[#1A1A1A] p-3 shadow-2xl shadow-[#5B6FFF]/20">
         <div className={`flex flex-1 flex-col overflow-hidden rounded-[20px] ${style.screen}`}>
           <header className="flex items-center justify-between border-b border-black/10 px-4 py-3 text-[#2B241E]">
             <span className="text-xs font-black">9:41</span>
@@ -207,7 +275,7 @@ export default async function PublicProfilePage({ params, searchParams }: Public
                 <div className="min-w-0 pt-1">
                   <h1 className={`truncate text-2xl font-black ${style.cardText}`}>{displayName}</h1>
                   <p className={`mt-0.5 text-xs font-bold ${style.cardSubtle}`}>@{profile.username}</p>
-                  <p className={`mt-2 text-sm leading-5 ${style.cardSubtle}`}>{profile.bio || "这个主页还没有简介。"}</p>
+                  <p className={`mt-2 text-sm leading-5 ${style.cardSubtle}`}>{profile.bio || i18n.bioFallback}</p>
                 </div>
               </div>
             </section>
@@ -215,28 +283,24 @@ export default async function PublicProfilePage({ params, searchParams }: Public
             <div className="mt-4 space-y-2.5">
               {profile.links.length === 0 ? (
                 <div className={`rounded-lg border border-dashed border-[#E0E0E0] ${style.card} px-4 py-5 text-center text-sm font-bold ${style.cardSubtle}`}>
-                  暂无公开链接
+                  {i18n.noLinks}
                 </div>
               ) : null}
               {profile.links.map((item) => (
-                <a
+                <Link
                   key={item.id}
-                  href={item.url}
-                  rel="noreferrer"
-                  target="_blank"
+                  href={`/go/${item.id}`}
                   className={`link168-card-hover flex min-h-16 items-center justify-between gap-3 rounded-2xl border px-3.5 py-3 text-sm shadow-sm transition active:scale-[0.99] ${style.link} ${style.linkBorder}`}
                 >
                   <span className="flex min-w-0 flex-1 items-center gap-3">
-                    <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${style.linkIcon}`}>
-                      <Globe aria-hidden className="size-5" />
-                    </span>
+                    {renderIcon(item.iconType, item.iconValue, item.iconUrl, style.linkIcon, style.linkText)}
                     <span className="min-w-0">
                       <span className={`block truncate font-black ${style.linkText}`}>{item.title}</span>
                       {item.description ? <span className={`mt-0.5 block truncate text-xs ${style.cardSubtle}`}>{item.description}</span> : null}
                     </span>
                   </span>
                   <ArrowUpRight aria-hidden className={`size-5 shrink-0 opacity-70 ${style.linkText}`} />
-                </a>
+                </Link>
               ))}
             </div>
 
@@ -245,7 +309,7 @@ export default async function PublicProfilePage({ params, searchParams }: Public
               href={`/report?url=${encodeURIComponent(`https://link168.me/${profile.username}`)}`}
               className={`mt-3 block text-center text-xs font-bold hover:text-[#5B6FFF] ${style.footerText}`}
             >
-              举报此主页
+              {i18n.report}
             </Link>
           </div>
         </div>

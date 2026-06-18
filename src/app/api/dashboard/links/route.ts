@@ -5,10 +5,15 @@ import { getOwnedProfile, newId, normalizeNullableString, normalizeUrl, toLinkDt
 
 export const runtime = "nodejs";
 
+const ICON_TYPES = ["default", "emoji", "custom"] as const;
+
 type CreateLinkRequest = {
   title?: unknown;
   url?: unknown;
   description?: unknown;
+  iconType?: unknown;
+  iconValue?: unknown;
+  iconUrl?: unknown;
 };
 
 export async function POST(request: Request) {
@@ -33,6 +38,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "Title and URL are required." }, { status: 400 });
   }
 
+  const iconTypeRaw = typeof body.iconType === "string" ? body.iconType.trim().toLowerCase() : "default";
+  const iconType = ICON_TYPES.includes(iconTypeRaw as (typeof ICON_TYPES)[number]) ? iconTypeRaw : "default";
+  const iconValue = iconType === "emoji" ? normalizeNullableString(body.iconValue) : null;
+  const iconUrlRaw = typeof body.iconUrl === "string" ? body.iconUrl.trim() : "";
+  const iconUrl = iconType === "custom" && /^https?:\/\//i.test(iconUrlRaw) ? iconUrlRaw : null;
+
   const position = await db.link.count({ where: { profileId: profile.id } });
   const link = await db.link.create({
     data: {
@@ -41,6 +52,9 @@ export async function POST(request: Request) {
       title,
       url,
       description: normalizeNullableString(body.description),
+      iconType,
+      iconValue,
+      iconUrl,
       position,
       isActive: true,
     },

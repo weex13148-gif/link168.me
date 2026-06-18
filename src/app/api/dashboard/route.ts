@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getDashboardData, newId, normalizeNullableString, normalizeUsername, toProfileDto } from "@/lib/dashboard-data";
 import { HANDLE_FORMAT_ERROR, HANDLE_RESERVED_ERROR, isPlaceholderHandle, normalizeHandle, validateHandle } from "@/lib/handle";
+import { SUPPORTED_LANGUAGES } from "@/lib/i18n";
 
 export const runtime = "nodejs";
 
@@ -15,6 +16,7 @@ type SaveProfileRequest = {
   displayName?: unknown;
   bio?: unknown;
   theme?: unknown;
+  language?: unknown;
 };
 
 export async function GET(request: Request) {
@@ -66,6 +68,8 @@ export async function PUT(request: Request) {
   }
 
   const themeValue = (typeof body.theme === "string" && body.theme.trim()) || null;
+  const languageRaw = (typeof body.language === "string" ? body.language.trim() : "") || "";
+  const languageValue = languageRaw && SUPPORTED_LANGUAGES.includes(languageRaw as (typeof SUPPORTED_LANGUAGES)[number]) ? languageRaw : null;
 
   const profile = await db.profile.upsert({
     where: { userId: user.id },
@@ -76,12 +80,14 @@ export async function PUT(request: Request) {
       displayName: normalizeNullableString(body.displayName),
       bio: normalizeNullableString(body.bio),
       theme: themeValue || "Link168 草木默认",
+      language: languageValue || "zh",
       isPublic: true,
     },
     update: {
       displayName: normalizeNullableString(body.displayName),
       bio: normalizeNullableString(body.bio),
       ...(themeValue ? { theme: themeValue } : {}),
+      ...(languageValue ? { language: languageValue } : {}),
       isPublic: true,
       ...(canCompleteUsername ? { username } : {}),
     },

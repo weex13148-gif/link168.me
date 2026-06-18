@@ -139,6 +139,8 @@ exports.Prisma.ProfileScalarFieldEnum = {
   bio: 'bio',
   avatarUrl: 'avatarUrl',
   theme: 'theme',
+  customTheme: 'customTheme',
+  language: 'language',
   isPublic: 'isPublic',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -150,9 +152,36 @@ exports.Prisma.LinkScalarFieldEnum = {
   title: 'title',
   url: 'url',
   description: 'description',
+  iconType: 'iconType',
+  iconValue: 'iconValue',
   iconUrl: 'iconUrl',
   position: 'position',
   isActive: 'isActive',
+  totalClicks: 'totalClicks',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.LinkClickScalarFieldEnum = {
+  id: 'id',
+  linkId: 'linkId',
+  profileId: 'profileId',
+  country: 'country',
+  city: 'city',
+  device: 'device',
+  os: 'os',
+  browser: 'browser',
+  referer: 'referer',
+  ipHash: 'ipHash',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ShortLinkScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  slug: 'slug',
+  targetUrl: 'targetUrl',
+  totalClicks: 'totalClicks',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -246,6 +275,8 @@ exports.Prisma.ModelName = {
   User: 'User',
   Profile: 'Profile',
   Link: 'Link',
+  LinkClick: 'LinkClick',
+  ShortLink: 'ShortLink',
   Session: 'Session',
   Report: 'Report',
   PasswordResetToken: 'PasswordResetToken',
