@@ -13,7 +13,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/link168_ci
       ADMIN_SECRET: ci-only-admin-secret-at-least-32-characters
@@ -36,10 +36,43 @@ jobs:
       - name: Generate Prisma client
         run: npx prisma generate
 
-      - name: Lint and typecheck
-        run: npm run check
+      - name: Prepare logs
+        run: mkdir -p ci-logs
+
+      - name: Lint
+        id: lint
+        continue-on-error: true
+        shell: bash
+        run: set -o pipefail; npm run lint 2>&1 | tee ci-logs/lint.log
+
+      - name: Typecheck
+        id: typecheck
+        continue-on-error: true
+        shell: bash
+        run: set -o pipefail; npm run typecheck 2>&1 | tee ci-logs/typecheck.log
 
       - name: Production build
+        id: build
+        continue-on-error: true
+        shell: bash
         env:
           NODE_OPTIONS: --max-old-space-size=4096
-        run: npm run build
+        run: set -o pipefail; npm run build 2>&1 | tee ci-logs/build.log
+
+      - name: Upload verification logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: link168-ci-logs
+          path: ci-logs
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Enforce verification result
+        if: always()
+        shell: bash
+        run: |
+          if [[ "${{ steps.lint.outcome }}" != "success" || "${{ steps.typecheck.outcome }}" != "success" || "${{ steps.build.outcome }}" != "success" ]]; then
+            echo "Lint, typecheck, or build failed. Review the link168-ci-logs artifact."
+            exit 1
+          fi
