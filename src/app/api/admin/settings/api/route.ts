@@ -16,6 +16,7 @@ import {
 } from "@/lib/app-config";
 import { db } from "@/lib/db";
 import { ROLE_SUPER_ADMIN } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -25,7 +26,37 @@ const STORAGE_PROVIDERS: StorageProvider[] = ["local", "aliyun-oss", "tencent-co
 const SMTP_SECURE_MODES: SmtpSecureMode[] = ["ssl", "tls", "none"];
 const KNOWN_ASSISTANTS = Object.values(AI_ASSISTANTS);
 
+const BOOLEAN_KEYS = new Set<keyof AppConfigValues>([
+  "aiEnabled",
+  "aiAssistantTaxEnabled",
+  "aiAssistantLegalEnabled",
+  "aiAssistantMarketEnabled",
+  "aiAssistantDesignEnabled",
+  "aiAssistantSocialEnabled",
+  "mailEnabled",
+  "paymentEnabled",
+  "paymentWechatEnabled",
+  "paymentAlipayEnabled",
+  "paymentTestMode",
+  "storageEnabled",
+  "smsEnabled",
+  "analyticsEnabled",
+  "webhookEnabled",
+]);
+
+const NUMBER_LIMITS: Partial<Record<keyof AppConfigValues, { min: number; max: number }>> = {
+  aiDailyLimitTotal: { min: 1, max: 1_000_000 },
+  aiDailyLimitPerUser: { min: 1, max: 100_000 },
+  smtpPort: { min: 1, max: 65_535 },
+};
+
 type UpdateBody = Partial<Record<keyof AppConfigValues, unknown>>;
+type TestActionBody = {
+  action?: unknown;
+  email?: unknown;
+};
+
+const hasOwn = (value: object, key: PropertyKey) => Object.prototype.hasOwnProperty.call(value, key);
 
 function parseBoolean(value: unknown, fallback = false) {
   return value === true ? true : value === false ? false : fallback;
@@ -37,93 +68,100 @@ function parseString(value: unknown, fallback = "") {
 
 function parseNumber(value: unknown, fallback: number, min: number, max: number) {
   const parsed = Number(value);
-  if (Number.isNaN(parsed)) return fallback;
-  return Math.min(Math.max(parsed, min), max);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.min(Math.max(Math.trunc(parsed), min), max);
 }
 
 function parseStringArray(value: unknown) {
-  if (Array.isArray(value)) {
-    return value
-      .map((item) => (typeof item === "string" ? item.trim().toLowerCase() : ""))
-      .filter((item) => EMAIL_REGEX.test(item));
-  }
-  if (typeof value === "string") {
-    return value
-      .split(/[,;\n]/)
-      .map((item) => item.trim().toLowerCase())
-      .filter((item) => EMAIL_REGEX.test(item));
-  }
-  return [];
+  const source = Array.isArray(value) ? value : typeof value === "string" ? value.split(/[,;\n]/) : [];
+  return Array.from(
+    new Set(
+      source
+        .map((item) => (typeof item === "string" ? item.trim().toLowerCase() : ""))
+        .filter((item) => EMAIL_REGEX.test(item)),
+    ),
+  );
 }
 
 function safeErrorMessage(error: unknown, fallback: string) {
+  if (process.env.NODE_ENV === "production") return fallback;
   const message = error instanceof Error ? error.message : fallback;
   if (!message) return fallback;
-  return message.replace(/sk-[A-Za-z0-9_\-]+/g, "sk-****").replace(/Bearer\s+[A-Za-z0-9_\-.]+/gi, "Bearer ****");
+  return message
+    .replace(/sk-[A-Za-z0-9_-]+/g, "sk-****")
+    .replace(/Bearer\s+[A-Za-z0-9_.-]+/gi, "Bearer ****")
+    .slice(0, 240);
 }
 
 function validateAndCoerce(body: UpdateBody): Partial<AppConfigValues> {
-  const aiProviderRaw = parseString(body.aiProvider, DEFAULT_CONFIG.aiProvider).toLowerCase() as AiProvider;
-  const storageProviderRaw = parseString(body.storageProvider, DEFAULT_CONFIG.storageProvider).toLowerCase() as StorageProvider;
-  const smtpSecureModeRaw = parseString(body.smtpSecureMode, DEFAULT_CONFIG.smtpSecureMode).toLowerCase() as SmtpSecureMode;
+  const patch: Partial<AppConfigValues> = {};
+  const mutable = patch as Record<string, unknown>;
 
-  return {
-    aiEnabled: parseBoolean(body.aiEnabled, DEFAULT_CONFIG.aiEnabled),
-    aiProvider: AI_PROVIDERS.includes(aiProviderRaw) ? aiProviderRaw : DEFAULT_CONFIG.aiProvider,
-    aiBaseUrl: parseString(body.aiBaseUrl, DEFAULT_CONFIG.aiBaseUrl),
-    aiModel: parseString(body.aiModel, DEFAULT_CONFIG.aiModel),
-    aiApiKey: parseString(body.aiApiKey, ""),
-    aiDailyLimitTotal: parseNumber(body.aiDailyLimitTotal, DEFAULT_CONFIG.aiDailyLimitTotal, 1, 1_000_000),
-    aiDailyLimitPerUser: parseNumber(body.aiDailyLimitPerUser, DEFAULT_CONFIG.aiDailyLimitPerUser, 1, 100_000),
-    aiTesterEmails: parseStringArray(body.aiTesterEmails),
-    aiAssistantTaxEnabled: parseBoolean(body.aiAssistantTaxEnabled, DEFAULT_CONFIG.aiAssistantTaxEnabled),
-    aiAssistantLegalEnabled: parseBoolean(body.aiAssistantLegalEnabled, DEFAULT_CONFIG.aiAssistantLegalEnabled),
-    aiAssistantMarketEnabled: parseBoolean(body.aiAssistantMarketEnabled, DEFAULT_CONFIG.aiAssistantMarketEnabled),
-    aiAssistantDesignEnabled: parseBoolean(body.aiAssistantDesignEnabled, DEFAULT_CONFIG.aiAssistantDesignEnabled),
-    aiAssistantSocialEnabled: parseBoolean(body.aiAssistantSocialEnabled, DEFAULT_CONFIG.aiAssistantSocialEnabled),
+  for (const key of Object.keys(DEFAULT_CONFIG) as (keyof AppConfigValues)[]) {
+    if (!hasOwn(body, key)) continue;
+    const value = body[key];
 
-    mailEnabled: parseBoolean(body.mailEnabled, DEFAULT_CONFIG.mailEnabled),
-    smtpHost: parseString(body.smtpHost),
-    smtpPort: parseNumber(body.smtpPort, DEFAULT_CONFIG.smtpPort, 1, 65535),
-    smtpUser: parseString(body.smtpUser),
-    smtpPassword: parseString(body.smtpPassword, ""),
-    mailFrom: parseString(body.mailFrom),
-    smtpSecureMode: SMTP_SECURE_MODES.includes(smtpSecureModeRaw) ? smtpSecureModeRaw : DEFAULT_CONFIG.smtpSecureMode,
+    if (BOOLEAN_KEYS.has(key)) {
+      mutable[key] = parseBoolean(value, DEFAULT_CONFIG[key] as boolean);
+      continue;
+    }
 
-    paymentEnabled: parseBoolean(body.paymentEnabled, DEFAULT_CONFIG.paymentEnabled),
-    paymentWechatEnabled: parseBoolean(body.paymentWechatEnabled, DEFAULT_CONFIG.paymentWechatEnabled),
-    paymentAlipayEnabled: parseBoolean(body.paymentAlipayEnabled, DEFAULT_CONFIG.paymentAlipayEnabled),
-    paymentMerchantId: parseString(body.paymentMerchantId),
-    paymentAppId: parseString(body.paymentAppId),
-    paymentApiKey: parseString(body.paymentApiKey, ""),
-    paymentCertPath: parseString(body.paymentCertPath),
-    paymentNotifyUrl: parseString(body.paymentNotifyUrl),
-    paymentTestMode: parseBoolean(body.paymentTestMode, DEFAULT_CONFIG.paymentTestMode),
+    const numberLimit = NUMBER_LIMITS[key];
+    if (numberLimit) {
+      mutable[key] = parseNumber(value, DEFAULT_CONFIG[key] as number, numberLimit.min, numberLimit.max);
+      continue;
+    }
 
-    storageEnabled: parseBoolean(body.storageEnabled, DEFAULT_CONFIG.storageEnabled),
-    storageProvider: STORAGE_PROVIDERS.includes(storageProviderRaw) ? storageProviderRaw : DEFAULT_CONFIG.storageProvider,
-    storageEndpoint: parseString(body.storageEndpoint),
-    storageBucket: parseString(body.storageBucket),
-    storageRegion: parseString(body.storageRegion),
-    storageAccessKeyId: parseString(body.storageAccessKeyId, ""),
-    storageAccessKeySecret: parseString(body.storageAccessKeySecret, ""),
-    storageUploadPrefix: parseString(body.storageUploadPrefix, DEFAULT_CONFIG.storageUploadPrefix),
+    if (key === "aiProvider") {
+      const normalized = parseString(value, DEFAULT_CONFIG.aiProvider).toLowerCase() as AiProvider;
+      patch.aiProvider = AI_PROVIDERS.includes(normalized) ? normalized : DEFAULT_CONFIG.aiProvider;
+      continue;
+    }
 
-    smsEnabled: parseBoolean(body.smsEnabled, DEFAULT_CONFIG.smsEnabled),
-    smsProvider: parseString(body.smsProvider),
-    smsAccessKeyId: parseString(body.smsAccessKeyId, ""),
-    smsAccessKeySecret: parseString(body.smsAccessKeySecret, ""),
-    smsSignName: parseString(body.smsSignName),
-    smsTemplateId: parseString(body.smsTemplateId),
+    if (key === "storageProvider") {
+      const normalized = parseString(value, DEFAULT_CONFIG.storageProvider).toLowerCase() as StorageProvider;
+      patch.storageProvider = STORAGE_PROVIDERS.includes(normalized) ? normalized : DEFAULT_CONFIG.storageProvider;
+      continue;
+    }
 
-    mapApiKey: parseString(body.mapApiKey, ""),
-    analyticsEnabled: parseBoolean(body.analyticsEnabled, DEFAULT_CONFIG.analyticsEnabled),
-    analyticsProvider: parseString(body.analyticsProvider),
-    analyticsKey: parseString(body.analyticsKey, ""),
-    webhookEnabled: parseBoolean(body.webhookEnabled, DEFAULT_CONFIG.webhookEnabled),
-    webhookUrl: parseString(body.webhookUrl),
-    customApiConfig: parseString(body.customApiConfig),
-  };
+    if (key === "smtpSecureMode") {
+      const normalized = parseString(value, DEFAULT_CONFIG.smtpSecureMode).toLowerCase() as SmtpSecureMode;
+      patch.smtpSecureMode = SMTP_SECURE_MODES.includes(normalized) ? normalized : DEFAULT_CONFIG.smtpSecureMode;
+      continue;
+    }
+
+    if (key === "aiTesterEmails") {
+      patch.aiTesterEmails = parseStringArray(value);
+      continue;
+    }
+
+    mutable[key] = parseString(value, String(DEFAULT_CONFIG[key] ?? ""));
+  }
+
+  return patch;
+}
+
+function isBlockedHostname(hostname: string) {
+  const host = hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  if (["localhost", "0.0.0.0", "127.0.0.1", "::1"].includes(host)) return true;
+  if (host.endsWith(".local") || host.endsWith(".internal")) return true;
+  if (/^10\./.test(host) || /^192\.168\./.test(host) || /^169\.254\./.test(host)) return true;
+  if (/^172\.(1[6-9]|2\d|3[01])\./.test(host)) return true;
+  return false;
+}
+
+function getSafeExternalBaseUrl(value: string) {
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:" && !(process.env.NODE_ENV !== "production" && url.protocol === "http:")) return null;
+    if (!url.hostname || url.username || url.password || isBlockedHostname(url.hostname)) return null;
+    url.pathname = url.pathname.replace(/\/+$/, "");
+    url.search = "";
+    url.hash = "";
+    return url;
+  } catch {
+    return null;
+  }
 }
 
 export async function GET(request: Request) {
@@ -138,6 +176,11 @@ export async function PUT(request: Request) {
   const forbidden = await requireSuperAdmin(request);
   if (forbidden) return forbidden;
 
+  const rl = rateLimit(request, "admin-settings:update", 30, 60 * 1000);
+  if (!rl.passed) {
+    return NextResponse.json({ success: false, error: "保存过于频繁，请稍后再试。" }, { status: 429 });
+  }
+
   let body: UpdateBody;
   try {
     body = (await request.json()) as UpdateBody;
@@ -145,8 +188,13 @@ export async function PUT(request: Request) {
     return NextResponse.json({ success: false, error: "请求体不是合法 JSON" }, { status: 400 });
   }
 
+  const patch = validateAndCoerce(body);
+  if (Object.keys(patch).length === 0) {
+    return NextResponse.json({ success: false, error: "没有可保存的配置。" }, { status: 400 });
+  }
+
   try {
-    await updateConfig(validateAndCoerce(body));
+    await updateConfig(patch);
   } catch (error) {
     return NextResponse.json({ success: false, error: safeErrorMessage(error, "保存配置失败") }, { status: 400 });
   }
@@ -154,11 +202,6 @@ export async function PUT(request: Request) {
   const config = await getMaskedConfig();
   return NextResponse.json({ success: true, config });
 }
-
-type TestActionBody = {
-  action?: unknown;
-  email?: unknown;
-};
 
 async function handleTestWhitelist(emailUnknown: unknown) {
   const email = parseString(emailUnknown).toLowerCase();
@@ -190,6 +233,9 @@ async function handlePromote(emailUnknown: unknown) {
   if (!user) {
     return NextResponse.json({ success: false, error: "该邮箱尚未注册" }, { status: 404 });
   }
+  if (user.role === ROLE_SUPER_ADMIN) {
+    return NextResponse.json({ success: true, message: `${email} 已经是超级管理员` });
+  }
 
   await db.user.update({ where: { id: user.id }, data: { role: ROLE_SUPER_ADMIN } });
   return NextResponse.json({ success: true, message: `已将 ${email} 提升为超级管理员` });
@@ -201,13 +247,18 @@ async function handleTestAiConnection() {
     return NextResponse.json({ success: false, error: "请先填写完整 AI API Key" }, { status: 400 });
   }
 
-  const baseUrl = config.aiBaseUrl.endsWith("/") ? config.aiBaseUrl.slice(0, -1) : config.aiBaseUrl;
+  const baseUrl = getSafeExternalBaseUrl(config.aiBaseUrl);
+  if (!baseUrl) {
+    return NextResponse.json({ success: false, error: "AI Base URL 无效或指向受限网络地址。" }, { status: 400 });
+  }
 
   try {
-    const apiResponse = await fetch(`${baseUrl}/models`, {
+    const endpoint = new URL(`${baseUrl.toString().replace(/\/$/, "")}/models`);
+    const apiResponse = await fetch(endpoint, {
       method: "GET",
       headers: { Authorization: `Bearer ${config.aiApiKey}` },
       cache: "no-store",
+      signal: AbortSignal.timeout(10_000),
     });
 
     if (!apiResponse.ok) {
@@ -239,6 +290,9 @@ async function handleTestMail(emailUnknown: unknown) {
     port: config.smtpPort,
     secure: config.smtpSecureMode === "ssl",
     requireTLS: config.smtpSecureMode === "tls",
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 15_000,
     auth: {
       user: config.smtpUser,
       pass: config.smtpPassword,
@@ -257,6 +311,8 @@ async function handleTestMail(emailUnknown: unknown) {
     return NextResponse.json({ success: true, message: `测试邮件已发送至 ${targetEmail}` });
   } catch (error) {
     return NextResponse.json({ success: false, error: safeErrorMessage(error, "SMTP 测试失败") }, { status: 502 });
+  } finally {
+    transporter.close();
   }
 }
 
@@ -267,32 +323,37 @@ async function handleTestStorage() {
   }
 
   if (config.storageProvider === "local") {
-    return NextResponse.json({ success: true, message: "本地存储模式可用，上传将写入服务器本地目录" });
+    return NextResponse.json({ success: true, message: "本地存储模式已启用。" });
   }
 
-  return NextResponse.json({
-    success: true,
-    message: "云存储配置已保存。内测版暂不开放真实云厂商连通性测试，请由老板或运维在服务器侧验证。",
-  });
+  return NextResponse.json(
+    { success: false, error: "云存储真实连通性测试尚未实现，不能判定配置可用。" },
+    { status: 501 },
+  );
 }
 
 async function handleTestPayment() {
-  return NextResponse.json({
-    success: true,
-    message: "支付配置预留已启用。内测版暂不开放真实支付测试，请保持默认关闭。",
-  });
+  return NextResponse.json(
+    { success: false, error: "真实支付测试尚未实现，请保持支付总开关关闭。" },
+    { status: 501 },
+  );
 }
 
 async function handleTestSms() {
-  return NextResponse.json({
-    success: true,
-    message: "短信配置预留已启用。内测版暂不开放真实短信发送。",
-  });
+  return NextResponse.json(
+    { success: false, error: "真实短信发送测试尚未实现，请保持短信总开关关闭。" },
+    { status: 501 },
+  );
 }
 
 export async function POST(request: Request) {
   const forbidden = await requireSuperAdmin(request);
   if (forbidden) return forbidden;
+
+  const rl = rateLimit(request, "admin-settings:action", 20, 60 * 1000);
+  if (!rl.passed) {
+    return NextResponse.json({ success: false, error: "操作过于频繁，请稍后再试。" }, { status: 429 });
+  }
 
   let body: TestActionBody;
   try {
