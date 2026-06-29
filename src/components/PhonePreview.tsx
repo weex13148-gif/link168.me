@@ -88,9 +88,7 @@ export function PhonePreview({
   );
 
   return (
-    <div
-      className={`phone-preview link168-phone-shell mx-auto w-full max-w-[390px] p-2.5 ${shellByVariant[variant]} ${className}`}
-    >
+    <div className={`phone-preview link168-phone-shell mx-auto w-full max-w-[390px] p-2.5 ${shellByVariant[variant]} ${className}`}>
       <div className={`link168-phone-screen flex h-full flex-col overflow-hidden ${appearance?.surfaceClassName || "bg-[#F7F1E7]"}`}>
         <div className="flex shrink-0 items-center justify-between border-b border-[#E8DCCB]/70 px-4 py-3 text-[#2B241E]">
           <span className="text-xs font-black">9:41</span>
@@ -119,13 +117,9 @@ export function PhonePreview({
                 </div>
               )}
               <div className="min-w-0 pt-1">
-                <h2 className="truncate text-2xl font-black" style={appearance?.nameStyle}>
-                  {name}
-                </h2>
+                <h2 className="truncate text-2xl font-black" style={appearance?.nameStyle}>{name}</h2>
                 <p className="mt-0.5 text-xs font-bold text-[#7A6D5E]">@{username || "yourname"}</p>
-                <p className="mt-2 text-sm leading-5 text-[#7A6D5E]" style={appearance?.bioStyle}>
-                  {profileBio}
-                </p>
+                <p className="mt-2 text-sm leading-5 text-[#7A6D5E]" style={appearance?.bioStyle}>{profileBio}</p>
               </div>
             </div>
           </section>
@@ -134,8 +128,9 @@ export function PhonePreview({
             {activeLinks.map(({ id, label, caption, href }) => (
               <a
                 key={id || label}
-                href={href || "#"}
-                className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3.5 py-3 shadow-sm active:scale-[0.99] ${appearance?.linkClassName || ""}`}
+                href={href}
+                aria-disabled={!href}
+                className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3.5 py-3 shadow-sm active:scale-[0.99] ${!href ? "cursor-default" : ""} ${appearance?.linkClassName || ""}`}
                 style={appearance?.linkStyle}
               >
                 <span className={`flex min-w-0 flex-1 items-center gap-3 ${linkAlign === "right" ? "justify-end" : linkAlign === "center" ? "justify-center" : ""}`}>
