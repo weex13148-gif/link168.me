@@ -40,24 +40,36 @@ jobs:
         run: mkdir -p ci-logs
 
       - name: Lint
-        id: lint
-        continue-on-error: true
         shell: bash
-        run: set -o pipefail; npm run lint 2>&1 | tee ci-logs/lint.log
+        run: |
+          set +e
+          set -o pipefail
+          npm run lint 2>&1 | tee ci-logs/lint.log
+          status=${PIPESTATUS[0]}
+          echo "$status" > ci-logs/lint.status
+          exit 0
 
       - name: Typecheck
-        id: typecheck
-        continue-on-error: true
         shell: bash
-        run: set -o pipefail; npm run typecheck 2>&1 | tee ci-logs/typecheck.log
+        run: |
+          set +e
+          set -o pipefail
+          npm run typecheck 2>&1 | tee ci-logs/typecheck.log
+          status=${PIPESTATUS[0]}
+          echo "$status" > ci-logs/typecheck.status
+          exit 0
 
       - name: Production build
-        id: build
-        continue-on-error: true
         shell: bash
         env:
           NODE_OPTIONS: --max-old-space-size=4096
-        run: set -o pipefail; npm run build 2>&1 | tee ci-logs/build.log
+        run: |
+          set +e
+          set -o pipefail
+          npm run build 2>&1 | tee ci-logs/build.log
+          status=${PIPESTATUS[0]}
+          echo "$status" > ci-logs/build.status
+          exit 0
 
       - name: Upload verification logs
         if: always()
@@ -72,7 +84,11 @@ jobs:
         if: always()
         shell: bash
         run: |
-          if [[ "${{ steps.lint.outcome }}" != "success" || "${{ steps.typecheck.outcome }}" != "success" || "${{ steps.build.outcome }}" != "success" ]]; then
-            echo "Lint, typecheck, or build failed. Review the link168-ci-logs artifact."
+          lint_status=$(cat ci-logs/lint.status 2>/dev/null || echo 1)
+          typecheck_status=$(cat ci-logs/typecheck.status 2>/dev/null || echo 1)
+          build_status=$(cat ci-logs/build.status 2>/dev/null || echo 1)
+          if [[ "$lint_status" != "0" || "$typecheck_status" != "0" || "$build_status" != "0" ]]; then
+            echo "Verification failed: lint=$lint_status typecheck=$typecheck_status build=$build_status"
             exit 1
           fi
+          echo "Lint, typecheck, and production build all passed."
