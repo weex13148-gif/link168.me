@@ -72,12 +72,8 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!password) {
-    return NextResponse.json({ success: false, error: "请输入密码" }, { status: 400 });
-  }
-
-  if (password.length < 6) {
-    return NextResponse.json({ success: false, error: "密码至少需要 6 位" }, { status: 400 });
+  if (!password || password.length < 6 || Buffer.byteLength(password, "utf8") > 72) {
+    return NextResponse.json({ success: false, error: "密码需为 6-72 字节" }, { status: 400 });
   }
 
   if (password !== confirmPassword) {
@@ -128,18 +124,19 @@ export async function POST(request: Request) {
     });
 
     const verifyToken = await createEmailVerificationToken(user.id);
-
     const mailResult = await sendEmailVerification(user.email, verifyToken);
-
-    const appUrl = getAppUrl();
-    const publicVerifyUrl = `${appUrl}/verify-email?token=${verifyToken}`;
+    const publicVerifyUrl = `${getAppUrl()}/verify-email?token=${verifyToken}`;
 
     const { token, expiresAt } = await createSession(user.id, request);
     const response = NextResponse.json({
       success: true,
       redirectTo: "/dashboard",
       user: { id: user.id, email: user.email, emailVerified: false },
-      emailVerificationSent: mailResult.mode,
+      emailVerificationSent: mailResult.success,
+      emailDeliveryMode: mailResult.mode,
+      emailVerificationMessage: mailResult.success
+        ? "验证邮件已发送，请检查收件箱和垃圾邮件。"
+        : "账号已创建，但验证邮件暂时发送失败。请稍后在验证页面重新发送。",
       profile: { username: handle },
       devVerifyUrl: process.env.NODE_ENV === "development" ? publicVerifyUrl : undefined,
       devToken: process.env.NODE_ENV === "development" ? verifyToken : undefined,
