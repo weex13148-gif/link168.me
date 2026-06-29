@@ -1,8 +1,8 @@
-import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { newId, normalizeNullableString, toProfileDto } from "@/lib/dashboard-data";
+import { createPlaceholderHandle } from "@/lib/handle";
 import { SUPPORTED_LANGUAGES } from "@/lib/i18n";
 import { hasSensitiveContent, sanitizePublicText } from "@/lib/content-safety";
 
@@ -17,8 +17,9 @@ const PRESET_THEMES = [
   "浅绿清新",
 ];
 
-const MAX_BIO_LENGTH = 500;
-const MAX_DISPLAY_NAME_LENGTH = 40;
+const MAX_BIO_LENGTH = 300;
+const MAX_DISPLAY_NAME_LENGTH = 60;
+const hasOwn = (value: object, key: string) => Object.prototype.hasOwnProperty.call(value, key);
 
 type SaveProfileRequest = {
   displayName?: unknown;
@@ -28,6 +29,31 @@ type SaveProfileRequest = {
   customTheme?: unknown;
 };
 
+type ProfileUpdateData = {
+  displayName?: string | null;
+  bio?: string | null;
+  theme?: string;
+  language?: string;
+  customTheme?: string | null;
+};
+
+function validatePublicText(value: unknown, label: string, maxLength: number) {
+  const normalized = typeof value === "string" ? sanitizePublicText(value) : null;
+  if (normalized && normalized.length > maxLength) {
+    return { value: null, error: `${label}不能超过 ${maxLength} 字。` };
+  }
+  if (normalized) {
+    const sensitive = hasSensitiveContent(normalized);
+    if (sensitive.detected) {
+      return {
+        value: null,
+        error: `${label}包含受限关键词（${sensitive.matches.slice(0, 3).join(" / ")}），请修改后再试。`,
+      };
+    }
+  }
+  return { value: normalized, error: "" };
+}
+
 export async function PUT(request: Request) {
   const { user, response } = await requireUser(request);
   if (response || !user) return response;
@@ -36,82 +62,63 @@ export async function PUT(request: Request) {
   try {
     body = (await request.json()) as SaveProfileRequest;
   } catch {
-    return NextResponse.json({ success: false, error: "Invalid JSON body." }, { status: 400 });
+    return NextResponse.json({ success: false, error: "请求格式不正确。" }, { status: 400 });
   }
 
   const existingProfile = await db.profile.findUnique({ where: { userId: user.id } });
+  const updateData: ProfileUpdateData = {};
 
-  let themeValue: string | null = typeof body.theme === "string" ? body.theme.trim() : null;
-  if (themeValue && !PRESET_THEMES.includes(themeValue)) {
-    themeValue = "Link168 草木默认";
+  if (hasOwn(body, "displayName")) {
+    const result = validatePublicText(body.displayName, "展示名", MAX_DISPLAY_NAME_LENGTH);
+    if (result.error) return NextResponse.json({ success: false, error: result.error }, { status: 400 });
+    updateData.displayName = result.value;
   }
 
-  let languageValue: string = typeof body.language === "string" ? body.language.trim() : "";
-  if (!languageValue || !SUPPORTED_LANGUAGES.includes(languageValue as (typeof SUPPORTED_LANGUAGES)[number])) {
-    languageValue = "zh";
+  if (hasOwn(body, "bio")) {
+    const result = validatePublicText(body.bio, "简介", MAX_BIO_LENGTH);
+    if (result.error) return NextResponse.json({ success: false, error: result.error }, { status: 400 });
+    updateData.bio = result.value;
   }
 
-  let customThemeValue: string | null = null;
-  if (body.customTheme === null) {
-    customThemeValue = null;
-  } else if (typeof body.customTheme === "string") {
-    customThemeValue = sanitizePublicText(body.customTheme);
-  }
-
-  // UGC 内容安全：展示名 / 简介 敏感词过滤
-  const displayNameRaw = typeof body.displayName === "string" ? body.displayName : "";
-  const bioRaw = typeof body.bio === "string" ? body.bio : "";
-
-  const displayNameSafe = sanitizePublicText(displayNameRaw) ?? "";
-  if (displayNameSafe.length > MAX_DISPLAY_NAME_LENGTH) {
-    return NextResponse.json({ success: false, error: `展示名不能超过 ${MAX_DISPLAY_NAME_LENGTH} 字。` }, { status: 400 });
-  }
-  const sensitiveDisplayName = hasSensitiveContent(displayNameSafe);
-  if (sensitiveDisplayName.detected) {
-    return NextResponse.json(
-      { success: false, error: `展示名包含受限关键词（${sensitiveDisplayName.matches.slice(0, 3).join(" / ")}），请修改后再试。` },
-      { status: 400 },
-    );
-  }
-
-  const bioSafe = sanitizePublicText(bioRaw);
-  if (bioSafe && bioSafe.length > MAX_BIO_LENGTH) {
-    return NextResponse.json({ success: false, error: `简介不能超过 ${MAX_BIO_LENGTH} 字。` }, { status: 400 });
-  }
-  if (bioSafe) {
-    const sensitiveBio = hasSensitiveContent(bioSafe);
-    if (sensitiveBio.detected) {
-      return NextResponse.json(
-        { success: false, error: `简介包含受限关键词（${sensitiveBio.matches.slice(0, 3).join(" / ")}），请修改后再试。` },
-        { status: 400 },
-      );
+  if (hasOwn(body, "theme")) {
+    const theme = typeof body.theme === "string" ? body.theme.trim() : "";
+    if (!PRESET_THEMES.includes(theme)) {
+      return NextResponse.json({ success: false, error: "不支持的主题。" }, { status: 400 });
     }
+    updateData.theme = theme;
   }
 
-  const upsertData = {
-    where: { userId: user.id },
-    create: {
-      id: newId(),
-      userId: user.id,
-      username: `u_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`,
-      displayName: displayNameSafe || null,
-      bio: bioSafe,
-      theme: themeValue || "Link168 草木默认",
-      language: languageValue,
-      customTheme: customThemeValue,
-      isPublic: true,
-    },
-    update: {
-      displayName: displayNameSafe || null,
-      bio: bioSafe,
-      ...(themeValue ? { theme: themeValue } : {}),
-      language: languageValue,
-      customTheme: customThemeValue,
-      isPublic: true,
-    },
-  };
+  if (hasOwn(body, "language")) {
+    const language = typeof body.language === "string" ? body.language.trim() : "";
+    if (!SUPPORTED_LANGUAGES.includes(language as (typeof SUPPORTED_LANGUAGES)[number])) {
+      return NextResponse.json({ success: false, error: "不支持的语言。" }, { status: 400 });
+    }
+    updateData.language = language;
+  }
 
-  const profile = await db.profile.upsert(upsertData);
+  if (hasOwn(body, "customTheme")) {
+    const customTheme = typeof body.customTheme === "string" ? body.customTheme.trim() : "";
+    if (customTheme.length > 20_000) {
+      return NextResponse.json({ success: false, error: "自定义主题配置过大。" }, { status: 400 });
+    }
+    updateData.customTheme = normalizeNullableString(customTheme);
+  }
+
+  const profile = existingProfile
+    ? await db.profile.update({ where: { userId: user.id }, data: updateData })
+    : await db.profile.create({
+        data: {
+          id: newId(),
+          userId: user.id,
+          username: createPlaceholderHandle(user.id),
+          displayName: updateData.displayName ?? null,
+          bio: updateData.bio ?? null,
+          theme: updateData.theme || "Link168 草木默认",
+          language: updateData.language || "zh",
+          customTheme: updateData.customTheme ?? null,
+          isPublic: false,
+        },
+      });
 
   return NextResponse.json({ success: true, profile: toProfileDto(profile) });
 }
