@@ -1,14 +1,11 @@
 import { NextResponse } from "next/server";
 import { getCurrentUserFromRequest } from "@/lib/auth";
-import {
-  getAiDailyUsage,
-  getConfig,
-  isAiTester,
-} from "@/lib/app-config";
-import { AI_ASSISTANT_LIST, type AiAssistantTitle } from "@/lib/ai/assistants";
+import { getAiDailyUsage, getConfig, isAiTester } from "@/lib/app-config";
+import { AI_ASSISTANT_LIST } from "@/lib/ai/assistants";
 import { getProviderConfig, isProviderConfigured } from "@/lib/ai/provider";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   const user = await getCurrentUserFromRequest(request);
@@ -17,7 +14,7 @@ export async function GET(request: Request) {
   const baseInfo = {
     aiEnabled: config.aiEnabled,
     aiDailyLimitPerUser: config.aiDailyLimitPerUser,
-    paymentEnabled: false, // V0.1 真实上线不接支付，后续版本规划
+    paymentEnabled: false,
   };
 
   if (!user) {
