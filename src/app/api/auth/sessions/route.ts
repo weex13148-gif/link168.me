@@ -1,12 +1,11 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { requireUser, getUserSessions, revokeSession, revokeAllOtherSessions, SESSION_COOKIE_NAME } from "@/lib/auth";
-import { db } from "@/lib/db";
 
 export const runtime = "nodejs";
 
-function parseUserAgentInfo(ua: string | null) {
-  if (!ua) return { device: "未知设备", location: "未知位置" };
+function parseUserAgentInfo(ua: string | null): { device: string; browser: string } {
+  if (!ua) return { device: "未知设备", browser: "未知浏览器" };
 
   let device = "其他设备";
   if (/iPhone|iPad|iPod/i.test(ua)) device = "iOS 设备";
@@ -24,22 +23,34 @@ function parseUserAgentInfo(ua: string | null) {
   return { device, browser };
 }
 
-export async function GET(request: Request) {
-  const { user, response } = await requireUser(request);
-  if (response || !user) return response;
+function maskIpAddress(value: string | null) {
+  if (!value) return "未知";
+  if (value.includes(".")) {
+    const parts = value.split(".");
+    return parts.length === 4 ? `${parts[0]}.${parts[1]}.${parts[2]}.*` : "已记录";
+  }
+  if (value.includes(":")) {
+    return `${value.split(":").slice(0, 4).join(":")}::*`;
+  }
+  return "已记录";
+}
 
-  const sessions = await getUserSessions(user.id);
-
-  const currentToken = request.headers
+function getCurrentToken(request: Request) {
+  return request.headers
     .get("cookie")
     ?.split(";")
     .map((part) => part.trim())
     .find((part) => part.startsWith(`${SESSION_COOKIE_NAME}=`))
     ?.slice(SESSION_COOKIE_NAME.length + 1);
+}
 
-  const currentHash = currentToken
-    ? crypto.createHash("sha256").update(currentToken).digest("hex")
-    : "";
+export async function GET(request: Request) {
+  const { user, response } = await requireUser(request);
+  if (response || !user) return response;
+
+  const sessions = await getUserSessions(user.id);
+  const currentToken = getCurrentToken(request);
+  const currentHash = currentToken ? crypto.createHash("sha256").update(currentToken).digest("hex") : "";
 
   const data = sessions.map((session) => {
     const info = parseUserAgentInfo(session.userAgent || null);
@@ -47,7 +58,7 @@ export async function GET(request: Request) {
       id: session.id,
       device: info.device,
       browser: info.browser,
-      location: session.ipAddress || "未知",
+      location: maskIpAddress(session.ipAddress),
       lastActive: session.lastActive.toISOString(),
       createdAt: session.createdAt.toISOString(),
       expiresAt: session.expiresAt.toISOString(),
@@ -62,18 +73,13 @@ export async function DELETE(request: Request) {
   const { user, response } = await requireUser(request);
   if (response || !user) return response;
 
-  const url = new URL(request.url);
-  const action = url.searchParams.get("action");
-
+  const action = new URL(request.url).searchParams.get("action");
   if (action === "all-others") {
-    const currentToken = request.headers
-      .get("cookie")
-      ?.split(";")
-      .map((part) => part.trim())
-      .find((part) => part.startsWith(`${SESSION_COOKIE_NAME}=`))
-      ?.slice(SESSION_COOKIE_NAME.length + 1);
-
-    const count = await revokeAllOtherSessions(user.id, currentToken || "");
+    const currentToken = getCurrentToken(request);
+    if (!currentToken) {
+      return NextResponse.json({ success: false, error: "当前会话无效，请重新登录。" }, { status: 401 });
+    }
+    const count = await revokeAllOtherSessions(user.id, currentToken);
     return NextResponse.json({ success: true, message: `已退出 ${count} 个其他设备。` });
   }
 
@@ -81,12 +87,12 @@ export async function DELETE(request: Request) {
   try {
     body = (await request.json()) as { sessionId?: unknown };
   } catch {
-    return NextResponse.json({ success: false, error: "Invalid JSON body." }, { status: 400 });
+    return NextResponse.json({ success: false, error: "请求格式不正确。" }, { status: 400 });
   }
 
   const sessionId = typeof body.sessionId === "string" ? body.sessionId : "";
   if (!sessionId) {
-    return NextResponse.json({ success: false, error: "缺少 session ID。" }, { status: 400 });
+    return NextResponse.json({ success: false, error: "缺少会话 ID。" }, { status: 400 });
   }
 
   const success = await revokeSession(user.id, sessionId);
