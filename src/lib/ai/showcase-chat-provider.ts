@@ -60,16 +60,22 @@ export async function callShowcaseChatProvider(
     };
   }
 
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${apiKey}`,
+  };
+  const workspaceId = process.env.AI_WORKSPACE_ID?.trim();
+  if (workspaceId) {
+    headers["X-DashScope-WorkSpace"] = workspaceId;
+  }
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 60_000);
 
   try {
     const response = await fetch(endpoint, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
+      headers,
       body: JSON.stringify({
         input: {
           prompt: buildPrompt(message, history),
