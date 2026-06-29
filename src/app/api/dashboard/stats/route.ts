@@ -3,28 +3,34 @@ import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-function startOfDay(date: Date): Date {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  return d;
+const SHANGHAI_OFFSET_MS = 8 * 60 * 60 * 1000;
+
+function startOfShanghaiDay(date: Date): Date {
+  const shifted = new Date(date.getTime() + SHANGHAI_OFFSET_MS);
+  return new Date(
+    Date.UTC(shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate()) - SHANGHAI_OFFSET_MS,
+  );
 }
 
-function formatDateKey(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
+function formatShanghaiDateKey(date: Date): string {
+  const shifted = new Date(date.getTime() + SHANGHAI_OFFSET_MS);
+  const year = shifted.getUTCFullYear();
+  const month = String(shifted.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(shifted.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 export async function GET(request: NextRequest) {
   const { user, response } = await requireUser(request);
   if (response || !user) return response;
 
-  const profile = await db.profile.findUnique({ where: { userId: user.id } });
+  const profile = await db.profile.findUnique({ where: { userId: user.id }, select: { id: true } });
   if (!profile) {
-    return NextResponse.json(
-      {
+    return NextResponse.json({
+      success: true,
+      stats: {
         totalClicks: 0,
         totalLinks: 0,
         clicksToday: 0,
@@ -33,12 +39,10 @@ export async function GET(request: NextRequest) {
         topLinks: [],
         daily: [],
       },
-      { status: 200 },
-    );
+    });
   }
 
-  const now = new Date();
-  const todayStart = startOfDay(now);
+  const todayStart = startOfShanghaiDay(new Date());
   const sevenDaysAgoStart = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
 
   const [totalClicksResult, totalLinks, clicksTodayCount, clicksLast7DaysCount, byDeviceResult, topLinksResult, dailyResult] =
@@ -73,18 +77,15 @@ export async function GET(request: NextRequest) {
     ]);
 
   const dailyMap = new Map<string, number>();
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(sevenDaysAgoStart.getTime() + i * 24 * 60 * 60 * 1000);
-    dailyMap.set(formatDateKey(d), 0);
-  }
-  for (const row of dailyResult) {
-    const key = formatDateKey(row.createdAt);
-    if (dailyMap.has(key)) {
-      dailyMap.set(key, (dailyMap.get(key) || 0) + 1);
-    }
+  for (let index = 0; index < 7; index += 1) {
+    const date = new Date(sevenDaysAgoStart.getTime() + index * 24 * 60 * 60 * 1000);
+    dailyMap.set(formatShanghaiDateKey(date), 0);
   }
 
-  const daily = Array.from(dailyMap.entries()).map(([date, count]) => ({ date, count }));
+  for (const row of dailyResult) {
+    const key = formatShanghaiDateKey(row.createdAt);
+    if (dailyMap.has(key)) dailyMap.set(key, (dailyMap.get(key) || 0) + 1);
+  }
 
   return NextResponse.json({
     success: true,
@@ -93,9 +94,9 @@ export async function GET(request: NextRequest) {
       totalLinks,
       clicksToday: clicksTodayCount,
       clicksLast7Days: clicksLast7DaysCount,
-      byDevice: byDeviceResult.map((r) => ({ device: r.device || "unknown", count: r._count.device })),
-      topLinks: topLinksResult.map((l) => ({ id: l.id, title: l.title, totalClicks: l.totalClicks })),
-      daily,
+      byDevice: byDeviceResult.map((row) => ({ device: row.device || "unknown", count: row._count.device })),
+      topLinks: topLinksResult.map((link) => ({ id: link.id, title: link.title, totalClicks: link.totalClicks })),
+      daily: Array.from(dailyMap.entries()).map(([date, count]) => ({ date, count })),
     },
   });
 }
