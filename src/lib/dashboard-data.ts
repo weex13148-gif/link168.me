@@ -1,6 +1,8 @@
 import crypto from "crypto";
 import { db } from "@/lib/db";
 
+const MAX_URL_LENGTH = 2048;
+
 export function toProfileDto(profile: {
   id: string;
   username: string;
@@ -74,8 +76,17 @@ export function normalizeNullableString(value: unknown) {
 export function normalizeUrl(value: unknown) {
   if (typeof value !== "string") return "";
   const trimmed = value.trim();
-  if (!trimmed) return "";
-  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  if (!trimmed || trimmed.length > MAX_URL_LENGTH) return "";
+
+  const candidate = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  try {
+    const parsed = new URL(candidate);
+    if (!["http:", "https:"].includes(parsed.protocol)) return "";
+    if (!parsed.hostname || parsed.username || parsed.password) return "";
+    return parsed.toString();
+  } catch {
+    return "";
+  }
 }
 
 export async function getDashboardData(userId: string) {
