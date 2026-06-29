@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { db } from "@/lib/db";
+import { isPlaceholderHandle } from "@/lib/handle";
 
 const MAX_URL_LENGTH = 2048;
 
@@ -18,7 +19,7 @@ export function toProfileDto(profile: {
 }) {
   return {
     id: profile.id,
-    username: profile.username,
+    username: isPlaceholderHandle(profile.username) ? "" : profile.username,
     display_name: profile.displayName,
     bio: profile.bio,
     avatar_url: profile.avatarUrl,
