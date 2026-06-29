@@ -1,7 +1,3 @@
-// 统一 AI Provider：封装 chat completions 调用，兼容 OpenAI 兼容接口（阿里云百炼、通义千问、DeepSeek、豆包、智谱等）
-// 配置读取优先级：AppConfig(DB) > process.env > DEFAULT_CONFIG
-// 仅在服务端使用，前端不得直接引用（避免泄露 API Key）。
-
 import { getConfig } from "@/lib/app-config";
 import type { AiAssistantDefinition } from "@/lib/ai/assistants";
 
@@ -11,7 +7,7 @@ export type ChatMessage = {
 };
 
 export type ProviderConfig = {
-  provider: string; // "openai-compatible" | "qwen" | "deepseek" | ... (当前全部走 OpenAI 兼容)
+  provider: string;
   baseUrl: string;
   model: string;
   apiKey: string;
@@ -22,44 +18,54 @@ export type ProviderConfig = {
 
 export type ProviderChatResult = {
   ok: boolean;
-  rawContent: string; // 模型原始返回（可能是 JSON 字符串，也可能是纯文本）
+  rawContent: string;
   error?: string;
   status?: number;
 };
 
-// 从 env 读取（兜底逻辑）：优先大写，其次小写
 function envValue(key: string): string | undefined {
-  const up = process.env[key];
-  if (up && up.trim()) return up.trim();
-  const low = process.env[key.toLowerCase()];
-  if (low && low.trim()) return low.trim();
-  return undefined;
+  const upper = process.env[key];
+  if (upper?.trim()) return upper.trim();
+  const lower = process.env[key.toLowerCase()];
+  return lower?.trim() || undefined;
+}
+
+function isBlockedHostname(hostname: string) {
+  const host = hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  if (["localhost", "0.0.0.0", "127.0.0.1", "::1"].includes(host)) return true;
+  if (host.endsWith(".local") || host.endsWith(".internal")) return true;
+  if (/^10\./.test(host) || /^192\.168\./.test(host) || /^169\.254\./.test(host)) return true;
+  if (/^172\.(1[6-9]|2\d|3[01])\./.test(host)) return true;
+  return false;
+}
+
+function normalizeProviderBaseUrl(value: string) {
+  try {
+    const url = new URL(value);
+    const allowHttp = process.env.NODE_ENV !== "production";
+    if (url.protocol !== "https:" && !(allowHttp && url.protocol === "http:")) return "";
+    if (!url.hostname || url.username || url.password || isBlockedHostname(url.hostname)) return "";
+    url.search = "";
+    url.hash = "";
+    return url.toString().replace(/\/+$/, "");
+  } catch {
+    return "";
+  }
 }
 
 export async function getProviderConfig(assistant: AiAssistantDefinition): Promise<ProviderConfig> {
   const config = await getConfig();
-
-  const dbApiKey = typeof config.aiApiKey === "string" ? config.aiApiKey.trim() : "";
-  const dbBaseUrl = typeof config.aiBaseUrl === "string" ? config.aiBaseUrl.trim() : "";
-  const dbModel = typeof config.aiModel === "string" ? config.aiModel.trim() : "";
-  const dbProvider = typeof config.aiProvider === "string" ? config.aiProvider.trim() : "";
-
-  const apiKey = dbApiKey || envValue("AI_API_KEY") || envValue("OPENAI_API_KEY") || "";
-  const baseUrl =
-    dbBaseUrl ||
+  const apiKey = config.aiApiKey.trim() || envValue("AI_API_KEY") || envValue("OPENAI_API_KEY") || "";
+  const rawBaseUrl =
+    config.aiBaseUrl.trim() ||
     envValue("AI_BASE_URL") ||
     envValue("OPENAI_BASE_URL") ||
     "https://dashscope.aliyuncs.com/compatible-mode/v1";
-  const model = dbModel || envValue("AI_MODEL") || "qwen-plus";
-  const provider = dbProvider || envValue("AI_PROVIDER") || "qwen";
-
-  // 去掉 URL 尾部斜杠，下游会自己拼 /chat/completions
-  const normalizedBase = baseUrl.replace(/\/+$/, "");
 
   return {
-    provider,
-    baseUrl: normalizedBase,
-    model,
+    provider: config.aiProvider.trim() || envValue("AI_PROVIDER") || "qwen",
+    baseUrl: normalizeProviderBaseUrl(rawBaseUrl),
+    model: config.aiModel.trim() || envValue("AI_MODEL") || "qwen-plus",
     apiKey,
     temperature: assistant.defaultTemperature,
     maxTokens: assistant.defaultMaxTokens,
@@ -68,73 +74,56 @@ export async function getProviderConfig(assistant: AiAssistantDefinition): Promi
 }
 
 export function isProviderConfigured(config: ProviderConfig): boolean {
-  return Boolean(config.apiKey) && Boolean(config.baseUrl) && Boolean(config.model);
+  return Boolean(config.apiKey && config.baseUrl && config.model);
 }
 
-// 从模型原始文本中抽取 JSON，兼容：
-// - 直接返回 JSON 字符串
-// - ```json ... ``` 代码块
-// - {...} 开头/结尾的 JSON 片段
-// - 非 JSON 文本：回退为 { summary, suggestions: [], content }
 function extractStructuredOutput(raw: string): {
   summary: string;
   suggestions: string[];
   content: string;
 } {
-  const trimmed = (raw || "").trim();
-
+  const trimmed = raw.trim();
   if (!trimmed) {
     return {
       summary: "模型未返回有效内容，请稍后重试。",
       suggestions: [],
-      content: "（未收到有效回复。如多次失败，请检查模型或 API Key 配置。）",
+      content: "未收到有效回复。",
     };
   }
 
-  // 1. 尝试直接解析
-  let target: string = trimmed;
-
-  // 2. 去掉 ```json ... ``` 代码块
+  let target = trimmed;
   const codeBlockMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  if (codeBlockMatch && codeBlockMatch[1]) {
+  if (codeBlockMatch?.[1]) {
     target = codeBlockMatch[1].trim();
   } else {
-    // 3. 取首个 { ... } 片段
     const firstBrace = trimmed.indexOf("{");
     const lastBrace = trimmed.lastIndexOf("}");
-    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-      target = trimmed.slice(firstBrace, lastBrace + 1).trim();
-    }
+    if (firstBrace >= 0 && lastBrace > firstBrace) target = trimmed.slice(firstBrace, lastBrace + 1);
   }
 
   try {
-    const parsed = JSON.parse(target) as { [key: string]: unknown };
+    const parsed = JSON.parse(target) as Record<string, unknown>;
     const summary =
       typeof parsed.summary === "string" && parsed.summary.trim()
-        ? parsed.summary.trim()
-        : "（AI 未生成 summary，以下为原始回复的简要摘要。）";
+        ? parsed.summary.trim().slice(0, 200)
+        : "AI 已生成回复，请查看详细内容。";
     const suggestions = Array.isArray(parsed.suggestions)
       ? parsed.suggestions
-          .map((item: unknown) => (typeof item === "string" ? item.trim() : ""))
+          .map((item) => (typeof item === "string" ? item.trim().slice(0, 300) : ""))
           .filter(Boolean)
+          .slice(0, 10)
       : [];
     const content =
       typeof parsed.content === "string" && parsed.content.trim()
-        ? parsed.content.trim()
-        : trimmed;
-
-    return {
-      summary,
-      suggestions,
-      content,
-    };
+        ? parsed.content.trim().slice(0, 20_000)
+        : trimmed.slice(0, 20_000);
+    return { summary, suggestions, content };
   } catch {
-    // 4. JSON 解析失败：回退为纯文本结构
-    const firstLine = trimmed.split("\n").find((line) => line.trim()) || trimmed.slice(0, 60);
+    const firstLine = trimmed.split("\n").find((line) => line.trim()) || trimmed;
     return {
-      summary: firstLine.slice(0, 80),
+      summary: firstLine.slice(0, 200),
       suggestions: [],
-      content: trimmed,
+      content: trimmed.slice(0, 20_000),
     };
   }
 }
@@ -148,17 +137,16 @@ export async function chatWithProvider(
     return {
       ok: false,
       rawContent: "",
-      error: "AI 配置未完成：缺少 API Key / Base URL / Model。请在超级管理员的 AI 配置页面补充。",
-      status: 400,
+      error: "AI 配置未完成或 Base URL 不安全，请由超级管理员检查配置。",
+      status: 503,
     };
   }
 
-  const endpoint = `${config.baseUrl}/chat/completions`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), config.timeoutMs);
 
   try {
-    const response = await fetch(endpoint, {
+    const response = await fetch(`${config.baseUrl}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -175,15 +163,13 @@ export async function chatWithProvider(
       cache: "no-store",
     });
 
-    clearTimeout(timer);
-
     if (!response.ok) {
-      const text = await response.text().catch(() => "");
+      await response.body?.cancel().catch(() => undefined);
       return {
         ok: false,
         rawContent: "",
-        error: `AI 服务返回错误（${response.status}）：${text.slice(0, 200)}`,
-        status: response.status,
+        error: `AI 服务暂时不可用（HTTP ${response.status}）。`,
+        status: response.status >= 400 && response.status < 500 ? 502 : response.status,
       };
     }
 
@@ -191,27 +177,22 @@ export async function chatWithProvider(
       choices?: { message?: { content?: string } }[];
       error?: { message?: string };
     };
-
-    const content = data?.choices?.[0]?.message?.content?.trim() ?? "";
+    const content = data.choices?.[0]?.message?.content?.trim() || "";
     if (!content) {
-      return {
-        ok: false,
-        rawContent: "",
-        error: data?.error?.message || "AI 未返回有效内容。",
-        status: 502,
-      };
+      return { ok: false, rawContent: "", error: "AI 未返回有效内容。", status: 502 };
     }
 
-    return { ok: true, rawContent: content };
+    return { ok: true, rawContent: content.slice(0, 30_000) };
   } catch (error) {
-    clearTimeout(timer);
-    const message = error instanceof Error ? error.message : String(error);
+    const aborted = error instanceof Error && error.name === "AbortError";
     return {
       ok: false,
       rawContent: "",
-      error: `调用 AI 服务失败：${message}`,
+      error: aborted ? "AI 请求超时，请稍后重试。" : "AI 服务连接失败，请稍后重试。",
       status: 502,
     };
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -236,7 +217,6 @@ export async function callAssistant(
   providerMeta?: { provider: string; model: string };
 }> {
   const config = await getProviderConfig(assistant);
-
   const systemPrompt = [
     assistant.systemPrompt,
     "",
@@ -247,17 +227,18 @@ export async function callAssistant(
     assistant.riskNotice,
   ].join("\n");
 
-  // 历史消息取最近 10 轮，避免超长
-  const trimmedHistory = (history || []).slice(-20);
+  const trimmedHistory = history
+    .slice(-20)
+    .filter((message) => message && (message.role === "user" || message.role === "assistant"))
+    .map((message) => ({ ...message, content: message.content.slice(0, 4_000) }));
 
   const messages: ChatMessage[] = [
     { role: "system", content: systemPrompt },
-    ...trimmedHistory.filter((m) => m && typeof m.role === "string" && typeof m.content === "string"),
-    { role: "user", content: userMessage },
+    ...trimmedHistory,
+    { role: "user", content: userMessage.slice(0, assistant.maxMessageLength) },
   ];
 
   const providerResult = await chatWithProvider(config, messages, assistant);
-
   if (!providerResult.ok) {
     return {
       ok: false,
@@ -267,7 +248,6 @@ export async function callAssistant(
   }
 
   const structured = extractStructuredOutput(providerResult.rawContent);
-
   return {
     ok: true,
     reply: {
