@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { rateLimit } from "@/lib/rate-limit";
+import { isPlaceholderHandle } from "@/lib/handle";
 
 export const runtime = "nodejs";
 
@@ -8,11 +9,34 @@ type RouteContext = {
   params: Promise<{ slug: string }>;
 };
 
+function getSafeTarget(value: string): URL | null {
+  try {
+    const target = new URL(value);
+    if (target.protocol !== "http:" && target.protocol !== "https:") return null;
+    if (!target.hostname || target.username || target.password) return null;
+    return target;
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(request: NextRequest, context: RouteContext) {
   const { slug } = await context.params;
 
-  const shortLink = await db.shortLink.findUnique({ where: { slug } });
-  if (!shortLink) {
+  const shortLink = await db.shortLink.findUnique({
+    where: { slug },
+    include: {
+      user: {
+        select: {
+          profile: { select: { isPublic: true, username: true } },
+        },
+      },
+    },
+  });
+
+  const target = shortLink ? getSafeTarget(shortLink.targetUrl) : null;
+  const profile = shortLink?.user.profile;
+  if (!shortLink || !profile?.isPublic || isPlaceholderHandle(profile.username) || !target) {
     return NextResponse.redirect(new URL("/", request.url), 302);
   }
 
@@ -24,9 +48,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
         data: { totalClicks: { increment: 1 } },
       });
     } catch {
-      // 静默失败：避免计数问题影响用户跳转
+      // 计数失败不影响正常跳转。
     }
   }
 
-  return NextResponse.redirect(shortLink.targetUrl, 302);
+  return NextResponse.redirect(target, 302);
 }
