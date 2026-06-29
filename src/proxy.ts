@@ -1,20 +1,21 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { isAdminRequest, isAdminSecretConfigured } from "@/lib/admin-auth";
-
-function adminFailureResponse(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith("/api/admin/")) {
-    const status = isAdminSecretConfigured() ? 401 : 500;
-    const error = isAdminSecretConfigured() ? "Unauthorized." : "ADMIN_SECRET is not configured.";
-
-    return NextResponse.json({ success: false, error }, { status });
-  }
-
-  return new NextResponse("Not Found", { status: 404 });
-}
+import { SESSION_COOKIE_NAME } from "@/lib/auth";
 
 export function proxy(request: NextRequest) {
-  if (!isAdminRequest(request)) {
-    return adminFailureResponse(request);
+  const pathname = request.nextUrl.pathname;
+
+  if (pathname.startsWith("/api/admin/")) {
+    // 每个管理员 API 都会在服务端执行 requireSuperAdmin，代理层不再要求浏览器传递秘密请求头。
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/admin/")) {
+    const sessionToken = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+    if (!sessionToken) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("next", `${pathname}${request.nextUrl.search}`);
+      return NextResponse.redirect(loginUrl);
+    }
   }
 
   return NextResponse.next();
