@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { db } from "@/lib/db";
+import { isPlaceholderHandle } from "@/lib/handle";
 
 export const runtime = "nodejs";
 
@@ -46,9 +47,18 @@ function getClientIp(request: NextRequest): string {
     const first = xff.split(",")[0]?.trim();
     if (first) return first;
   }
-  const realIp = request.headers.get("x-real-ip");
-  if (realIp) return realIp;
-  return "unknown";
+  return request.headers.get("x-real-ip")?.trim() || "unknown";
+}
+
+function getSafeTargetUrl(value: string): URL | null {
+  try {
+    const target = new URL(value);
+    if (target.protocol !== "http:" && target.protocol !== "https:") return null;
+    if (!target.hostname || target.username || target.password) return null;
+    return target;
+  } catch {
+    return null;
+  }
 }
 
 export async function GET(request: NextRequest, context: RouteContext) {
@@ -56,17 +66,21 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
   const link = await db.link.findUnique({
     where: { id: linkId, isActive: true },
-    include: { profile: true },
+    include: {
+      profile: {
+        select: { isPublic: true, username: true },
+      },
+    },
   });
 
-  if (!link) {
+  const target = link ? getSafeTargetUrl(link.url) : null;
+  if (!link || !link.profile.isPublic || isPlaceholderHandle(link.profile.username) || !target) {
     return NextResponse.redirect(new URL("/", request.url), 302);
   }
 
   const userAgent = request.headers.get("user-agent");
   const referer = request.headers.get("referer") || null;
-  const ipRaw = getClientIp(request);
-  const ipHash = hashIp(ipRaw);
+  const ipHash = hashIp(getClientIp(request));
   const { device, os, browser } = parseDeviceOsBrowser(userAgent);
 
   await db.$transaction([
@@ -88,5 +102,5 @@ export async function GET(request: NextRequest, context: RouteContext) {
     }),
   ]);
 
-  return NextResponse.redirect(link.url, 302);
+  return NextResponse.redirect(target, 302);
 }
