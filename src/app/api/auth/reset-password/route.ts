@@ -7,6 +7,7 @@ import {
   setSessionCookie,
 } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -18,14 +19,22 @@ type ResetPasswordRequest = {
 
 export async function POST(request: Request) {
   if (!process.env.DATABASE_URL) {
-    return NextResponse.json({ success: false, error: "DATABASE_URL is not configured." }, { status: 500 });
+    return NextResponse.json({ success: false, error: "服务暂不可用，请稍后重试。" }, { status: 500 });
+  }
+
+  const rl = rateLimit(request, "reset-password:ip", 5, 10 * 60 * 1000);
+  if (!rl.passed) {
+    return NextResponse.json(
+      { success: false, error: `请求过于频繁，请 ${Math.ceil(rl.resetMs / 1000)} 秒后重试。` },
+      { status: 429 },
+    );
   }
 
   let body: ResetPasswordRequest;
   try {
     body = (await request.json()) as ResetPasswordRequest;
   } catch {
-    return NextResponse.json({ success: false, error: "Invalid JSON body." }, { status: 400 });
+    return NextResponse.json({ success: false, error: "请求格式不正确。" }, { status: 400 });
   }
 
   const token = typeof body.token === "string" ? body.token.trim() : "";
@@ -36,8 +45,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "重置链接无效或已过期。" }, { status: 400 });
   }
 
-  if (!password || password.length < 6) {
-    return NextResponse.json({ success: false, error: "密码至少需要 6 位。" }, { status: 400 });
+  if (!password || password.length < 6 || Buffer.byteLength(password, "utf8") > 72) {
+    return NextResponse.json({ success: false, error: "密码需为 6-72 字节。" }, { status: 400 });
   }
 
   if (password !== confirmPassword) {
@@ -49,18 +58,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "重置链接无效或已过期，请重新发起忘记密码请求。" }, { status: 400 });
   }
 
-  const newHash = await bcrypt.hash(password, 12);
-  await db.user.update({
-    where: { id: user.id },
-    data: { passwordHash: newHash },
-  });
+  const consumed = await consumePasswordResetToken(token);
+  if (!consumed) {
+    return NextResponse.json({ success: false, error: "重置链接已被使用或已过期。" }, { status: 400 });
+  }
 
-  await consumePasswordResetToken(token);
+  const newHash = await bcrypt.hash(password, 12);
+  await db.$transaction([
+    db.user.update({
+      where: { id: user.id },
+      data: { passwordHash: newHash },
+    }),
+    db.session.deleteMany({ where: { userId: user.id } }),
+  ]);
 
   const { token: sessionToken, expiresAt } = await createSession(user.id, request);
   const response = NextResponse.json({
     success: true,
-    message: "密码已重置成功。",
+    message: "密码已重置成功，其他设备已退出登录。",
     redirectTo: "/dashboard",
   });
   setSessionCookie(response, sessionToken, expiresAt);
