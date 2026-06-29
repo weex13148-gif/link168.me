@@ -8,4 +8,11 @@ export default defineConfig([
   },
   ...nextVitals,
   ...nextTs,
+  {
+    files: ["scripts/db/**/*.js"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+    },
+  },
 ]);
