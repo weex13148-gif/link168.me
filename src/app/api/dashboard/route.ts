@@ -34,6 +34,16 @@ type SaveProfileRequest = {
   customTheme?: unknown;
 };
 
+type ProfileUpdateData = {
+  username?: string;
+  displayName?: string | null;
+  bio?: string | null;
+  theme?: string;
+  language?: string;
+  customTheme?: string | null;
+  isPublic?: boolean;
+};
+
 function validatePublicText(value: unknown, label: string, maxLength: number) {
   const normalized = typeof value === "string" ? sanitizePublicText(value) : null;
   if (normalized && normalized.length > maxLength) {
@@ -107,7 +117,7 @@ export async function PUT(request: Request) {
     }
   }
 
-  const updateData: Record<string, unknown> = {};
+  const updateData: ProfileUpdateData = {};
 
   if (hasOwn(body, "displayName")) {
     const result = validatePublicText(body.displayName, "昵称", MAX_DISPLAY_NAME_LENGTH);
@@ -157,11 +167,11 @@ export async function PUT(request: Request) {
           id: newId(),
           userId: user.id,
           username,
-          displayName: (updateData.displayName as string | null | undefined) ?? null,
-          bio: (updateData.bio as string | null | undefined) ?? null,
-          theme: (updateData.theme as string | undefined) || "Link168 草木默认",
-          language: (updateData.language as string | undefined) || "zh",
-          customTheme: (updateData.customTheme as string | null | undefined) ?? null,
+          displayName: updateData.displayName ?? null,
+          bio: updateData.bio ?? null,
+          theme: updateData.theme || "Link168 草木默认",
+          language: updateData.language || "zh",
+          customTheme: updateData.customTheme ?? null,
           isPublic: true,
         },
       });
