@@ -1,0 +1,176 @@
+name: Build Uploadable Test Package
+
+on:
+  push:
+    branches:
+      - release/internal-test-upload-20260701
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: link168_release_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d link168_release_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/link168_release_ci
+      SESSION_SECRET: release-ci-session-secret-at-least-32-characters
+      ADMIN_SECRET: release-ci-admin-secret-at-least-32-characters
+      CONFIG_ENCRYPTION_KEY: release-ci-config-key-at-least-32-characters
+      NEXT_PUBLIC_APP_URL: http://127.0.0.1:3100
+      COOKIE_SECURE: "false"
+      COOKIE_SAME_SITE: lax
+      RATE_LIMIT_STORE: memory
+      AUTH_RATE_LIMIT_BYPASS: "false"
+      DEMO_EMAIL: demo-release@link168.test
+      DEMO_PASSWORD: Demo-release-password-2026
+      ADMIN_EMAIL: admin-release@link168.test
+      ADMIN_PASSWORD: Admin-release-password-2026
+      SUPER_ADMIN_EMAIL: superadmin-release@link168.test
+      SUPER_ADMIN_PASSWORD: Superadmin-release-password-2026
+
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Prisma schema
+        run: npx prisma validate
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Apply migrations to clean PostgreSQL
+        run: npx prisma migrate deploy
+
+      - name: Create test system users
+        run: npm run db:create-users
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Production build
+        run: NODE_OPTIONS="--max-old-space-size=3072" npm run build
+
+      - name: Assemble standalone upload directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          RELEASE_SHA="$(git rev-parse HEAD)"
+          SHORT_SHA="${RELEASE_SHA:0:12}"
+          RELEASE_NAME="link168-internal-test-${SHORT_SHA}"
+          RELEASE_DIR="dist/${RELEASE_NAME}"
+
+          test -f .next/standalone/server.js
+          rm -rf dist
+          mkdir -p "${RELEASE_DIR}/.next"
+
+          cp -a .next/standalone/. "${RELEASE_DIR}/"
+          cp -a .next/static "${RELEASE_DIR}/.next/static"
+          cp -a public "${RELEASE_DIR}/public"
+          cp -a prisma "${RELEASE_DIR}/prisma"
+          cp -a .env.example "${RELEASE_DIR}/.env.example"
+
+          cat > "${RELEASE_DIR}/RELEASE_INFO.txt" <<EOF
+          Link168 internal test upload package
+          Branch: release/internal-test-upload-20260701
+          Commit: ${RELEASE_SHA}
+          BuiltAtUTC: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          Runtime: Node.js 22
+          Start: HOSTNAME=127.0.0.1 PORT=3000 node server.js
+          Secrets: not included
+          Database: not included
+          User uploads: not included
+          EOF
+
+          cat > "${RELEASE_DIR}/DEPLOY_TEST.txt" <<'EOF'
+          Link168 腾讯云测试上传说明
+
+          1. 本包是 Next.js standalone 运行包，不需要在服务器执行 next build。
+          2. 本包不包含 .env、数据库、API Key、SMTP 密码或 public/uploads 用户文件。
+          3. 上传并解压到临时目录后，将服务器原有 .env.local 放入本包根目录。
+          4. 如服务器已有 public/uploads，请保留并放回本包 public/uploads。
+          5. HTTP IP 内测：NEXT_PUBLIC_APP_URL=http://122.51.183.200，COOKIE_SECURE=false。
+          6. 启动命令：HOSTNAME=127.0.0.1 PORT=3000 node server.js。
+          7. PM2 名称：link168。
+          8. 禁止 prisma migrate reset、db push --force-reset、DROP 或清空数据库。
+          EOF
+
+          tar -C dist -czf "dist/${RELEASE_NAME}.tar.gz" "${RELEASE_NAME}"
+          sha256sum "dist/${RELEASE_NAME}.tar.gz" > "dist/${RELEASE_NAME}.tar.gz.sha256"
+          echo "RELEASE_NAME=${RELEASE_NAME}" >> "$GITHUB_ENV"
+          echo "RELEASE_SHA=${RELEASE_SHA}" >> "$GITHUB_ENV"
+
+      - name: Smoke test packaged standalone server
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "dist/${RELEASE_NAME}"
+          HOSTNAME=127.0.0.1 PORT=3100 node server.js > /tmp/link168-package.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill ${SERVER_PID} 2>/dev/null || true' EXIT
+
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3100/ >/dev/null; then
+              break
+            fi
+            sleep 2
+          done
+
+          test "$(curl -sS -o /tmp/home.html -w '%{http_code}' http://127.0.0.1:3100/)" = "200"
+          test "$(curl -sS -o /tmp/login.html -w '%{http_code}' http://127.0.0.1:3100/login)" = "200"
+          test "$(curl -sS -o /tmp/register.html -w '%{http_code}' http://127.0.0.1:3100/register)" = "200"
+          test "$(curl -sS -o /tmp/terms.html -w '%{http_code}' http://127.0.0.1:3100/terms)" = "200"
+          test "$(curl -sS -o /tmp/me.json -w '%{http_code}' http://127.0.0.1:3100/api/auth/me)" = "401"
+
+          if grep -q 'XXXXXXXXXXXXXX' /tmp/home.html; then
+            echo 'Placeholder public-security filing number still exists.'
+            exit 1
+          fi
+
+          if grep -q '链接被系统判定为不安全' /tmp/home.html; then
+            echo 'Homepage still contains red unsafe-link warning.'
+            exit 1
+          fi
+
+          echo "PACKAGE_SMOKE=PASS"
+
+      - name: Upload test package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.RELEASE_NAME }}
+          path: |
+            dist/${{ env.RELEASE_NAME }}.tar.gz
+            dist/${{ env.RELEASE_NAME }}.tar.gz.sha256
+            dist/${{ env.RELEASE_NAME }}/RELEASE_INFO.txt
+            dist/${{ env.RELEASE_NAME }}/DEPLOY_TEST.txt
+          if-no-files-found: error
+          retention-days: 14
