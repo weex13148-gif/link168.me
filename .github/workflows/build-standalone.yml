@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - integration/local-latest-20260629
+      - master
       - release/internal-test-20260630
   pull_request:
     branches:
@@ -15,48 +15,9 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  publish-release-candidate:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/integration/local-latest-20260629'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout source snapshot
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Create or update normal-history release branch
-        shell: bash
-        run: |
-          set -euo pipefail
-          SOURCE_SHA="$GITHUB_SHA"
-          RELEASE_BRANCH="release/internal-test-20260630"
-
-          git config user.name "Link168 Release Bot"
-          git config user.email "actions@github.com"
-          git fetch origin master
-
-          if git ls-remote --exit-code --heads origin "$RELEASE_BRANCH" >/dev/null 2>&1; then
-            git fetch origin "$RELEASE_BRANCH"
-            git switch --create "$RELEASE_BRANCH" --track "origin/$RELEASE_BRANCH"
-          else
-            git switch --create "$RELEASE_BRANCH" origin/master
-          fi
-
-          git rm -r --ignore-unmatch .
-          git checkout "$SOURCE_SHA" -- .
-          git add -A
-
-          if git diff --cached --quiet; then
-            echo "Release branch already matches source snapshot"
-            exit 0
-          fi
-
-          git commit -m "release: Link168 internal test 2026-06-30"
-          git push origin "HEAD:refs/heads/$RELEASE_BRANCH"
-
   build:
     runs-on: ubuntu-latest
     env:
@@ -73,8 +34,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Use Node.js 22
         uses: actions/setup-node@v4
@@ -92,20 +51,53 @@ jobs:
         run: npx prisma generate
 
       - name: Lint
-        run: npm run lint
+        id: lint
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run lint 2>&1 | tee lint.log
 
       - name: Typecheck
-        run: npm run typecheck
+        id: typecheck
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run typecheck 2>&1 | tee typecheck.log
 
       - name: Build standalone
-        run: npm run build
-
-      - name: Verify standalone output
+        id: build_app
+        continue-on-error: true
+        shell: bash
         run: |
-          set -e
+          set -o pipefail
+          npm run build 2>&1 | tee build.log
+
+      - name: Upload check logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: link168-check-logs-${{ github.sha }}
+          path: |
+            lint.log
+            typecheck.log
+            build.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Enforce validation gate
+        if: always()
+        shell: bash
+        run: |
+          echo "lint=${{ steps.lint.outcome }}"
+          echo "typecheck=${{ steps.typecheck.outcome }}"
+          echo "build=${{ steps.build_app.outcome }}"
+          test "${{ steps.lint.outcome }}" = "success"
+          test "${{ steps.typecheck.outcome }}" = "success"
+          test "${{ steps.build_app.outcome }}" = "success"
           test -f .next/standalone/server.js
           test -d .next/static
-          echo "standalone/server.js exists"
 
       - name: Prepare deployment package
         shell: bash
@@ -123,7 +115,7 @@ jobs:
           tar -czf link168-linux-standalone.tar.gz -C deploy-package .
           ls -lh link168-linux-standalone.tar.gz
 
-      - name: Upload artifact
+      - name: Upload standalone artifact
         uses: actions/upload-artifact@v4
         with:
           name: link168-linux-standalone-${{ github.sha }}
