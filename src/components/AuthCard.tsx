@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useState } from "react";
 import {
   ArrowRight,
   CheckCircle2,
@@ -16,7 +16,6 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { PhonePreview, type PhonePreviewLink } from "@/components/PhonePreview";
-import { normalizeHandle, validateHandle } from "@/lib/handle";
 
 type AuthMode = "login" | "register";
 
@@ -31,9 +30,13 @@ type AuthResponse = {
   message?: string;
   redirectTo?: string;
   user?: { id: string; email: string; emailVerified?: boolean };
-  emailVerificationSent?: "smtp" | "console";
-  devVerifyUrl?: string;
-  devToken?: string;
+  emailVerificationSent?: boolean;
+  emailVerificationDetail?: string;
+  profile?: { username: string };
+  meta?: {
+    needVerifyEmail?: boolean;
+    message?: string;
+  };
 };
 
 const previewLinks: PhonePreviewLink[] = [
@@ -55,10 +58,9 @@ const floatingItems: Array<{ label: string; icon: LucideIcon; className: string 
   { label: "商品入口", icon: ShoppingBag, className: "right-4 bottom-24 bg-[#FFFDF8] text-[#C9824B]" },
 ];
 
-export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
+export function AuthCard({ mode }: AuthCardProps) {
   const router = useRouter();
   const isRegister = mode === "register";
-  const [handle, setHandle] = useState(() => normalizeHandle(initialHandle));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -67,20 +69,12 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
   const [message, setMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const previewUsername = useMemo(() => normalizeHandle(handle) || "yourname", [handle]);
-
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("");
     setSuccessMessage("");
 
     if (isRegister) {
-      const handleResult = validateHandle(handle);
-      if (!handleResult.success) {
-        setMessage(handleResult.error);
-        return;
-      }
-
       if (password !== confirmPassword) {
         setMessage("两次输入的密码不一致");
         return;
@@ -100,7 +94,6 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
           password,
           confirmPassword,
           agreeTerms,
-          handle: handleResult.handle,
         }),
       });
       const result = (await response.json()) as AuthResponse;
@@ -111,19 +104,12 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
         return;
       }
 
-      const devModeHint =
-        result.emailVerificationSent === "console" && result.devVerifyUrl
-          ? `\n开发模式提示：请点击此链接完成验证 → ${result.devVerifyUrl}`
-          : "";
-
-      setSuccessMessage(
-        `🎉 注册成功！我们已向 ${result.user?.email || "你的邮箱"} 发送了验证邮件。请查收并点击邮件中的链接完成验证。${devModeHint}`,
-      );
+      setSuccessMessage(result.meta?.message || "🎉 注册成功！正在进入后台...");
 
       setTimeout(() => {
-        router.push("/dashboard");
+        router.push(result.redirectTo || "/dashboard");
         router.refresh();
-      }, 2800);
+      }, 2000);
       return;
     }
 
@@ -139,12 +125,6 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
     if (!loginResponse.ok || !loginResult.success) {
       setMessage(loginResult.error || "登录失败，请检查账号或密码。");
       return;
-    }
-
-    if (!loginResult.user?.emailVerified) {
-      setSuccessMessage(
-        `⚠️ 登录成功，但你的邮箱尚未验证。请先完成邮箱验证以获得完整功能。`,
-      );
     }
 
     router.push("/dashboard");
@@ -172,24 +152,6 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
             </div>
 
             <form onSubmit={onSubmit} className="mt-8 grid max-w-md gap-4">
-              {isRegister ? (
-                <label className="block">
-                  <span className="text-sm font-black text-[#3F5F31]">链接后缀</span>
-                  <div className="mt-2 flex h-12 overflow-hidden rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] transition focus-within:border-[#6F8F4E] focus-within:bg-[#FFFDF8] focus-within:ring-4 focus-within:ring-[#6F8F4E]/12">
-                    <span className="flex shrink-0 items-center border-r border-[#E8DCCB] px-4 text-sm font-black text-[#3F5F31]">
-                      link168.me/
-                    </span>
-                    <input
-                      required
-                      value={handle}
-                      onChange={(event) => setHandle(event.target.value.toLowerCase())}
-                      placeholder="abao"
-                      className="min-w-0 flex-1 bg-transparent px-4 text-[#2B241E] outline-none placeholder:text-[#A69A8A]"
-                    />
-                  </div>
-                </label>
-              ) : null}
-
               <label className="block">
                 <span className="text-sm font-black text-[#3F5F31]">邮箱</span>
                 <input
@@ -302,7 +264,7 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
               </p>
               <h2 className="mt-4 max-w-md text-4xl font-black leading-tight">抢占后缀，马上拥有公开主页</h2>
               <p className="mt-4 max-w-md text-sm leading-7 text-[#7A6D5E]">
-                你的主页地址会同步进入后台资料，并兼容公开访问：link168.me/{previewUsername}
+                注册后即可设置你的专属主页地址：link168.me/你的名字
               </p>
             </div>
 
@@ -320,7 +282,7 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
               <PhonePreview
                 variant="auth"
                 poweredLogoClickable
-                username={previewUsername}
+                username="yourname"
                 displayName="Link168 名片"
                 bio="一个人，一个链接，连接全网"
                 links={previewLinks}

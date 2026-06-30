@@ -1,21 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f1e7;
-  --foreground: #2b241e;
-  --link168-ivory: #f7f1e7;
-  --link168-paper: #fffdf8;
-  --link168-sand: #f2e7d8;
-  --link168-line: #e8dccb;
-  --link168-green: #6f8f4e;
-  --link168-green-dark: #3f5f31;
-  --link168-green-soft: #dde8cd;
-  --link168-green-hover: #5e7f3f;
-  --link168-clay: #c9824b;
-  --link168-gold: #c8a45d;
-  --link168-ink: #2b241e;
-  --link168-muted: #7a6d5e;
-  --link168-faint: #a69a8a;
+  --background: #ffffff;
+  --foreground: #1f1f2e;
+  --link168-white: #ffffff;
+  --link168-purple-light: #f5f3ff;
+  --link168-purple: #8b5cf6;
+  --link168-purple-dark: #6d28d9;
+  --link168-purple-soft: #ede9fe;
+  --link168-blue: #3b82f6;
+  --link168-blue-soft: #dbeafe;
+  --link168-ink: #1f1f2e;
+  --link168-muted: #6b7280;
+  --link168-faint: #9ca3af;
+  --link168-line: #e5e7eb;
+  --link168-card: #f9fafb;
   --link168-font:
     Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
     "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans CJK JP",
@@ -49,6 +48,23 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
+.link168-break-anywhere {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.link168-mono-link {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 13px;
 }
 
 .link168-nav-icon {
@@ -89,8 +105,8 @@ select {
 }
 
 ::selection {
-  background: #facc15;
-  color: #113a1d;
+  background: #8b5cf6;
+  color: #ffffff;
 }
 
 @keyframes link168-float {
@@ -144,7 +160,7 @@ select {
 
 .link168-card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 18px 45px rgb(17 58 29 / 12%);
+  box-shadow: 0 18px 45px rgb(139 92 246 / 15%);
 }
 
 .link168-button-press {
@@ -172,7 +188,7 @@ select {
 
 .phone-preview-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgb(111 143 78 / 42%) transparent;
+  scrollbar-color: rgb(139 92 246 / 42%) transparent;
 }
 
 .phone-preview-scroll::-webkit-scrollbar {
@@ -184,7 +200,7 @@ select {
 }
 
 .phone-preview-scroll::-webkit-scrollbar-thumb {
-  background: rgb(111 143 78 / 35%);
+  background: rgb(139 92 246 / 35%);
   border-radius: 999px;
 }
 
@@ -201,7 +217,7 @@ select {
 }
 
 .legal-content a {
-  color: #0b6b2b;
+  color: #6d28d9;
   font-weight: 900;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -326,5 +342,10 @@ html[data-link168-ui-theme="creator"] a {
   .link168-button-press {
     min-height: 44px;
   }
+}
 
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }

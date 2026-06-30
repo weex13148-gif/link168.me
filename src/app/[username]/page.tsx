@@ -1,229 +1,132 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { ArrowUpRight, Globe } from "lucide-react";
-import { BrandFooter } from "@/components/ProfilePreview";
+import { notFound, permanentRedirect } from "next/navigation";
 import { db } from "@/lib/db";
+import {
+  getActiveRestrictions,
+  canShowPublicProfile,
+  syncEmailVerificationRestriction,
+  RestrictionQueryError,
+  type ActiveRestriction,
+} from "@/lib/auth";
+import {
+  SharePageWithContact,
+} from "@/components/share/SharePageWithContact";
+import {
+  type SharePageTemplate,
+} from "@/components/share/SharePageRenderer";
+import { getThemeClasses } from "@/components/theme/presetThemes";
 
 type PublicProfilePageProps = {
   params: Promise<{ username: string }>;
-  searchParams?: Promise<{ preview?: string }>;
+  searchParams?: Promise<{ preview?: string; template?: string }>;
 };
 
-async function getPublicProfile(username: string) {
-  const profile = await db.profile.findUnique({
-    where: { username: username.toLowerCase() },
-    include: {
-      links: {
-        where: { isActive: true },
-        orderBy: { position: "asc" },
+function normalizeUsername(handle: string) {
+  return handle.trim().toLowerCase();
+}
+
+// V2-002：从用户名 -> userId 解析。优先查 Profile，失败时查 UsernameRegistry / History。
+// History 保留期内 → 重定向到当前用户名。永久保留/封禁 → 展示规则冻结页。
+async function resolveUsernameToProfile(rawUsername: string) {
+  const normalized = normalizeUsername(rawUsername);
+
+  // 1. 当前 Profile
+  try {
+    const profile = await db.profile.findUnique({
+      where: { username: normalized },
+      include: {
+        links: {
+          where: { isActive: true },
+          orderBy: { position: "asc" },
+        },
       },
-    },
-  });
-
-  if (!profile) {
-    return null;
+    });
+    if (profile) return { type: "current", profile } as const;
+  } catch {
+    // 继续尝试其它路径
   }
 
-  return profile;
+  // 2. Registry：当前占用（CURRENT）→ 返回 profile；RESERVED_90_DAYS 在有效期 → 重定向到当前 username
+  try {
+    const registry = await db.usernameRegistry.findUnique({
+      where: { normalizedUsername: normalized },
+      select: { userId: true, status: true, reservedUntil: true, displayUsername: true },
+    });
+
+    if (registry) {
+      if (registry.status === "CURRENT" && registry.userId) {
+        const profile = await db.profile.findUnique({
+          where: { userId: registry.userId },
+          include: { links: { where: { isActive: true }, orderBy: { position: "asc" } } },
+        });
+        if (profile) return { type: "current", profile } as const;
+      }
+      if (registry.status === "RESERVED_90_DAYS" && registry.reservedUntil && registry.reservedUntil > new Date() && registry.userId) {
+        // 旧 Username → 查找该用户的当前 Profile.username
+        const currentProfile = await db.profile.findUnique({
+          where: { userId: registry.userId },
+          select: { username: true },
+        });
+        if (currentProfile && normalizeUsername(currentProfile.username) !== normalized) {
+          return { type: "reserved-redirect", newUsername: currentProfile.username } as const;
+        }
+      }
+      if (registry.status === "PERMANENTLY_RESERVED") {
+        return { type: "permanently-reserved" } as const;
+      }
+    }
+  } catch {
+    // 表未迁移：降级，继续后续路径
+  }
+
+  // 3. History：保留期内 → 重定向到 replacedBy
+  try {
+    const historyEntry = await db.usernameHistory.findFirst({
+      where: { normalizedUsername: normalized },
+      orderBy: { createdAt: "desc" },
+      take: 1,
+    });
+    if (historyEntry) {
+      if (historyEntry.reservedUntil && historyEntry.reservedUntil > new Date()) {
+        if (historyEntry.replacedBy && normalizeUsername(historyEntry.replacedBy) !== normalized) {
+          return { type: "reserved-redirect", newUsername: historyEntry.replacedBy } as const;
+        }
+      }
+    }
+  } catch {
+    // 表未迁移：降级
+  }
+
+  return { type: "not-found" } as const;
 }
 
-type ThemeStyle = {
-  outer: string;
-  screen: string;
-  card: string;
-  cardText: string;
-  cardSubtle: string;
-  avatar: string;
-  avatarText: string;
-  link: string;
-  linkIcon: string;
-  linkText: string;
-  linkBorder: string;
-  footerText: string;
-};
-
-function getThemeStyle(theme: string | null | undefined): ThemeStyle {
-  const name = (theme || "").trim();
-
-  switch (name) {
-    case "简约白":
-      return {
-        outer: "bg-white",
-        screen: "bg-white",
-        card: "bg-white",
-        cardText: "text-[#2B241E]",
-        cardSubtle: "text-[#7A6D5E]",
-        avatar: "bg-[#F5F7FA]",
-        avatarText: "text-[#2B241E]",
-        link: "bg-white",
-        linkIcon: "bg-[#F5F7FA] text-[#2B241E]",
-        linkText: "text-[#2B241E]",
-        linkBorder: "border-[#E0E0E0]",
-        footerText: "text-[#8C8C8C]",
-      };
-    case "商务黑":
-      return {
-        outer: "bg-[#111827]",
-        screen: "bg-[#111827]",
-        card: "bg-[#1F2937]",
-        cardText: "text-white",
-        cardSubtle: "text-[#D1D5DB]",
-        avatar: "bg-[#374151]",
-        avatarText: "text-white",
-        link: "bg-[#111827]",
-        linkIcon: "bg-[#374151] text-white",
-        linkText: "text-white",
-        linkBorder: "border-[#374151]",
-        footerText: "text-[#9CA3AF]",
-      };
-    case "蓝色科技":
-      return {
-        outer: "bg-[#EAF3FF]",
-        screen: "bg-[#EAF3FF]",
-        card: "bg-white",
-        cardText: "text-[#0F172A]",
-        cardSubtle: "text-[#64748B]",
-        avatar: "bg-[#2563EB]",
-        avatarText: "text-white",
-        link: "bg-[#2563EB]",
-        linkIcon: "bg-white/90 text-[#2563EB]",
-        linkText: "text-white",
-        linkBorder: "border-[#1D4ED8]",
-        footerText: "text-[#64748B]",
-      };
-    case "橙色活力":
-      return {
-        outer: "bg-[#FFF3E6]",
-        screen: "bg-[#FFF3E6]",
-        card: "bg-white",
-        cardText: "text-[#4A1C06]",
-        cardSubtle: "text-[#9A3412]",
-        avatar: "bg-[#F97316]",
-        avatarText: "text-white",
-        link: "bg-[#F97316]",
-        linkIcon: "bg-white/90 text-[#F97316]",
-        linkText: "text-white",
-        linkBorder: "border-[#EA580C]",
-        footerText: "text-[#9A3412]",
-      };
-    case "浅绿清新":
-      return {
-        outer: "bg-[#DDE8CD]",
-        screen: "bg-[#DDE8CD]",
-        card: "bg-[#FFFDF8]",
-        cardText: "text-[#2B241E]",
-        cardSubtle: "text-[#4A5A2F]",
-        avatar: "bg-[#6F8F4E]",
-        avatarText: "text-white",
-        link: "bg-[#FFFDF8]",
-        linkIcon: "bg-[#DDE8CD] text-[#3F5F31]",
-        linkText: "text-[#3F5F31]",
-        linkBorder: "border-[#E8DCCB]",
-        footerText: "text-[#4A5A2F]",
-      };
-    case "Link168 草木默认":
-    default:
-      return {
-        outer: "bg-[#F7F1E7]",
-        screen: "bg-[#F7F1E7]",
-        card: "bg-[#FFFDF8]",
-        cardText: "text-[#2B241E]",
-        cardSubtle: "text-[#7A6D5E]",
-        avatar: "bg-[linear-gradient(135deg,#DDE8CD,#C8A45D)]",
-        avatarText: "text-[#3F5F31]",
-        link: "bg-[#FFFDF8]",
-        linkIcon: "bg-[#DDE8CD] text-[#3F5F31]",
-        linkText: "text-[#2B241E]",
-        linkBorder: "border-[#E8DCCB]",
-        footerText: "text-[#7A6D5E]",
-      };
-  }
-}
-
-type I18nText = {
-  noLinks: string;
-  bioFallback: string;
-  poweredBy: string;
-  report: string;
-  returnDashboard: string;
-};
-
-function getI18n(language: string | null | undefined): I18nText {
-  const lang = (language || "zh").trim().toLowerCase();
-  if (lang === "en") {
-    return {
-      noLinks: "No public links yet.",
-      bioFallback: "This profile has no bio.",
-      poweredBy: "Powered by Link168",
-      report: "Report this profile",
-      returnDashboard: "Back to dashboard",
-    };
-  }
-  if (lang === "ja") {
-    return {
-      noLinks: "公開リンクはまだありません。",
-      bioFallback: "このプロフィールには自己紹介がありません。",
-      poweredBy: "Link168 提供",
-      report: "このプロフィールを通報",
-      returnDashboard: "管理画面に戻る",
-    };
-  }
-  return {
-    noLinks: "暂无公开链接",
-    bioFallback: "这个主页还没有简介。",
-    poweredBy: "Powered by Link168",
-    report: "举报此主页",
-    returnDashboard: "返回操作后台",
-  };
-}
-
-function renderIcon(
-  iconType: string | null | undefined,
-  iconValue: string | null | undefined,
-  iconUrl: string | null | undefined,
-  defaultIconClass: string,
-  defaultTextClass: string,
-): ReactNode {
-  const type = (iconType || "default").toLowerCase();
-  if (type === "emoji" && iconValue) {
-    return (
-      <span className={`grid size-10 shrink-0 place-items-center rounded-xl text-2xl ${defaultIconClass}`}>
-        {iconValue}
-      </span>
-    );
-  }
-  if (type === "custom" && iconUrl) {
-    return (
-      <span className={`grid size-10 shrink-0 place-items-center overflow-hidden rounded-xl border border-black/5 ${defaultIconClass}`}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={iconUrl} alt="" className="size-full object-cover" />
-      </span>
-    );
-  }
-  return (
-    <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${defaultIconClass}`}>
-      <Globe aria-hidden className="size-5" />
-    </span>
-  );
-}
+type FoundProfile = Extract<Awaited<ReturnType<typeof resolveUsernameToProfile>>, { type: "current" }>["profile"];
+type PublicProfile = FoundProfile;
 
 export async function generateMetadata({ params }: PublicProfilePageProps): Promise<Metadata> {
   const { username } = await params;
-  const profile = await getPublicProfile(username);
+  const result = await resolveUsernameToProfile(username);
 
-  if (!profile) {
+  if (result.type === "not-found" || result.type === "permanently-reserved") {
     return {
       title: `@${username} | Link168`,
       description: `访问 @${username} 的 link168.me 主页。`,
     };
   }
 
+  if (result.type === "reserved-redirect") {
+    return {
+      title: `@${username} → @${result.newUsername} | Link168`,
+      description: `该地址已更新，请访问新的主页 @${result.newUsername}。`,
+    };
+  }
+
+  const profile = result.profile;
   if (!profile.isPublic) {
     return {
       title: `该主页暂不可访问 | Link168`,
-      description: `该页面可能因违反平台规则、被用户举报或由管理员处理，当前已暂停展示。`,
+      description: `该页面可能因隐私设置或平台规则已暂停展示。`,
     };
   }
 
@@ -233,129 +136,254 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
   };
 }
 
+function resolveTemplate(profile: PublicProfile & { template?: string | null }, queryTemplate?: string): SharePageTemplate {
+  if (queryTemplate === "creator" || queryTemplate === "conversion" || queryTemplate === "business") {
+    return queryTemplate;
+  }
+  const stored = String(profile.template || "").trim().toLowerCase();
+  if (stored === "creator" || stored === "conversion" || stored === "business") return stored;
+  return "business";
+}
+
+function renderRestrictionBlock(restrictions: ActiveRestriction[]): React.ReactNode {
+  if (restrictions.length === 0) return null;
+  const types = restrictions.map((r) => r.type);
+  if (types.includes("BANNED")) {
+    return (
+      <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center px-4 py-10">
+        <section className="w-full rounded-[28px] border border-red-200 bg-red-50 p-8 text-center shadow-sm">
+          <h1 className="text-2xl font-black text-red-800">该账号已被封禁</h1>
+          <p className="mt-3 text-sm leading-7 text-red-700">该账号因违反平台规则已被封禁，公开主页不可访问。</p>
+        </section>
+        <Link href="/" className="mt-4 text-xs text-[#7A6D5E] hover:opacity-80">由 Link168 提供</Link>
+      </main>
+    );
+  }
+  if (types.includes("ADMIN_FREEZE")) {
+    return (
+      <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center px-4 py-10">
+        <section className="w-full rounded-[28px] border border-amber-200 bg-amber-50 p-8 text-center shadow-sm">
+          <h1 className="text-2xl font-black text-amber-900">该主页暂不可访问</h1>
+          <p className="mt-3 text-sm leading-7 text-amber-800">管理员已暂停该主页展示。</p>
+        </section>
+        <Link href="/" className="mt-4 text-xs text-[#7A6D5E] hover:opacity-80">由 Link168 提供</Link>
+      </main>
+    );
+  }
+  if (types.includes("EMAIL_UNVERIFIED")) {
+    return (
+      <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center px-4 py-10">
+        <section className="w-full rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8] p-8 text-center shadow-[0_18px_55px_rgba(86,68,46,0.08)]">
+          <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#F3E7D1] text-[#8A6A2E]">
+            <svg viewBox="0 0 24 24" fill="none" className="size-7" aria-hidden>
+              <path d="M4 6h16v12H4z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="m4 7 8 6 8-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <h1 className="mt-5 text-2xl font-black text-[#2B241E]">该主页未完成邮箱验证</h1>
+          <p className="mt-3 text-sm leading-7 text-[#7A6D5E]">注册超过 30 天仍未验证邮箱的主页，将暂时暂停公开展示。请用户本人登录后台后重新发起邮箱验证。</p>
+          <Link href="/login" className="mt-6 inline-flex min-h-[48px] items-center justify-center rounded-full bg-[#6F8F4E] px-6 text-sm font-black text-white shadow-sm">登录后台验证</Link>
+        </section>
+        <Link href="/" className="mt-6 text-xs text-[#7A6D5E] hover:opacity-80">由 Link168 提供</Link>
+      </main>
+    );
+  }
+  return null;
+}
+
+function renderRestrictionErrorBlock(): React.ReactNode {
+  return (
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center px-4 py-10">
+      <section className="w-full rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8] p-8 text-center shadow-[0_18px_55px_rgba(86,68,46,0.08)]">
+        <h1 className="mt-2 text-2xl font-black text-[#2B241E]">服务暂时不可用</h1>
+        <p className="mt-3 text-sm leading-7 text-[#7A6D5E]">系统暂时无法验证该主页状态，请稍后再试。</p>
+        <Link href="/" className="mt-6 inline-flex min-h-[48px] items-center justify-center rounded-full bg-[#6F8F4E] px-6 text-sm font-black text-white shadow-sm">返回 Link168</Link>
+      </section>
+      <Link href="/" className="mt-6 text-xs text-[#7A6D5E] hover:opacity-80">由 Link168 提供</Link>
+    </main>
+  );
+}
+
+function renderPermanentlyReservedPage(username: string): React.ReactNode {
+  return (
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center px-4 py-10">
+      <section className="w-full rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8] p-8 text-center shadow-[0_18px_55px_rgba(86,68,46,0.08)]">
+        <h1 className="mt-2 text-2xl font-black text-[#2B241E]">@ {username} 已被保留</h1>
+        <p className="mt-3 text-sm leading-7 text-[#7A6D5E]">该公开地址已被系统保留，不再作为普通主页展示。</p>
+      </section>
+      <Link href="/" className="mt-6 text-xs text-[#7A6D5E] hover:opacity-80">由 Link168 提供</Link>
+    </main>
+  );
+}
+
 export default async function PublicProfilePage({ params, searchParams }: PublicProfilePageProps) {
   const { username } = await params;
   const query = searchParams ? await searchParams : {};
   const isPreview = query.preview === "1";
-  const profile = await getPublicProfile(username);
 
-  if (!profile) {
+  const result = await resolveUsernameToProfile(username);
+
+  if (result.type === "not-found") {
     notFound();
+  }
+
+  if (result.type === "reserved-redirect") {
+    // 旧地址 90 天内重定向到新地址；Next.js permanentRedirect 为 308，仅对当前路径
+    // 但 90 天不是永久，这里使用 meta-refresh 的软重定向，避免搜索引擎将旧地址视为永久已迁移
+    // 同时提供 JS 跳转与手动点击按钮，满足安全与 SEO 平衡
+    return (
+      <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center px-4 py-10">
+        <section className="w-full rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8] p-8 text-center shadow-[0_18px_55px_rgba(86,68,46,0.08)]">
+          <h1 className="text-2xl font-black text-[#2B241E]">该主页地址已更新</h1>
+          <p className="mt-3 text-sm leading-7 text-[#7A6D5E]">该公开地址已更换为新地址，请访问新的主页。</p>
+          <Link href={`/${result.newUsername}`} className="mt-6 inline-flex min-h-[48px] items-center justify-center rounded-full bg-[#6F8F4E] px-6 text-sm font-black text-white shadow-sm break-all">前往 @{result.newUsername}</Link>
+        </section>
+        <Link href="/" className="mt-6 text-xs text-[#7A6D5E] hover:opacity-80">由 Link168 提供</Link>
+      </main>
+    );
+  }
+
+  if (result.type === "permanently-reserved") {
+    return renderPermanentlyReservedPage(username);
+  }
+
+  const profile = result.profile;
+
+  // V2-002：同步邮箱冻结 + 读取全部有效限制 — 禁止失败静默放行
+  let restrictions: ActiveRestriction[] = [];
+  let restrictionQueryFailed = false;
+
+  try {
+    // 惰性同步邮箱验证冻结（超过 30 天未验证）
+    const userBasic = await db.user.findUnique({
+      where: { id: profile.userId },
+      select: { emailVerified: true, createdAt: true },
+    });
+    if (userBasic && !userBasic.emailVerified) {
+      try {
+        await syncEmailVerificationRestriction(profile.userId);
+      } catch (err) {
+        if (!(err instanceof RestrictionQueryError)) {
+          // 非限制服务错误（真实 DB 异常）：不中断，继续读取 getActiveRestrictions 以暴露状态
+        }
+        // 新表未迁移等情况：降级继续，不伪装成功
+      }
+    }
+    restrictions = await getActiveRestrictions(profile.userId);
+  } catch (err) {
+    if (err instanceof RestrictionQueryError) {
+      restrictionQueryFailed = true;
+    } else {
+      // 真实 DB 异常：不公开主页（安全原则：不确定时保守）
+      restrictionQueryFailed = true;
+    }
+  }
+
+  if (restrictionQueryFailed) {
+    return renderRestrictionErrorBlock();
+  }
+
+  const { ok, blockedType } = canShowPublicProfile(restrictions);
+  if (!ok) {
+    // 若被 BANNED 则展示更明确的冻结页；EMAIL_UNVERIFIED 使用统一逻辑
+    if (blockedType) {
+      return renderRestrictionBlock(restrictions) || renderRestrictionErrorBlock();
+    }
+    return renderRestrictionBlock(restrictions) || renderRestrictionErrorBlock();
   }
 
   if (!profile.isPublic) {
     return (
       <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center px-4 py-10">
-        <section className="w-full rounded-2xl border border-[#E0E0E0] bg-white p-8 text-center shadow-sm">
-          <div className="mx-auto grid size-14 place-items-center rounded-full bg-[#FFF7E6] text-[#AD6800]">
-            <svg viewBox="0 0 24 24" fill="none" className="size-7" aria-hidden>
-              <path d="M12 9v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              <path d="M12 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-          <h1 className="mt-5 text-2xl font-black text-[#1A1A1A]">该主页暂不可访问</h1>
-          <p className="mt-3 text-sm leading-7 text-[#4A4A4A]">
-            该页面可能因违反平台规则、被用户举报或由管理员处理，当前已暂停展示。
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Link
-              href="/"
-              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[#E0E0E0] bg-white px-5 text-sm font-black text-[#1A1A1A]"
-            >
-              返回首页
-            </Link>
-            <Link
-              href="/register"
-              className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#5B6FFF] px-5 text-sm font-black text-white"
-            >
-              免费创建我的主页
-            </Link>
-          </div>
+        <section className="w-full rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8] p-8 text-center shadow-[0_18px_55px_rgba(86,68,46,0.08)]">
+          <h1 className="mt-3 text-2xl font-black text-[#2B241E]">该主页暂不可访问</h1>
+          <p className="mt-3 text-sm leading-7 text-[#7A6D5E]">该页面可能因隐私设置已暂停展示。</p>
+          <Link href="/register" className="mt-6 inline-flex min-h-[48px] items-center justify-center rounded-full bg-[#6F8F4E] px-6 text-sm font-black text-white shadow-sm">免费创建我的主页</Link>
         </section>
-        <BrandFooter />
+        <Link href="/" className="mt-6 text-xs text-[#7A6D5E] hover:opacity-80">由 Link168 提供</Link>
       </main>
     );
   }
 
-  const style = getThemeStyle(profile.theme || "Link168 草木默认");
-  const i18n = getI18n(profile.language);
+  const profileWithTemplate = profile as PublicProfile & { template?: string | null };
+  const themeName = profile.theme || "Link168 草木默认";
+  const template = resolveTemplate(profileWithTemplate, query.template);
   const displayName = profile.displayName || `@${profile.username}`;
-  const initial = displayName.slice(0, 1).toUpperCase();
+  const surfaceClass = getThemeClasses(themeName).surfaceClassName;
+
+  const shareLinks = profile.links.map((item) => {
+    const typedItem = item as unknown as {
+      type?: string | null;
+      payloadJson?: string | null;
+      id: string;
+      title: string;
+      description?: string | null;
+      url?: string | null;
+      iconUrl?: string | null;
+      iconValue?: string | null;
+      iconType?: string | null;
+    };
+    return {
+      id: typedItem.id,
+      title: typedItem.title,
+      description: typedItem.description || null,
+      url: typedItem.url ? `/go/${typedItem.id}` : null,
+      icon: typedItem.iconUrl || typedItem.iconValue || null,
+      type: typedItem.iconType || null,
+      componentType: typedItem.type || null,
+      payload: typedItem.payloadJson || null,
+    };
+  });
+
+  const reportUrl = `/report?url=${encodeURIComponent(`${process.env.NEXT_PUBLIC_APP_URL || "https://link168.me"}/${profile.username}`)}`;
+
+  // 获取已激活产品列表
+  let products: Array<{
+    id: string;
+    name: string;
+    category: string | null;
+    description: string | null;
+    priceText: string | null;
+    coverImageUrl: string | null;
+    ctaLabel: string | null;
+    ctaUrl: string | null;
+  }> = [];
+  try {
+    const productsResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL || "https://link168.me"}/api/${profile.username}/products`,
+      { cache: "no-store" }
+    );
+    if (productsResponse.ok) {
+      const productsData = await productsResponse.json();
+      if (productsData.success && Array.isArray(productsData.products)) {
+        products = productsData.products;
+      }
+    }
+  } catch {
+    // 产品获取失败不影响主页展示
+  }
 
   return (
-    <main className={`mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 py-5 ${style.outer}`}>
+    <main className={`mx-auto flex min-h-dvh w-full max-w-2xl flex-col px-4 py-6 sm:py-10 ${surfaceClass}`}>
       {isPreview ? (
-        <Link
-          href="/dashboard"
-          className="mb-3 inline-flex w-fit items-center rounded-full bg-[#6F8F4E] px-4 py-2 text-sm font-black text-white shadow-sm"
-        >
-          {i18n.returnDashboard}
+        <Link href="/dashboard" className="mb-4 inline-flex w-fit items-center rounded-full bg-[#6F8F4E] px-4 py-2 text-sm font-black text-white shadow-sm">
+          返回操作后台
         </Link>
       ) : null}
-      <section className="flex flex-1 flex-col overflow-hidden rounded-[28px] border border-[#1A1A1A]/15 bg-[#1A1A1A] p-3 shadow-2xl shadow-[#5B6FFF]/20">
-        <div className={`flex flex-1 flex-col overflow-hidden rounded-[20px] ${style.screen}`}>
-          <header className="flex items-center justify-between border-b border-black/10 px-4 py-3 text-[#2B241E]">
-            <span className="text-xs font-black">9:41</span>
-            <span className="h-1.5 w-20 rounded-full bg-black/15" />
-            <span className="text-xs font-black">5G</span>
-          </header>
-
-          <div className="flex-1 px-4 pb-5 pt-6 text-[#2B241E]">
-            <section className={`relative overflow-hidden rounded-[24px] p-4 shadow-sm ${style.card}`}>
-              <div className="pointer-events-none absolute -right-6 -top-8 size-24 rounded-full bg-[#F2E7D8]/70 blur-2xl" />
-              <div className="pointer-events-none absolute bottom-2 right-3 h-16 w-12 rounded-full border border-[#C8A45D]/20" />
-              <div className="flex items-start gap-4">
-                {profile.avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={profile.avatarUrl} alt={`${displayName} 的头像`} className="size-20 shrink-0 rounded-full object-cover" />
-                ) : (
-                  <div className={`grid size-20 shrink-0 place-items-center rounded-full ${style.avatar} text-2xl font-black ${style.avatarText}`}>
-                    {initial}
-                  </div>
-                )}
-                <div className="min-w-0 pt-1">
-                  <h1 className={`truncate text-2xl font-black ${style.cardText}`}>{displayName}</h1>
-                  <p className={`mt-0.5 text-xs font-bold ${style.cardSubtle}`}>@{profile.username}</p>
-                  <p className={`mt-2 text-sm leading-5 ${style.cardSubtle}`}>{profile.bio || i18n.bioFallback}</p>
-                </div>
-              </div>
-            </section>
-
-            <div className="mt-4 space-y-2.5">
-              {profile.links.length === 0 ? (
-                <div className={`rounded-lg border border-dashed border-[#E0E0E0] ${style.card} px-4 py-5 text-center text-sm font-bold ${style.cardSubtle}`}>
-                  {i18n.noLinks}
-                </div>
-              ) : null}
-              {profile.links.map((item) => (
-                <Link
-                  key={item.id}
-                  href={`/go/${item.id}`}
-                  className={`link168-card-hover flex min-h-16 items-center justify-between gap-3 rounded-2xl border px-3.5 py-3 text-sm shadow-sm transition active:scale-[0.99] ${style.link} ${style.linkBorder}`}
-                >
-                  <span className="flex min-w-0 flex-1 items-center gap-3">
-                    {renderIcon(item.iconType, item.iconValue, item.iconUrl, style.linkIcon, style.linkText)}
-                    <span className="min-w-0">
-                      <span className={`block truncate font-black ${style.linkText}`}>{item.title}</span>
-                      {item.description ? <span className={`mt-0.5 block truncate text-xs ${style.cardSubtle}`}>{item.description}</span> : null}
-                    </span>
-                  </span>
-                  <ArrowUpRight aria-hidden className={`size-5 shrink-0 opacity-70 ${style.linkText}`} />
-                </Link>
-              ))}
-            </div>
-
-            <BrandFooter textClass={style.footerText} />
-            <Link
-              href={`/report?url=${encodeURIComponent(`https://link168.me/${profile.username}`)}`}
-              className={`mt-3 block text-center text-xs font-bold hover:text-[#5B6FFF] ${style.footerText}`}
-            >
-              {i18n.report}
-            </Link>
-          </div>
-        </div>
-      </section>
+      <div className="w-full max-w-md mx-auto">
+        <SharePageWithContact
+          template={template}
+          username={profile.username}
+          displayName={displayName}
+          bio={profile.bio}
+          avatarUrl={profile.avatarUrl || null}
+          links={shareLinks}
+          themeName={themeName}
+          showBrandFoot
+          reportUrl={reportUrl}
+          products={products}
+        />
+      </div>
     </main>
   );
 }

@@ -1,10 +1,11 @@
 import crypto from "crypto";
-import { mkdir, writeFile } from "fs/promises";
+import { mkdir, writeFile, rm } from "fs/promises";
 import path from "path";
 import { NextResponse } from "next/server";
-import { requireUser } from "@/lib/auth";
+import { requireDashboardUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getOwnedProfile, toProfileDto } from "@/lib/dashboard-data";
+import { moderateImageContent } from "@/lib/content-safety";
 
 export const runtime = "nodejs";
 
@@ -34,7 +35,7 @@ function matchesMagicBytes(buffer: Uint8Array, spec: { extension: string; signat
 }
 
 export async function POST(request: Request) {
-  const { user, response } = await requireUser(request);
+  const { user, response } = await requireDashboardUser(request);
   if (response || !user) return response;
 
   const profile = await getOwnedProfile(user.id);
@@ -78,20 +79,50 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "文件内容与声明格式不一致。" }, { status: 400 });
   }
 
-  // 4. 文件名中只保留白名单后缀，并且用随机名 + 用户资料名，防止路径遍历
-  // TODO(P0-security): 此处暂未做 NSFW / 暴力/敏感内容图片审核，
-  //   上线建议接入腾讯内容安全 / 阿里云内容安全 或其他第三方图片审核 API，
-  //   避免用户上传违法违规图片被他人访问。
+  // 4. 图片内容审核：若审核失败，统一返回错误，不写文件到磁盘（若已写则立即回滚）
+  try {
+    const moderated = moderateImageContent({
+      size: file.size,
+      mimeType: file.type,
+      fileName: file.name,
+    });
+    if (!moderated.ok || moderated.blocked) {
+      return NextResponse.json(
+        { success: false, error: "该图片未能通过内容安全审核，请更换其他图片。" },
+        { status: 400 },
+      );
+    }
+  } catch (err) {
+    console.error("[dashboard:avatar] image moderation failed", err && (err as { message?: unknown }).message ? String((err as { message?: unknown }).message) : String(err));
+    return NextResponse.json(
+      { success: false, error: "该图片未能通过内容安全审核，请更换其他图片。" },
+      { status: 400 },
+    );
+  }
+
+  // 5. 文件名中只保留白名单后缀，并且用随机名 + 用户资料名，防止路径遍历
   const safeExtension = typeSpec.extension;
   const fileName = profile.username + "-" + crypto.randomUUID() + safeExtension;
   const uploadDir = path.join(process.cwd(), "public", "uploads", "avatars");
   await mkdir(uploadDir, { recursive: true });
-  await writeFile(path.join(uploadDir, fileName), Buffer.from(arrayBuffer));
 
-  const updatedProfile = await db.profile.update({
-    where: { id: profile.id },
-    data: { avatarUrl: "/uploads/avatars/" + fileName },
-  });
+  let createdFile: string | null = null;
+  try {
+    createdFile = path.join(uploadDir, fileName);
+    await writeFile(createdFile, Buffer.from(arrayBuffer));
 
-  return NextResponse.json({ success: true, profile: toProfileDto(updatedProfile) });
+    const updatedProfile = await db.profile.update({
+      where: { id: profile.id },
+      data: { avatarUrl: "/uploads/avatars/" + fileName },
+    });
+
+    return NextResponse.json({ success: true, profile: toProfileDto(updatedProfile) });
+  } catch (err) {
+    // 回滚：写数据库失败时，删除落盘文件
+    if (createdFile) {
+      await rm(createdFile, { force: true }).catch(() => undefined);
+    }
+    throw err;
+  }
 }
+

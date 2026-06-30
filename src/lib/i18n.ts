@@ -165,7 +165,7 @@ export const translations: Record<Language, TranslationRecord> = {
     edit: "Edit",
     publicPage: "Public Page",
     backToTop: "Back to Top",
-    poweredBy: "Powered by Link168",
+    poweredBy: "Link168.me",
     customTheme: "Custom Theme",
     bgColor: "Background",
     cardColor: "Card",

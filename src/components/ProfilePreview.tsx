@@ -1,5 +1,3 @@
-import Image from "next/image";
-import Link from "next/link";
 import { PhonePreview } from "@/components/PhonePreview";
 
 export type PreviewLink = {
@@ -10,15 +8,28 @@ export type PreviewLink = {
   isActive?: boolean;
 };
 
-export function BrandFooter({ clickable = true, textClass = "text-[#7A8673]" }: { clickable?: boolean; textClass?: string }) {
+export function BrandFooter({ clickable = true, textClass = "text-[#3F5F31]" }: { clickable?: boolean; textClass?: string }) {
   const content = (
-    <div className={`mx-auto mt-5 flex w-fit items-center gap-2 text-[10px] font-semibold tracking-wide ${textClass}`}>
-      <Image src="/brand/link168-logo.png" alt="Link168" width={1536} height={864} className="h-3.5 w-auto object-contain opacity-90" />
-      <span>Powered by Link168</span>
+    <div className="mx-auto mt-5 flex justify-center">
+      <span
+        className={`inline-flex min-h-[40px] items-center gap-2 rounded-full border border-black/10 bg-white/70 px-4 py-1.5 text-base font-bold shadow-sm ${textClass}`}
+      >
+        Link168.me
+      </span>
     </div>
   );
 
-  return clickable ? <Link href="/">{content}</Link> : content;
+  return clickable ? (
+    <a
+      href={process.env.NEXT_PUBLIC_APP_URL || "https://link168.me"}
+      aria-label="访问 Link168.me 首页"
+      className="link168-card-hover block transition hover:opacity-80 active:scale-[0.98]"
+    >
+      {content}
+    </a>
+  ) : (
+    content
+  );
 }
 
 export function ProfilePreview({

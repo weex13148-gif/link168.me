@@ -1,23 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { isAdminRequest, isAdminSecretConfigured } from "@/lib/admin-auth";
 
-function adminFailureResponse(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith("/api/admin/")) {
-    const status = isAdminSecretConfigured() ? 401 : 500;
-    const error = isAdminSecretConfigured() ? "Unauthorized." : "ADMIN_SECRET is not configured.";
-
-    return NextResponse.json({ success: false, error }, { status });
-  }
-
-  return new NextResponse("Not Found", { status: 404 });
-}
+// 旧 /admin 与 /api/admin 路由统一返回 404。
+// 真实的后台入口在 /jeepwork，权限校验由各页面/路由的 Server 代码直接读取 link168_admin_session 完成。
+// 这里不做重定向，也不暴露任何提示信息，保持"路径不存在"的统一表现。
 
 export function proxy(request: NextRequest) {
-  if (!isAdminRequest(request)) {
-    return adminFailureResponse(request);
-  }
-
-  return NextResponse.next();
+  return NextResponse.json({ success: false, error: "Not Found" }, { status: 404 });
 }
 
 export const config = {

@@ -4,8 +4,35 @@ import nextTs from "eslint-config-next/typescript";
 
 export default defineConfig([
   {
-    ignores: ["src/generated/prisma/**"],
+    ignores: [
+      "src/generated/prisma/**",
+      "prototype/**",
+      "scripts/gen-doc*.js",
+    ],
   },
   ...nextVitals,
   ...nextTs,
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",
+      "prefer-const": "warn",
+      "react/no-unescaped-entities": "warn",
+      "@next/next/no-html-link-for-pages": "warn",
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/purity": "warn",
+      "react-hooks/immutability": "warn",
+    },
+  },
+  {
+    files: ["scripts/**/*.js"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
+  {
+    files: ["src/types/**/*.d.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
 ]);

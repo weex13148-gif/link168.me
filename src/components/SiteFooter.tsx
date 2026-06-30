@@ -11,11 +11,11 @@ const footerLinks = [
 
 export function SiteFooter() {
   return (
-    <footer id="about" className="border-t border-[#E8DCCB] bg-[#F7F1E7] px-4 py-8 text-sm text-[#7A6D5E] sm:px-6 lg:px-8">
+    <footer className="border-t border-[#e5e7eb] bg-[#f9fafb] px-4 py-8 text-sm text-[#6b7280] sm:px-6 lg:px-8">
       <div className="mx-auto grid w-full max-w-7xl gap-6 md:grid-cols-[1fr_1.4fr] md:items-start">
         <div>
           <BrandLogo size="footer" />
-          <p className="mt-4 text-lg font-black text-[#2B241E]">Link168 连接美好生活</p>
+          <p className="mt-4 text-lg font-bold text-[#1f1f2e]">Link168 连接美好生活</p>
           <p className="mt-2 text-sm leading-6">用一个链接，整理你的内容、服务与生意。</p>
         </div>
         <div className="grid gap-4">
@@ -24,9 +24,9 @@ export function SiteFooter() {
               <Link
                 key={label}
                 href={href}
-                className="link168-card-hover link168-button-press group flex min-h-14 items-center gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 py-3 text-[15px] font-semibold text-[#2B241E] shadow-sm"
+                className="link168-card-hover link168-button-press group flex min-h-14 items-center gap-3 rounded-2xl border border-[#e5e7eb] bg-white px-4 py-3 text-[15px] font-semibold text-[#1f1f2e] shadow-sm"
               >
-                <span className="link168-card-icon link168-wiggle-on-hover grid size-9 shrink-0 place-items-center rounded-xl bg-[#DDE8CD] text-[#3F5F31] transition group-hover:bg-[#F2E7D8] group-hover:text-[#2B241E]">
+                <span className="link168-card-icon link168-wiggle-on-hover grid size-9 shrink-0 place-items-center rounded-xl bg-[#f5f3ff] text-[#8b5cf6] transition group-hover:bg-[#8b5cf6]/20 group-hover:text-[#8b5cf6]">
                   <Icon aria-hidden className="link168-nav-icon" />
                 </span>
                 {label}
@@ -34,10 +34,15 @@ export function SiteFooter() {
             ))}
           </nav>
           <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs">
-            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer" className="hover:text-[#3F5F31]">
+            <a
+              href="https://beian.miit.gov.cn/"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-[#8b5cf6]"
+            >
               皖ICP备2026018031号-1
             </a>
-            <a href="#" className="hover:text-[#3F5F31]">
+            <a href="#" className="hover:text-[#8b5cf6]">
               皖公网安备 XXXXXXXXXXXXXX号
             </a>
           </div>
