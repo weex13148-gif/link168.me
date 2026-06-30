@@ -90,22 +90,47 @@ jobs:
       - name: Inventory pages, APIs, migrations and unfinished markers
         shell: bash
         run: |
-          set -e
-          PAGE_COUNT=$(find src/app -type f \( -name 'page.tsx' -o -name 'page.ts' -o -name 'page.jsx' -o -name 'page.js' \) | wc -l)
-          API_COUNT=$(find src/app -type f \( -name 'route.ts' -o -name 'route.js' \) | wc -l)
-          MIGRATION_COUNT=$(find prisma/migrations -mindepth 1 -maxdepth 1 -type d | wc -l)
-          TODO_COUNT=$(git grep -nEi 'TODO|FIXME|待开发|暂未开放|coming soon' -- 'src/**' 2>/dev/null | wc -l || true)
-          HASH_LINK_COUNT=$(git grep -nE 'href=["'"']#["'"']|url:[[:space:]]*["'"']#["'"']' -- 'src/**' 2>/dev/null | wc -l || true)
-          TRACKED_ENV=$(git ls-files '.env' '.env.local' '.env.production' '.env.*.local' | wc -l)
-          {
-            echo "PAGE_COUNT=$PAGE_COUNT"
-            echo "API_ROUTE_COUNT=$API_COUNT"
-            echo "MIGRATION_COUNT=$MIGRATION_COUNT"
-            echo "UNFINISHED_MARKER_COUNT=$TODO_COUNT"
-            echo "HASH_LINK_COUNT=$HASH_LINK_COUNT"
-            echo "TRACKED_SECRET_ENV_COUNT=$TRACKED_ENV"
-          } | tee audit-counts.txt
-          test "$TRACKED_ENV" -eq 0
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const { execFileSync } = require('node:child_process');
+
+          function walk(dir) {
+            if (!fs.existsSync(dir)) return [];
+            return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+              const full = path.join(dir, entry.name);
+              return entry.isDirectory() ? walk(full) : [full];
+            });
+          }
+
+          const appFiles = walk('src/app');
+          const pageCount = appFiles.filter((file) => /(^|\/)page\.(tsx|ts|jsx|js)$/.test(file)).length;
+          const apiCount = appFiles.filter((file) => /(^|\/)route\.(ts|js)$/.test(file)).length;
+          const migrations = fs.existsSync('prisma/migrations')
+            ? fs.readdirSync('prisma/migrations', { withFileTypes: true }).filter((entry) => entry.isDirectory()).length
+            : 0;
+          const sourceFiles = walk('src').filter((file) => /\.(ts|tsx|js|jsx)$/.test(file));
+          let unfinished = 0;
+          let hashLinks = 0;
+          for (const file of sourceFiles) {
+            const text = fs.readFileSync(file, 'utf8');
+            unfinished += (text.match(/TODO|FIXME|待开发|暂未开放|coming soon/gi) || []).length;
+            hashLinks += (text.match(/href\s*=\s*["']#["']|url\s*:\s*["']#["']/g) || []).length;
+          }
+          const trackedEnvRaw = execFileSync('git', ['ls-files', '.env', '.env.local', '.env.production', '.env.*.local'], { encoding: 'utf8' }).trim();
+          const trackedEnv = trackedEnvRaw ? trackedEnvRaw.split(/\r?\n/).filter(Boolean).length : 0;
+          const report = [
+            `PAGE_COUNT=${pageCount}`,
+            `API_ROUTE_COUNT=${apiCount}`,
+            `MIGRATION_COUNT=${migrations}`,
+            `UNFINISHED_MARKER_COUNT=${unfinished}`,
+            `HASH_LINK_COUNT=${hashLinks}`,
+            `TRACKED_SECRET_ENV_COUNT=${trackedEnv}`,
+          ].join('\n') + '\n';
+          fs.writeFileSync('audit-counts.txt', report);
+          process.stdout.write(report);
+          if (trackedEnv !== 0) process.exit(1);
+          NODE
 
       - name: Start application in production mode
         shell: bash
