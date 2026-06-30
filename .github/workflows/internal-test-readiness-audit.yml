@@ -1,0 +1,295 @@
+name: Internal Test Readiness Audit
+
+on:
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: link168_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d link168_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/link168_ci
+      SESSION_SECRET: ci-session-secret-at-least-32-characters-long
+      ADMIN_SECRET: ci-admin-secret-at-least-32-characters-long
+      CONFIG_ENCRYPTION_KEY: ci-config-encryption-key-at-least-32-characters
+      NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
+      COOKIE_SECURE: "false"
+      COOKIE_SAME_SITE: lax
+      AUTH_RATE_LIMIT_BYPASS: "false"
+      RATE_LIMIT_STORE: memory
+      DEMO_EMAIL: demo-ci@link168.test
+      DEMO_PASSWORD: Demo-ci-password-2026
+      ADMIN_EMAIL: admin-ci@link168.test
+      ADMIN_PASSWORD: Admin-ci-password-2026
+      SUPER_ADMIN_EMAIL: superadmin-ci@link168.test
+      SUPER_ADMIN_PASSWORD: Superadmin-ci-password-2026
+
+    steps:
+      - name: Checkout current candidate
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Prisma schema
+        run: npx prisma validate
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Apply all migrations to clean PostgreSQL
+        run: npx prisma migrate deploy
+
+      - name: Create CI system users
+        run: npm run db:create-users
+
+      - name: Lint runtime source
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Production build
+        run: npm run build
+
+      - name: Verify build artifacts
+        shell: bash
+        run: |
+          set -e
+          test -f .next/BUILD_ID
+          test -d .next/server
+          test -d .next/static
+
+      - name: Inventory pages, APIs, migrations and unfinished markers
+        shell: bash
+        run: |
+          set -e
+          PAGE_COUNT=$(find src/app -type f \( -name 'page.tsx' -o -name 'page.ts' -o -name 'page.jsx' -o -name 'page.js' \) | wc -l)
+          API_COUNT=$(find src/app -type f \( -name 'route.ts' -o -name 'route.js' \) | wc -l)
+          MIGRATION_COUNT=$(find prisma/migrations -mindepth 1 -maxdepth 1 -type d | wc -l)
+          TODO_COUNT=$(git grep -nEi 'TODO|FIXME|待开发|暂未开放|coming soon' -- 'src/**' 2>/dev/null | wc -l || true)
+          HASH_LINK_COUNT=$(git grep -nE 'href=["'"']#["'"']|url:[[:space:]]*["'"']#["'"']' -- 'src/**' 2>/dev/null | wc -l || true)
+          TRACKED_ENV=$(git ls-files '.env' '.env.local' '.env.production' '.env.*.local' | wc -l)
+          {
+            echo "PAGE_COUNT=$PAGE_COUNT"
+            echo "API_ROUTE_COUNT=$API_COUNT"
+            echo "MIGRATION_COUNT=$MIGRATION_COUNT"
+            echo "UNFINISHED_MARKER_COUNT=$TODO_COUNT"
+            echo "HASH_LINK_COUNT=$HASH_LINK_COUNT"
+            echo "TRACKED_SECRET_ENV_COUNT=$TRACKED_ENV"
+          } | tee audit-counts.txt
+          test "$TRACKED_ENV" -eq 0
+
+      - name: Start application
+        shell: bash
+        run: |
+          nohup npx next start -H 127.0.0.1 -p 3000 > /tmp/link168-audit-server.log 2>&1 &
+          echo $! > /tmp/link168-audit-server.pid
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/link168-audit-server.log
+          exit 1
+
+      - name: Run real HTTP and core closed-loop smoke tests
+        shell: bash
+        run: |
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const base = 'http://127.0.0.1:3000';
+
+          function cookieFrom(response) {
+            const values = typeof response.headers.getSetCookie === 'function'
+              ? response.headers.getSetCookie()
+              : [response.headers.get('set-cookie')].filter(Boolean);
+            return values.map((value) => value.split(';')[0]).join('; ');
+          }
+
+          async function request(path, options = {}) {
+            const response = await fetch(base + path, { redirect: 'manual', ...options });
+            const text = await response.text();
+            let json = null;
+            try { json = JSON.parse(text); } catch {}
+            return { response, text, json };
+          }
+
+          (async () => {
+            const publicPages = [
+              '/', '/login', '/register', '/forgot-password', '/reset-password',
+              '/verify-email', '/pricing', '/help', '/privacy', '/terms', '/report', '/showcase'
+            ];
+            for (const path of publicPages) {
+              const { response } = await request(path);
+              assert.equal(response.status, 200, `${path} returned ${response.status}`);
+            }
+
+            const unauthAi = await request('/api/enterprise-ai/access');
+            assert.equal(unauthAi.response.status, 200);
+            assert.equal(unauthAi.json?.accessAllowed, false);
+
+            const email = `smoke-${Date.now()}@example.com`;
+            const password = 'Smoke-test-2026';
+            const register = await request('/api/auth/register', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json', 'x-forwarded-for': '127.0.0.51' },
+              body: JSON.stringify({ email, password, confirmPassword: password, agreeTerms: true }),
+            });
+            assert.equal(register.response.status, 200, register.text);
+            assert.equal(register.json?.success, true, register.text);
+            const userCookie = cookieFrom(register.response);
+            assert.ok(userCookie, 'registration did not set a session cookie');
+            const username = register.json?.profile?.username;
+            assert.ok(username, 'registration did not return a username');
+
+            const me = await request('/api/auth/me', { headers: { cookie: userCookie } });
+            assert.equal(me.response.status, 200, me.text);
+            assert.equal(me.json?.success, true, me.text);
+
+            const profile = await request('/api/dashboard/profile', {
+              method: 'PUT',
+              headers: { 'content-type': 'application/json', cookie: userCookie },
+              body: JSON.stringify({
+                displayName: 'Link168 内测用户',
+                bio: '用于验证注册、资料、链接、公开主页和二维码闭环。',
+                theme: '简约白',
+                language: 'zh',
+                customTheme: null,
+              }),
+            });
+            assert.equal(profile.response.status, 200, profile.text);
+            assert.equal(profile.json?.success, true, profile.text);
+
+            const link = await request('/api/dashboard/links', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json', cookie: userCookie },
+              body: JSON.stringify({
+                title: 'Link168 测试链接',
+                description: '用于验证链接创建与公开展示。',
+                url: 'https://example.com/',
+                componentType: 'link',
+              }),
+            });
+            assert.equal(link.response.status, 200, link.text);
+            assert.equal(link.json?.success, true, link.text);
+
+            const links = await request('/api/dashboard/links', { headers: { cookie: userCookie } });
+            assert.equal(links.response.status, 200, links.text);
+            assert.ok(Array.isArray(links.json?.links) && links.json.links.length >= 1, links.text);
+
+            const dashboard = await request('/dashboard', { headers: { cookie: userCookie } });
+            assert.equal(dashboard.response.status, 200, `/dashboard returned ${dashboard.response.status}`);
+
+            const publicProfile = await request(`/${username}`);
+            assert.equal(publicProfile.response.status, 200, `/${username} returned ${publicProfile.response.status}`);
+            assert.match(publicProfile.text, /Link168 内测用户/);
+            assert.match(publicProfile.text, /Link168 测试链接/);
+
+            const billing = await request('/api/billing/config', { headers: { cookie: userCookie } });
+            assert.equal(billing.response.status, 200, billing.text);
+            assert.equal(billing.json?.payment?.enabled, false, billing.text);
+            assert.equal(billing.json?.payment?.testMode, true, billing.text);
+
+            const aiChat = await request('/api/enterprise-ai/chat', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json', cookie: userCookie },
+              body: JSON.stringify({ assistant: '财税 AI Agent', message: '测试消息' }),
+            });
+            assert.equal(aiChat.response.status, 403, aiChat.text);
+
+            const adminLogin = await request('/api/jeepwork/auth/login', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json', 'x-forwarded-for': '127.0.0.52' },
+              body: JSON.stringify({
+                email: process.env.SUPER_ADMIN_EMAIL,
+                password: process.env.SUPER_ADMIN_PASSWORD,
+              }),
+            });
+            assert.equal(adminLogin.response.status, 200, adminLogin.text);
+            assert.equal(adminLogin.json?.success, true, adminLogin.text);
+            const adminCookie = cookieFrom(adminLogin.response);
+            assert.ok(adminCookie, 'super-admin login did not set a cookie');
+
+            const adminMe = await request('/api/jeepwork/auth/me', { headers: { cookie: adminCookie } });
+            assert.equal(adminMe.response.status, 200, adminMe.text);
+            assert.equal(adminMe.json?.success, true, adminMe.text);
+
+            console.log('CORE_SMOKE_TESTS=PASS');
+            console.log(`TEST_USERNAME=${username}`);
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+
+      - name: Produce audit report
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '# Link168 内测准备度审计'
+            echo
+            echo "Commit: $GITHUB_SHA"
+            echo
+            if [ -f audit-counts.txt ]; then
+              cat audit-counts.txt
+            fi
+            echo
+            echo '## 已执行'
+            echo '- npm ci'
+            echo '- Prisma validate / generate / migrate deploy'
+            echo '- 系统测试账号创建'
+            echo '- ESLint'
+            echo '- TypeScript'
+            echo '- Next.js production build'
+            echo '- 公开页面 HTTP 冒烟'
+            echo '- 注册与 Session'
+            echo '- Dashboard 资料保存'
+            echo '- 链接创建和列表读取'
+            echo '- 公开主页展示'
+            echo '- 免费用户 AI 拦截'
+            echo '- 支付默认关闭'
+            echo '- 超级管理员登录'
+          } | tee internal-test-audit.md
+
+      - name: Upload audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: link168-internal-test-audit-${{ github.sha }}
+          path: |
+            internal-test-audit.md
+            audit-counts.txt
+            /tmp/link168-audit-server.log
+          if-no-files-found: ignore
+          retention-days: 7
