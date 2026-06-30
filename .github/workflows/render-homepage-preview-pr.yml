@@ -1,4 +1,4 @@
-name: Render Homepage Preview PR
+name: Inventory Website Pages
 
 on:
   pull_request:
@@ -9,75 +9,34 @@ permissions:
   contents: read
 
 jobs:
-  render:
+  inventory:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    env:
-      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/link168_preview
-      SESSION_SECRET: preview-session-placeholder
-      ADMIN_SECRET: preview-admin-placeholder
-      CONFIG_ENCRYPTION_KEY: preview-config-placeholder
-      NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
-      COOKIE_SECURE: "false"
-      COOKIE_SAME_SITE: lax
-      AUTH_RATE_LIMIT_BYPASS: "false"
-      RATE_LIMIT_STORE: memory
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Use Node.js 22
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install project dependencies
-        run: npm ci
-
-      - name: Generate Prisma client
-        run: npx prisma generate
-
-      - name: Build current repository
-        run: npm run build
-
-      - name: Install Chromium renderer
-        run: |
-          npm install --no-save playwright
-          npx playwright install --with-deps chromium
-
-      - name: Start application
+      - name: Build page inventory
         shell: bash
         run: |
-          nohup npx next start -H 127.0.0.1 -p 3000 > /tmp/link168-preview.log 2>&1 &
-          for i in {1..60}; do
-            if curl -fsS http://127.0.0.1:3000/ >/dev/null; then
-              exit 0
-            fi
-            sleep 2
-          done
-          cat /tmp/link168-preview.log
-          exit 1
+          set -e
+          find src/app -type f \( -name 'page.tsx' -o -name 'page.ts' -o -name 'page.jsx' -o -name 'page.js' \) | sort > page-files.txt
+          find src/app -type f \( -name 'route.ts' -o -name 'route.js' \) | sort > api-route-files.txt
+          PAGE_COUNT=$(wc -l < page-files.txt)
+          API_COUNT=$(wc -l < api-route-files.txt)
+          {
+            echo "PAGE_COUNT=$PAGE_COUNT"
+            echo "API_ROUTE_COUNT=$API_COUNT"
+            echo
+            echo "=== PAGE FILES ==="
+            cat page-files.txt
+            echo
+            echo "=== API ROUTE FILES ==="
+            cat api-route-files.txt
+          } | tee route-inventory.txt
 
-      - name: Capture actual homepage
-        shell: bash
-        run: |
-          node <<'NODE'
-          const { chromium } = require('playwright');
-          (async () => {
-            const browser = await chromium.launch({ headless: true });
-            const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
-            await page.goto('http://127.0.0.1:3000/', { waitUntil: 'networkidle', timeout: 120000 });
-            await page.evaluate(() => document.fonts.ready);
-            await page.screenshot({ path: 'link168-homepage-preview.png', fullPage: true });
-            await browser.close();
-          })();
-          NODE
-
-      - name: Upload preview image
+      - name: Upload inventory
         uses: actions/upload-artifact@v4
         with:
-          name: link168-homepage-preview
-          path: link168-homepage-preview.png
+          name: link168-route-inventory
+          path: route-inventory.txt
           retention-days: 7
