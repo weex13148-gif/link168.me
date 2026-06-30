@@ -29,7 +29,6 @@ jobs:
           --health-retries 10
 
     env:
-      NODE_ENV: production
       DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/link168_ci
       SESSION_SECRET: ci-session-secret-at-least-32-characters-long
       ADMIN_SECRET: ci-admin-secret-at-least-32-characters-long
@@ -56,7 +55,7 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
+      - name: Install all dependencies
         run: npm ci
 
       - name: Validate Prisma schema
@@ -108,10 +107,10 @@ jobs:
           } | tee audit-counts.txt
           test "$TRACKED_ENV" -eq 0
 
-      - name: Start application
+      - name: Start application in production mode
         shell: bash
         run: |
-          nohup npx next start -H 127.0.0.1 -p 3000 > /tmp/link168-audit-server.log 2>&1 &
+          NODE_ENV=production nohup npx next start -H 127.0.0.1 -p 3000 > /tmp/link168-audit-server.log 2>&1 &
           echo $! > /tmp/link168-audit-server.pid
           for i in {1..60}; do
             if curl -fsS http://127.0.0.1:3000/ >/dev/null; then
