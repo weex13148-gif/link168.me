@@ -1,4 +1,4 @@
-name: Build Linux Standalone
+name: Validate Internal Test Release
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/link168_ci
@@ -50,65 +50,20 @@ jobs:
       - name: Generate Prisma client
         run: npx prisma generate
 
-      - name: Lint diagnostics
-        id: lint
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          npx eslint src --quiet --format json --output-file lint-report.json
+      - name: Lint runtime source
+        run: npm run lint
 
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Build standalone
+      - name: Production build
         run: npm run build
 
-      - name: Verify build output
+      - name: Verify production build
         shell: bash
         run: |
           set -e
-          echo '=== .next top level ==='
-          find .next -maxdepth 3 -mindepth 1 -printf '%y %p\n' | sort | head -300
-          echo '=== server.js candidates ==='
-          find .next -maxdepth 8 -type f -name 'server.js' -print
-          test -f .next/standalone/server.js
-          echo 'standalone/server.js exists'
-
-      - name: Upload lint diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: link168-lint-report-${{ github.sha }}
-          path: lint-report.json
-          if-no-files-found: ignore
-          retention-days: 7
-
-      - name: Enforce lint gate
-        if: always()
-        run: test "${{ steps.lint.outcome }}" = "success"
-
-      - name: Prepare deployment package
-        shell: bash
-        run: |
-          set -e
-          mkdir -p deploy-package/.next
-          cp -a .next/standalone/. deploy-package/
-          if [ -d .next/static ]; then
-            cp -a .next/static deploy-package/.next/static
-          fi
-          if [ -d public ]; then
-            cp -a public deploy-package/public
-          fi
-          cp -a prisma deploy-package/prisma
-          cp -a package.json deploy-package/package.json
-          printf '%s\n' "$GITHUB_SHA" > deploy-package/GIT_SHA
-          tar -czf link168-linux-standalone.tar.gz -C deploy-package .
-          ls -lh link168-linux-standalone.tar.gz
-
-      - name: Upload standalone artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: link168-linux-standalone-${{ github.sha }}
-          path: link168-linux-standalone.tar.gz
-          retention-days: 7
+          test -f .next/BUILD_ID
+          test -d .next/server
+          test -d .next/static
+          echo "Next.js production build is complete"
