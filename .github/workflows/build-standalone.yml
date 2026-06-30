@@ -1,0 +1,68 @@
+name: Build Linux Standalone
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - integration/local-latest-20260629
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Build standalone
+        run: npm run build
+
+      - name: Verify standalone output
+        run: |
+          set -e
+          test -f .next/standalone/server.js
+          echo "standalone/server.js exists"
+          ls -la .next/standalone/
+          echo "---"
+          ls -la .next/static/ 2>/dev/null || echo "no static dir"
+
+      - name: Prepare deployment package
+        shell: bash
+        run: |
+          set -e
+          mkdir -p deploy-package/.next
+          cp -a .next/standalone/. deploy-package/
+          cp -a .next/static deploy-package/.next/static
+          if [ -d public ]; then
+            cp -a public deploy-package/public
+          fi
+          cp -a prisma deploy-package/prisma
+          cp -a package.json deploy-package/package.json
+          cp -a src/generated/prisma deploy-package/prisma-client 2>/dev/null || true
+          tar -czf link168-linux-standalone.tar.gz -C deploy-package .
+          ls -lh link168-linux-standalone.tar.gz
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: link168-linux-standalone
+          path: link168-linux-standalone.tar.gz
+          retention-days: 7

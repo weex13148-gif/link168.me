@@ -1,0 +1,15 @@
+local baseline freeze: V1 主链闭环 + 管理员体系验证通过
+
+验证通过：
+- V1 主链：注册/登录/保存profile/创建链接/公开主页/二维码/退出
+- 超级管理员：后台/用户列表/审计日志/系统健康/CompetitionCenter/Showcase
+- 普通管理员：后台/被正确拦截 super_admin 专属 API
+- 普通用户：管理员页面拦截/AI API 403/冻结解冻闭环
+- 权限边界：prompt injection 全部 403 拦截
+- 首页无 Showcase/比赛入口，/showcase 路由保留
+- 数据库：5433，Windows 服务 postgresql-x64-17（Automatic）
+- prisma migrate/deploy/validate/tsc/npm build 全部通过
+
+账号见 scripts/db/create-system-users.js（seed 脚本）
+
+删除旧 competition/plan V2 废弃文档。
