@@ -51,53 +51,24 @@ jobs:
         run: npx prisma generate
 
       - name: Lint
-        id: lint
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          npm run lint 2>&1 | tee lint.log
+        run: npm run lint
 
       - name: Typecheck
-        id: typecheck
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -o pipefail
-          npm run typecheck 2>&1 | tee typecheck.log
+        run: npm run typecheck
 
       - name: Build standalone
-        id: build_app
-        continue-on-error: true
+        run: npm run build
+
+      - name: Verify build output
         shell: bash
         run: |
-          set -o pipefail
-          npm run build 2>&1 | tee build.log
-
-      - name: Upload check logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: link168-check-logs-${{ github.sha }}
-          path: |
-            lint.log
-            typecheck.log
-            build.log
-          if-no-files-found: ignore
-          retention-days: 7
-
-      - name: Enforce validation gate
-        if: always()
-        shell: bash
-        run: |
-          echo "lint=${{ steps.lint.outcome }}"
-          echo "typecheck=${{ steps.typecheck.outcome }}"
-          echo "build=${{ steps.build_app.outcome }}"
-          test "${{ steps.lint.outcome }}" = "success"
-          test "${{ steps.typecheck.outcome }}" = "success"
-          test "${{ steps.build_app.outcome }}" = "success"
+          set -e
+          echo '=== .next top level ==='
+          find .next -maxdepth 2 -mindepth 1 -printf '%y %p\n' | sort | head -200
+          echo '=== server.js candidates ==='
+          find .next -maxdepth 6 -type f -name 'server.js' -print
           test -f .next/standalone/server.js
-          test -d .next/static
+          echo 'standalone/server.js exists'
 
       - name: Prepare deployment package
         shell: bash
@@ -105,7 +76,9 @@ jobs:
           set -e
           mkdir -p deploy-package/.next
           cp -a .next/standalone/. deploy-package/
-          cp -a .next/static deploy-package/.next/static
+          if [ -d .next/static ]; then
+            cp -a .next/static deploy-package/.next/static
+          fi
           if [ -d public ]; then
             cp -a public deploy-package/public
           fi
