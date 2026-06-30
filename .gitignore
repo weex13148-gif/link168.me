@@ -27,9 +27,13 @@ pnpm-debug.log*
 Thumbs.db
 *.tmp
 *.sql
+!prisma/migrations/**/migration.sql
 *.sql.gz
 backup/
 backups/
 *_backup/
 *_备份/
 link168_项目备份归档/
+
+# 上传文件目录（比赛文件等，不应进入版本控制）
+uploads/

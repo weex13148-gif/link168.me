@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireUser, changePassword, SESSION_COOKIE_NAME } from "@/lib/auth";
+import { requireUser, changePassword, revokeAllOtherSessions, SESSION_COOKIE_NAME } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
@@ -7,6 +7,7 @@ type ChangePasswordRequest = {
   oldPassword?: unknown;
   newPassword?: unknown;
   confirmPassword?: unknown;
+  logoutOtherDevices?: unknown;
 };
 
 export async function POST(request: Request) {
@@ -23,6 +24,7 @@ export async function POST(request: Request) {
   const oldPassword = typeof body.oldPassword === "string" ? body.oldPassword : "";
   const newPassword = typeof body.newPassword === "string" ? body.newPassword : "";
   const confirmPassword = typeof body.confirmPassword === "string" ? body.confirmPassword : "";
+  const logoutOtherDevices = body.logoutOtherDevices === true;
 
   if (!oldPassword) {
     return NextResponse.json({ success: false, error: "请输入当前密码。" }, { status: 400 });
@@ -45,8 +47,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "当前密码不正确，修改失败。" }, { status: 401 });
   }
 
+  if (logoutOtherDevices) {
+    const currentToken = request.headers
+      .get("cookie")
+      ?.split(";")
+      .map((part) => part.trim())
+      .find((part) => part.startsWith(`${SESSION_COOKIE_NAME}=`))
+      ?.slice(SESSION_COOKIE_NAME.length + 1);
+
+    if (currentToken) {
+      await revokeAllOtherSessions(user.id, currentToken);
+    }
+  }
+
   return NextResponse.json({
     success: true,
-    message: "密码已修改成功。",
+    message: logoutOtherDevices ? "密码已修改成功，其他设备已退出。" : "密码已修改成功。",
   });
 }

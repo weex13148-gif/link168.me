@@ -1,20 +1,62 @@
-// link168 system user creation
-// Uses Prisma Client + bcrypt. Saves only password_hash, never plaintext.
-// Env overrides: DEMO_EMAIL, DEMO_PASSWORD, ADMIN_EMAIL, ADMIN_PASSWORD,
-// SUPER_ADMIN_EMAIL, SUPER_ADMIN_PASSWORD.
+// Link168 系统账号 / 测试账号生成脚本（Node.js + Prisma）
+// 运行：node scripts/db/create-system-users.js
+// 环境变量覆盖：
+//   DEMO_EMAIL / DEMO_PASSWORD
+//   ADMIN_EMAIL / ADMIN_PASSWORD
+//   SUPER_ADMIN_EMAIL / SUPER_ADMIN_PASSWORD
+//
+// 本脚本只在账号不存在时插入。密码只写 bcrypt hash，从不写明文。
+// 输出中不会打印明文密码或完整 API Key。
 
 "use strict";
 
+const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const path = require("path");
-require("dotenv").config();
+require("dotenv").config({ path: path.join(__dirname, "..", "..", ".env.local") });
+
+// 方案A：直接 require 生成路径（适配 Link168 自定义输出目录）
+// 方案B：标准 @prisma/client（适配其他项目）
+function createPrismaClient() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let PrismaClient;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const generated = require(path.join(__dirname, "..", "..", "src/generated/prisma/client"));
+    PrismaClient = generated.PrismaClient || generated.default?.PrismaClient;
+    if (!PrismaClient) throw new Error("PrismaClient not found in generated client");
+  } catch (_e) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { PrismaClient: PC } = require("@prisma/client");
+      PrismaClient = PC;
+    } catch (_e2) {
+      throw new Error("无法加载 PrismaClient，请确认 prisma generate 已执行");
+    }
+  }
+  // Prisma 7 需要使用 adapter
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { PrismaPg } = require("@prisma/adapter-pg");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pg = require("pg");
+  const Pool = pg.default?.Pool || pg.Pool;
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const adapter = new PrismaPg(pool);
+  return new PrismaClient({ adapter });
+}
+
+let _prismaClient = null;
+function getPrisma() {
+  if (_prismaClient) return _prismaClient;
+  _prismaClient = createPrismaClient();
+  return _prismaClient;
+}
 
 const RED = "\x1b[31m";
 const YELLOW = "\x1b[33m";
 const GREEN = "\x1b[32m";
 const CYAN = "\x1b[36m";
 const RESET = "\x1b[0m";
-const BOLD = "\x1b[1m";
 
 function logInfo(msg) {
   console.log(`${CYAN}[db:create-users]${RESET} ${msg}`);
@@ -29,160 +71,108 @@ function logErr(msg) {
   console.error(`${RED}[db:create-users]${RESET} ${msg}`);
 }
 
-const PASSWORD_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#";
+const HASH_ROUNDS = 12;
 
-function genStrongPassword(len = 20) {
-  let out = "";
-  // Prefer crypto.randomInt if available
-  const rndInt = (min, max) => {
-    try {
-      return require("crypto").randomInt(min, max);
-    } catch (_) {
-      return Math.floor(Math.random() * (max - min)) + min;
-    }
-  };
-  for (let i = 0; i < len; i++) {
-    out += PASSWORD_CHARS.charAt(rndInt(0, PASSWORD_CHARS.length));
-  }
-  return out;
-}
-
-function loadPrisma() {
-  try {
-    const { PrismaClient } = require("@prisma/client");
-    return new PrismaClient();
-  } catch (e) {
-    const genPath = path.join(process.cwd(), "src", "generated", "prisma", "client");
-    try {
-      const { PrismaClient } = require(genPath);
-      return new PrismaClient();
-    } catch (e2) {
-      logErr("Could not load PrismaClient. Run `npm install && npx prisma generate`.");
-      throw e2;
-    }
-  }
-}
-
-const ACCOUNTS = [
+const USER_SPECS = [
   {
-    key: "DEMO",
     role: "user",
-    username: "demo",
-    displayName: "Demo User",
     emailEnv: "DEMO_EMAIL",
-    pwdEnv: "DEMO_PASSWORD",
-    defaultEmail: "demo@link168.me",
+    passwordEnv: "DEMO_PASSWORD",
+    fallbackEmail: "demo@example.com",
+    fallbackPassword: "demo-password-1234",
+    isSystem: true,
+    bio: "Demo 用户，用于功能验证；其主页数据可随时被管理员重置。",
   },
   {
-    key: "ADMIN",
     role: "admin",
-    username: "admin",
-    displayName: "Admin",
     emailEnv: "ADMIN_EMAIL",
-    pwdEnv: "ADMIN_PASSWORD",
-    defaultEmail: "admin@link168.me",
+    passwordEnv: "ADMIN_PASSWORD",
+    fallbackEmail: "admin@example.com",
+    fallbackPassword: "admin-password-1234",
+    isSystem: true,
+    bio: "系统管理员账号，可处理举报、隐藏/恢复主页。",
   },
   {
-    key: "SUPER_ADMIN",
     role: "super_admin",
-    username: "superadmin",
-    displayName: "Super Admin",
     emailEnv: "SUPER_ADMIN_EMAIL",
-    pwdEnv: "SUPER_ADMIN_PASSWORD",
-    defaultEmail: "superadmin@link168.me",
+    passwordEnv: "SUPER_ADMIN_PASSWORD",
+    fallbackEmail: "super-admin@example.com",
+    fallbackPassword: "super-admin-password-1234",
+    isSystem: true,
+    bio: "超级管理员账号，可管理其他管理员与系统配置。",
   },
 ];
 
+async function upsertUser(prisma, spec) {
+  const email = (process.env[spec.emailEnv] || spec.fallbackEmail).toLowerCase().trim();
+  const password = process.env[spec.passwordEnv] || spec.fallbackPassword;
+
+  if (!email || !email.includes("@")) {
+    logWarn(`跳过账号（邮箱不合法）：role=${spec.role} email=${email}`);
+    return false;
+  }
+
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    if (existing.role !== spec.role) {
+      await prisma.user.update({
+        where: { id: existing.id },
+        data: { role: spec.role, isSystem: spec.isSystem },
+      });
+      logOk(`账号已存在并更新角色：${email} -> ${spec.role}`);
+    } else {
+      logInfo(`账号已存在，跳过：${email}（role=${existing.role}）`);
+    }
+    return true;
+  }
+
+  const passwordHash = await bcrypt.hash(password, HASH_ROUNDS);
+  const userId = crypto.randomUUID();
+  const profileId = crypto.randomUUID();
+
+  const { id: newUserId } = await prisma.user.create({
+    data: {
+      id: userId,
+      email,
+      passwordHash,
+      role: spec.role,
+      isSystem: spec.isSystem,
+      profile: {
+        create: {
+          id: profileId,
+          username: email.replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, ""),
+          displayName: `${spec.role} (system)`,
+          bio: spec.bio,
+          language: "zh",
+          theme: "default",
+          isPublic: false,
+        },
+      },
+    },
+    select: { id: true },
+  });
+
+  logOk(`新账号已创建：${email} role=${spec.role}`);
+  return true;
+}
+
 async function main() {
-  console.log(`${BOLD}=== Link168 Create System Users ===${RESET}`);
-  console.log(`NODE_ENV: ${process.env.NODE_ENV || "(unset)"}`);
   if (!process.env.DATABASE_URL) {
-    logErr("DATABASE_URL is missing.");
+    logErr("环境变量 DATABASE_URL 未设置。");
     process.exit(2);
   }
 
-  const prisma = loadPrisma();
-
-  const results = [];
-
-  for (const acc of ACCOUNTS) {
-    const email = (process.env[acc.emailEnv] || acc.defaultEmail).trim();
-    const providedPwd = (process.env[acc.pwdEnv] || "").trim();
-    const password = providedPwd.length > 0 ? providedPwd : genStrongPassword();
-    const wasAuto = providedPwd.length === 0;
-
-    const passwordHash = await bcrypt.hash(password, 12);
-
-    const existing = await prisma.user.findUnique({ where: { email } });
-    let action;
-    if (existing) {
-      await prisma.user.update({
-        where: { email },
-        data: { passwordHash, role: acc.role, emailVerified: true, isSystem: false },
-      });
-      action = "updated";
-    } else {
-      await prisma.user.create({
-        data: {
-          id: require("crypto").randomUUID(),
-          email,
-          passwordHash,
-          emailVerified: true,
-          role: acc.role,
-          isSystem: false,
-        },
-      });
-      action = "created";
+  const prisma = getPrisma();
+  try {
+    for (const spec of USER_SPECS) {
+      await upsertUser(prisma, spec);
     }
-
-    // create/update profile
-    const user = await prisma.user.findUnique({ where: { email } });
-    const existingProfile = await prisma.profile.findUnique({ where: { username: acc.username } });
-    if (existingProfile) {
-      await prisma.profile.update({
-        where: { username: acc.username },
-        data: { displayName: acc.displayName, isPublic: true, userId: user.id },
-      });
-    } else {
-      await prisma.profile.create({
-        data: {
-          id: require("crypto").randomUUID(),
-          userId: user.id,
-          username: acc.username,
-          displayName: acc.displayName,
-          theme: "default",
-          language: "zh",
-          isPublic: true,
-        },
-      });
-    }
-
-    results.push({
-      email,
-      role: acc.role,
-      username: acc.username,
-      action,
-      passwordShownOnce: password,
-      wasAuto,
-    });
+  } finally {
+    await prisma.$disconnect();
   }
-
-  await prisma.$disconnect();
-
-  console.log();
-  console.log(`${BOLD}--- Accounts (shown once; save them now) ---${RESET}`);
-  for (const r of results) {
-    const source = r.wasAuto ? "auto-generated" : "from env";
-    console.log(`  ${GREEN}${r.action}${RESET}  role=${r.role}  user=${r.username}  email=${r.email}  (pwd ${source})`);
-    console.log(`       password: ${r.passwordShownOnce}`);
-  }
-  console.log();
-  logWarn("Passwords are shown ONCE. Save them in a secure location now.");
-  logWarn("Do NOT commit, print, or persist these passwords anywhere in source code or files.");
-  logOk("Done.");
 }
 
-main().catch((e) => {
-  logErr(`Fatal error: ${e && e.message ? e.message : String(e)}`);
+main().catch((err) => {
+  logErr("创建系统账号失败：" + (err && err.message ? err.message : String(err)));
   process.exit(1);
 });

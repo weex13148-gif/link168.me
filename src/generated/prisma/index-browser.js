@@ -125,8 +125,50 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   passwordHash: 'passwordHash',
   emailVerified: 'emailVerified',
+  frozenReason: 'frozenReason',
+  frozenAt: 'frozenAt',
+  usernameChanges: 'usernameChanges',
   role: 'role',
   isSystem: 'isSystem',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.FreezeRecordScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  reason: 'reason',
+  source: 'source',
+  isActive: 'isActive',
+  startsAt: 'startsAt',
+  expiresAt: 'expiresAt',
+  clearedAt: 'clearedAt',
+  clearedByUserId: 'clearedByUserId',
+  clearedBySource: 'clearedBySource',
+  metadataRaw: 'metadataRaw',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UsernameHistoryScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  username: 'username',
+  normalizedUsername: 'normalizedUsername',
+  replacedBy: 'replacedBy',
+  reservedUntil: 'reservedUntil',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.UsernameRegistryScalarFieldEnum = {
+  id: 'id',
+  normalizedUsername: 'normalizedUsername',
+  displayUsername: 'displayUsername',
+  userId: 'userId',
+  status: 'status',
+  reservedUntil: 'reservedUntil',
+  reason: 'reason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -140,6 +182,7 @@ exports.Prisma.ProfileScalarFieldEnum = {
   avatarUrl: 'avatarUrl',
   theme: 'theme',
   customTheme: 'customTheme',
+  template: 'template',
   language: 'language',
   isPublic: 'isPublic',
   createdAt: 'createdAt',
@@ -149,6 +192,8 @@ exports.Prisma.ProfileScalarFieldEnum = {
 exports.Prisma.LinkScalarFieldEnum = {
   id: 'id',
   profileId: 'profileId',
+  type: 'type',
+  payloadJson: 'payloadJson',
   title: 'title',
   url: 'url',
   description: 'description',
@@ -184,6 +229,30 @@ exports.Prisma.ShortLinkScalarFieldEnum = {
   totalClicks: 'totalClicks',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ShortLinkClickScalarFieldEnum = {
+  id: 'id',
+  shortLinkId: 'shortLinkId',
+  profileId: 'profileId',
+  visitorId: 'visitorId',
+  ipHash: 'ipHash',
+  device: 'device',
+  os: 'os',
+  browser: 'browser',
+  country: 'country',
+  city: 'city',
+  channel: 'channel',
+  channelLabel: 'channelLabel',
+  utmSource: 'utmSource',
+  utmMedium: 'utmMedium',
+  utmCampaign: 'utmCampaign',
+  utmContent: 'utmContent',
+  referer: 'referer',
+  isPaid: 'isPaid',
+  isOrganic: 'isOrganic',
+  isBot: 'isBot',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SessionScalarFieldEnum = {
@@ -225,6 +294,8 @@ exports.Prisma.EmailVerificationTokenScalarFieldEnum = {
   tokenHash: 'tokenHash',
   expiresAt: 'expiresAt',
   used: 'used',
+  usedAt: 'usedAt',
+  sentAt: 'sentAt',
   createdAt: 'createdAt'
 };
 
@@ -257,9 +328,296 @@ exports.Prisma.AiUsageLogScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AdminAuditLogScalarFieldEnum = {
+  id: 'id',
+  actorUserId: 'actorUserId',
+  actorEmail: 'actorEmail',
+  actorRole: 'actorRole',
+  action: 'action',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  metadataRaw: 'metadataRaw',
+  ipHash: 'ipHash',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt',
+  success: 'success'
+};
+
+exports.Prisma.LeadScalarFieldEnum = {
+  id: 'id',
+  profileId: 'profileId',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  wechat: 'wechat',
+  message: 'message',
+  sourceComponent: 'sourceComponent',
+  sourcePage: 'sourcePage',
+  interestedProductId: 'interestedProductId',
+  interestedProductName: 'interestedProductName',
+  interestedProductPrice: 'interestedProductPrice',
+  interestedProductCategory: 'interestedProductCategory',
+  conversationId: 'conversationId',
+  status: 'status',
+  notes: 'notes',
+  handlerNote: 'handlerNote',
+  handledAt: 'handledAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.LeadFollowUpScalarFieldEnum = {
+  id: 'id',
+  leadId: 'leadId',
+  profileId: 'profileId',
+  createdByType: 'createdByType',
+  createdByUserId: 'createdByUserId',
+  content: 'content',
+  previousStatus: 'previousStatus',
+  newStatus: 'newStatus',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.EmailSendLogScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  purpose: 'purpose',
+  success: 'success',
+  errorCode: 'errorCode',
+  provider: 'provider',
+  ipHash: 'ipHash',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ProductScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  category: 'category',
+  description: 'description',
+  priceText: 'priceText',
+  coverImageUrl: 'coverImageUrl',
+  ctaLabel: 'ctaLabel',
+  ctaUrl: 'ctaUrl',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  allowAiRecommendation: 'allowAiRecommendation',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.KnowledgeDocScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  category: 'category',
+  content: 'content',
+  sourceType: 'sourceType',
+  isActive: 'isActive',
+  allowAiCitation: 'allowAiCitation',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AiServiceConfigScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  enabled: 'enabled',
+  assistantName: 'assistantName',
+  welcomeMessage: 'welcomeMessage',
+  tone: 'tone',
+  allowProductRecommendation: 'allowProductRecommendation',
+  collectLead: 'collectLead',
+  providerMode: 'providerMode',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AiConversationScalarFieldEnum = {
+  id: 'id',
+  profileId: 'profileId',
+  visitorSessionId: 'visitorSessionId',
+  status: 'status',
+  transferredToHuman: 'transferredToHuman',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AiMessageScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  role: 'role',
+  content: 'content',
+  sourceRefs: 'sourceRefs',
+  creditCost: 'creditCost',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AiCreditAccountScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  balance: 'balance',
+  version: 'version',
+  updatedAt: 'updatedAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AiCreditLedgerScalarFieldEnum = {
+  id: 'id',
+  accountId: 'accountId',
+  entryType: 'entryType',
+  amount: 'amount',
+  balanceAfter: 'balanceAfter',
+  idempotencyKey: 'idempotencyKey',
+  referenceType: 'referenceType',
+  referenceId: 'referenceId',
+  metadata: 'metadata',
+  reason: 'reason',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.MembershipSubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  planCode: 'planCode',
+  status: 'status',
+  currentPeriodStart: 'currentPeriodStart',
+  currentPeriodEnd: 'currentPeriodEnd',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.OrderScalarFieldEnum = {
+  id: 'id',
+  orderNo: 'orderNo',
+  userId: 'userId',
+  planCode: 'planCode',
+  planNameSnapshot: 'planNameSnapshot',
+  billingCycle: 'billingCycle',
+  originalAmount: 'originalAmount',
+  payableAmount: 'payableAmount',
+  currency: 'currency',
+  paymentChannel: 'paymentChannel',
+  providerTradeNo: 'providerTradeNo',
+  idempotencyKey: 'idempotencyKey',
+  status: 'status',
+  paidAt: 'paidAt',
+  cancelledAt: 'cancelledAt',
+  closedAt: 'closedAt',
+  refundedAt: 'refundedAt',
+  expiresAt: 'expiresAt',
+  metadata: 'metadata',
+  cancelReason: 'cancelReason',
+  refundReason: 'refundReason',
+  refundBy: 'refundBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CompetitionFileScalarFieldEnum = {
+  id: 'id',
+  originalName: 'originalName',
+  storedName: 'storedName',
+  mimeType: 'mimeType',
+  sizeBytes: 'sizeBytes',
+  purpose: 'purpose',
+  description: 'description',
+  uploadedBy: 'uploadedBy',
+  uploadedByEmail: 'uploadedByEmail',
+  isCurrentMain: 'isCurrentMain',
+  isDeleted: 'isDeleted',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ShowcaseContentScalarFieldEnum = {
+  id: 'id',
+  sectionKey: 'sectionKey',
+  eyebrow: 'eyebrow',
+  title: 'title',
+  body: 'body',
+  bullets: 'bullets',
+  stats: 'stats',
+  ctaText: 'ctaText',
+  ctaUrl: 'ctaUrl',
+  metadata: 'metadata',
+  updatedBy: 'updatedBy',
+  updatedAt: 'updatedAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ShowcaseSequenceScalarFieldEnum = {
+  id: 'id',
+  sectionKey: 'sectionKey',
+  orderIndex: 'orderIndex',
+  visible: 'visible',
+  animation: 'animation',
+  theme: 'theme',
+  dwellSec: 'dwellSec',
+  allowSwipe: 'allowSwipe',
+  updatedAt: 'updatedAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ShowcaseAIDemoCallScalarFieldEnum = {
+  id: 'id',
+  visitorHash: 'visitorHash',
+  assistant: 'assistant',
+  question: 'question',
+  response: 'response',
+  latencyMs: 'latencyMs',
+  success: 'success',
+  errorCode: 'errorCode',
+  errorMessage: 'errorMessage',
+  modelName: 'modelName',
+  inputTokens: 'inputTokens',
+  outputTokens: 'outputTokens',
+  sourcePage: 'sourcePage',
+  saved: 'saved',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ShowcaseAIDebugLogScalarFieldEnum = {
+  id: 'id',
+  debuggerId: 'debuggerId',
+  debuggerEmail: 'debuggerEmail',
+  assistant: 'assistant',
+  systemPrompt: 'systemPrompt',
+  question: 'question',
+  rawResponse: 'rawResponse',
+  latencyMs: 'latencyMs',
+  success: 'success',
+  errorCode: 'errorCode',
+  errorMessage: 'errorMessage',
+  modelName: 'modelName',
+  configVersion: 'configVersion',
+  published: 'published',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ShowcasePromptDraftScalarFieldEnum = {
+  id: 'id',
+  assistant: 'assistant',
+  title: 'title',
+  systemPrompt: 'systemPrompt',
+  welcomeText: 'welcomeText',
+  suggestedQuestions: 'suggestedQuestions',
+  published: 'published',
+  version: 'version',
+  authorId: 'authorId',
+  authorEmail: 'authorEmail',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -272,20 +630,49 @@ exports.Prisma.NullsOrder = {
   last: 'last'
 };
 
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
 
 exports.Prisma.ModelName = {
   User: 'User',
+  FreezeRecord: 'FreezeRecord',
+  UsernameHistory: 'UsernameHistory',
+  UsernameRegistry: 'UsernameRegistry',
   Profile: 'Profile',
   Link: 'Link',
   LinkClick: 'LinkClick',
   ShortLink: 'ShortLink',
+  ShortLinkClick: 'ShortLinkClick',
   Session: 'Session',
   Report: 'Report',
   PasswordResetToken: 'PasswordResetToken',
   EmailVerificationToken: 'EmailVerificationToken',
   LoginAttempt: 'LoginAttempt',
   AppConfig: 'AppConfig',
-  AiUsageLog: 'AiUsageLog'
+  AiUsageLog: 'AiUsageLog',
+  AdminAuditLog: 'AdminAuditLog',
+  Lead: 'Lead',
+  LeadFollowUp: 'LeadFollowUp',
+  EmailSendLog: 'EmailSendLog',
+  Product: 'Product',
+  KnowledgeDoc: 'KnowledgeDoc',
+  AiServiceConfig: 'AiServiceConfig',
+  AiConversation: 'AiConversation',
+  AiMessage: 'AiMessage',
+  AiCreditAccount: 'AiCreditAccount',
+  AiCreditLedger: 'AiCreditLedger',
+  MembershipSubscription: 'MembershipSubscription',
+  Order: 'Order',
+  CompetitionFile: 'CompetitionFile',
+  ShowcaseContent: 'ShowcaseContent',
+  ShowcaseSequence: 'ShowcaseSequence',
+  ShowcaseAIDemoCall: 'ShowcaseAIDemoCall',
+  ShowcaseAIDebugLog: 'ShowcaseAIDebugLog',
+  ShowcasePromptDraft: 'ShowcasePromptDraft'
 };
 
 /**

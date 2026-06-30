@@ -1,0 +1,131 @@
+name: Build Linux Standalone
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - integration/local-latest-20260629
+      - release/internal-test-20260630
+  pull_request:
+    branches:
+      - master
+
+concurrency:
+  group: link168-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  publish-release-candidate:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/integration/local-latest-20260629'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source snapshot
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create or update normal-history release branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="$GITHUB_SHA"
+          RELEASE_BRANCH="release/internal-test-20260630"
+
+          git config user.name "Link168 Release Bot"
+          git config user.email "actions@github.com"
+          git fetch origin master
+
+          if git ls-remote --exit-code --heads origin "$RELEASE_BRANCH" >/dev/null 2>&1; then
+            git fetch origin "$RELEASE_BRANCH"
+            git switch --create "$RELEASE_BRANCH" --track "origin/$RELEASE_BRANCH"
+          else
+            git switch --create "$RELEASE_BRANCH" origin/master
+          fi
+
+          git rm -r --ignore-unmatch .
+          git checkout "$SOURCE_SHA" -- .
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "Release branch already matches source snapshot"
+            exit 0
+          fi
+
+          git commit -m "release: Link168 internal test 2026-06-30"
+          git push origin "HEAD:refs/heads/$RELEASE_BRANCH"
+
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/link168_ci
+      SESSION_SECRET: ci-session-secret-please-replace-32-characters
+      ADMIN_SECRET: ci-admin-secret-please-replace-32-characters
+      CONFIG_ENCRYPTION_KEY: ci-config-encryption-key-32-characters
+      NEXT_PUBLIC_APP_URL: https://example.invalid
+      COOKIE_SECURE: "true"
+      COOKIE_SAME_SITE: lax
+      AUTH_RATE_LIMIT_BYPASS: "false"
+      RATE_LIMIT_STORE: memory
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Prisma schema
+        run: npx prisma validate
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build standalone
+        run: npm run build
+
+      - name: Verify standalone output
+        run: |
+          set -e
+          test -f .next/standalone/server.js
+          test -d .next/static
+          echo "standalone/server.js exists"
+
+      - name: Prepare deployment package
+        shell: bash
+        run: |
+          set -e
+          mkdir -p deploy-package/.next
+          cp -a .next/standalone/. deploy-package/
+          cp -a .next/static deploy-package/.next/static
+          if [ -d public ]; then
+            cp -a public deploy-package/public
+          fi
+          cp -a prisma deploy-package/prisma
+          cp -a package.json deploy-package/package.json
+          printf '%s\n' "$GITHUB_SHA" > deploy-package/GIT_SHA
+          tar -czf link168-linux-standalone.tar.gz -C deploy-package .
+          ls -lh link168-linux-standalone.tar.gz
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: link168-linux-standalone-${{ github.sha }}
+          path: link168-linux-standalone.tar.gz
+          retention-days: 7

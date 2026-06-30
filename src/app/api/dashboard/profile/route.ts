@@ -1,8 +1,8 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
-import { requireUser } from "@/lib/auth";
+import { requireActiveUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { newId, normalizeNullableString, toProfileDto } from "@/lib/dashboard-data";
+import { newId, toProfileDto } from "@/lib/dashboard-data";
 import { SUPPORTED_LANGUAGES } from "@/lib/i18n";
 import { hasSensitiveContent, sanitizePublicText } from "@/lib/content-safety";
 
@@ -29,7 +29,7 @@ type SaveProfileRequest = {
 };
 
 export async function PUT(request: Request) {
-  const { user, response } = await requireUser(request);
+  const { user, response } = await requireActiveUser(request);
   if (response || !user) return response;
 
   let body: SaveProfileRequest;
@@ -38,8 +38,6 @@ export async function PUT(request: Request) {
   } catch {
     return NextResponse.json({ success: false, error: "Invalid JSON body." }, { status: 400 });
   }
-
-  const existingProfile = await db.profile.findUnique({ where: { userId: user.id } });
 
   let themeValue: string | null = typeof body.theme === "string" ? body.theme.trim() : null;
   if (themeValue && !PRESET_THEMES.includes(themeValue)) {

@@ -1,23 +1,19 @@
 import { NextResponse } from "next/server";
-import { getCurrentUserFromRequest } from "@/lib/auth";
-import {
-  getAiDailyUsage,
-  getConfig,
-  isAiTester,
-} from "@/lib/app-config";
-import { AI_ASSISTANT_LIST, type AiAssistantTitle } from "@/lib/ai/assistants";
-import { getProviderConfig, isProviderConfigured } from "@/lib/ai/provider";
+import { getAiDailyUsage } from "@/lib/app-config";
+import { AI_ASSISTANT_LIST } from "@/lib/ai/assistants";
+import { getEnterpriseBailianAccessForRequest } from "@/lib/ai/enterprise-bailian";
 
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
-  const user = await getCurrentUserFromRequest(request);
-  const config = await getConfig();
+  const enterpriseAccess = await getEnterpriseBailianAccessForRequest(request);
+  const { user, config, access } = enterpriseAccess;
 
   const baseInfo = {
     aiEnabled: config.aiEnabled,
     aiDailyLimitPerUser: config.aiDailyLimitPerUser,
-    paymentEnabled: false, // V0.1 真实上线不接支付，后续版本规划
+    paymentEnabled: false,
+    providerConfigured: access.isConfigured,
   };
 
   if (!user) {
@@ -26,7 +22,8 @@ export async function GET(request: Request) {
       ...baseInfo,
       authenticated: false,
       isTester: false,
-      providerConfigured: false,
+      accessAllowed: false,
+      accessReason: access.reason,
       assistants: [],
       availableAssistants: AI_ASSISTANT_LIST.map((item) => ({
         title: item.title,
@@ -35,11 +32,6 @@ export async function GET(request: Request) {
       })),
     });
   }
-
-  const tester = await isAiTester(user.email);
-  const sampleDefinition = AI_ASSISTANT_LIST[0];
-  const providerConfig = sampleDefinition ? await getProviderConfig(sampleDefinition) : null;
-  const providerConfigured = providerConfig ? isProviderConfigured(providerConfig) : false;
 
   const assistantUsages = await Promise.all(
     AI_ASSISTANT_LIST.map(async (assistant) => ({
@@ -54,10 +46,14 @@ export async function GET(request: Request) {
     success: true,
     ...baseInfo,
     authenticated: true,
-    isTester: tester,
-    userEmail: user.email,
-    emailVerified: user.emailVerified,
-    providerConfigured,
+    isTester: enterpriseAccess.isTester,
+    accessAllowed: access.allowed,
+    accessReason: access.reason,
     assistants: assistantUsages,
+    availableAssistants: AI_ASSISTANT_LIST.map((item) => ({
+      title: item.title,
+      displayTitle: item.displayTitle,
+      category: item.category,
+    })),
   });
 }

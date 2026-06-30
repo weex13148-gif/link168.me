@@ -3,6 +3,46 @@ import { getConfig } from "@/lib/app-config";
 
 let cachedTransporter: Transporter | null = null;
 
+// 邮件发送频率限制（内存Map，TTL清理）
+// 同一IP 10秒内只能发1次，同一邮箱60秒内只能发1次
+const EMAIL_RATE_LIMIT_WINDOW_MS = 60 * 1000; // 60秒
+const EMAIL_RATE_LIMIT_IP_WINDOW_MS = 10 * 1000; // 10秒
+const emailRateLimitMap = new Map<string, number>();
+
+if (typeof setInterval !== "undefined") {
+  setInterval(() => {
+    const now = Date.now();
+    const staleCutoff = EMAIL_RATE_LIMIT_WINDOW_MS * 2;
+    for (const [k, t] of Array.from(emailRateLimitMap.entries())) {
+      if (now - t > staleCutoff) emailRateLimitMap.delete(k);
+    }
+  }, 30 * 1000).unref?.();
+}
+
+function checkEmailRateLimit(ip: string, email: string): { allowed: boolean; waitMs: number } {
+  const now = Date.now();
+  const ipKey = `ip:${ip}`;
+  const emailKey = `email:${email}`;
+
+  const lastIpSend = emailRateLimitMap.get(ipKey);
+  if (lastIpSend && now - lastIpSend < EMAIL_RATE_LIMIT_IP_WINDOW_MS) {
+    return { allowed: false, waitMs: EMAIL_RATE_LIMIT_IP_WINDOW_MS - (now - lastIpSend) };
+  }
+
+  const lastEmailSend = emailRateLimitMap.get(emailKey);
+  if (lastEmailSend && now - lastEmailSend < EMAIL_RATE_LIMIT_WINDOW_MS) {
+    return { allowed: false, waitMs: EMAIL_RATE_LIMIT_WINDOW_MS - (now - lastEmailSend) };
+  }
+
+  return { allowed: true, waitMs: 0 };
+}
+
+function recordEmailSend(ip: string, email: string): void {
+  const now = Date.now();
+  emailRateLimitMap.set(`ip:${ip}`, now);
+  emailRateLimitMap.set(`email:${email}`, now);
+}
+
 async function getTransporter(): Promise<Transporter | null> {
   if (cachedTransporter) return cachedTransporter;
 
@@ -38,7 +78,12 @@ export async function getMailFrom(): Promise<string> {
   return process.env.MAIL_FROM || `Link168 <${process.env.SMTP_USER || "noreply@link168.me"}>`;
 }
 
-export function getAppUrl(): string {
+export async function getAppUrl(): Promise<string> {
+  // 优先从数据库配置读取，其次环境变量
+  const config = await getConfig().catch(() => null);
+  if (config?.mailEnabled && config.mailAppUrl) {
+    return config.mailAppUrl;
+  }
   return process.env.NEXT_PUBLIC_APP_URL || (process.env.NODE_ENV === "production" ? "" : "http://localhost:3000");
 }
 
@@ -47,14 +92,11 @@ export async function sendEmail(options: {
   subject: string;
   html: string;
   text?: string;
-}): Promise<{ success: boolean; mode: "smtp" | "console"; error?: string }> {
+}): Promise<{ success: boolean; mode: "smtp" | "none"; error?: string; errorCode?: string }> {
   const transporter = await getTransporter();
 
   if (!transporter) {
-    console.log(`[MAIL DEV MODE] To: ${options.to}`);
-    console.log(`[MAIL DEV MODE] Subject: ${options.subject}`);
-    console.log(`[MAIL DEV MODE] Body (first 300 chars): ${options.html.replace(/<[^>]+>/g, " ").slice(0, 300)}...`);
-    return { success: true, mode: "console" };
+    return { success: false, mode: "none", error: "SMTP_NOT_CONFIGURED", errorCode: "SMTP_NOT_CONFIGURED" };
   }
 
   try {
@@ -108,8 +150,8 @@ function wrapInLayout(title: string, bodyHtml: string, footerNote?: string): str
 </html>`;
 }
 
-export async function sendEmailVerification(email: string, verifyToken: string): Promise<{ success: boolean; mode: "smtp" | "console" }> {
-  const appUrl = getAppUrl();
+export async function sendEmailVerification(email: string, verifyToken: string): Promise<{ success: boolean; mode: "smtp" | "none"; errorCode?: string }> {
+  const appUrl = await getAppUrl();
   const verifyUrl = `${appUrl}/verify-email?token=${encodeURIComponent(verifyToken)}`;
 
   const bodyHtml = `
@@ -127,11 +169,11 @@ export async function sendEmailVerification(email: string, verifyToken: string):
     html: wrapInLayout("邮箱验证 · Link168", bodyHtml),
   });
 
-  return { success: result.success, mode: result.mode };
+  return { success: result.success, mode: result.mode, errorCode: result.errorCode };
 }
 
-export async function sendPasswordReset(email: string, resetToken: string): Promise<{ success: boolean; mode: "smtp" | "console" }> {
-  const appUrl = getAppUrl();
+export async function sendPasswordReset(email: string, resetToken: string): Promise<{ success: boolean; mode: "smtp" | "none"; errorCode?: string }> {
+  const appUrl = await getAppUrl();
   const resetUrl = `${appUrl}/reset-password?token=${encodeURIComponent(resetToken)}`;
 
   const bodyHtml = `
@@ -149,5 +191,5 @@ export async function sendPasswordReset(email: string, resetToken: string): Prom
     html: wrapInLayout("重置密码 · Link168", bodyHtml),
   });
 
-  return { success: result.success, mode: result.mode };
+  return { success: result.success, mode: result.mode, errorCode: result.errorCode };
 }

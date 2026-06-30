@@ -4,6 +4,12 @@
 
 import { getConfig } from "@/lib/app-config";
 import type { AiAssistantDefinition } from "@/lib/ai/assistants";
+import { BailianProvider } from "@/lib/ai/providers/bailian";
+import { callBailianApplication } from "@/lib/ai/providers/bailian-application";
+import type { AiProviderResult } from "@/lib/ai/providers/types";
+
+// Re-export for convenience
+export type { AiProviderResult } from "@/lib/ai/providers/types";
 
 export type ChatMessage = {
   role: "system" | "user" | "assistant";
@@ -18,6 +24,9 @@ export type ProviderConfig = {
   temperature: number;
   maxTokens: number;
   timeoutMs: number;
+  // 百炼应用接口专用字段
+  bailianAppId: string;
+  bailianWorkspaceId: string;
 };
 
 export type ProviderChatResult = {
@@ -43,17 +52,26 @@ export async function getProviderConfig(assistant: AiAssistantDefinition): Promi
   const dbBaseUrl = typeof config.aiBaseUrl === "string" ? config.aiBaseUrl.trim() : "";
   const dbModel = typeof config.aiModel === "string" ? config.aiModel.trim() : "";
   const dbProvider = typeof config.aiProvider === "string" ? config.aiProvider.trim() : "";
+  const dbBailianAppId = typeof config.aiBailianAppId === "string" ? config.aiBailianAppId.trim() : "";
+  const dbBailianWorkspaceId = typeof config.aiBailianWorkspaceId === "string" ? config.aiBailianWorkspaceId.trim() : "";
 
   const apiKey = dbApiKey || envValue("AI_API_KEY") || envValue("OPENAI_API_KEY") || "";
   const baseUrl =
     dbBaseUrl ||
     envValue("AI_BASE_URL") ||
     envValue("OPENAI_BASE_URL") ||
-    "https://dashscope.aliyuncs.com/compatible-mode/v1";
+    "https://dashscope.aliyuncs.com/api/v1";
   const model = dbModel || envValue("AI_MODEL") || "qwen-plus";
   const provider = dbProvider || envValue("AI_PROVIDER") || "qwen";
+  const bailianAppId = dbBailianAppId || envValue("BAILIAN_APP_ID") || "";
+  const bailianWorkspaceId = dbBailianWorkspaceId || envValue("BAILIAN_WORKSPACE_ID") || "";
 
-  // 去掉 URL 尾部斜杠，下游会自己拼 /chat/completions
+  // 读取新配置字段（服务端使用）
+  const requestTimeout = typeof config.aiRequestTimeout === "number" && config.aiRequestTimeout > 0 ? config.aiRequestTimeout : 45;
+  const maxOutputTokens = typeof config.aiMaxOutputTokens === "number" && config.aiMaxOutputTokens > 0 ? config.aiMaxOutputTokens : 1500;
+  const temperature = typeof config.aiTemperature === "number" && config.aiTemperature >= 0 ? config.aiTemperature : 0.3;
+
+  // 去掉 URL 尾部斜杠
   const normalizedBase = baseUrl.replace(/\/+$/, "");
 
   return {
@@ -61,9 +79,11 @@ export async function getProviderConfig(assistant: AiAssistantDefinition): Promi
     baseUrl: normalizedBase,
     model,
     apiKey,
-    temperature: assistant.defaultTemperature,
-    maxTokens: assistant.defaultMaxTokens,
-    timeoutMs: 60_000,
+    temperature,
+    maxTokens: maxOutputTokens,
+    timeoutMs: requestTimeout * 1000,
+    bailianAppId,
+    bailianWorkspaceId,
   };
 }
 
@@ -215,6 +235,59 @@ export async function chatWithProvider(
   }
 }
 
+/**
+ * 使用百炼 Provider 调用 AI（第一轮仅限社媒运营助理）
+ * 返回统一结构 AiProviderResult
+ */
+const bailianProvider = new BailianProvider();
+
+export async function chatWithBailian(
+  config: ProviderConfig,
+  messages: ChatMessage[],
+  assistant: AiAssistantDefinition,
+): Promise<{ ok: true; data: AiProviderResult } | { ok: false; error: string; status: number }> {
+  // 第一轮权限检查：只允许社媒运营助理调用百炼
+  if (!bailianProvider.supportsAssistant(assistant.title)) {
+    return {
+      ok: false,
+      error: `当前助手「${assistant.title}」暂不支持百炼 AI。`,
+      status: 403,
+    };
+  }
+
+  if (!isProviderConfigured(config)) {
+    return {
+      ok: false,
+      error: "AI 配置未完成：缺少 API Key / Base URL / Model。请在超级管理员的 AI 配置页面补充。",
+      status: 400,
+    };
+  }
+
+  const result = await bailianProvider.chat(config, messages);
+
+  if (!result.ok) {
+    // 将 ProviderError 转换为 ProviderChatResult 格式
+    const statusMap: Record<string, number> = {
+      TIMEOUT: 408,
+      AUTH_ERROR: 401,
+      NOT_FOUND: 404,
+      RATE_LIMIT: 429,
+      SERVER_ERROR: 502,
+      EMPTY_RESPONSE: 502,
+      INVALID_JSON: 502,
+      NETWORK_ERROR: 502,
+      UNKNOWN: 500,
+    };
+    return {
+      ok: false,
+      error: result.error.message,
+      status: statusMap[result.error.type] ?? 500,
+    };
+  }
+
+  return result;
+}
+
 export type StructuredAssistantReply = {
   summary: string;
   suggestions: string[];
@@ -234,9 +307,34 @@ export async function callAssistant(
   status?: number;
   reply?: StructuredAssistantReply;
   providerMeta?: { provider: string; model: string };
+  bailianResult?: AiProviderResult;
 }> {
   const config = await getProviderConfig(assistant);
 
+  // 第一阶段：检查是否允许该助手使用百炼
+  if (!bailianProvider.supportsAssistant(assistant.title)) {
+    return {
+      ok: false,
+      error: `当前助手「${assistant.title}」暂不支持百炼 AI，请联系管理员。`,
+      status: 403,
+    };
+  }
+
+  // 百炼应用接口：必须有 App ID + API Key 才走正式链路
+  const useAppInterface = Boolean(config.bailianAppId) && Boolean(config.apiKey);
+
+  if (!useAppInterface) {
+    // 禁止自动回退模型直连 — 明确告知未配置
+    if (!config.bailianAppId) {
+      return { ok: false, error: "百炼应用 App ID 未配置，请在超级管理员后台配置百炼参数。", status: 400 };
+    }
+    if (!config.apiKey) {
+      return { ok: false, error: "百炼 API Key 未配置，请在超级管理员后台配置百炼参数。", status: 400 };
+    }
+    return { ok: false, error: "AI 服务未配置，请在超级管理员后台补充配置。", status: 400 };
+  }
+
+  // 正式链路：百炼应用接口
   const systemPrompt = [
     assistant.systemPrompt,
     "",
@@ -247,26 +345,38 @@ export async function callAssistant(
     assistant.riskNotice,
   ].join("\n");
 
-  // 历史消息取最近 10 轮，避免超长
   const trimmedHistory = (history || []).slice(-20);
-
-  const messages: ChatMessage[] = [
+  const conversation: ChatMessage[] = [
     { role: "system", content: systemPrompt },
     ...trimmedHistory.filter((m) => m && typeof m.role === "string" && typeof m.content === "string"),
     { role: "user", content: userMessage },
   ];
 
-  const providerResult = await chatWithProvider(config, messages, assistant);
+  // 将 messages 格式化为单个 prompt 字符串
+  const prompt = conversation
+    .map((m) => `${m.role === "system" ? "系统" : m.role === "assistant" ? "助手" : "用户"}：${m.content}`)
+    .join("\n");
 
-  if (!providerResult.ok) {
+  const appResult = await callBailianApplication(
+    {
+      appId: config.bailianAppId,
+      apiKey: config.apiKey,
+      baseUrl: config.baseUrl,
+      timeoutMs: config.timeoutMs,
+      workspaceId: config.bailianWorkspaceId || undefined,
+    },
+    prompt,
+  );
+
+  if (!appResult.ok) {
     return {
       ok: false,
-      error: providerResult.error || "AI 服务暂时不可用。",
-      status: providerResult.status ?? 502,
+      error: appResult.error,
+      status: appResult.status,
     };
   }
 
-  const structured = extractStructuredOutput(providerResult.rawContent);
+  const structured = extractStructuredOutput(appResult.reply);
 
   return {
     ok: true,
@@ -274,10 +384,19 @@ export async function callAssistant(
       summary: structured.summary,
       suggestions: structured.suggestions,
       content: structured.content,
-      raw: providerResult.rawContent,
+      raw: appResult.reply,
       disclaimer: assistant.disclaimer,
       assistantTitle: assistant.title,
     },
-    providerMeta: { provider: config.provider, model: config.model },
+    providerMeta: { provider: "bailian-application", model: appResult.usage?.modelId ?? config.model },
+    bailianResult: {
+      text: appResult.reply,
+      model: appResult.usage?.modelId ?? config.model,
+      inputTokens: appResult.usage?.inputTokens ?? 0,
+      outputTokens: appResult.usage?.outputTokens ?? 0,
+      totalTokens: appResult.usage?.totalTokens ?? 0,
+      latencyMs: 0,
+      requestId: appResult.requestId,
+    },
   };
 }

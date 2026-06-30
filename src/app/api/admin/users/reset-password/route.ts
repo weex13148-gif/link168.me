@@ -1,39 +1,25 @@
-import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
-import { requireSuperAdmin } from "@/lib/admin-auth";
-import { db } from "@/lib/db";
 
 export const runtime = "nodejs";
 
-type ResetPasswordRequest = {
-  email?: unknown;
-  password?: unknown;
-};
+// 旧 /api/admin 全部返回 404，真正的后台 API 在 /api/jeepwork/*
 
-function normalizeEmail(value: unknown) {
-  return typeof value === "string" ? value.trim().toLowerCase() : "";
+export async function POST() {
+  return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
 }
 
-export async function POST(request: Request) {
-  const forbidden = await requireSuperAdmin(request);
-  if (forbidden) return forbidden;
+export async function GET() {
+  return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
+}
 
-  const body = (await request.json()) as ResetPasswordRequest;
-  const email = normalizeEmail(body.email);
-  const password = typeof body.password === "string" ? body.password : "";
+export async function PUT() {
+  return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
+}
 
-  if (!email || !email.includes("@")) {
-    return NextResponse.json({ success: false, error: "邮箱格式不正确" }, { status: 400 });
-  }
-  if (password.length < 6) {
-    return NextResponse.json({ success: false, error: "密码长度至少 6 位" }, { status: 400 });
-  }
+export async function PATCH() {
+  return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
+}
 
-  const user = await db.user.findUnique({ where: { email } });
-  if (!user) {
-    return NextResponse.json({ success: false, error: "该邮箱尚未注册" }, { status: 404 });
-  }
-
-  await db.user.update({ where: { id: user.id }, data: { passwordHash: await bcrypt.hash(password, 12) } });
-  return NextResponse.json({ success: true, message: "密码已重置" });
+export async function DELETE() {
+  return NextResponse.json({ success: false, error: "Not found" }, { status: 404 });
 }

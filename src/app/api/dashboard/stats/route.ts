@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireUser } from "@/lib/auth";
+import { requireDashboardUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -18,7 +18,7 @@ function formatDateKey(date: Date): string {
 }
 
 export async function GET(request: NextRequest) {
-  const { user, response } = await requireUser(request);
+  const { user, response } = await requireDashboardUser(request);
   if (response || !user) return response;
 
   const profile = await db.profile.findUnique({ where: { userId: user.id } });

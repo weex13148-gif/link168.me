@@ -5,6 +5,7 @@ import {
   consumePasswordResetToken,
   createSession,
   setSessionCookie,
+  revokeAllOtherSessions,
 } from "@/lib/auth";
 import { db } from "@/lib/db";
 
@@ -58,6 +59,9 @@ export async function POST(request: Request) {
   await consumePasswordResetToken(token);
 
   const { token: sessionToken, expiresAt } = await createSession(user.id, request);
+
+  await revokeAllOtherSessions(user.id, sessionToken);
+
   const response = NextResponse.json({
     success: true,
     message: "密码已重置成功。",

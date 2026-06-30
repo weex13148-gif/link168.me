@@ -8,39 +8,119 @@ datasource db {
 }
 
 model User {
-  id            String                   @id @db.Uuid
-  email         String                   @unique
-  passwordHash  String                   @map("password_hash")
-  emailVerified Boolean                  @default(false) @map("email_verified")
-  role          String                   @default("user")
-  isSystem      Boolean                  @default(false) @map("is_system")
-  createdAt     DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
-  profile       Profile?
-  sessions      Session[]
-  resetTokens   PasswordResetToken[]
-  verifyTokens  EmailVerificationToken[]
-  aiUsageLogs   AiUsageLog[]
-  shortLinks    ShortLink[]
+  id                     String                   @id @db.Uuid
+  email                  String                   @unique
+  passwordHash           String                   @map("password_hash")
+  emailVerified          Boolean                  @default(false) @map("email_verified")
+  // V2-002: 兼容旧字段（只读，主要冻结依据切换到 FreezeRecord）
+  frozenReason           String?                  @map("frozen_reason")
+  frozenAt               DateTime?                @map("frozen_at") @db.Timestamptz(6)
+  // V2-003: 允许 Username 主动修改次数（默认1次可用，首次设置不消耗）
+  usernameChanges        Int                      @default(1) @map("username_changes")
+  role                   String                   @default("user")
+  isSystem               Boolean                  @default(false) @map("is_system")
+  createdAt              DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
+  profile                Profile?
+  usernameHistory        UsernameHistory[]
+  // V2-002: 独立冻结记录
+  freezeRecords          FreezeRecord[]
+  sessions               Session[]
+  resetTokens            PasswordResetToken[]
+  verifyTokens           EmailVerificationToken[]
+  aiUsageLogs            AiUsageLog[]
+  shortLinks             ShortLink[]
+  // 客户工作台业务数据（均通过 userId 做租户隔离
+  // AiCreditLedger 通过 AiCreditAccount → User，不单独直连 User
+  products               Product[]
+  knowledgeDocs          KnowledgeDoc[]
+  aiServiceConfig        AiServiceConfig?
+  aiCreditAccount        AiCreditAccount?
+  membershipSubscription MembershipSubscription?
+  orders                 Order[]
 
   @@map("users")
 }
 
+// V2-002: 独立冻结/限制记录
+// 一个用户可以同时拥有多条有效限制，例如：邮箱未验证 + 管理员冻结
+model FreezeRecord {
+  id              String    @id @db.Uuid
+  userId          String    @map("user_id") @db.Uuid
+  // EMAIL_UNVERIFIED / ADMIN_FREEZE / SECURITY_RISK / BANNED
+  type            String    @map("type")
+  reason          String?   @map("reason")
+  source          String    @default("system") @map("source") // system / admin / security
+  isActive        Boolean   @default(true) @map("is_active")
+  startsAt        DateTime  @default(now()) @map("starts_at") @db.Timestamptz(6)
+  expiresAt       DateTime? @map("expires_at") @db.Timestamptz(6)
+  clearedAt       DateTime? @map("cleared_at") @db.Timestamptz(6)
+  clearedByUserId String?   @map("cleared_by_user_id") @db.Uuid
+  // EMAIL_VERIFICATION / ADMIN / SYSTEM / SECURITY_PROCESS
+  clearedBySource String?   @map("cleared_by_source")
+  metadataRaw     String?   @map("metadata_raw")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type, isActive])
+  @@index([isActive, expiresAt])
+  @@map("freeze_records")
+}
+
+model UsernameHistory {
+  // V2-003: Username 历史，用于永久审计 + 旧地址重定向
+  id                 String    @id @db.Uuid
+  userId             String    @map("user_id") @db.Uuid
+  username           String
+  normalizedUsername String    @map("normalized_username") // 小写规范化
+  replacedBy         String?   @map("replaced_by") // 新 Username
+  reservedUntil      DateTime? @map("reserved_until") @db.Timestamptz(6) // 90天保留（INITIAL_SET 为 null，不承担实际占用）
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([normalizedUsername])
+  @@index([userId, createdAt])
+  @@map("username_histories")
+}
+
+// V2-003: Username 注册中心，负责占用、90天保留、永久封禁
+model UsernameRegistry {
+  id                 String    @id @db.Uuid
+  normalizedUsername String    @unique @map("normalized_username") // 小写全局唯一
+  displayUsername    String    @map("display_username") // 用户实际输入
+  userId             String?   @map("user_id") @db.Uuid
+  // CURRENT / RESERVED_90_DAYS / PERMANENTLY_RESERVED
+  status             String    @default("CURRENT") @map("status")
+  reservedUntil      DateTime? @map("reserved_until") @db.Timestamptz(6)
+  reason             String?   @map("reason") // system_reserved / user_changed / banned / frozen
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([userId, status])
+  @@map("username_registry")
+}
+
 model Profile {
-  id          String   @id @db.Uuid
-  userId      String   @unique @map("user_id") @db.Uuid
-  username    String   @unique
-  displayName String?  @map("display_name")
-  bio         String?
-  avatarUrl   String?  @map("avatar_url")
-  theme       String   @default("default")
-  customTheme String?  @map("custom_theme")
-  language    String   @default("zh")
-  isPublic    Boolean  @default(true) @map("is_public")
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  links       Link[]
+  id              String           @id @db.Uuid
+  userId          String           @unique @map("user_id") @db.Uuid
+  username        String           @unique
+  displayName     String?          @map("display_name")
+  bio             String?
+  avatarUrl       String?          @map("avatar_url")
+  theme           String           @default("default")
+  customTheme     String?          @map("custom_theme")
+  // V2-004: 模板选择持久化 — business / creator / conversion
+  template        String           @default("business")
+  language        String           @default("zh")
+  isPublic        Boolean          @default(true) @map("is_public")
+  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links           Link[]
+  leads           Lead[]
+  // AI 对话：公开主页访客与 AI 客服的对话记录
+  aiConversations AiConversation[]
 
   @@map("profiles")
 }
@@ -48,6 +128,10 @@ model Profile {
 model Link {
   id          String      @id @db.Uuid
   profileId   String      @map("profile_id") @db.Uuid
+  // V2-005: 组件类型 — link/text/group-title/qr/wechat/shop/booking/map/phone
+  type        String      @default("link")
+  // V2-005: 组件扩展字段（微信账号、商品价格、预约时间段、地图坐标等）
+  payloadJson String?     @map("payload_json")
   title       String
   url         String
   description String?
@@ -62,6 +146,7 @@ model Link {
   profile     Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
   clicks      LinkClick[]
 
+  @@index([profileId, type])
   @@map("links")
 }
 
@@ -85,18 +170,49 @@ model LinkClick {
 }
 
 model ShortLink {
-  id          String   @id @db.Uuid
-  userId      String   @map("user_id") @db.Uuid
-  slug        String   @unique
-  targetUrl   String   @map("target_url")
-  totalClicks Int      @default(0) @map("total_clicks")
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String           @id @db.Uuid
+  userId      String           @map("user_id") @db.Uuid
+  slug        String           @unique
+  targetUrl   String           @map("target_url")
+  totalClicks Int              @default(0) @map("total_clicks")
+  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clicks      ShortLinkClick[]
 
   @@index([slug])
   @@index([userId, createdAt])
   @@map("short_links")
+}
+
+model ShortLinkClick {
+  id           String    @id @db.Uuid
+  shortLinkId  String    @map("short_link_id") @db.Uuid
+  profileId    String?   @map("profile_id") @db.Uuid
+  visitorId    String?   @map("visitor_id")
+  ipHash       String?   @map("ip_hash")
+  device       String?
+  os           String?
+  browser      String?
+  country      String?
+  city         String?
+  channel      String?
+  channelLabel String?   @map("channel_label")
+  utmSource    String?   @map("utm_source")
+  utmMedium    String?   @map("utm_medium")
+  utmCampaign  String?   @map("utm_campaign")
+  utmContent   String?   @map("utm_content")
+  referer      String?
+  isPaid       Boolean   @default(false) @map("is_paid")
+  isOrganic    Boolean   @default(false) @map("is_organic")
+  isBot        Boolean   @default(false) @map("is_bot")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  shortLink    ShortLink @relation(fields: [shortLinkId], references: [id], onDelete: Cascade)
+
+  @@index([shortLinkId, createdAt])
+  @@index([profileId, createdAt])
+  @@index([visitorId])
+  @@map("short_link_clicks")
 }
 
 model Session {
@@ -141,14 +257,19 @@ model PasswordResetToken {
 }
 
 model EmailVerificationToken {
-  id        String   @id @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  tokenHash String   @unique @map("token_hash")
-  expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
-  used      Boolean  @default(false)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // V2-002: 已使用(used) + 过期时间，24 小时过期后不可再验证
+  id        String    @id @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  used      Boolean   @default(false)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(6)
+  // V2-002: 发送节流，避免滥发
+  sentAt    DateTime  @default(now()) @map("sent_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId, createdAt])
   @@map("email_verification_tokens")
 }
 
@@ -190,4 +311,478 @@ model AiUsageLog {
   @@unique([userId, assistant, usageDate])
   @@index([userId, usageDate])
   @@map("ai_usage_logs")
+}
+
+model AdminAuditLog {
+  id          String   @id @db.Uuid
+  actorUserId String?  @map("actor_user_id") @db.Uuid
+  actorEmail  String?  @map("actor_email")
+  actorRole   String?  @map("actor_role")
+  action      String
+  targetType  String?  @map("target_type")
+  targetId    String?  @map("target_id")
+  metadataRaw String?  @map("metadata_raw")
+  ipHash      String?  @map("ip_hash")
+  userAgent   String?  @map("user_agent")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  success     Boolean  @default(true)
+
+  @@index([actorUserId, createdAt])
+  @@index([action, createdAt])
+  @@index([targetType, targetId, createdAt])
+  @@map("admin_audit_logs")
+}
+
+// ======== V2 新增表 ========
+
+// V2-006: 客户线索
+model Lead {
+  id                        String          @id @db.Uuid
+  profileId                 String          @map("profile_id") @db.Uuid
+  name                      String
+  email                     String?
+  phone                     String?
+  wechat                    String?
+  message                   String?
+  // link / qr / booking / shop / wechat / phone / direct / ai-chat / product_card
+  sourceComponent           String?         @map("source_component")
+  sourcePage                String?         @map("source_page")
+  interestedProductId       String?         @map("interested_product_id") @db.Uuid
+  // 产品快照：创建时保存，防止产品下架/删除后历史丢失
+  interestedProductName     String?         @map("interested_product_name")
+  interestedProductPrice    String?         @map("interested_product_price")
+  interestedProductCategory String?         @map("interested_product_category")
+  conversationId            String?         @unique @map("conversation_id") @db.Uuid
+  // new / contacted / following / converted / closed
+  // 旧状态迁移: qualified → following, lost → closed, 其他未知状态保持不变
+  status                    String          @default("new")
+  notes                     String? // 旧版历史备注（追加式文本，仅展示，不继续写入）
+  handlerNote               String?         @map("handler_note")
+  handledAt                 DateTime?       @map("handled_at") @db.Timestamptz(6)
+  createdAt                 DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                 DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+  profile                   Profile         @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  interestedProduct         Product?        @relation(fields: [interestedProductId], references: [id], onDelete: SetNull)
+  conversation              AiConversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  // 独立跟进记录
+  followUps                 LeadFollowUp[]
+
+  @@index([profileId, createdAt])
+  @@index([status])
+  @@index([interestedProductId])
+  @@map("leads")
+}
+
+// V2-006: 线索独立跟进记录（替代 notes 追加文本）
+model LeadFollowUp {
+  id              String   @id @db.Uuid
+  leadId          String   @map("lead_id") @db.Uuid
+  profileId       String   @map("profile_id") @db.Uuid // 冗余存储，用于快速权限校验
+  // 操作人类型：owner（名片主人） / admin（管理员）
+  createdByType   String   @default("owner") @map("created_by_type")
+  createdByUserId String   @map("created_by_user_id") @db.Uuid
+  // 跟进内容（纯文本，不再与 notes 混用）
+  content         String
+  // 状态变更记录（可选）
+  previousStatus  String?  @map("previous_status")
+  newStatus       String?  @map("new_status")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  lead            Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId, createdAt])
+  @@index([profileId, createdAt])
+  @@map("lead_follow_ups")
+}
+
+// V2-008: 会员/订单/AI草稿占位模型在功能落地前暂不纳入，避免 schema 与 migration 漂移
+
+// 功能上线后将引入独立 migration 创建：member_plans、orders、ai_drafts
+
+// V2-010: 邮箱发送记录（用于 60 秒间隔和每日限额检测）
+model EmailSendLog {
+  id        String   @id @db.Uuid
+  email     String
+  purpose   String // verify / password-reset / system
+  success   Boolean  @default(true)
+  // SMTP_NOT_CONFIGURED / SMTP_UNAVAILABLE / RATE_LIMITED / PROVIDER_REJECTED / INVALID_RECIPIENT / UNKNOWN_SEND_FAILURE
+  errorCode String?  @map("error_code")
+  // smtp / mock / none
+  provider  String?  @map("provider")
+  ipHash    String?  @map("ip_hash")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([email, createdAt])
+  @@index([ipHash, createdAt])
+  @@map("email_send_logs")
+}
+
+// ======== 客户工作台真实功能模型 ========
+// 所有业务数据均通过 userId（或 profileId → userId）做租户隔离
+
+// 产品与服务
+model Product {
+  id                    String   @id @default(uuid()) @db.Uuid
+  userId                String   @map("user_id") @db.Uuid
+  name                  String
+  category              String?
+  description           String?
+  priceText             String?  @map("price_text")
+  coverImageUrl         String?  @map("cover_image_url")
+  ctaLabel              String?  @map("cta_label")
+  ctaUrl                String?  @map("cta_url")
+  sortOrder             Int      @default(0) @map("sort_order")
+  isActive              Boolean  @default(true) @map("is_active")
+  allowAiRecommendation Boolean  @default(true) @map("allow_ai_recommendation")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leads                 Lead[]
+
+  @@index([userId, isActive, sortOrder])
+  @@index([userId, category])
+  @@map("products")
+}
+
+// 企业知识库文档
+model KnowledgeDoc {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @map("user_id") @db.Uuid
+  title           String
+  category        String?
+  content         String
+  sourceType      String   @default("manual") @map("source_type")
+  isActive        Boolean  @default(true) @map("is_active")
+  allowAiCitation Boolean  @default(true) @map("allow_ai_citation")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive, category])
+  @@map("knowledge_docs")
+}
+
+// AI 客服配置（仅保存客户自己的设置，不保存任何 API Key）
+// 模型 API Key 由超级管理员配置中心管理，不在本表中
+model AiServiceConfig {
+  id                         String   @id @default(uuid()) @db.Uuid
+  userId                     String   @unique @map("user_id") @db.Uuid
+  enabled                    Boolean  @default(false)
+  assistantName              String   @default("AI 助理") @map("assistant_name")
+  welcomeMessage             String   @default("你好！我是 AI 助理，有什么可以帮你？") @map("welcome_message")
+  tone                       String   @default("friendly") // friendly / professional / concise
+  allowProductRecommendation Boolean  @default(true) @map("allow_product_recommendation")
+  collectLead                Boolean  @default(true) @map("collect_lead")
+  // providerMode：mock / 真实模型名（如 "gpt-4o-mini"）。具体模型的 API Key 不存本表
+  providerMode               String   @default("mock") @map("provider_mode")
+  createdAt                  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user                       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ai_service_configs")
+}
+
+// AI 对话会话
+model AiConversation {
+  id                 String      @id @default(uuid()) @db.Uuid
+  profileId          String      @map("profile_id") @db.Uuid
+  visitorSessionId   String?     @map("visitor_session_id")
+  // active / closed
+  status             String      @default("active")
+  transferredToHuman Boolean     @default(false) @map("transferred_to_human")
+  createdAt          DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  // 租户隔离：Profile.userId 必须与当前会话用户一致
+  profile            Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  messages           AiMessage[]
+  lead               Lead?
+
+  @@index([profileId, createdAt])
+  @@index([visitorSessionId])
+  @@map("ai_conversations")
+}
+
+// AI 对话消息
+model AiMessage {
+  id             String         @id @default(uuid()) @db.Uuid
+  conversationId String         @map("conversation_id") @db.Uuid
+  // user / assistant
+  role           String
+  content        String
+  // 引用的产品、资料与命中片段，用 JSON 存储
+  sourceRefs     Json?          @map("source_refs") @db.JsonB
+  creditCost     Int            @default(0) @map("credit_cost")
+  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@map("ai_messages")
+}
+
+// AI 额度账户
+model AiCreditAccount {
+  id        String           @id @default(uuid()) @db.Uuid
+  userId    String           @unique @map("user_id") @db.Uuid
+  // balance 永远 >= 0，通过 migration.sql 中 ALTER TABLE ADD CONSTRAINT check_balance_non_negative CHECK (balance >= 0)
+  balance   Int              @default(0)
+  version   Int              @default(0) // 乐观锁：消费时用 version 条件更新防并发
+  updatedAt DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  // 账户与经营数据不允许用户删除时静默清零；物理删除需管理员显式操作
+  user      User             @relation(fields: [userId], references: [id], onDelete: Restrict)
+  ledger    AiCreditLedger[]
+
+  @@map("ai_credit_accounts")
+}
+
+// AI 额度流水
+// 归属链路：AiCreditLedger → AiCreditAccount → User
+// 注意：不在本表单独保存 userId，避免与 Account 隐含客户
+model AiCreditLedger {
+  id             String          @id @default(uuid()) @db.Uuid
+  accountId      String          @map("account_id") @db.Uuid
+  // entryType 口径：grant / consume / refund / adjustment / expire
+  // amount 口径：grant=正、refund=正、consume=负、expire=负、adjustment=可正可负
+  entryType      String          @map("entry_type")
+  amount         Int // 正数=增加，负数=扣减
+  balanceAfter   Int             @map("balance_after")
+  // 幂等键：同一业务操作仅产生一条流水；配合数据库级别的唯一保证
+  idempotencyKey String?         @unique @map("idempotency_key")
+  // 外部参考类型与编号（message / order / manual / grant）
+  referenceType  String?         @map("reference_type")
+  referenceId    String?         @map("reference_id")
+  // 扩展字段：原始请求快照、AI 响应摘要等
+  metadata       Json?           @db.JsonB
+  // 人工说明
+  reason         String?
+  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  // 经营数据不允许级联删除
+  account        AiCreditAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
+
+  @@index([accountId, createdAt])
+  @@index([referenceType, referenceId])
+  @@map("ai_credit_ledgers")
+}
+
+// 会员订阅（最小模型：当前不接支付，仅标记套餐与状态）
+model MembershipSubscription {
+  id                 String    @id @default(uuid()) @db.Uuid
+  userId             String    @unique @map("user_id") @db.Uuid
+  planCode           String    @default("free") @map("plan_code")
+  status             String    @default("active")
+  currentPeriodStart DateTime? @map("current_period_start") @db.Timestamptz(6)
+  currentPeriodEnd   DateTime? @map("current_period_end") @db.Timestamptz(6)
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  // 会员与计费历史不允许用户删除时静默清除
+  user               User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@map("membership_subscriptions")
+}
+
+// 正式订单模型：禁止将订单存入 AppConfig，必须使用独立表
+// 订单状态：pending（待支付）/ paid（已支付）/ cancelled（用户取消）/ closed（超时关闭）/ refunded（已退款）
+model Order {
+  id               String    @id @default(uuid()) @db.Uuid
+  // 业务订单号：L + 时间戳 + 随机字符，全局唯一
+  orderNo          String    @unique @map("order_no")
+  userId           String    @map("user_id") @db.Uuid
+  // 套餐快照
+  planCode         String    @map("plan_code")
+  planNameSnapshot String    @map("plan_name_snapshot")
+  billingCycle     String    @map("billing_cycle") // monthly / yearly
+  // 金额快照（下单时锁定，不允许后续修改）
+  originalAmount   Int       @map("original_amount") // 原价（分）
+  payableAmount    Int       @map("payable_amount") // 应付（分）
+  currency         String    @default("CNY") @map("currency")
+  // 支付信息
+  paymentChannel   String?   @map("payment_channel") // wechat / alipay
+  providerTradeNo  String?   @unique @map("provider_trade_no") // 支付通道交易号（非空时唯一）
+  // 幂等键：避免重复回调
+  idempotencyKey   String?   @map("idempotency_key")
+  // 状态
+  status           String    @default("pending") @map("status") // pending / paid / cancelled / closed / refunded
+  // 时间戳
+  paidAt           DateTime? @map("paid_at") @db.Timestamptz(6)
+  cancelledAt      DateTime? @map("cancelled_at") @db.Timestamptz(6)
+  closedAt         DateTime? @map("closed_at") @db.Timestamptz(6)
+  refundedAt       DateTime? @map("refunded_at") @db.Timestamptz(6)
+  expiresAt        DateTime? @map("expires_at") @db.Timestamptz(6) // 订单超时时间
+  // 扩展数据
+  metadata         Json?     @db.JsonB
+  // 审计字段
+  cancelReason     String?   @map("cancel_reason")
+  refundReason     String?   @map("refund_reason")
+  refundBy         String?   @map("refund_by") // admin_id 或 system
+  // 时间戳
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  // 关系
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, status])
+  @@index([status, expiresAt])
+  @@map("orders")
+}
+
+// 比赛文件管理中心：存储老板上传的比赛相关文件的元数据
+// 文件实际存储在服务器受保护目录（uploads/competition-files/），不放在 public/ 目录
+// 所有文件必须通过权限保护的 API 下载，普通用户无法直接访问
+model CompetitionFile {
+  id              String   @id @default(uuid()) @db.Uuid
+  // 原始文件名（展示用）
+  originalName    String   @map("original_name")
+  // 服务器保存的文件名（UUID，无扩展名）
+  storedName      String   @map("stored_name")
+  // MIME 类型
+  mimeType        String   @map("mime_type")
+  // 文件大小（字节）
+  sizeBytes       Int      @map("size_bytes")
+  // 文件用途：competition_ppt / project_pdf / demo_video / product_screenshot / judge_doc / backup
+  purpose         String   @default("backup")
+  // 文件说明
+  description     String?
+  // 上传人 ID
+  uploadedBy      String   @map("uploaded_by") @db.Uuid
+  // 上传人邮箱
+  uploadedByEmail String   @map("uploaded_by_email")
+  // 是否为当前比赛主文件
+  isCurrentMain   Boolean  @default(false) @map("is_current_main")
+  // 是否已删除（软删除）
+  isDeleted       Boolean  @default(false) @map("is_deleted")
+  // 上传时间
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  // 更新时间
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([isDeleted, createdAt])
+  @@index([uploadedBy])
+  @@map("competition_files")
+}
+
+// 比赛展示页面 V2：动态章节内容
+// 替代原有 SHOWCASE_CONTENT 硬编码常量，超级管理员可在后台修改
+// 章节 key 列表（顺序由 showcase_sequences 表控制）：
+//   opening / painPoints / solution / productDemo / aiAssistants / businessModel / competition / progress / ending
+model ShowcaseContent {
+  id         String   @id @default(uuid()) @db.Uuid
+  sectionKey String   @unique @map("section_key")
+  eyebrow    String   @default("")
+  title      String   @default("")
+  body       String   @default("")
+  // 列表项 / 痛点 / 优势 等结构化数据
+  bullets    Json?    @db.JsonB
+  // 数字卡片 / 进度数字 / 商业模式价格
+  stats      Json?    @db.JsonB
+  // 章节附加 CTA
+  ctaText    String?  @map("cta_text")
+  ctaUrl     String?  @map("cta_url")
+  // 扩展元数据：图片 URL、徽章、标签等
+  metadata   Json?    @db.JsonB
+  // 最近修改人
+  updatedBy  String?  @map("updated_by") @db.Uuid
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("showcase_contents")
+}
+
+// 比赛展示页面 V2：章节顺序与可见性
+model ShowcaseSequence {
+  id         String   @id @default(uuid()) @db.Uuid
+  sectionKey String   @unique @map("section_key")
+  orderIndex Int      @map("order_index")
+  visible    Boolean  @default(true)
+  // 是否启用滚动动画
+  animation  Boolean  @default(true)
+  // dark / light / gradient 三选一
+  theme      String   @default("dark")
+  // 自动播放模式下默认停留秒数（0 = 不自动播放）
+  dwellSec   Int      @default(0) @map("dwell_sec")
+  // 允许键盘和触摸切换
+  allowSwipe Boolean  @default(true) @map("allow_swipe")
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([orderIndex])
+  @@map("showcase_sequences")
+}
+
+// 比赛 AI 演示调用记录
+// 数据不与正式用户 AiConversation / AiMessage 共享
+model ShowcaseAIDemoCall {
+  id           String   @id @default(uuid()) @db.Uuid
+  visitorHash  String   @map("visitor_hash")
+  // tax / legal / market / design / social
+  assistant    String
+  question     String
+  response     String
+  latencyMs    Int      @map("latency_ms")
+  success      Boolean
+  errorCode    String?  @map("error_code")
+  errorMessage String?  @map("error_message")
+  modelName    String?  @map("model_name")
+  inputTokens  Int?     @map("input_tokens")
+  outputTokens Int?     @map("output_tokens")
+  sourcePage   String?  @map("source_page")
+  // 是否保存记录（受 aiConfig.saveRecord 控制）
+  saved        Boolean  @default(false)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([createdAt])
+  @@index([visitorHash, createdAt])
+  @@index([assistant, createdAt])
+  @@map("showcase_ai_demo_calls")
+}
+
+// 比赛 AI 调试台记录
+// 严格区分于演示调用，不进入正式用户数据
+model ShowcaseAIDebugLog {
+  id            String   @id @default(uuid()) @db.Uuid
+  debuggerId    String   @map("debugger_id") @db.Uuid
+  debuggerEmail String   @map("debugger_email")
+  assistant     String
+  systemPrompt  String   @map("system_prompt")
+  question      String
+  rawResponse   String   @map("raw_response")
+  latencyMs     Int      @map("latency_ms")
+  success       Boolean
+  errorCode     String?  @map("error_code")
+  errorMessage  String?  @map("error_message")
+  modelName     String?  @map("model_name")
+  configVersion String?  @map("config_version")
+  // 是否发布到比赛演示
+  published     Boolean  @default(false)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([debuggerId, createdAt])
+  @@index([assistant, createdAt])
+  @@map("showcase_ai_debug_logs")
+}
+
+// 比赛 AI 调试台：提示词草稿与发布
+model ShowcasePromptDraft {
+  id                 String   @id @default(uuid()) @db.Uuid
+  assistant          String
+  // 草稿标题
+  title              String
+  // 系统提示词
+  systemPrompt       String   @map("system_prompt")
+  // 欢迎语
+  welcomeText        String   @default("") @map("welcome_text")
+  // 推荐问题（JSON 数组）
+  suggestedQuestions Json?    @map("suggested_questions") @db.JsonB
+  // 当前是否激活
+  published          Boolean  @default(false)
+  // 版本号
+  version            String   @default("0.1.0")
+  // 创建者
+  authorId           String   @map("author_id") @db.Uuid
+  authorEmail        String   @map("author_email")
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([assistant, published])
+  @@index([authorId, createdAt])
+  @@map("showcase_prompt_drafts")
 }
