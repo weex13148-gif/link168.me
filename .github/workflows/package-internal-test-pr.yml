@@ -45,7 +45,7 @@ jobs:
           echo "SESSION_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
           echo "ADMIN_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
           echo "CONFIG_ENCRYPTION_KEY=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
-          echo "NEXT_PUBLIC_APP_URL=http://127.0.0.1:3100" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_APP_URL=http://122.51.183.200" >> "$GITHUB_ENV"
           echo "COOKIE_SECURE=false" >> "$GITHUB_ENV"
           echo "COOKIE_SAME_SITE=lax" >> "$GITHUB_ENV"
           echo "RATE_LIMIT_STORE=memory" >> "$GITHUB_ENV"
@@ -89,6 +89,7 @@ jobs:
           Commit: ${RELEASE_SHA}
           BuiltAtUTC: $(date -u +%Y-%m-%dT%H:%M:%SZ)
           Runtime: Node.js 22
+          PublicBaseUrl: http://122.51.183.200
           Start: HOSTNAME=127.0.0.1 PORT=3000 node server.js
           Secrets: not included
           Database: not included
