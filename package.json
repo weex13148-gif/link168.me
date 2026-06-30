@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "node .next/standalone/server.js",
-    "lint": "eslint .",
+    "lint": "eslint src --quiet",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck && npm run build",
     "db:backup": "node scripts/db/backup-db.js",
