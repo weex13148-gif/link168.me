@@ -42,9 +42,7 @@ export function SiteFooter() {
             >
               皖ICP备2026018031号-1
             </a>
-            <a href="#" className="hover:text-[#8b5cf6]">
-              皖公网安备 XXXXXXXXXXXXXX号
-            </a>
+            <span>公安备案办理中</span>
           </div>
           <p className="text-xs">合肥造梦哈勃文化传媒有限公司</p>
           <p className="text-xs">Copyright © 2026 link168.me</p>
