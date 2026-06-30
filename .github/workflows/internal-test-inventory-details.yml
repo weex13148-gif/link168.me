@@ -1,0 +1,69 @@
+name: Internal Test Inventory Details
+
+on:
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inventory-details:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Collect unfinished markers and hash links
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+
+          function walk(dir) {
+            if (!fs.existsSync(dir)) return [];
+            return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+              const full = path.join(dir, entry.name);
+              return entry.isDirectory() ? walk(full) : [full];
+            });
+          }
+
+          const files = walk('src').filter((file) => /\.(ts|tsx|js|jsx)$/.test(file));
+          const markerPattern = /TODO|FIXME|待开发|暂未开放|coming soon/gi;
+          const hashPattern = /href\s*=\s*["']#["']|url\s*:\s*["']#["']/g;
+          const markerRows = [];
+          const hashRows = [];
+
+          for (const file of files) {
+            const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/);
+            lines.forEach((line, index) => {
+              const markerMatches = line.match(markerPattern);
+              if (markerMatches) markerRows.push(`${file}:${index + 1}: ${line.trim()}`);
+              const hashMatches = line.match(hashPattern);
+              if (hashMatches) hashRows.push(`${file}:${index + 1}: ${line.trim()}`);
+            });
+          }
+
+          const text = [
+            '# Unfinished markers',
+            ...markerRows,
+            '',
+            '# Hash links',
+            ...hashRows,
+            '',
+            `MARKER_LINE_COUNT=${markerRows.length}`,
+            `HASH_LINK_LINE_COUNT=${hashRows.length}`,
+          ].join('\n');
+          fs.writeFileSync('inventory-details.txt', text);
+          console.log(text);
+          NODE
+
+      - name: Upload details
+        uses: actions/upload-artifact@v4
+        with:
+          name: link168-inventory-details-${{ github.sha }}
+          path: inventory-details.txt
+          retention-days: 7
