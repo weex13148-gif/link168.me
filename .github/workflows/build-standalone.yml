@@ -50,8 +50,13 @@ jobs:
       - name: Generate Prisma client
         run: npx prisma generate
 
-      - name: Lint
-        run: npm run lint
+      - name: Lint diagnostics
+        id: lint
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          npx eslint src --quiet --format json --output-file lint-report.json
 
       - name: Typecheck
         run: npm run typecheck
@@ -64,11 +69,24 @@ jobs:
         run: |
           set -e
           echo '=== .next top level ==='
-          find .next -maxdepth 2 -mindepth 1 -printf '%y %p\n' | sort | head -200
+          find .next -maxdepth 3 -mindepth 1 -printf '%y %p\n' | sort | head -300
           echo '=== server.js candidates ==='
-          find .next -maxdepth 6 -type f -name 'server.js' -print
+          find .next -maxdepth 8 -type f -name 'server.js' -print
           test -f .next/standalone/server.js
           echo 'standalone/server.js exists'
+
+      - name: Upload lint diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: link168-lint-report-${{ github.sha }}
+          path: lint-report.json
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Enforce lint gate
+        if: always()
+        run: test "${{ steps.lint.outcome }}" = "success"
 
       - name: Prepare deployment package
         shell: bash
