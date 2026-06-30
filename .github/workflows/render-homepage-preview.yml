@@ -1,0 +1,94 @@
+name: Render Homepage Preview
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - preview-homepage-20260630
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/link168_preview
+      SESSION_SECRET: preview-session-secret-at-least-32-characters-long
+      ADMIN_SECRET: preview-admin-secret-at-least-32-characters-long
+      CONFIG_ENCRYPTION_KEY: preview-config-key-at-least-32-characters-long
+      NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
+      COOKIE_SECURE: "false"
+      COOKIE_SAME_SITE: lax
+      AUTH_RATE_LIMIT_BYPASS: "false"
+      RATE_LIMIT_STORE: memory
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install project dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Build current repository
+        run: npm run build
+
+      - name: Install Chromium renderer
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Start application
+        shell: bash
+        run: |
+          nohup npx next start -H 127.0.0.1 -p 3000 > /tmp/link168-preview.log 2>&1 &
+          echo $! > /tmp/link168-preview.pid
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/link168-preview.log
+          exit 1
+
+      - name: Capture actual homepage
+        shell: bash
+        run: |
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage({
+              viewport: { width: 1440, height: 1000 },
+              deviceScaleFactor: 1,
+            });
+            await page.goto('http://127.0.0.1:3000/', {
+              waitUntil: 'networkidle',
+              timeout: 120000,
+            });
+            await page.evaluate(() => document.fonts.ready);
+            await page.screenshot({
+              path: 'link168-homepage-preview.png',
+              fullPage: true,
+            });
+            await browser.close();
+          })();
+          NODE
+
+      - name: Upload preview image
+        uses: actions/upload-artifact@v4
+        with:
+          name: link168-homepage-preview
+          path: link168-homepage-preview.png
+          retention-days: 7
