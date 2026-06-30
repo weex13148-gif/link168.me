@@ -18,6 +18,9 @@ export default defineConfig([
       "prefer-const": "warn",
       "react/no-unescaped-entities": "warn",
       "@next/next/no-html-link-for-pages": "warn",
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/purity": "warn",
+      "react-hooks/immutability": "warn",
     },
   },
   {
