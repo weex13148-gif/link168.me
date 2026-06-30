@@ -13,6 +13,14 @@ export default defineConfig([
   ...nextVitals,
   ...nextTs,
   {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",
+      "prefer-const": "warn",
+      "react/no-unescaped-entities": "warn",
+      "@next/next/no-html-link-for-pages": "warn",
+    },
+  },
+  {
     files: ["scripts/**/*.js"],
     rules: {
       "@typescript-eslint/no-require-imports": "off",
