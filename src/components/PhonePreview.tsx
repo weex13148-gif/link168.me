@@ -66,13 +66,17 @@ export function PhonePreview({
   appearance,
   className = "",
 }: PhonePreviewProps) {
+  // 首页营销样机使用安全的展示链接，避免空 URL 触发真实主页的红色风控告警。
+  // Dashboard / 公开主页等非营销场景仍保留原有 URL 安全校验和降级提示。
+  const marketingFallbackUrl = variant === "marketing" ? "https://link168.me" : null;
+
   const activeLinks: SharePageLink[] = links
     .filter((link) => link.isActive !== false)
     .map((link, idx) => ({
       id: link.id || `link-${idx}`,
       title: (link.label || link.title || "链接") as string,
       description: link.caption || link.description || null,
-      url: link.href || link.url || null,
+      url: link.href || link.url || marketingFallbackUrl,
       icon: link.icon || null,
       type: link.type || null,
     }));
