@@ -1,1 +1,0 @@
-Temporary CI marker for validating the current payment and membership changes. Do not merge this marker file.
