@@ -19,39 +19,36 @@ export default function ShowcaseGate() {
       });
       const result = (await response.json()) as { success?: boolean; error?: { message?: string } };
       if (!response.ok || !result.success) {
-        setMessage(result.error?.message || "访问密码不正确，可以立即重试");
+        setMessage(result.error?.message || "访问密码不正确，可以立即重试。");
         return;
       }
       window.location.reload();
     } catch {
-      setMessage("网络异常，请稍后重试");
+      setMessage("网络连接失败，请稍后重试。");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <form onSubmit={onSubmit} className="mt-6 w-full max-w-md rounded-[20px] border border-[#DCD2C2] bg-white p-4 shadow-sm sm:mt-8 sm:rounded-[28px] sm:p-5">
-      <label className="grid gap-2 text-xs font-black text-[#2B241E] sm:text-sm">
-        比赛访问密码
+    <form onSubmit={onSubmit} className="mt-6 grid w-full max-w-md gap-4 rounded-[var(--ui-radius-lg)] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-5 shadow-[var(--ui-shadow-sm)]">
+      <label className="grid gap-2">
+        <span className="text-sm font-black text-[var(--ui-ink)]">比赛访问密码</span>
         <input
           type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="min-h-11 rounded-xl border border-[#DCD2C2] px-3 text-sm font-bold outline-none focus:border-[#315F8C] sm:min-h-12 sm:rounded-2xl sm:px-4 sm:text-base"
+          className="ui-input"
           placeholder="请输入评委共享密码"
           autoComplete="current-password"
+          autoFocus
         />
       </label>
-      {message ? <p className="mt-2 text-xs font-bold text-[#B42318] sm:text-sm">{message}</p> : null}
-      <button
-        type="submit"
-        disabled={loading}
-        className="mt-4 min-h-11 w-full rounded-xl bg-[#315F8C] px-4 text-sm font-black text-white disabled:opacity-60 sm:min-h-12 sm:rounded-2xl sm:text-base"
-      >
-        {loading ? "验证中..." : "进入展示中心"}
+      {message ? <p className="rounded-[var(--ui-radius-sm)] bg-[var(--ui-danger-soft)] px-4 py-3 text-sm font-bold text-[var(--ui-danger)]">{message}</p> : null}
+      <button type="submit" disabled={loading || !password.trim()} className="ui-button-primary min-h-12 w-full text-base disabled:cursor-not-allowed disabled:opacity-60">
+        {loading ? "正在验证…" : "进入比赛展示"}
       </button>
-      <p className="mt-3 text-[10px] leading-5 text-[#7A6D5E] sm:text-xs">密码输错可以立即重试；本页不设置验证码、IP 限流或账号锁定。</p>
+      <p className="text-xs leading-5 text-[var(--ui-muted)]">本入口仅用于比赛评审与审核。验证成功后，本设备可以直接查看展示内容。</p>
     </form>
   );
 }
