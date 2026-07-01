@@ -8,32 +8,28 @@ import { BrandLogo } from "@/components/BrandLogo";
 function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const tokenFromUrl = searchParams.get("token") || "";
-
-  const [token, setToken] = useState(tokenFromUrl);
+  const token = searchParams.get("token") || "";
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("");
     setError("");
 
     if (!token) {
-      setError("缺少重置链接。请从邮箱中的链接访问本页面。");
+      setError("重置链接无效，请重新申请忘记密码邮件。");
       return;
     }
-
-    if (!password || password.length < 6) {
-      setError("密码至少需要 6 位。");
+    if (password.length < 8) {
+      setError("新密码至少需要 8 位。");
       return;
     }
-
     if (password !== confirmPassword) {
-      setError("两次输入的密码不一致。");
+      setError("两次输入的新密码不一致。");
       return;
     }
 
@@ -44,104 +40,56 @@ function ResetPasswordForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password, confirmPassword }),
       });
-      const result = (await response.json()) as {
-        success?: boolean;
-        error?: string;
-        message?: string;
-        redirectTo?: string;
-      };
-      setLoading(false);
-
+      const result = await response.json() as { success?: boolean; error?: string; message?: string; redirectTo?: string };
       if (!response.ok || !result.success) {
-        setError(result.error || "重置失败，请稍后重试。");
+        setError(result.error || "密码重置失败，请稍后重试。");
         return;
       }
-
-      setMessage(result.message || "密码已重置成功。");
+      setMessage(result.message || "密码修改成功，请使用新密码重新登录。");
       window.setTimeout(() => {
-        router.push(result.redirectTo || "/dashboard");
+        router.replace(result.redirectTo || "/login?passwordReset=success");
         router.refresh();
       }, 1200);
     } catch {
+      setError("网络连接失败，请稍后重试。");
+    } finally {
       setLoading(false);
-      setError("网络错误，请稍后重试。");
     }
   }
 
   return (
-    <section className="w-full rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8]/90 p-6 shadow-[0_24px_70px_rgba(86,68,46,0.12)] backdrop-blur">
+    <section className="w-full rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8]/94 p-6 shadow-[0_24px_70px_rgba(86,68,46,0.12)]">
       <BrandLogo size="header" />
-      <h1 className="mt-6 text-3xl font-black text-[#2B241E]">重置密码</h1>
-      <p className="mt-3 text-sm leading-7 text-[#7A6D5E]">
-        请输入你的新密码。重置成功后，你将自动登录并返回主页。
-      </p>
+      <h1 className="mt-6 text-3xl font-black text-[#2B241E]">设置新密码</h1>
+      <p className="mt-3 text-sm leading-7 text-[#7A6D5E]">请输入两次新密码。修改成功后，其他设备上的旧登录状态会失效。</p>
 
-      <form onSubmit={onSubmit} className="mt-6 grid gap-4">
-        <label className="block">
-          <span className="text-sm font-black text-[#3F5F31]">重置 Token</span>
-          <input
-            required
-            value={token}
-            onChange={(event) => setToken(event.target.value)}
-            placeholder="从邮箱链接自动填充"
-            className="mt-2 h-12 w-full rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 text-sm text-[#2B241E] outline-none transition placeholder:text-[#A69A8A] focus:border-[#6F8F4E] focus:bg-[#FFFDF8] focus:ring-4 focus:ring-[#6F8F4E]/12"
-          />
-        </label>
+      {!token ? (
+        <div className="mt-6 rounded-2xl bg-[#FFF1F0] p-4 text-sm font-bold text-[#B42318]">
+          当前重置链接无效或缺少凭证，请重新申请。
+        </div>
+      ) : (
+        <form onSubmit={submit} className="mt-6 grid gap-4">
+          <label className="grid gap-2">
+            <span className="text-sm font-black text-[#3F5F31]">新密码</span>
+            <input required minLength={8} type="password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="至少 8 位" className="h-12 rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 outline-none focus:border-[#6F8F4E] focus:bg-white" />
+          </label>
+          <label className="grid gap-2">
+            <span className="text-sm font-black text-[#3F5F31]">再次输入新密码</span>
+            <input required minLength={8} type="password" autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="再次输入新密码" className="h-12 rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 outline-none focus:border-[#6F8F4E] focus:bg-white" />
+          </label>
 
-        <label className="block">
-          <span className="text-sm font-black text-[#3F5F31]">新密码</span>
-          <input
-            required
-            minLength={6}
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder="至少 6 位"
-            className="mt-2 h-12 w-full rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 text-[#2B241E] outline-none transition placeholder:text-[#A69A8A] focus:border-[#6F8F4E] focus:bg-[#FFFDF8] focus:ring-4 focus:ring-[#6F8F4E]/12"
-          />
-        </label>
+          {error ? <p className="rounded-2xl bg-[#FFF1F0] px-4 py-3 text-sm font-bold text-[#B42318]">{error}</p> : null}
+          {message ? <p className="rounded-2xl bg-[#EEF4E7] px-4 py-3 text-sm font-bold text-[#355126]">{message}</p> : null}
 
-        <label className="block">
-          <span className="text-sm font-black text-[#3F5F31]">再次输入新密码</span>
-          <input
-            required
-            minLength={6}
-            type="password"
-            value={confirmPassword}
-            onChange={(event) => setConfirmPassword(event.target.value)}
-            placeholder="请再次输入"
-            className="mt-2 h-12 w-full rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 text-[#2B241E] outline-none transition placeholder:text-[#A69A8A] focus:border-[#6F8F4E] focus:bg-[#FFFDF8] focus:ring-4 focus:ring-[#6F8F4E]/12"
-          />
-        </label>
-
-        {error ? (
-          <p className="rounded-2xl bg-[#FFF1F0] px-4 py-3 text-sm font-bold text-[#B42318]">
-            {error}
-          </p>
-        ) : null}
-
-        {message ? (
-          <p className="rounded-2xl bg-[#DDE8CD] px-4 py-3 text-sm font-bold text-[#3F5F31]">
-            {message}
-          </p>
-        ) : null}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="link168-button-press flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#6F8F4E] px-5 font-black text-white shadow-lg shadow-[#6F8F4E]/20 transition hover:-translate-y-0.5 hover:bg-[#5E7F3F] disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {loading ? "提交中..." : "重置并登录"}
-        </button>
-      </form>
+          <button type="submit" disabled={loading} className="h-12 rounded-full bg-[#6F8F4E] px-5 font-black text-white disabled:opacity-60">
+            {loading ? "正在修改…" : "确认修改密码"}
+          </button>
+        </form>
+      )}
 
       <div className="mt-6 grid gap-3 text-center text-sm">
-        <Link href="/forgot-password" className="font-black text-[#3F5F31]">
-          链接已失效？重新申请
-        </Link>
-        <Link href="/login" className="font-black text-[#3F5F31]">
-          返回登录
-        </Link>
+        <Link href="/forgot-password" className="font-black text-[#3F5F31]">重新申请重置邮件</Link>
+        <Link href="/login" className="font-bold text-[#7A6D5E]">返回登录</Link>
       </div>
     </section>
   );
@@ -151,15 +99,7 @@ export default function ResetPasswordPage() {
   return (
     <main className="relative mx-auto flex min-h-dvh w-full max-w-md items-center overflow-hidden px-4 py-8">
       <div className="absolute inset-0 -z-20 bg-[linear-gradient(135deg,#FFFDF8_0%,#F7F1E7_55%,#F2E7D8_100%)]" />
-      <div className="absolute left-[-90px] top-24 -z-10 size-48 rounded-full bg-[#DDE8CD]/70 blur-3xl" />
-      <div className="absolute bottom-16 right-[-80px] -z-10 size-56 rounded-full bg-[#F2E7D8]/80 blur-3xl" />
-      <Suspense
-        fallback={
-          <section className="w-full rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8]/90 p-6 text-center text-sm text-[#7A6D5E]">
-            正在加载...
-          </section>
-        }
-      >
+      <Suspense fallback={<section className="w-full rounded-2xl bg-white p-6 text-center">正在加载密码重置页面…</section>}>
         <ResetPasswordForm />
       </Suspense>
     </main>
