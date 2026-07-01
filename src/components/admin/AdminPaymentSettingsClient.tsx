@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { CheckCircle2, Copy, Loader2, Save, ShieldAlert } from "lucide-react";
 import PaymentDiagnosticsPanel from "@/components/admin/PaymentDiagnosticsPanel";
+import AiCreditAuditPanel from "@/components/admin/AiCreditAuditPanel";
 
 type PaymentConfig = {
   paymentEnabled: boolean;
@@ -203,6 +204,7 @@ export default function AdminPaymentSettingsClient() {
       </section>
 
       <PaymentDiagnosticsPanel />
+      <AiCreditAuditPanel />
 
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#E8DCCB] bg-white/95 p-3 shadow-[0_-12px_30px_rgba(86,68,46,0.08)] backdrop-blur lg:left-[250px]">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-4 px-2 sm:px-5">
