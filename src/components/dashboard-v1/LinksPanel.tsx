@@ -28,10 +28,6 @@ function draftFromLink(link: DashboardLink): LinkDraft {
   };
 }
 
-function planLimit(planCode: string) {
-  return planCode === "free" ? 10 : null;
-}
-
 export function LinksPanel({
   links,
   planCode,
@@ -59,8 +55,7 @@ export function LinksPanel({
   const [newDraft, setNewDraft] = useState<LinkDraft>(emptyLinkDraft);
   const [expandedId, setExpandedId] = useState<string>("");
   const [drafts, setDrafts] = useState<Record<string, LinkDraft>>({});
-  const limit = planLimit(planCode);
-  const limitReached = limit !== null && links.length >= limit;
+  const isFreePlan = planCode === "free";
 
   useEffect(() => {
     setDrafts((current) => {
@@ -94,15 +89,15 @@ export function LinksPanel({
           <h1 className="mt-1 text-2xl ui-title sm:text-3xl">管理公开入口</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 ui-muted">链接不会被改写成短链。显示、隐藏、排序和编辑都会真实写入数据库。</p>
         </div>
-        <button type="button" disabled={limitReached} onClick={() => setNewOpen(true)} className="ui-button-primary disabled:cursor-not-allowed disabled:opacity-50">
+        <button type="button" onClick={() => setNewOpen(true)} className="ui-button-primary">
           <Plus className="size-4" />新增链接
         </button>
       </header>
 
-      {limit !== null ? (
+      {isFreePlan ? (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--ui-line)] bg-[var(--ui-surface)] px-4 py-3 text-sm">
-          <span className="font-bold text-[var(--ui-muted)]">免费版链接额度</span>
-          <span className={`font-black ${limitReached ? "text-[var(--ui-danger)]" : "text-[var(--ui-brand-hover)]"}`}>{links.length}/{limit}</span>
+          <span className="font-bold text-[var(--ui-muted)]">免费版支持无限链接</span>
+          <span className="font-black text-[var(--ui-brand-hover)]">已创建 {links.length} 个</span>
         </div>
       ) : null}
 
