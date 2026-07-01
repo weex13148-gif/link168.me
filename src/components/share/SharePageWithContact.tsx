@@ -1,28 +1,14 @@
-/**
- * 公开主页联系表单 FAB（Floating Action Button）
- * 访客点击"联系"按钮 → 弹出表单 → 提交创建 Lead
- *
- * 使用方式：
- * <SharePageWithContact username={profile.username} displayName={...} bio={...} products={products} ... />
- *
- * 与 SharePageRenderer 完全相同的 props，额外增加联系表单功能。
- */
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { MessageCircle, X, CheckCircle, Loader } from "lucide-react";
-import {
-  SharePageRenderer,
-  type SharePageTemplate,
-} from "@/components/share/SharePageRenderer";
-import {
-  PublicProductsSection,
-  type ProductDto,
-} from "@/components/share/PublicProductsSection";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { CheckCircle, Loader, MessageCircle, X } from "lucide-react";
+import { PublicProductsSection, type ProductDto } from "@/components/share/PublicProductsSection";
 import { QrCodeModal } from "@/components/share/QrCodeModal";
 import { ShareModal } from "@/components/share/ShareModal";
+import { SharePageRenderer, type SharePageTemplate } from "@/components/share/SharePageRenderer";
+import { sanitizePublicUrl } from "@/lib/public-url-security";
 
-interface Props {
+type Props = {
   username: string;
   displayName: string;
   bio: string | null;
@@ -33,6 +19,19 @@ interface Props {
   template?: SharePageTemplate;
   showBrandFoot?: boolean;
   products?: ProductDto[];
+  interestedProductId?: string;
+};
+
+function originalUrlFromPayload(payloadRaw: string | null | undefined) {
+  if (!payloadRaw) return null;
+  try {
+    const payload = JSON.parse(payloadRaw) as { url?: unknown };
+    if (typeof payload.url !== "string") return null;
+    const checked = sanitizePublicUrl(payload.url);
+    return checked.safe ? checked.url : null;
+  } catch {
+    return null;
+  }
 }
 
 function ContactForm({
@@ -46,50 +45,42 @@ function ContactForm({
   interestedProductId?: string;
   onClose: () => void;
 }) {
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "",
     contact: "",
     message: "",
     productId: interestedProductId || "",
   });
-  const formRef = useRef<HTMLFormElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  // 焦点管理
   useEffect(() => {
     closeButtonRef.current?.focus();
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
     };
-  }, []);
-
-  // Escape 键关闭
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    }
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+    };
   }, [onClose]);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     if (!form.name.trim() && !form.contact.trim()) {
       setError("请填写姓名或联系方式。");
       return;
     }
 
     setLoading(true);
-    setError(null);
-
+    setError("");
     try {
-      const res = await fetch(`/api/contact`, {
+      const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -101,16 +92,13 @@ function ContactForm({
           interestedProductId: form.productId || undefined,
         }),
       });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        setError(data.error ?? "提交失败，请稍后重试。");
+      const result = await response.json() as { success?: boolean; error?: string };
+      if (!response.ok || !result.success) {
+        setError(result.error || "提交失败，请稍后重试。");
         return;
       }
-
       setSuccess(true);
-      setTimeout(onClose, 2000);
+      window.setTimeout(onClose, 1800);
     } catch {
       setError("网络错误，请稍后重试。");
     } finally {
@@ -118,183 +106,90 @@ function ContactForm({
     }
   }
 
-  if (success) {
-    return (
-      <div 
-        className="fixed inset-0 z-50 grid place-items-center bg-[#2B241E]/40 p-4" 
-        role="presentation"
-        onClick={onClose}
-      >
-        <div 
-          className="flex w-full max-w-sm flex-col items-center gap-4 rounded-[30px] border border-[#E8DCCB] bg-[#FFFDF8] p-8 shadow-[0_18px_55px_rgba(86,68,46,0.12)]"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="contact-success-title"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <CheckCircle className="size-14 text-[#6F8F4E]" aria-hidden="true" />
-          <h2 id="contact-success-title" className="text-center text-lg font-black text-[#2B241E]">提交成功！</h2>
-          <p className="text-center text-sm text-[#7A6D5E]">
-            @{username} 的工作人员将尽快与你联系。
-          </p>
-          <button
-            onClick={onClose}
-            className="mt-2 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#6F8F4E] px-6 text-sm font-black text-white focus:outline-none focus:ring-2 focus:ring-[#6F8F4E] focus:ring-offset-2"
-          >
-            关闭
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div 
-      className="fixed inset-0 z-50 grid place-items-center bg-[#2B241E]/40 p-4" 
-      role="presentation"
-      onClick={onClose}
-    >
-      <div 
-        className="w-full max-w-sm rounded-[30px] border border-[#E8DCCB] bg-[#FFFDF8] p-6 shadow-[0_18px_55px_rgba(86,68,46,0.12)]"
+    <div className="fixed inset-0 z-50 grid place-items-center bg-[#2B241E]/45 p-4" onClick={onClose} role="presentation">
+      <section
+        className="w-full max-w-sm rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8] p-6 shadow-[0_24px_80px_rgba(43,36,30,0.22)]"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="contact-form-title"
-        onClick={(e) => e.stopPropagation()}
+        aria-labelledby="contact-title"
+        onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-black text-[#3F5F31]">联系</p>
-            <h2 id="contact-form-title" className="mt-1 text-xl font-black text-[#2B241E]">
-              @{username}
-            </h2>
+            <p className="text-sm font-black text-[#3F5F31]">联系主页所有者</p>
+            <h2 id="contact-title" className="mt-1 text-xl font-black text-[#2B241E]">@{username}</h2>
           </div>
-          <button
-            ref={closeButtonRef}
-            onClick={onClose}
-            className="grid size-10 place-items-center rounded-2xl bg-[#F2E7D8] hover:bg-[#E8DCCB] focus:outline-none focus:ring-2 focus:ring-[#6F8F4E]"
-            aria-label="关闭"
-          >
+          <button ref={closeButtonRef} type="button" onClick={onClose} className="grid size-10 place-items-center rounded-xl bg-[#F2E7D8]" aria-label="关闭">
             <X className="size-5 text-[#7A6D5E]" />
           </button>
         </div>
 
-        <form ref={formRef} onSubmit={handleSubmit} className="mt-5 grid gap-3">
-          {products.length > 0 && (
-            <div className="grid gap-1.5 text-sm">
-              <label htmlFor="contact-product" className="font-black text-[#2B241E]">咨询产品（选填）</label>
-              <select
-                id="contact-product"
-                value={form.productId}
-                onChange={(e) => setForm((f) => ({ ...f, productId: e.target.value }))}
-                className="rounded-2xl border border-[#E8DCCB] bg-white px-4 py-3 text-sm text-[#2B241E] focus:border-[#6F8F4E] focus:outline-none focus:ring-2 focus:ring-[#6F8F4E]"
-              >
-                <option value="">不指定产品</option>
-                {products.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                    {p.priceText ? ` - ${p.priceText}` : ""}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          <div className="grid gap-1.5 text-sm">
-            <label htmlFor="contact-name" className="font-black text-[#2B241E]">姓名 *</label>
-            <input
-              id="contact-name"
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              placeholder="如何称呼你"
-              maxLength={50}
-              required={!form.contact.trim()}
-              className="rounded-2xl border border-[#E8DCCB] bg-white px-4 py-3 text-sm text-[#2B241E] placeholder-[#C8B89A] focus:border-[#6F8F4E] focus:outline-none focus:ring-2 focus:ring-[#6F8F4E]"
-            />
+        {success ? (
+          <div className="mt-6 rounded-2xl bg-[#EEF4E7] p-6 text-center">
+            <CheckCircle className="mx-auto size-12 text-[#6F8F4E]" />
+            <p className="mt-3 font-black text-[#355126]">提交成功</p>
+            <p className="mt-2 text-sm text-[#4F633F]">主页所有者会尽快与你联系。</p>
           </div>
-
-          <div className="grid gap-1.5 text-sm">
-            <label htmlFor="contact-info" className="font-black text-[#2B241E]">邮箱或电话 *</label>
-            <input
-              id="contact-info"
-              type="text"
-              value={form.contact}
-              onChange={(e) => setForm((f) => ({ ...f, contact: e.target.value }))}
-              placeholder="邮箱或手机号码，方便联系你"
-              maxLength={100}
-              required={!form.name.trim()}
-              className="rounded-2xl border border-[#E8DCCB] bg-white px-4 py-3 text-sm text-[#2B241E] placeholder-[#C8B89A] focus:border-[#6F8F4E] focus:outline-none focus:ring-2 focus:ring-[#6F8F4E]"
-            />
-          </div>
-
-          <div className="grid gap-1.5 text-sm">
-            <label htmlFor="contact-message" className="font-black text-[#2B241E]">留言（选填）</label>
-            <textarea
-              id="contact-message"
-              value={form.message}
-              onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-              placeholder="有什么想了解的？"
-              rows={3}
-              maxLength={500}
-              className="resize-none rounded-2xl border border-[#E8DCCB] bg-white px-4 py-3 text-sm text-[#2B241E] placeholder-[#C8B89A] focus:border-[#6F8F4E] focus:outline-none focus:ring-2 focus:ring-[#6F8F4E]"
-            />
-          </div>
-
-          {error && (
-            <p role="alert" className="rounded-2xl bg-[#FFE6E2] px-4 py-2 text-sm text-[#B42318]">
-              {error}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="link168-button-press mt-2 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#6F8F4E] text-sm font-black text-white hover:bg-[#5E7F3F] disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-[#6F8F4E] focus:ring-offset-2"
-          >
-            {loading ? (
-              <>
-                <Loader className="size-4 animate-spin" aria-hidden="true" />
-                提交中...
-              </>
-            ) : (
-              <>
-                <CheckCircle className="size-4" aria-hidden="true" />
-                提交
-              </>
-            )}
-          </button>
-        </form>
-      </div>
+        ) : (
+          <form onSubmit={submit} className="mt-5 grid gap-3">
+            {products.length ? (
+              <label className="grid gap-1.5 text-sm">
+                <span className="font-black">咨询产品（选填）</span>
+                <select value={form.productId} onChange={(event) => setForm((current) => ({ ...current, productId: event.target.value }))} className="rounded-xl border border-[#E8DCCB] bg-white px-4 py-3">
+                  <option value="">不指定产品</option>
+                  {products.map((product) => <option key={product.id} value={product.id}>{product.name}{product.priceText ? ` - ${product.priceText}` : ""}</option>)}
+                </select>
+              </label>
+            ) : null}
+            <label className="grid gap-1.5 text-sm">
+              <span className="font-black">姓名</span>
+              <input value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} maxLength={50} placeholder="如何称呼你" className="rounded-xl border border-[#E8DCCB] bg-white px-4 py-3" />
+            </label>
+            <label className="grid gap-1.5 text-sm">
+              <span className="font-black">邮箱或电话</span>
+              <input value={form.contact} onChange={(event) => setForm((current) => ({ ...current, contact: event.target.value }))} maxLength={100} placeholder="方便联系你的方式" className="rounded-xl border border-[#E8DCCB] bg-white px-4 py-3" />
+            </label>
+            <label className="grid gap-1.5 text-sm">
+              <span className="font-black">留言（选填）</span>
+              <textarea value={form.message} onChange={(event) => setForm((current) => ({ ...current, message: event.target.value }))} rows={3} maxLength={500} placeholder="有什么想了解的？" className="resize-none rounded-xl border border-[#E8DCCB] bg-white px-4 py-3" />
+            </label>
+            {error ? <p className="rounded-xl bg-[#FFF1F0] px-4 py-3 text-sm font-bold text-[#B42318]">{error}</p> : null}
+            <button type="submit" disabled={loading} className="mt-1 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#6F8F4E] text-sm font-black text-white disabled:opacity-50">
+              {loading ? <Loader className="size-4 animate-spin" /> : <MessageCircle className="size-4" />}
+              {loading ? "提交中…" : "提交联系信息"}
+            </button>
+          </form>
+        )}
+      </section>
     </div>
   );
 }
 
-interface SharePageWithContactProps extends Props {
-  interestedProductId?: string;
-}
-
-export function SharePageWithContact(props: SharePageWithContactProps) {
+export function SharePageWithContact(props: Props) {
   const [showContact, setShowContact] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
   const [showShare, setShowShare] = useState(false);
 
-  const getPageUrl = () => {
-    if (typeof window !== "undefined") {
-      return window.location.href;
+  const directLinks = useMemo(() => props.links.map((link) => {
+    const originalUrl = originalUrlFromPayload(link.payload);
+    if (originalUrl && (!link.url || link.url.startsWith("/go/"))) {
+      return { ...link, url: originalUrl };
     }
-    return "";
-  };
+    return link;
+  }), [props.links]);
+
+  const pageUrl = typeof window === "undefined" ? "" : window.location.href;
 
   return (
     <>
-      {/* 渲染原始分享页面 */}
       <SharePageRenderer
         template={props.template}
         username={props.username}
         displayName={props.displayName}
         bio={props.bio}
         avatarUrl={props.avatarUrl}
-        links={props.links}
+        links={directLinks}
         themeName={props.themeName}
         showBrandFoot={props.showBrandFoot}
         reportUrl={props.reportUrl || undefined}
@@ -302,54 +197,19 @@ export function SharePageWithContact(props: SharePageWithContactProps) {
         onShareClick={() => setShowShare(true)}
       />
 
-      {/* 产品展示区域 */}
-      {props.products && props.products.length > 0 && (
-        <PublicProductsSection
-          products={props.products}
-          username={props.username}
-        />
-      )}
+      {props.products?.length ? <PublicProductsSection products={props.products} username={props.username} /> : null}
 
-      {/* 浮窗联系按钮 */}
-      {!props.reportUrl && (
-        <button
-          onClick={() => setShowContact(true)}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-[#6F8F4E] px-5 py-3 text-sm font-black text-white shadow-lg hover:bg-[#5E7F3F] active:scale-95 transition-transform focus:outline-none focus:ring-2 focus:ring-[#6F8F4E] focus:ring-offset-2"
-          aria-label="联系"
-        >
-          <MessageCircle className="size-5" aria-hidden="true" />
-          <span>联系</span>
+      {!props.reportUrl ? (
+        <button type="button" onClick={() => setShowContact(true)} className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-[#6F8F4E] px-5 py-3 text-sm font-black text-white shadow-lg hover:bg-[#5E7F3F]" aria-label="联系">
+          <MessageCircle className="size-5" />
+          联系
         </button>
-      )}
+      ) : null}
 
-      {/* 联系表单弹窗 */}
-      {showContact && (
-        <ContactForm
-          username={props.username}
-          products={props.products}
-          interestedProductId={props.interestedProductId}
-          onClose={() => setShowContact(false)}
-        />
-      )}
+      {showContact ? <ContactForm username={props.username} products={props.products} interestedProductId={props.interestedProductId} onClose={() => setShowContact(false)} /> : null}
 
-      {/* 二维码弹窗 */}
-      <QrCodeModal
-        isOpen={showQrCode}
-        onClose={() => setShowQrCode(false)}
-        pageUrl={getPageUrl()}
-        displayName={props.displayName}
-        username={props.username}
-      />
-
-      {/* 分享弹窗 */}
-      <ShareModal
-        isOpen={showShare}
-        onClose={() => setShowShare(false)}
-        pageUrl={getPageUrl()}
-        displayName={props.displayName}
-        username={props.username}
-        onOpenQrCode={() => setShowQrCode(true)}
-      />
+      <QrCodeModal isOpen={showQrCode} onClose={() => setShowQrCode(false)} pageUrl={pageUrl} displayName={props.displayName} username={props.username} />
+      <ShareModal isOpen={showShare} onClose={() => setShowShare(false)} pageUrl={pageUrl} displayName={props.displayName} username={props.username} onOpenQrCode={() => setShowQrCode(true)} />
     </>
   );
 }
