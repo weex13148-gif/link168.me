@@ -16,6 +16,7 @@ const ALL_NAV_ITEMS: NavItem[] = [
   { href: "/jeepwork/users", label: "用户管理", icon: "◇", tone: "info", superAdminOnly: true },
   { href: "/jeepwork/profiles", label: "主页管理", icon: "◇" },
   { href: "/jeepwork/reports", label: "举报管理", icon: "!", tone: "danger" },
+  { href: "/jeepwork/competition-center", label: "比赛中心", icon: "赛", tone: "brand", superAdminOnly: true },
   { href: "/jeepwork/settings/ai", label: "AI 配置", icon: "⚙", tone: "accent", superAdminOnly: true },
   { href: "/jeepwork/ai-safety", label: "AI 安全测试", icon: "盾", tone: "accent", superAdminOnly: true },
   { href: "/jeepwork/ai-usage", label: "AI 用量", icon: "△", tone: "accent" },
