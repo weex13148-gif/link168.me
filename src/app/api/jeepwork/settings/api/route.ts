@@ -49,13 +49,22 @@ function emailList(value: unknown) {
 }
 
 function safeHost(hostname: string) {
-  const host = hostname.toLowerCase();
-  if (!host || host === "localhost" || host.endsWith(".local")) return false;
-  if (["100.100.100.200", "169.254.169.254", "0.0.0.0"].includes(host)) return false;
-  if (net.isIP(host)) {
-    if (host.startsWith("10.") || host.startsWith("127.") || host.startsWith("192.168.")) return false;
-    if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)) return false;
-    if (host.startsWith("169.254.") || host === "::1" || host.startsWith("fe80:") || host.startsWith("fc") || host.startsWith("fd")) return false;
+  const host = hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  if (!host || host === "localhost" || host.endsWith(".local") || host.endsWith(".internal")) return false;
+  if (["100.100.100.200", "169.254.169.254", "0.0.0.0", "metadata.google.internal"].includes(host)) return false;
+  const ipVersion = net.isIP(host);
+  if (ipVersion === 4) {
+    const parts = host.split(".").map(Number);
+    const [a, b] = parts;
+    if (a === 0 || a === 10 || a === 127 || a >= 224) return false;
+    if (a === 100 && b >= 64 && b <= 127) return false;
+    if (a === 169 && b === 254) return false;
+    if (a === 172 && b >= 16 && b <= 31) return false;
+    if (a === 192 && b === 168) return false;
+    if (a === 198 && (b === 18 || b === 19)) return false;
+  }
+  if (ipVersion === 6) {
+    if (host === "::" || host === "::1" || host.startsWith("fe80:") || host.startsWith("fc") || host.startsWith("fd")) return false;
   }
   return true;
 }
@@ -64,7 +73,7 @@ function safeHttpsUrl(value: string) {
   if (!value) return true;
   try {
     const url = new URL(value);
-    return url.protocol === "https:" && safeHost(url.hostname);
+    return url.protocol === "https:" && !url.username && !url.password && safeHost(url.hostname);
   } catch {
     return false;
   }
@@ -166,7 +175,20 @@ export async function PUT(request: Request) {
   if (patch.aiBailianBaseUrl && !safeHttpsUrl(patch.aiBailianBaseUrl)) return errorResponse("BAD_URL", "百炼接口地址必须是安全的 HTTPS 公网地址。", 400);
   if (patch.webhookUrl && !safeHttpsUrl(patch.webhookUrl)) return errorResponse("BAD_URL", "Webhook 地址必须是安全的 HTTPS 公网地址。", 400);
   if (patch.paymentNotifyUrl && !safeHttpsUrl(patch.paymentNotifyUrl)) return errorResponse("BAD_URL", "支付回调地址必须是安全的 HTTPS 公网地址。", 400);
+  if (patch.paymentAlipayNotifyUrl && !safeHttpsUrl(patch.paymentAlipayNotifyUrl)) return errorResponse("BAD_ALIPAY_NOTIFY_URL", "支付宝异步通知地址必须是安全的 HTTPS 公网地址。", 400);
   if (patch.storageEndpoint && !safeHttpsUrl(patch.storageEndpoint)) return errorResponse("BAD_URL", "对象存储地址必须是安全的 HTTPS 公网地址。", 400);
+
+  const currentConfig = await getConfig();
+  const nextPaymentEnabled = patch.paymentEnabled ?? currentConfig.paymentEnabled;
+  const nextAlipayEnabled = patch.paymentAlipayEnabled ?? currentConfig.paymentAlipayEnabled;
+  const nextTestMode = patch.paymentTestMode ?? currentConfig.paymentTestMode;
+  const nextAlipayNotifyUrl = patch.paymentAlipayNotifyUrl ?? currentConfig.paymentAlipayNotifyUrl ?? currentConfig.paymentNotifyUrl;
+  if (nextPaymentEnabled && nextAlipayEnabled && !nextTestMode && !nextAlipayNotifyUrl) {
+    return errorResponse("ALIPAY_NOTIFY_REQUIRED", "正式收款模式必须填写支付宝公网 HTTPS 异步通知地址。", 400);
+  }
+  if (nextPaymentEnabled && nextAlipayEnabled && !nextTestMode && !safeHttpsUrl(nextAlipayNotifyUrl)) {
+    return errorResponse("BAD_ALIPAY_NOTIFY_URL", "正式收款模式的支付宝通知地址必须是安全的 HTTPS 公网地址。", 400);
+  }
 
   try {
     await updateConfig(patch);
@@ -269,7 +291,7 @@ export async function POST(request: Request) {
     case "promote-super-admin": return promoteSuperAdmin(body.email);
     case "test-ai-connection": return testAi();
     case "test-storage": return NextResponse.json({ success: true, data: { message: "存储配置已保存；云厂商实时连通测试尚未启用。" }, error: null });
-    case "test-payment": return NextResponse.json({ success: true, data: { message: "支付配置已保存；内测阶段真实支付测试尚未启用。" }, error: null });
+    case "test-payment": return NextResponse.json({ success: true, data: { message: "请在支付宝与收费页面使用专用签名测试、查单和补单工具。" }, error: null });
     case "test-sms": return NextResponse.json({ success: true, data: { message: "短信配置已保存；内测阶段真实短信发送尚未启用。" }, error: null });
     default: return errorResponse("BAD_ACTION", "不支持的操作。", 400);
   }
