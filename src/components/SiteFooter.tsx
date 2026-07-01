@@ -1,43 +1,38 @@
 import Link from "next/link";
-import { BookOpenText, FileText, ShieldAlert } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 
 const footerLinks = [
-  { label: "用户协议", href: "/terms", icon: FileText },
-  { label: "隐私政策", href: "/privacy", icon: ShieldAlert },
-  { label: "举报中心", href: "/report", icon: ShieldAlert },
-  { label: "帮助中心", href: "/help", icon: BookOpenText },
+  { label: "用户协议", href: "/terms" },
+  { label: "隐私政策", href: "/privacy" },
+  { label: "举报中心", href: "/report" },
+  { label: "帮助中心", href: "/help" },
 ];
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-[#e5e7eb] bg-[#f9fafb] px-4 py-8 text-sm text-[#6b7280] sm:px-6 lg:px-8">
-      <div className="mx-auto grid w-full max-w-7xl gap-6 md:grid-cols-[1fr_1.4fr] md:items-start">
+    <footer className="border-t border-[var(--ui-line)] bg-[var(--ui-surface)] py-8 text-sm text-[var(--ui-muted)]">
+      <div className="ui-container grid gap-6 md:grid-cols-[1fr_auto] md:items-end">
         <div>
-          <BrandLogo size="footer" />
-          <p className="mt-4 text-lg font-bold text-[#1f1f2e]">个人数字名片与客户入口整理工具</p>
-          <p className="mt-2 max-w-md text-sm leading-6">用一个公开主页，集中展示你的内容、服务、联系方式和二维码。</p>
+          <BrandLogo size="footer" className="!w-[92px]" />
+          <p className="mt-3 font-bold text-[var(--ui-ink)]">个人数字名片与客户入口整理工具</p>
+          <p className="mt-1 max-w-xl leading-6">集中展示内容、服务和联系方式，让客户通过一个公开地址找到你。</p>
         </div>
 
-        <div className="grid gap-4">
-          <nav className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {footerLinks.map(({ label, href, icon: Icon }) => (
-              <Link key={label} href={href} className="group flex min-h-14 items-center gap-3 rounded-2xl border border-[#e5e7eb] bg-white px-4 py-3 text-[15px] font-semibold text-[#1f1f2e] shadow-sm transition hover:-translate-y-0.5">
-                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#f5f3ff] text-[#8b5cf6]">
-                  <Icon aria-hidden className="size-4" />
-                </span>
-                {label}
+        <div className="grid gap-4 md:justify-items-end">
+          <nav className="flex flex-wrap gap-x-5 gap-y-2 font-bold" aria-label="页脚导航">
+            {footerLinks.map((item) => (
+              <Link key={item.href} href={item.href} className="transition hover:text-[var(--ui-brand-hover)]">
+                {item.label}
               </Link>
             ))}
           </nav>
-
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs">
-            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer" className="hover:text-[#8b5cf6]">
+          <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs">
+            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer" className="transition hover:text-[var(--ui-brand-hover)]">
               皖ICP备2026018031号-1
             </a>
             <span>合肥造梦哈勃文化传媒有限公司</span>
+            <span>© 2026 link168.me</span>
           </div>
-          <p className="text-xs">Copyright © 2026 link168.me</p>
         </div>
       </div>
     </footer>
