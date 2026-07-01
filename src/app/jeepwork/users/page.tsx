@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdminUsersClient from "@/components/admin/AdminUsersClient";
+import AdminUsersDesktopTable from "@/components/admin/AdminUsersDesktopTable";
 import AdminShell from "@/components/admin/AdminShell";
 
 type AdminUser = { email: string; role: string };
@@ -14,44 +15,31 @@ export default function JeepworkUsersPage() {
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    void (async () => {
       try {
         const response = await fetch("/api/jeepwork/auth/me", { cache: "no-store" });
-        if (!response.ok) {
-          if (!cancelled) router.push("/jeepwork/login");
+        const result = await response.json() as { success?: boolean; user?: AdminUser };
+        if (!response.ok || !result.success || !result.user) {
+          if (!cancelled) router.replace("/jeepwork/login");
           return;
         }
-        const result = (await response.json()) as { success?: boolean; user?: AdminUser };
-        if (!cancelled) {
-          if (result.success && result.user) {
-            if (result.user.role !== "super_admin") {
-              router.push("/jeepwork");
-              return;
-            }
-            setUser(result.user);
-          } else {
-            router.push("/jeepwork/login");
-          }
+        if (result.user.role !== "super_admin") {
+          if (!cancelled) router.replace("/jeepwork");
+          return;
         }
+        if (!cancelled) setUser(result.user);
       } catch {
-        if (!cancelled) router.push("/jeepwork/login");
+        if (!cancelled) router.replace("/jeepwork/login");
       }
     })();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [router]);
 
   async function onLogout() {
-    const confirmed = window.confirm("确定要退出管理员后台吗？");
-    if (!confirmed) return;
+    if (!window.confirm("确定要退出管理员后台吗？")) return;
     setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // 忽略网络错误，仍然做前端跳转
-    }
-    router.push("/jeepwork/login");
+    await fetch("/api/jeepwork/auth/logout", { method: "POST" }).catch(() => undefined);
+    router.replace("/jeepwork/login");
     router.refresh();
   }
 
@@ -62,13 +50,25 @@ export default function JeepworkUsersPage() {
       currentUserRole={user?.role}
       onLogout={loggingOut ? undefined : onLogout}
       pageHeader={{
-        eyebrow: "Users",
+        eyebrow: "用户与会员",
         title: "用户管理",
-        subtitle: "修改用户角色、重置密码、查看使用统计。",
+        subtitle: "查看用户邮箱验证、会员等级、账号状态和最近登录；冻结、封禁、角色与批量操作保留在高级管理区。",
         highlight: "#5B6FFF",
       }}
     >
-      <AdminUsersClient />
+      <div className="grid gap-6">
+        <AdminUsersDesktopTable />
+
+        <details id="advanced-user-management" className="rounded-[24px] border border-[#E8DCCB] bg-white shadow-sm">
+          <summary className="cursor-pointer list-none px-5 py-4 text-sm font-black text-[#2B241E] marker:hidden">
+            高级用户管理：角色、冻结、封禁、批量导出
+            <span className="ml-2 text-xs font-bold text-[#7A6D5E]">点击展开</span>
+          </summary>
+          <div className="border-t border-[#E8DCCB] p-5">
+            <AdminUsersClient currentUserEmail={user?.email} />
+          </div>
+        </details>
+      </div>
     </AdminShell>
   );
 }
