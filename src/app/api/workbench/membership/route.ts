@@ -1,23 +1,22 @@
-/**
- * Membership API
- * 路径: /api/workbench/membership
- *
- * GET /api/workbench/membership — 获取当前用户的会员订阅信息
- */
 import { NextResponse } from "next/server";
 import { requireDashboardUser } from "@/lib/auth";
 import { getMembershipWithUsage } from "@/lib/billing/membership";
 import { PLAN_DEFINITIONS, PLAN_ORDER } from "@/lib/billing/plans";
-import { isPaymentAvailable, isPaymentMethodAvailable } from "@/lib/billing/payments";
+import { getPaymentAvailability } from "@/lib/billing/payments";
 
 export const runtime = "nodejs";
 
+function yuan(value: number | null) {
+  return value === null ? null : value / 100;
+}
+
 function serializePlanDefinition(plan: (typeof PLAN_DEFINITIONS)[keyof typeof PLAN_DEFINITIONS]) {
   return {
+    code: plan.code,
     name: plan.name,
     description: plan.description,
-    price_monthly: plan.priceMonthly,
-    price_yearly: plan.priceYearly,
+    price_monthly: yuan(plan.priceMonthly),
+    price_yearly: yuan(plan.priceYearly),
     features: plan.features,
     limits: {
       ai_chats_per_month: plan.limits.aiChatsPerMonth,
@@ -39,22 +38,20 @@ export async function GET(request: Request) {
   if (response || !user) return response;
 
   const data = await getMembershipWithUsage(user.id);
+  const availability = await getPaymentAvailability();
+  const planDefinitions: Record<string, ReturnType<typeof serializePlanDefinition>> = {};
 
-  const paymentAvailable = await isPaymentAvailable();
-  const wechatAvailable = await isPaymentMethodAvailable("wechat");
-  const alipayAvailable = await isPaymentMethodAvailable("alipay");
-
-  const planDefinitionsObj: Record<string, ReturnType<typeof serializePlanDefinition>> = {};
   for (const code of PLAN_ORDER) {
-    planDefinitionsObj[code] = serializePlanDefinition(PLAN_DEFINITIONS[code]);
+    planDefinitions[code] = serializePlanDefinition(PLAN_DEFINITIONS[code]);
   }
 
   return NextResponse.json({
     success: true,
+    email_verified: user.emailVerified,
     subscription: data.subscription.subscriptionId
       ? {
           id: data.subscription.subscriptionId,
-          plan_code: data.subscription.planCode,
+          plan_code: data.subscription.planCode === "member_basic" ? "member_plus" : data.subscription.planCode,
           status: data.subscription.status,
           current_period_start: data.subscription.currentPeriodStart?.toISOString() ?? null,
           current_period_end: data.subscription.currentPeriodEnd?.toISOString() ?? null,
@@ -63,12 +60,14 @@ export async function GET(request: Request) {
     plan: serializePlanDefinition(data.plan),
     ai_usage: data.aiUsage,
     credit_balance: data.creditBalance,
-    plan_definitions: planDefinitionsObj,
+    plan_definitions: planDefinitions,
     plan_order: PLAN_ORDER,
     payment: {
-      enabled: paymentAvailable,
-      wechat_available: wechatAvailable,
-      alipay_available: alipayAvailable,
+      enabled: availability.paymentEnabled && availability.alipayAvailable,
+      alipay_available: availability.alipayAvailable,
+      alipay_reason: availability.alipayReason ?? null,
+      wechat_available: false,
+      wechat_status: "微信支付后续开放",
       sandbox_available: process.env.NODE_ENV === "development",
     },
   });
