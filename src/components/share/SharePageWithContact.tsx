@@ -34,6 +34,27 @@ function originalUrlFromPayload(payloadRaw: string | null | undefined) {
   }
 }
 
+function normalizePublicLinkUrl(url: string | null | undefined, payload: string | null | undefined) {
+  const payloadUrl = originalUrlFromPayload(payload);
+  if (payloadUrl) return payloadUrl;
+  if (!url || url.startsWith("/go/")) return null;
+  const checked = sanitizePublicUrl(url);
+  return checked.safe ? checked.url : null;
+}
+
+function BrandFooter() {
+  return (
+    <a
+      href={process.env.NEXT_PUBLIC_APP_URL || "https://link168.me"}
+      className="mx-auto mt-5 inline-flex min-h-10 items-center gap-2 rounded-full border border-black/10 bg-white/80 px-4 py-2 text-sm font-black text-[#3F5F31] shadow-sm transition hover:-translate-y-0.5 hover:bg-white"
+      aria-label="访问 Link168 官网"
+    >
+      <span className="grid size-7 place-items-center rounded-xl bg-[#6F8F4E] text-xs font-black text-white">L</span>
+      由 Link168 提供
+    </a>
+  );
+}
+
 function ContactForm({
   username,
   products = [],
@@ -171,13 +192,10 @@ export function SharePageWithContact(props: Props) {
   const [showQrCode, setShowQrCode] = useState(false);
   const [showShare, setShowShare] = useState(false);
 
-  const directLinks = useMemo(() => props.links.map((link) => {
-    const originalUrl = originalUrlFromPayload(link.payload);
-    if (originalUrl && (!link.url || link.url.startsWith("/go/"))) {
-      return { ...link, url: originalUrl };
-    }
-    return link;
-  }), [props.links]);
+  const directLinks = useMemo(() => props.links.map((link) => ({
+    ...link,
+    url: normalizePublicLinkUrl(link.url, link.payload),
+  })), [props.links]);
 
   const pageUrl = typeof window === "undefined" ? "" : window.location.href;
 
@@ -191,12 +209,13 @@ export function SharePageWithContact(props: Props) {
         avatarUrl={props.avatarUrl}
         links={directLinks}
         themeName={props.themeName}
-        showBrandFoot={props.showBrandFoot}
+        showBrandFoot={false}
         reportUrl={props.reportUrl || undefined}
         onQrCodeClick={() => setShowQrCode(true)}
         onShareClick={() => setShowShare(true)}
       />
 
+      {props.showBrandFoot !== false ? <div className="flex justify-center"><BrandFooter /></div> : null}
       {props.products?.length ? <PublicProductsSection products={props.products} username={props.username} /> : null}
 
       {!props.reportUrl ? (
@@ -207,7 +226,6 @@ export function SharePageWithContact(props: Props) {
       ) : null}
 
       {showContact ? <ContactForm username={props.username} products={props.products} interestedProductId={props.interestedProductId} onClose={() => setShowContact(false)} /> : null}
-
       <QrCodeModal isOpen={showQrCode} onClose={() => setShowQrCode(false)} pageUrl={pageUrl} displayName={props.displayName} username={props.username} />
       <ShareModal isOpen={showShare} onClose={() => setShowShare(false)} pageUrl={pageUrl} displayName={props.displayName} username={props.username} onOpenQrCode={() => setShowQrCode(true)} />
     </>
