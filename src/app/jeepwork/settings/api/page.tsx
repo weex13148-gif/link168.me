@@ -57,15 +57,15 @@ export default function JeepworkSettingsApiPage() {
 
   return (
     <AdminShell
-      currentPageLabel="系统配置"
+      currentPageLabel="邮箱与系统配置"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
       onLogout={loggingOut ? undefined : onLogout}
       pageHeader={{
-        eyebrow: "Settings",
-        title: "系统配置",
-        subtitle: "管理第三方 API、邮件、短信、存储等配置。",
-        highlight: "#8B7B68",
+        eyebrow: "系统配置",
+        title: "邮箱验证与系统配置",
+        subtitle: "统一管理注册验证码、重新发送验证码、忘记密码邮件、AI 接口、支付与存储配置。",
+        highlight: "#5B6FFF",
       }}
     >
       <AdminSettingsApiClient />
