@@ -27,6 +27,8 @@ const STORAGE_PROVIDERS: StorageProvider[] = ["local", "aliyun-oss", "tencent-co
 const SMTP_MODES: SmtpSecureMode[] = ["ssl", "tls", "none"];
 const ASSISTANTS = Object.values(AI_ASSISTANTS);
 
+type VisibleConfigInput = Partial<Record<keyof AppConfigValues, unknown>>;
+
 function errorResponse(code: string, message: string, status = 400) {
   return NextResponse.json({ success: false, data: null, error: { code, message } }, { status });
 }
@@ -68,7 +70,7 @@ function safeHttpsUrl(value: string) {
   }
 }
 
-function visibleConfig(config: Record<string, unknown>) {
+function visibleConfig(config: VisibleConfigInput) {
   return {
     ...config,
     smtpHost: text(config.smtpHost) || "smtpdm.aliyun.com",
@@ -154,7 +156,7 @@ export async function PUT(request: Request) {
 
   let body: Record<string, unknown>;
   try {
-    body = (await request.json()) as Record<string, unknown>;
+    body = await request.json() as Record<string, unknown>;
   } catch {
     return errorResponse("BAD_BODY", "请求格式不正确。", 400);
   }
@@ -234,10 +236,10 @@ async function testWhitelist(emailValue: unknown) {
   return NextResponse.json({ success: true, data: { message: tester ? "该邮箱在 AI 测试白名单中。" : "该邮箱不在 AI 测试白名单中。", email, isTester: tester, usage }, error: null });
 }
 
-async function promoteSuperAdmin(request: Request, emailValue: unknown) {
+async function promoteSuperAdmin(emailValue: unknown) {
   const email = text(emailValue).toLowerCase();
   if (!EMAIL_REGEX.test(email)) return errorResponse("BAD_EMAIL", "请输入正确的邮箱地址。", 400);
-  const user = await db.user.findUnique({ where: { email }, select: { id: true, role: true } });
+  const user = await db.user.findUnique({ where: { email }, select: { id: true } });
   if (!user) return errorResponse("NOT_FOUND", "没有找到该用户。", 404);
   await db.user.update({ where: { id: user.id }, data: { role: ROLE_SUPER_ADMIN } });
   return NextResponse.json({ success: true, data: { message: `已将 ${email} 设置为超级管理员。` }, error: null });
@@ -256,7 +258,7 @@ export async function POST(request: Request) {
   if (forbidden) return forbidden;
   let body: { action?: unknown; email?: unknown };
   try {
-    body = (await request.json()) as { action?: unknown; email?: unknown };
+    body = await request.json() as { action?: unknown; email?: unknown };
   } catch {
     return errorResponse("BAD_BODY", "请求格式不正确。", 400);
   }
@@ -264,7 +266,7 @@ export async function POST(request: Request) {
   switch (body.action) {
     case "test-mail": return testMail(body.email);
     case "test-email": return testWhitelist(body.email);
-    case "promote-super-admin": return promoteSuperAdmin(request, body.email);
+    case "promote-super-admin": return promoteSuperAdmin(body.email);
     case "test-ai-connection": return testAi();
     case "test-storage": return NextResponse.json({ success: true, data: { message: "存储配置已保存；云厂商实时连通测试尚未启用。" }, error: null });
     case "test-payment": return NextResponse.json({ success: true, data: { message: "支付配置已保存；内测阶段真实支付测试尚未启用。" }, error: null });
