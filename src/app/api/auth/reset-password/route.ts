@@ -1,13 +1,8 @@
 import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
-import {
-  validatePasswordResetToken,
-  consumePasswordResetToken,
-  createSession,
-  setSessionCookie,
-  revokeAllOtherSessions,
-} from "@/lib/auth";
+import { consumePasswordResetToken, validatePasswordResetToken } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -18,15 +13,16 @@ type ResetPasswordRequest = {
 };
 
 export async function POST(request: Request) {
-  if (!process.env.DATABASE_URL) {
-    return NextResponse.json({ success: false, error: "DATABASE_URL is not configured." }, { status: 500 });
+  const limited = await rateLimit(request, "auth:reset-password", 10, 30 * 60 * 1000);
+  if (!limited.passed) {
+    return NextResponse.json({ success: false, error: "操作过于频繁，请稍后再试。" }, { status: 429 });
   }
 
   let body: ResetPasswordRequest;
   try {
     body = (await request.json()) as ResetPasswordRequest;
   } catch {
-    return NextResponse.json({ success: false, error: "Invalid JSON body." }, { status: 400 });
+    return NextResponse.json({ success: false, error: "请求格式不正确。" }, { status: 400 });
   }
 
   const token = typeof body.token === "string" ? body.token.trim() : "";
@@ -34,39 +30,30 @@ export async function POST(request: Request) {
   const confirmPassword = typeof body.confirmPassword === "string" ? body.confirmPassword : "";
 
   if (!token) {
-    return NextResponse.json({ success: false, error: "重置链接无效或已过期。" }, { status: 400 });
+    return NextResponse.json({ success: false, error: "重置链接无效或已过期，请重新申请。" }, { status: 400 });
   }
-
-  if (!password || password.length < 6) {
-    return NextResponse.json({ success: false, error: "密码至少需要 6 位。" }, { status: 400 });
+  if (password.length < 8) {
+    return NextResponse.json({ success: false, error: "新密码至少需要 8 位。" }, { status: 400 });
   }
-
   if (password !== confirmPassword) {
-    return NextResponse.json({ success: false, error: "两次输入的密码不一致。" }, { status: 400 });
+    return NextResponse.json({ success: false, error: "两次输入的新密码不一致。" }, { status: 400 });
   }
 
   const user = await validatePasswordResetToken(token);
   if (!user) {
-    return NextResponse.json({ success: false, error: "重置链接无效或已过期，请重新发起忘记密码请求。" }, { status: 400 });
+    return NextResponse.json({ success: false, error: "重置链接无效、已使用或已过期，请重新申请。" }, { status: 400 });
   }
 
-  const newHash = await bcrypt.hash(password, 12);
-  await db.user.update({
-    where: { id: user.id },
-    data: { passwordHash: newHash },
-  });
-
+  const passwordHash = await bcrypt.hash(password, 12);
+  await db.$transaction([
+    db.user.update({ where: { id: user.id }, data: { passwordHash } }),
+    db.session.deleteMany({ where: { userId: user.id } }),
+  ]);
   await consumePasswordResetToken(token);
 
-  const { token: sessionToken, expiresAt } = await createSession(user.id, request);
-
-  await revokeAllOtherSessions(user.id, sessionToken);
-
-  const response = NextResponse.json({
+  return NextResponse.json({
     success: true,
-    message: "密码已重置成功。",
-    redirectTo: "/dashboard",
+    message: "密码修改成功，请使用新密码重新登录。",
+    redirectTo: "/login?passwordReset=success",
   });
-  setSessionCookie(response, sessionToken, expiresAt);
-  return response;
 }
