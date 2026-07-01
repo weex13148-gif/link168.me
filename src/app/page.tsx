@@ -6,7 +6,6 @@ import {
   ExternalLink,
   Link2,
   QrCode,
-  Smartphone,
 } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { PhonePreview, type PhonePreviewLink } from "@/components/PhonePreview";
@@ -124,7 +123,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="features" className="py-14 sm:py-18">
+        <section id="features" className="py-14 sm:py-16">
           <div className="ui-container">
             <div className="max-w-2xl">
               <p className="ui-eyebrow">核心流程</p>
@@ -149,7 +148,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="cases" className="border-y border-[var(--ui-line)] bg-[var(--ui-surface)] py-14 sm:py-18">
+        <section id="cases" className="border-y border-[var(--ui-line)] bg-[var(--ui-surface)] py-14 sm:py-16">
           <div className="ui-container grid gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-start">
             <div>
               <p className="ui-eyebrow">适用人群</p>
@@ -168,18 +167,18 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="pricing" className="py-14 sm:py-18">
+        <section id="pricing" className="py-14 sm:py-16">
           <div className="ui-container">
             <div className="max-w-2xl">
               <p className="ui-eyebrow">版本与能力</p>
               <h2 className="ui-title mt-3 text-3xl sm:text-4xl">先免费使用，再按经营需要升级</h2>
-              <p className="ui-muted mt-3 leading-7">V1 的核心主页和链接功能可以免费使用，会员与企业能力按实际需要开通。</p>
+              <p className="ui-muted mt-3 leading-7">核心主页和链接功能可以免费使用，会员与企业能力按实际需要开通。</p>
             </div>
 
             <div className="mt-8 overflow-x-auto rounded-[var(--ui-radius-lg)] border border-[var(--ui-line)] bg-[var(--ui-surface)] shadow-[var(--ui-shadow-sm)]">
               <div className="grid min-w-[850px] grid-cols-3 divide-x divide-[var(--ui-line)]">
                 {plans.map((plan) => (
-                  <article key={plan.name} className={`p-6 ${plan.featured ? "bg-[var(--ui-brand-soft)]/55" : ""}`}>
+                  <article key={plan.name} className={`p-6 ${plan.featured ? "bg-[var(--ui-brand-soft)]" : ""}`}>
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <h3 className="text-lg font-black text-[var(--ui-ink)]">{plan.name}</h3>
