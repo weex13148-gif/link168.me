@@ -58,38 +58,39 @@ function ResetPasswordForm() {
   }
 
   return (
-    <section className="w-full rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8]/94 p-6 shadow-[0_24px_70px_rgba(86,68,46,0.12)]">
-      <BrandLogo size="header" />
-      <h1 className="mt-6 text-3xl font-black text-[#2B241E]">设置新密码</h1>
-      <p className="mt-3 text-sm leading-7 text-[#7A6D5E]">请输入两次新密码。修改成功后，其他设备上的旧登录状态会失效。</p>
+    <section className="ui-surface w-full p-7">
+      <BrandLogo size="header" className="!w-[124px]" />
+      <p className="ui-eyebrow mt-7">账户安全</p>
+      <h1 className="ui-title mt-3 text-3xl">设置新密码</h1>
+      <p className="ui-muted mt-3 text-sm leading-7">请输入两次新密码。修改成功后，其他设备上的旧登录状态会失效。</p>
 
       {!token ? (
-        <div className="mt-6 rounded-2xl bg-[#FFF1F0] p-4 text-sm font-bold text-[#B42318]">
+        <div className="mt-6 rounded-[var(--ui-radius-sm)] bg-[var(--ui-danger-soft)] p-4 text-sm font-bold text-[var(--ui-danger)]">
           当前重置链接无效或缺少凭证，请重新申请。
         </div>
       ) : (
         <form onSubmit={submit} className="mt-6 grid gap-4">
           <label className="grid gap-2">
-            <span className="text-sm font-black text-[#3F5F31]">新密码</span>
-            <input required minLength={8} type="password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="至少 8 位" className="h-12 rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 outline-none focus:border-[#6F8F4E] focus:bg-white" />
+            <span className="text-sm font-black text-[var(--ui-ink)]">新密码</span>
+            <input required minLength={8} type="password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="至少 8 位" className="ui-input" />
           </label>
           <label className="grid gap-2">
-            <span className="text-sm font-black text-[#3F5F31]">再次输入新密码</span>
-            <input required minLength={8} type="password" autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="再次输入新密码" className="h-12 rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 outline-none focus:border-[#6F8F4E] focus:bg-white" />
+            <span className="text-sm font-black text-[var(--ui-ink)]">再次输入新密码</span>
+            <input required minLength={8} type="password" autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="再次输入新密码" className="ui-input" />
           </label>
 
-          {error ? <p className="rounded-2xl bg-[#FFF1F0] px-4 py-3 text-sm font-bold text-[#B42318]">{error}</p> : null}
-          {message ? <p className="rounded-2xl bg-[#EEF4E7] px-4 py-3 text-sm font-bold text-[#355126]">{message}</p> : null}
+          {error ? <p className="rounded-[var(--ui-radius-sm)] bg-[var(--ui-danger-soft)] px-4 py-3 text-sm font-bold text-[var(--ui-danger)]">{error}</p> : null}
+          {message ? <p className="rounded-[var(--ui-radius-sm)] bg-[var(--ui-success-soft)] px-4 py-3 text-sm font-bold text-[var(--ui-success)]">{message}</p> : null}
 
-          <button type="submit" disabled={loading} className="h-12 rounded-full bg-[#6F8F4E] px-5 font-black text-white disabled:opacity-60">
+          <button type="submit" disabled={loading} className="ui-button-primary min-h-12 w-full text-base disabled:opacity-60">
             {loading ? "正在修改…" : "确认修改密码"}
           </button>
         </form>
       )}
 
-      <div className="mt-6 grid gap-3 text-center text-sm">
-        <Link href="/forgot-password" className="font-black text-[#3F5F31]">重新申请重置邮件</Link>
-        <Link href="/login" className="font-bold text-[#7A6D5E]">返回登录</Link>
+      <div className="mt-6 grid gap-3 border-t border-[var(--ui-line)] pt-5 text-center text-sm">
+        <Link href="/forgot-password" className="font-black text-[var(--ui-brand-hover)]">重新申请重置邮件</Link>
+        <Link href="/login" className="font-bold text-[var(--ui-muted)]">返回登录</Link>
       </div>
     </section>
   );
@@ -97,11 +98,12 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <main className="relative mx-auto flex min-h-dvh w-full max-w-md items-center overflow-hidden px-4 py-8">
-      <div className="absolute inset-0 -z-20 bg-[linear-gradient(135deg,#FFFDF8_0%,#F7F1E7_55%,#F2E7D8_100%)]" />
-      <Suspense fallback={<section className="w-full rounded-2xl bg-white p-6 text-center">正在加载密码重置页面…</section>}>
-        <ResetPasswordForm />
-      </Suspense>
+    <main className="ui-page flex min-h-dvh items-center py-8">
+      <div className="ui-container max-w-md">
+        <Suspense fallback={<section className="ui-surface w-full p-6 text-center">正在加载密码重置页面…</section>}>
+          <ResetPasswordForm />
+        </Suspense>
+      </div>
     </main>
   );
 }
