@@ -2,185 +2,180 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AdminShell from "@/components/admin/AdminShell";
 
 type AdminUser = { email: string; role: string };
+type Summary = {
+  counts: {
+    totalUsers: number;
+    todayUsers: number;
+    verifiedUsers: number;
+    unverifiedUsers: number;
+    paidUsers: number;
+    pendingReports: number;
+    activeRestrictions: number;
+    todayMailCount: number;
+    todayMailFailures: number;
+    todayAiCalls: number;
+  };
+  services: Record<string, { status: string; label: string }>;
+};
+
+const shortcuts = [
+  { href: "/jeepwork/users", title: "用户管理", description: "查看邮箱验证、会员、账号状态和最近登录。" },
+  { href: "/jeepwork/settings/api", title: "邮箱与系统配置", description: "配置注册验证码、忘记密码、AI、支付与存储。" },
+  { href: "/jeepwork/logs", title: "访问与安全日志", description: "查看登录、会话、管理员操作和原始 IP。" },
+  { href: "/jeepwork/reports", title: "举报管理", description: "处理用户举报和违规主页。" },
+  { href: "/jeepwork/profiles", title: "主页管理", description: "搜索、隐藏、恢复公开主页和链接。" },
+  { href: "/jeepwork/showcase", title: "比赛展示中心", description: "管理比赛展示页面、访问密码和演示内容。" },
+];
+
+function statusClass(status: string) {
+  if (status === "available" || status === "enabled" || status === "configured") return "bg-[#EEF4E7] text-[#355126]";
+  if (status === "incomplete") return "bg-[#FFF7E8] text-[#8C612E]";
+  return "bg-[#F3F1ED] text-[#6F6255]";
+}
 
 export default function JeepworkHomePage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
+  const [summary, setSummary] = useState<Summary | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
   const [loggingOut, setLoggingOut] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const response = await fetch("/api/jeepwork/auth/me", { cache: "no-store" });
-        if (!response.ok) {
-          if (!cancelled) router.push("/jeepwork/login");
-          return;
-        }
-        const result = (await response.json()) as { success?: boolean; user?: AdminUser };
-        if (!cancelled) {
-          if (result.success && result.user) {
-            setUser(result.user);
-          } else {
-            router.push("/jeepwork/login");
-          }
-        }
-      } catch {
-        if (!cancelled) router.push("/jeepwork/login");
+  const load = useCallback(async () => {
+    setLoading(true);
+    setMessage("");
+    try {
+      const meResponse = await fetch("/api/jeepwork/auth/me", { cache: "no-store" });
+      const meResult = await meResponse.json() as { success?: boolean; user?: AdminUser };
+      if (!meResponse.ok || !meResult.success || !meResult.user) {
+        router.replace("/jeepwork/login");
+        return;
       }
-    })();
-    return () => {
-      cancelled = true;
-    };
+      setUser(meResult.user);
+
+      if (meResult.user.role !== "super_admin") {
+        setSummary(null);
+        return;
+      }
+
+      const response = await fetch("/api/jeepwork/summary", { cache: "no-store" });
+      const result = await response.json() as { success?: boolean; data?: Summary; error?: { message?: string } };
+      if (!response.ok || !result.success || !result.data) {
+        setMessage(result.error?.message || "管理总览加载失败。");
+        return;
+      }
+      setSummary(result.data);
+    } catch {
+      setMessage("网络连接失败，无法加载管理总览。");
+    } finally {
+      setLoading(false);
+    }
   }, [router]);
 
+  useEffect(() => { void load(); }, [load]);
+
   async function onLogout() {
-    const confirmed = window.confirm("确定要退出管理员后台吗？");
-    if (!confirmed) return;
+    if (!window.confirm("确定要退出管理员后台吗？")) return;
     setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // 忽略网络错误，仍然做前端跳转
-    }
-    router.push("/jeepwork/login");
+    await fetch("/api/jeepwork/auth/logout", { method: "POST" }).catch(() => undefined);
+    router.replace("/jeepwork/login");
     router.refresh();
   }
 
-  const isSuper = user?.role === "super_admin";
+  const countCards = summary ? [
+    { label: "用户总数", value: summary.counts.totalUsers, detail: `今日新增 ${summary.counts.todayUsers}` },
+    { label: "邮箱已验证", value: summary.counts.verifiedUsers, detail: `未验证 ${summary.counts.unverifiedUsers}` },
+    { label: "付费用户", value: summary.counts.paidUsers, detail: "当前有效会员与企业用户" },
+    { label: "待处理举报", value: summary.counts.pendingReports, detail: "需要管理员处理" },
+    { label: "有效限制记录", value: summary.counts.activeRestrictions, detail: "冻结、封禁或安全限制" },
+    { label: "今日邮件", value: summary.counts.todayMailCount, detail: `失败 ${summary.counts.todayMailFailures}` },
+    { label: "今日 AI 调用", value: summary.counts.todayAiCalls, detail: "按实际调用日志统计" },
+  ] : [];
 
   return (
     <AdminShell
-      currentPageLabel="后台首页"
+      currentPageLabel="管理后台首页"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
       onLogout={loggingOut ? undefined : onLogout}
       pageHeader={{
-        eyebrow: "Admin Console",
-        title: "内部工作台",
-        subtitle: "统一管理用户、主页、举报、AI 用量与第三方配置。",
+        eyebrow: "管理总览",
+        title: "Link168 管理后台",
+        subtitle: "查看真实用户、邮箱、会员、举报和系统配置状态。没有检测能力的服务不会显示虚假的“正常”。",
         highlight: "#6F8F4E",
       }}
     >
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Link
-          href="/jeepwork/reports"
-          className="group rounded-[28px] border border-[#E8DCCB] bg-white p-6 shadow-sm transition hover:shadow-[0_18px_55px_rgba(86,68,46,0.08)]"
-        >
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#B42318]">Reports</p>
-          <h2 className="mt-2 text-lg font-black text-[#2B241E]">举报管理</h2>
-          <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">处理用户提交的内容举报、隐藏违规主页。</p>
-          <p className="mt-4 text-sm font-bold text-[#6F8F4E] group-hover:underline">进入举报管理 →</p>
-        </Link>
-        <Link
-          href="/jeepwork/profiles"
-          className="group rounded-[28px] border border-[#E8DCCB] bg-white p-6 shadow-sm transition hover:shadow-[0_18px_55px_rgba(86,68,46,0.08)]"
-        >
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#6F8F4E]">Profiles</p>
-          <h2 className="mt-2 text-lg font-black text-[#2B241E]">主页管理</h2>
-          <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">搜索、隐藏或恢复公开主页、下架链接。</p>
-          <p className="mt-4 text-sm font-bold text-[#6F8F4E] group-hover:underline">进入主页管理 →</p>
-        </Link>
-        <Link
-          href="/jeepwork/ai-usage"
-          className="group rounded-[28px] border border-[#E8DCCB] bg-white p-6 shadow-sm transition hover:shadow-[0_18px_55px_rgba(86,68,46,0.08)]"
-        >
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#8C612E]">AI Usage</p>
-          <h2 className="mt-2 text-lg font-black text-[#2B241E]">AI 用量统计</h2>
-          <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">查看用户 AI 调用情况、Agent 与日期分布。</p>
-          <p className="mt-4 text-sm font-bold text-[#6F8F4E] group-hover:underline">进入 AI 用量 →</p>
-        </Link>
-        {isSuper ? (
-          <Link
-            href="/jeepwork/governance"
-            className="group rounded-[28px] border border-[#E8DCCB] bg-white p-6 shadow-sm transition hover:shadow-[0_18px_55px_rgba(86,68,46,0.08)]"
-          >
-            <p className="text-xs font-black uppercase tracking-[0.2em]" style={{ color: "#5B6FFF" }}>Governance</p>
-            <h2 className="mt-2 text-lg font-black text-[#2B241E]">平台治理</h2>
-            <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">角色权限边界、高风险操作分级与审计策略。</p>
-            <p className="mt-4 text-sm font-bold text-[#5B6FFF] group-hover:underline">进入平台治理 →</p>
-          </Link>
-        ) : null}
-        {isSuper ? (
-          <Link
-            href="/jeepwork/roles"
-            className="group rounded-[28px] border border-[#E8DCCB] bg-white p-6 shadow-sm transition hover:shadow-[0_18px_55px_rgba(86,68,46,0.08)]"
-          >
-            <p className="text-xs font-black uppercase tracking-[0.2em]" style={{ color: "#8C612E" }}>Roles</p>
-            <h2 className="mt-2 text-lg font-black text-[#2B241E]">角色管理</h2>
-            <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">统一管理所有管理员与超级管理员账号。</p>
-            <p className="mt-4 text-sm font-bold text-[#8C612E] group-hover:underline">进入角色管理 →</p>
-          </Link>
-        ) : null}
-        {isSuper ? (
-          <Link
-            href="/jeepwork/audit"
-            className="group rounded-[28px] border border-[#E8DCCB] bg-white p-6 shadow-sm transition hover:shadow-[0_18px_55px_rgba(86,68,46,0.08)]"
-          >
-            <p className="text-xs font-black uppercase tracking-[0.2em]" style={{ color: "#B42318" }}>Audit</p>
-            <h2 className="mt-2 text-lg font-black text-[#2B241E]">审计日志</h2>
-            <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">查看所有管理员操作的完整审计记录。</p>
-            <p className="mt-4 text-sm font-bold text-[#B42318] group-hover:underline">进入审计日志 →</p>
-          </Link>
-        ) : null}
-        {isSuper ? (
-          <Link
-            href="/jeepwork/users"
-            className="group rounded-[28px] border border-[#E8DCCB] bg-white p-6 shadow-sm transition hover:shadow-[0_18px_55px_rgba(86,68,46,0.08)]"
-          >
-            <p className="text-xs font-black uppercase tracking-[0.2em]" style={{ color: "#5B6FFF" }}>Users</p>
-            <h2 className="mt-2 text-lg font-black text-[#2B241E]">用户管理</h2>
-            <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">修改用户角色与权限、重置密码。</p>
-            <p className="mt-4 text-sm font-bold text-[#6F8F4E] group-hover:underline">进入用户管理 →</p>
-          </Link>
-        ) : null}
-        {isSuper ? (
-          <Link
-            href="/jeepwork/settings/api"
-            className="group rounded-[28px] border border-[#E8DCCB] bg-white p-6 shadow-sm transition hover:shadow-[0_18px_55px_rgba(86,68,46,0.08)]"
-          >
-            <p className="text-xs font-black uppercase tracking-[0.2em]" style={{ color: "#8B7B68" }}>Settings</p>
-            <h2 className="mt-2 text-lg font-black text-[#2B241E]">系统配置</h2>
-            <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">管理第三方 API、邮件、短信、存储等配置。</p>
-            <p className="mt-4 text-sm font-bold text-[#6F8F4E] group-hover:underline">进入系统配置 →</p>
-          </Link>
-        ) : null}
-        {isSuper ? (
-          <Link
-            href="/jeepwork/system-health"
-            className="group rounded-[28px] border border-[#E8DCCB] bg-white p-6 shadow-sm transition hover:shadow-[0_18px_55px_rgba(86,68,46,0.08)]"
-          >
-            <p className="text-xs font-black uppercase tracking-[0.2em]" style={{ color: "#6F8F4E" }}>Ops Center</p>
-            <h2 className="mt-2 text-lg font-black text-[#2B241E]">运维健康中心</h2>
-            <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">系统健康总览、数据库、Redis、邮件、AI服务、存储监控与Dry Run。</p>
-            <p className="mt-4 text-sm font-bold text-[#6F8F4E] group-hover:underline">进入运维中心 →</p>
-          </Link>
-        ) : null}
-        {isSuper ? (
-          <Link
-            href="/jeepwork/showcase"
-            className="group rounded-[28px] border border-[#E8DCCB] bg-white p-6 shadow-sm transition hover:shadow-[0_18px_55px_rgba(86,68,46,0.08)]"
-          >
-            <p className="text-xs font-black uppercase tracking-[0.2em]" style={{ color: "#315F8C" }}>Showcase</p>
-            <h2 className="mt-2 text-lg font-black text-[#2B241E]">比赛展示中心</h2>
-            <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">管理 /showcase 开关、访问密码、展示分区与评委访问日志。</p>
-            <p className="mt-4 text-sm font-bold text-[#6F8F4E] group-hover:underline">进入比赛展示 →</p>
-          </Link>
-        ) : null}
-      </section>
+      <div className="grid gap-6">
+        {message ? <p className="rounded-2xl bg-[#FFF7E8] px-4 py-3 text-sm font-bold text-[#8C612E]">{message}</p> : null}
 
-      <section className="mt-8 rounded-[28px] border border-dashed border-[#E8DCCB] bg-white p-6 text-sm leading-6 text-[#7A6D5E] shadow-sm">
-        <p className="font-black text-[#2B241E]">操作提示</p>
-        <ul className="mt-2 grid list-disc gap-1 pl-5">
-          <li>红色按钮为敏感操作（删除、隐藏、提升权限），点击后需要二次确认。</li>
-          <li>所有操作均会留下操作日志，请谨慎操作。</li>
-          <li>如页面数据为空，请先在相应页面查看筛选条件。</li>
-        </ul>
-      </section>
+        {user?.role === "super_admin" ? (
+          <>
+            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-7">
+              {loading ? <div className="col-span-full rounded-[24px] border border-[#E8DCCB] bg-white p-10 text-center font-bold text-[#7A6D5E]">正在加载真实统计…</div> : null}
+              {!loading ? countCards.map((card) => (
+                <article key={card.label} className="rounded-[22px] border border-[#E8DCCB] bg-white p-5 shadow-sm">
+                  <p className="text-xs font-black text-[#7A6D5E]">{card.label}</p>
+                  <p className="mt-2 text-3xl font-black text-[#2B241E]">{card.value}</p>
+                  <p className="mt-2 text-xs leading-5 text-[#8B7B68]">{card.detail}</p>
+                </article>
+              )) : null}
+            </section>
+
+            {summary ? (
+              <section className="rounded-[24px] border border-[#E8DCCB] bg-white p-5 shadow-sm sm:p-6">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-xl font-black text-[#2B241E]">系统配置状态</h2>
+                    <p className="mt-1 text-sm text-[#7A6D5E]">这里只反映真实连接或配置状态，不代表所有外部服务都已经完成业务验收。</p>
+                  </div>
+                  <button type="button" onClick={() => void load()} className="min-h-10 rounded-xl border border-[#E8DCCB] bg-white px-4 text-sm font-black text-[#3F5F31]">刷新状态</button>
+                </div>
+                <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+                  {Object.entries(summary.services).map(([key, service]) => {
+                    const labels: Record<string, string> = { database: "数据库", mail: "邮箱服务", ai: "AI 服务", storage: "上传与存储", payment: "支付服务" };
+                    return (
+                      <div key={key} className="rounded-xl border border-[#E8DCCB] bg-[#FFFDF8] p-4">
+                        <p className="text-xs font-black text-[#7A6D5E]">{labels[key] || key}</p>
+                        <span className={`mt-2 inline-flex rounded-full px-2.5 py-1 text-xs font-black ${statusClass(service.status)}`}>{service.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            ) : null}
+          </>
+        ) : (
+          <section className="rounded-[24px] border border-[#E8DCCB] bg-white p-6 shadow-sm">
+            <h2 className="text-xl font-black">管理员工作台</h2>
+            <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">当前账号可处理主页与举报。系统配置、用户角色和安全日志仅超级管理员可见。</p>
+          </section>
+        )}
+
+        <section>
+          <div className="mb-4">
+            <h2 className="text-xl font-black text-[#2B241E]">常用管理入口</h2>
+            <p className="mt-1 text-sm text-[#7A6D5E]">按日常管理任务快速进入对应页面。</p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {shortcuts.filter((item) => user?.role === "super_admin" || ["/jeepwork/reports", "/jeepwork/profiles"].includes(item.href)).map((item) => (
+              <Link key={item.href} href={item.href} className="group rounded-[24px] border border-[#E8DCCB] bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_18px_55px_rgba(86,68,46,0.08)]">
+                <h3 className="text-lg font-black text-[#2B241E]">{item.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">{item.description}</p>
+                <p className="mt-4 text-sm font-black text-[#6F8F4E] group-hover:underline">进入管理 →</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-[24px] border border-dashed border-[#D8CCBD] bg-white p-5 text-sm leading-6 text-[#7A6D5E] shadow-sm">
+          <p className="font-black text-[#2B241E]">操作说明</p>
+          <p className="mt-2">冻结、封禁、删除和权限提升属于敏感操作，需要二次确认并写入管理员审计日志。</p>
+        </section>
+      </div>
     </AdminShell>
   );
 }
