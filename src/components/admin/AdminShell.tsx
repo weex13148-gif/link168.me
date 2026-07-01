@@ -22,6 +22,7 @@ const ALL_NAV_ITEMS: NavItem[] = [
   { href: "/jeepwork/ai-usage", label: "AI 用量", icon: "△", tone: "accent" },
   { href: "/jeepwork/ai-cost", label: "AI 成本", icon: "￥", tone: "accent", superAdminOnly: true },
   { href: "/jeepwork/system-health", label: "运维健康", icon: "◈", superAdminOnly: true },
+  { href: "/jeepwork/settings/payment", label: "支付宝与收费", icon: "支", tone: "info", superAdminOnly: true },
   { href: "/jeepwork/settings/api", label: "邮箱与系统配置", icon: "⚙", tone: "info", superAdminOnly: true },
   { href: "/jeepwork/logs", label: "访问日志", icon: "☰", tone: "info", superAdminOnly: true },
   { href: "/jeepwork/governance", label: "平台治理", icon: "⬡", tone: "info", superAdminOnly: true },
