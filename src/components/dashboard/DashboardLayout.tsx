@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ChangeEvent, type ReactNode } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { Loader2, X } from "lucide-react";
 
 type DashboardLayoutProps = {
@@ -26,14 +26,13 @@ export function DashboardLayout({
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [avatarMessage, setAvatarMessage] = useState("");
 
-  async function handleFileChangeCapture(event: ChangeEvent<HTMLElement>) {
+  async function handleFileChangeCapture(event: FormEvent<HTMLElement>) {
     const input = event.target;
     if (!(input instanceof HTMLInputElement) || input.type !== "file" || !input.accept.includes("image/")) return;
 
     const file = input.files?.[0];
     if (!file) return;
 
-    // 统一接管头像上传，避免旧页面因临时用户名而错误拦截。
     event.stopPropagation();
     setAvatarMessage("");
 
@@ -100,10 +99,7 @@ export function DashboardLayout({
       <header className="sticky top-0 z-40 border-b border-[#E8DCCB]/90 bg-[#FFFDF8]/90 px-3 py-2 backdrop-blur sm:px-6 sm:py-3 lg:px-8">
         <div className="mx-auto flex w-full max-w-[1760px] items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">{brand}</div>
-          <div className="flex min-w-0 items-center gap-2">
-            {statusBar}
-            {headerActions}
-          </div>
+          <div className="flex min-w-0 items-center gap-2">{statusBar}{headerActions}</div>
         </div>
       </header>
 
