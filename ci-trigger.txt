@@ -1,1 +1,1 @@
-Link168 V1 pull request build check.
+Link168 V1 pull request build check with downloadable logs.
