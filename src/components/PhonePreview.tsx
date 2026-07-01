@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PreviewShell, type PreviewShellVariant } from "@/components/preview/PreviewShell";
 import {
   SharePageRenderer,
@@ -54,7 +55,7 @@ const defaultLinks: PhonePreviewLink[] = [
 
 export function PhonePreview({
   variant = "marketing",
-  poweredLogoClickable: _poweredLogoClickable,
+  poweredLogoClickable = false,
   username = "abao",
   displayName,
   bio,
@@ -63,9 +64,8 @@ export function PhonePreview({
   appearance,
   className = "",
 }: PhonePreviewProps) {
-  // 首页和注册页只是产品样机，不应因为示例链接没有真实目标而显示红色风控提示。
-  // 真实公开主页仍必须通过服务端与渲染器的 URL 校验。
   const exampleFallbackUrl = variant === "public" ? null : "https://link168.me";
+  const showPowered = appearance?.showPowered !== false;
 
   const activeLinks: SharePageLink[] = links
     .filter((link) => link.isActive !== false)
@@ -78,12 +78,15 @@ export function PhonePreview({
       type: link.type || null,
     }));
 
+  const brandMark = (
+    <span className="mx-auto mt-4 inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 px-3 py-1.5 text-[11px] font-black text-[#4F6D37] shadow-sm">
+      <span className="grid size-5 place-items-center rounded-lg bg-[#6F8F4E] text-[9px] text-white">L</span>
+      由 Link168 提供
+    </span>
+  );
+
   return (
-    <PreviewShell
-      variant={variant}
-      className={className}
-      surfaceClassName={appearance?.surfaceClassName}
-    >
+    <PreviewShell variant={variant} className={className} surfaceClassName={appearance?.surfaceClassName}>
       <SharePageRenderer
         template={appearance?.template || "business"}
         username={username}
@@ -95,8 +98,13 @@ export function PhonePreview({
         surfaceClassName={appearance?.surfaceClassName}
         cardClassName={appearance?.cardClassName}
         linkClassName={appearance?.linkClassName}
-        showBrandFoot
+        showBrandFoot={false}
       />
+      {showPowered ? (
+        <div className="flex justify-center">
+          {poweredLogoClickable ? <Link href="/">{brandMark}</Link> : brandMark}
+        </div>
+      ) : null}
     </PreviewShell>
   );
 }
