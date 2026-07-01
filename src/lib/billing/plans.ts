@@ -1,23 +1,13 @@
 import crypto from "crypto";
 
-// ===== 套餐价格来源 =====
-/**
- * 价格策略说明：
- * - 价格必须来自主 PRD (docs/product/PRODUCT_CANONICAL_V1.md)
- * - 如主 PRD 中尚未最终确认具体价格，使用 null 表示"价格待正式发布"
- * - 禁止在代码中自行编写价格
- */
-
-// 主 PRD 确认的价格（单位：分）
-const PRD_CONFIRMED_PRICES: Record<string, { monthly: number | null; yearly: number | null }> = {
+// 价格统一以“分”为单位保存；当前正式销售仅开放年付。
+const PRICES: Record<string, { monthly: number | null; yearly: number | null }> = {
   free: { monthly: 0, yearly: 0 },
-  // 会员基础版：主 PRD 确认 188 元/年
-  member_basic: { monthly: null, yearly: 18800 }, // 188 元 = 18800 分
-  // Plus 版：主 PRD 标注"价格待正式发布"
-  member_plus: { monthly: null, yearly: null },
-  // 企业版：联系销售
-  enterprise: { monthly: null, yearly: null },
-  // 内部测试套餐：0.01 元
+  member_basic: { monthly: null, yearly: 18800 }, // 旧版兼容：等同 Plus
+  member_plus: { monthly: null, yearly: 18800 },
+  pro: { monthly: null, yearly: 38800 },
+  enterprise: { monthly: null, yearly: 128800 },
+  enterprise_pro_plus: { monthly: null, yearly: 398800 },
   internal_test: { monthly: 1, yearly: 1 },
 };
 
@@ -25,22 +15,18 @@ export const PLAN_CODES = {
   FREE: "free",
   MEMBER_BASIC: "member_basic",
   MEMBER_PLUS: "member_plus",
+  PRO: "pro",
   ENTERPRISE: "enterprise",
+  ENTERPRISE_PRO_PLUS: "enterprise_pro_plus",
   INTERNAL_TEST: "internal_test",
 } as const;
 
 export type PlanCode = (typeof PLAN_CODES)[keyof typeof PLAN_CODES];
 
-export type PlanFeature = {
-  label: string;
-  included: boolean;
-};
-
 export type PlanDefinition = {
   code: PlanCode;
   name: string;
   description: string;
-  // 价格（分），null 表示待正式发布
   priceMonthly: number | null;
   priceYearly: number | null;
   currency: string;
@@ -57,30 +43,38 @@ export type PlanDefinition = {
   };
   highlight?: boolean;
   contactSales?: boolean;
+  legacy?: boolean;
 };
+
+const plusFeatures = [
+  "无限链接与中英文主页",
+  "基础访客 AI 助理窗口",
+  "基础资料与文件交付",
+  "更多主题与高级二维码",
+  "90 天访问与点击数据",
+  "隐藏 Link168 品牌标识",
+];
 
 export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
   free: {
     code: "free",
     name: "免费版",
-    description: "基础经营名片，开启你的线上展示",
+    description: "免费建立中英文无限链接主页",
     priceMonthly: 0,
     priceYearly: 0,
     currency: "CNY",
     features: [
-      "1 张经营名片",
-      "基础经营组件（联系/链接/文字/图片/标题）",
-      "基础分享页模板",
-      "基础配色与字体",
-      "二维码下载",
-      "基础访问统计",
-      "Link168 品牌露出页脚",
-      "50 次/月 AI 咨询（预览）",
+      "1 个公开主页",
+      "无限添加链接",
+      "基础二维码与免费主题",
+      "基础访问数据",
+      "保留 Link168 品牌标识",
+      "AI 功能演示，不产生真实调用",
     ],
     limits: {
       products: 3,
-      knowledgeDocs: 5,
-      aiChatsPerMonth: 50,
+      knowledgeDocs: 0,
+      aiChatsPerMonth: 0,
       aiCreditsGrant: 0,
       teamSeats: 1,
       customDomain: false,
@@ -90,59 +84,65 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
   },
   member_basic: {
     code: "member_basic",
-    name: "会员基础版",
-    description: "AI 页面设计与高级自定义装修",
-    priceMonthly: PRD_CONFIRMED_PRICES.member_basic.monthly,
-    priceYearly: PRD_CONFIRMED_PRICES.member_basic.yearly,
+    name: "Plus（旧版兼容）",
+    description: "旧会员基础版自动按 Plus 权益兼容",
+    priceMonthly: PRICES.member_basic.monthly,
+    priceYearly: PRICES.member_basic.yearly,
     currency: "CNY",
-    features: [
-      "3 张经营名片",
-      "每年 3 次完整 AI 页面设计",
-      "自定义背景图片",
-      "渐变背景",
-      "卡片样式与按钮样式自定义",
-      "高级经营组件（商品/预约/资料/微信客服）",
-      "单个插件密码保护",
-      "更完整访问数据",
-      "品牌露出弱化",
-      "200 次/月 AI 咨询",
-    ],
+    features: plusFeatures,
     limits: {
       products: 10,
-      knowledgeDocs: 20,
-      aiChatsPerMonth: 200,
-      aiCreditsGrant: 200,
+      knowledgeDocs: 3,
+      aiChatsPerMonth: 300,
+      aiCreditsGrant: 300,
+      teamSeats: 1,
+      customDomain: false,
+      removeBranding: true,
+      prioritySupport: false,
+    },
+    legacy: true,
+  },
+  member_plus: {
+    code: "member_plus",
+    name: "Plus 会员",
+    description: "让主页拥有基础 AI 资料助理",
+    priceMonthly: PRICES.member_plus.monthly,
+    priceYearly: PRICES.member_plus.yearly,
+    currency: "CNY",
+    features: plusFeatures,
+    limits: {
+      products: 10,
+      knowledgeDocs: 3,
+      aiChatsPerMonth: 300,
+      aiCreditsGrant: 300,
       teamSeats: 1,
       customDomain: false,
       removeBranding: true,
       prioritySupport: false,
     },
   },
-  member_plus: {
-    code: "member_plus",
-    name: "会员 Plus",
-    description: "AI 经营与客户转化，五大 Agent 加持",
-    priceMonthly: PRD_CONFIRMED_PRICES.member_plus.monthly,
-    priceYearly: PRD_CONFIRMED_PRICES.member_plus.yearly,
+  pro: {
+    code: "pro",
+    name: "Pro 会员",
+    description: "面向创作者、销售与个体经营者的 AI 获客主页",
+    priceMonthly: PRICES.pro.monthly,
+    priceYearly: PRICES.pro.yearly,
     currency: "CNY",
     highlight: true,
     features: [
-      "10 张经营名片",
-      "无限 AI 页面设计次数",
-      "五大 AI Agent 基础能力",
-      "标准 AI 销售顾问",
-      "客户线索与经营档案",
-      "高级数据与报表",
-      "更多 AI 页面设计额度",
-      "2,000 次/月 AI 咨询",
-      "优先客服支持",
+      "包含 Plus 全部功能",
+      "客户需求收集与线索整理",
+      "更多文件与 AI 使用额度",
+      "365 天高级访问数据",
+      "AI 自动生成中英文内容",
+      "数据导出与优先支持",
     ],
     limits: {
       products: 50,
-      knowledgeDocs: 100,
+      knowledgeDocs: 20,
       aiChatsPerMonth: 2000,
       aiCreditsGrant: 2000,
-      teamSeats: 3,
+      teamSeats: 1,
       customDomain: false,
       removeBranding: true,
       prioritySupport: true,
@@ -150,29 +150,51 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
   },
   enterprise: {
     code: "enterprise",
-    name: "企业版",
-    description: "企业知识库、长期记忆、团队能力",
-    priceMonthly: null,
-    priceYearly: null,
+    name: "企业会员",
+    description: "企业主页、独立域名与高级 AI 客服顾问",
+    priceMonthly: PRICES.enterprise.monthly,
+    priceYearly: PRICES.enterprise.yearly,
     currency: "CNY",
-    contactSales: true,
     features: [
-      "不限名片数量",
-      "不限 AI 咨询额度",
-      "企业知识库",
-      "企业长期记忆",
-      "企业团队能力（多用户协作）",
-      "高级数据与专属 AI 销售顾问",
-      "自定义域名与备案支持",
-      "专属客户经理",
-      "定制服务",
+      "包含 Pro 全部功能",
+      "企业品牌主页与企业资料",
+      "1 个自购域名绑定名额",
+      "高级 AI 客服顾问",
+      "企业知识资料与客户线索",
+      "最多 3 名企业成员",
     ],
     limits: {
-      products: -1,
-      knowledgeDocs: -1,
-      aiChatsPerMonth: -1,
+      products: 200,
+      knowledgeDocs: 100,
+      aiChatsPerMonth: 10000,
       aiCreditsGrant: 10000,
-      teamSeats: -1,
+      teamSeats: 3,
+      customDomain: true,
+      removeBranding: true,
+      prioritySupport: true,
+    },
+  },
+  enterprise_pro_plus: {
+    code: "enterprise_pro_plus",
+    name: "企业专业 Plus",
+    description: "多产品、多成员和企业级 AI 工作空间",
+    priceMonthly: PRICES.enterprise_pro_plus.monthly,
+    priceYearly: PRICES.enterprise_pro_plus.yearly,
+    currency: "CNY",
+    features: [
+      "包含企业会员全部功能",
+      "最多 10 名企业成员",
+      "最多 3 个独立域名名额",
+      "多产品与多知识空间",
+      "高级客服顾问与操作日志",
+      "企业初始化与优先服务",
+    ],
+    limits: {
+      products: 1000,
+      knowledgeDocs: 500,
+      aiChatsPerMonth: 50000,
+      aiCreditsGrant: 50000,
+      teamSeats: 10,
       customDomain: true,
       removeBranding: true,
       prioritySupport: true,
@@ -181,16 +203,11 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
   internal_test: {
     code: "internal_test",
     name: "内部测试",
-    description: "仅限 super_admin 使用，用于支付流程测试",
-    priceMonthly: PRD_CONFIRMED_PRICES.internal_test.monthly,
-    priceYearly: PRD_CONFIRMED_PRICES.internal_test.yearly,
+    description: "仅限 super_admin 验证支付闭环",
+    priceMonthly: PRICES.internal_test.monthly,
+    priceYearly: PRICES.internal_test.yearly,
     currency: "CNY",
-    features: [
-      "全部会员功能",
-      "无限 AI 咨询额度",
-      "全部组件权限",
-      "内部测试用",
-    ],
+    features: ["全部会员功能", "支付回调测试", "内部验收专用"],
     limits: {
       products: -1,
       knowledgeDocs: -1,
@@ -204,56 +221,40 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
   },
 };
 
-export const PLAN_ORDER: PlanCode[] = ["free", "member_basic", "member_plus", "enterprise"];
+export const PLAN_ORDER: PlanCode[] = [
+  "free",
+  "member_plus",
+  "pro",
+  "enterprise",
+  "enterprise_pro_plus",
+];
 
-/**
- * 判断价格是否已确认
- */
 export function isPriceConfirmed(planCode: PlanCode, billingCycle: "monthly" | "yearly"): boolean {
   const plan = getPlanDefinition(planCode);
-  if (plan.contactSales) return false; // 企业版不在线支付
+  if (plan.contactSales) return false;
   return billingCycle === "yearly" ? plan.priceYearly !== null : plan.priceMonthly !== null;
 }
 
-/**
- * 获取格式化价格字符串
- */
 export function formatPrice(planCode: PlanCode, billingCycle: "monthly" | "yearly"): string {
   const plan = getPlanDefinition(planCode);
   if (plan.contactSales) return "联系销售";
-  
   const price = billingCycle === "yearly" ? plan.priceYearly : plan.priceMonthly;
-  if (price === null) return "价格待正式发布";
-  
+  if (price === null) return "暂未开放";
   if (price === 0) return "免费";
   return `${(price / 100).toFixed(0)} 元`;
 }
 
-/**
- * 获取套餐定义（带价格来源说明）
- */
 export function getPlanDefinition(planCode: string): PlanDefinition {
   return PLAN_DEFINITIONS[planCode as PlanCode] ?? PLAN_DEFINITIONS.free;
 }
 
-/**
- * 获取套餐价格（分）
- * @throws 如果价格尚未确认
- */
 export function getPlanPrice(plan: PlanDefinition, billingCycle: "monthly" | "yearly"): number {
-  if (plan.contactSales) {
-    throw new Error("企业版请联系销售定制，不支持在线支付");
-  }
+  if (plan.contactSales) throw new Error("该套餐暂不支持在线购买");
   const price = billingCycle === "yearly" ? plan.priceYearly : plan.priceMonthly;
-  if (price === null) {
-    throw new Error(`套餐 ${plan.name} 的${billingCycle === "yearly" ? "年付" : "月付"}价格尚未确认，请联系客服`);
-  }
+  if (price === null) throw new Error(`${plan.name} 当前仅支持年付`);
   return price;
 }
 
-/**
- * 生成唯一订单号
- */
 export function generateOrderId(): string {
   const timestamp = Date.now().toString(36).toUpperCase();
   const random = crypto.randomBytes(4).toString("hex").toUpperCase();
