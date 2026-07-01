@@ -4,7 +4,6 @@ import { db } from "@/lib/db";
 import { getOwnedProfile, newId, normalizeNullableString, toLinkDto } from "@/lib/dashboard-data";
 import { hasSensitiveContent, sanitizePublicText } from "@/lib/content-safety";
 import { sanitizePublicUrl, sanitizePhoneNumber, sanitizeMapUrl, sanitizeQrPayload } from "@/lib/public-url-security";
-import { getUserEntitlements } from "@/lib/billing/entitlements";
 
 export const runtime = "nodejs";
 
@@ -13,7 +12,6 @@ const COMPONENT_TYPES = ["link", "text", "group-title", "qr", "wechat", "phone",
 const TEXT_ONLY_TYPES = new Set(["text", "group-title"]);
 const MAX_TITLE_LENGTH = 60;
 const MAX_DESCRIPTION_LENGTH = 200;
-const FREE_LINK_LIMIT = 10;
 
 type CreateLinkRequest = {
   title?: unknown;
@@ -60,18 +58,6 @@ export async function POST(request: Request) {
 
   const profile = await getOwnedProfile(user.id);
   if (!profile) return NextResponse.json({ success: false, error: "没有找到当前用户的主页资料。" }, { status: 404 });
-
-  const entitlements = await getUserEntitlements(user.id);
-  const currentLinkCount = await db.link.count({ where: { profileId: profile.id } });
-  if (entitlements.planCode === "free" && currentLinkCount >= FREE_LINK_LIMIT) {
-    return NextResponse.json({
-      success: false,
-      error: `免费版最多可创建 ${FREE_LINK_LIMIT} 个链接，当前已有 ${currentLinkCount} 个。升级会员可解锁更多链接。`,
-      upgradeRequired: true,
-      limit: FREE_LINK_LIMIT,
-      used: currentLinkCount,
-    }, { status: 403 });
-  }
 
   let body: CreateLinkRequest;
   try {
