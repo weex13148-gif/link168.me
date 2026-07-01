@@ -9,15 +9,13 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
-  const [devLink, setDevLink] = useState("");
 
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("");
     setSuccess(false);
-    setDevLink("");
 
-    if (!email) {
+    if (!email.trim()) {
       setMessage("请输入邮箱地址。");
       return;
     }
@@ -29,84 +27,48 @@ export default function ForgotPasswordPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      const result = (await response.json()) as {
-        success?: boolean;
-        message?: string;
-        devResetUrl?: string;
-      };
-      setLoading(false);
-
+      const result = await response.json() as { success?: boolean; message?: string; error?: string };
       if (!response.ok || !result.success) {
-        setMessage(result.message || "请求失败，请稍后重试。");
+        setMessage(result.error || result.message || "请求失败，请稍后重试。");
         return;
       }
-
       setSuccess(true);
-      setMessage(result.message || "如果该邮箱已注册，我们已向其发送重置密码链接。");
-      if (result.devResetUrl) setDevLink(result.devResetUrl);
+      setMessage(result.message || "如果该邮箱已注册，我们将发送密码重置邮件，请检查收件箱或垃圾箱。");
     } catch {
+      setMessage("网络连接失败，请稍后重试。");
+    } finally {
       setLoading(false);
-      setMessage("网络错误，请稍后重试。");
     }
   }
 
   return (
     <main className="relative mx-auto flex min-h-dvh w-full max-w-md items-center overflow-hidden px-4 py-8">
       <div className="absolute inset-0 -z-20 bg-[linear-gradient(135deg,#FFFDF8_0%,#F7F1E7_55%,#F2E7D8_100%)]" />
-      <div className="absolute left-[-90px] top-24 -z-10 size-48 rounded-full bg-[#DDE8CD]/70 blur-3xl" />
-      <div className="absolute bottom-16 right-[-80px] -z-10 size-56 rounded-full bg-[#F2E7D8]/80 blur-3xl" />
-
-      <section className="w-full rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8]/90 p-6 shadow-[0_24px_70px_rgba(86,68,46,0.12)] backdrop-blur">
+      <section className="w-full rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8]/94 p-6 shadow-[0_24px_70px_rgba(86,68,46,0.12)]">
         <BrandLogo size="header" />
         <h1 className="mt-6 text-3xl font-black text-[#2B241E]">找回密码</h1>
-        <p className="mt-3 text-sm leading-7 text-[#7A6D5E]">
-          请输入你注册时使用的邮箱地址，我们会发送重置密码链接到你的邮箱。
-        </p>
+        <p className="mt-3 text-sm leading-7 text-[#7A6D5E]">输入注册邮箱，我们会发送一次性密码重置链接。为保护账号安全，页面不会透露该邮箱是否已经注册。</p>
 
         {success ? (
-          <>
-            <div className="mt-6 rounded-2xl bg-[#DDE8CD]/60 p-4 text-sm text-[#3F5F31]">
-              {message}
-            </div>
-            {devLink ? (
-              <div className="mt-4 rounded-2xl border border-dashed border-[#E8DCCB] bg-[#FFFDF8] p-4 text-xs text-[#7A6D5E]">
-                <p className="font-bold text-[#3F5F31]">开发模式提示：</p>
-                <p className="mt-2 break-all">{devLink}</p>
-              </div>
-            ) : null}
-          </>
+          <div className="mt-6 rounded-2xl bg-[#EEF4E7] p-4 text-sm font-bold leading-7 text-[#355126]">
+            {message}
+          </div>
         ) : (
-          <form onSubmit={onSubmit} className="mt-6 grid gap-4">
-            <label className="block">
-              <span className="text-sm font-black text-[#3F5F31]">邮箱地址</span>
-              <input
-                required
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@example.com"
-                className="mt-2 h-12 w-full rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 text-[#2B241E] outline-none transition placeholder:text-[#A69A8A] focus:border-[#6F8F4E] focus:bg-[#FFFDF8] focus:ring-4 focus:ring-[#6F8F4E]/12"
-              />
+          <form onSubmit={submit} className="mt-6 grid gap-4">
+            <label className="grid gap-2">
+              <span className="text-sm font-black text-[#3F5F31]">注册邮箱</span>
+              <input required type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="请输入注册邮箱" className="h-12 rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 outline-none focus:border-[#6F8F4E] focus:bg-white" />
             </label>
-            {message ? (
-              <p className="rounded-2xl bg-[#FFF1F0] px-4 py-3 text-sm font-bold text-[#B42318]">
-                {message}
-              </p>
-            ) : null}
-            <button
-              type="submit"
-              disabled={loading}
-              className="link168-button-press flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#6F8F4E] px-5 font-black text-white shadow-lg shadow-[#6F8F4E]/20 transition hover:-translate-y-0.5 hover:bg-[#5E7F3F] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {loading ? "发送中..." : "发送重置密码链接"}
+            {message ? <p className="rounded-2xl bg-[#FFF1F0] px-4 py-3 text-sm font-bold text-[#B42318]">{message}</p> : null}
+            <button type="submit" disabled={loading} className="h-12 rounded-full bg-[#6F8F4E] px-5 font-black text-white disabled:opacity-60">
+              {loading ? "正在发送…" : "发送密码重置邮件"}
             </button>
           </form>
         )}
 
         <div className="mt-6 grid gap-3 text-center text-sm">
-          <Link href="/login" className="font-black text-[#3F5F31]">
-            想起密码？返回登录
-          </Link>
+          {success ? <button type="button" onClick={() => { setSuccess(false); setMessage(""); }} className="font-black text-[#3F5F31]">重新填写邮箱</button> : null}
+          <Link href="/login" className="font-bold text-[#7A6D5E]">返回登录</Link>
         </div>
       </section>
     </main>
