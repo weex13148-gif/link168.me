@@ -21,13 +21,13 @@ export default async function ShowcasePage() {
   if (!config.enabled) {
     await recordShowcaseAccess(buildShowcaseLogMetadata(requestHeaders, "disabled")).catch(() => undefined);
     return (
-      <main className="flex min-h-dvh items-center justify-center bg-[#0A1020] px-4 py-8 text-white sm:px-5 sm:py-10">
-        <section className="w-full max-w-2xl rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl sm:rounded-[32px] sm:p-8">
-          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#9DBADD] sm:text-xs">Link168 Showcase</p>
-          <h1 className="mt-2 text-2xl font-black sm:mt-3 sm:text-3xl lg:text-5xl">比赛展示中心暂未启用</h1>
-          <p className="mt-4 text-sm leading-7 text-white/70 sm:text-base lg:leading-8">
-            该页面由超级管理员后台总开关控制，默认关闭。主站首页、Dashboard、登录注册页和用户公开主页不会出现比赛宣传。
-          </p>
+      <main className="ui-page grid min-h-dvh place-items-center px-4 py-10">
+        <section className="ui-surface w-full max-w-xl p-7 text-center sm:p-9">
+          <span className="mx-auto grid size-12 place-items-center rounded-[var(--ui-radius-sm)] bg-[var(--ui-brand)] text-lg font-black text-white">L</span>
+          <p className="ui-eyebrow mt-6">比赛展示中心</p>
+          <h1 className="ui-title mt-3 text-3xl sm:text-4xl">当前暂未开放评委访问</h1>
+          <p className="ui-muted mt-4 text-sm leading-7">比赛页面由超级管理员控制，默认关闭。开启后可通过共享密码查看真实产品、比赛资料、演示状态和评委下载文件。</p>
+          <a href="/" className="ui-button-secondary mt-6">返回 Link168 首页</a>
         </section>
       </main>
     );
@@ -35,18 +35,7 @@ export default async function ShowcasePage() {
 
   if (!authed) {
     await recordShowcaseAccess(buildShowcaseLogMetadata(requestHeaders, "password_required")).catch(() => undefined);
-    return (
-      <main className="flex min-h-dvh items-center justify-center bg-[#0A1020] px-4 py-8 text-white sm:px-5 sm:py-10">
-        <section className="w-full max-w-3xl">
-          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#9DBADD] sm:text-xs">Judge Access</p>
-          <h1 className="mt-2 text-2xl font-black leading-tight sm:mt-3 sm:text-4xl lg:text-6xl">Link168 比赛展示中心</h1>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-white/70 sm:text-base lg:leading-8">
-            本展示中心仅面向评委和比赛审核场景开放，需输入共享访问密码。展示内容严格区分已上线、内测中和规划中能力。
-          </p>
-          <ShowcaseGate />
-        </section>
-      </main>
-    );
+    return <ShowcaseGate />;
   }
 
   await recordShowcaseAccess(buildShowcaseLogMetadata(requestHeaders, "authorized_page")).catch(() => undefined);
