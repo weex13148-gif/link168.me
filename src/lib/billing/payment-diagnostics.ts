@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { db } from "@/lib/db";
 
 const ACTION_PREFIX = "PAYMENT_ALIPAY_";
@@ -25,6 +26,7 @@ export async function recordAlipayDiagnostic(event: PaymentDiagnosticEvent) {
   try {
     await db.adminAuditLog.create({
       data: {
+        id: crypto.randomUUID(),
         action: `${ACTION_PREFIX}${event.type.toUpperCase()}`,
         targetType: "alipay_payment",
         targetId: event.orderNo || event.tradeNo || null,
