@@ -1,9 +1,4 @@
-// V2-002：URL / 电话 / 地图 协议统一安全白名单
-// 职责：
-//  - API 写入侧对提交的 URL 进行协议校验与规范化
-//  - Renderer 输出侧再次校验，防止数据库中已污染的内容被执行
-//  - 协议白名单仅允许 http / https / tel / mailto + 受控地图服务参数
-//  - 禁止 javascript: / data: / vbscript: / file: / ftp: 等危险协议
+// V1 公共链接安全校验：写入和渲染统一使用同一套规则。
 
 export type SanitizedUrl = {
   safe: boolean;
@@ -30,38 +25,51 @@ const ALLOWED_WEB_PROTOCOLS = new Set(["http", "https"]);
 function detectProtocol(raw: string | null | undefined): string | null {
   if (!raw) return null;
   const trimmed = raw.trim();
-  const idx = trimmed.indexOf(":");
-  if (idx <= 0 || idx > 20) return null;
-  return trimmed.slice(0, idx).toLowerCase();
+  const index = trimmed.indexOf(":");
+  if (index <= 0 || index > 20) return null;
+  return trimmed.slice(0, index).toLowerCase();
 }
 
-// 清洗普通链接（LINK / PRODUCT / BOOKING）：仅 http / https
+function isValidPublicHostname(hostname: string) {
+  const host = hostname.trim().toLowerCase();
+  if (!host || host === "localhost" || host.endsWith(".local")) return false;
+  if (host === "0.0.0.0" || host === "127.0.0.1" || host === "::1") return false;
+  if (host.startsWith("10.") || host.startsWith("192.168.") || host.startsWith("169.254.")) return false;
+  if (/^172\.(1[6-9]|2\d|3[0-1])\./.test(host)) return false;
+
+  // 普通域名必须至少包含一个点，避免把 https://link168/ 之类错误地址保存为有效网址。
+  if (!host.includes(".")) return false;
+  if (host.startsWith(".") || host.endsWith(".") || host.includes("..")) return false;
+  return true;
+}
+
 export function sanitizePublicUrl(raw: string | null | undefined): SanitizedUrl {
-  if (!raw || typeof raw !== "string") return { safe: false, url: null, sanitized: false };
+  if (!raw || typeof raw !== "string") return { safe: false, url: null, sanitized: false, hint: "empty" };
   const trimmed = raw.trim();
-  if (!trimmed) return { safe: false, url: null, sanitized: false };
+  if (!trimmed) return { safe: false, url: null, sanitized: false, hint: "empty" };
 
-  // 无协议：默认添加 https://
-  if (!/^[A-Za-z][A-Za-z0-9+\-.]*:/.test(trimmed)) {
-    return { safe: true, url: `https://${trimmed}`, sanitized: true, hint: "auto-prepend-https" };
-  }
-
-  const protocol = detectProtocol(trimmed);
-  if (!protocol) return { safe: false, url: null, sanitized: false };
+  const candidate = /^[A-Za-z][A-Za-z0-9+\-.]*:/.test(trimmed) ? trimmed : `https://${trimmed}`;
+  const protocol = detectProtocol(candidate);
+  if (!protocol) return { safe: false, url: null, sanitized: false, hint: "missing-protocol" };
   if (DANGEROUS_PROTOCOLS.has(protocol)) return { safe: false, url: null, sanitized: false, hint: `blocked-${protocol}` };
   if (!ALLOWED_WEB_PROTOCOLS.has(protocol)) return { safe: false, url: null, sanitized: false, hint: `unsupported-${protocol}` };
 
-  // URL 合法性：使用 WHATWG URL 基础验证
   try {
-    const parsed = new URL(trimmed);
-    if (!parsed.hostname) return { safe: false, url: null, sanitized: false, hint: "no-hostname" };
-    return { safe: true, url: parsed.toString(), sanitized: false };
+    const parsed = new URL(candidate);
+    if (!isValidPublicHostname(parsed.hostname)) {
+      return { safe: false, url: null, sanitized: false, hint: "invalid-hostname" };
+    }
+    return {
+      safe: true,
+      url: parsed.toString(),
+      sanitized: candidate !== trimmed,
+      hint: candidate !== trimmed ? "auto-prepend-https" : undefined,
+    };
   } catch {
     return { safe: false, url: null, sanitized: false, hint: "invalid-url" };
   }
 }
 
-// 清洗电话号码 → 只保留数字与 +-() 符号，渲染时再生成 tel:
 export function sanitizePhoneNumber(raw: string | null | undefined): { safe: boolean; phone: string | null; telUrl: string | null } {
   if (!raw || typeof raw !== "string") return { safe: false, phone: null, telUrl: null };
   const cleaned = raw.replace(/[^\d+]/g, "");
@@ -69,7 +77,6 @@ export function sanitizePhoneNumber(raw: string | null | undefined): { safe: boo
   return { safe: true, phone: cleaned, telUrl: `tel:${cleaned}` };
 }
 
-// 清洗邮箱地址 → 合法邮箱再生成 mailto:
 export function sanitizeMailUrl(raw: string | null | undefined): { safe: boolean; mail: string | null; mailtoUrl: string | null } {
   if (!raw || typeof raw !== "string") return { safe: false, mail: null, mailtoUrl: null };
   const mail = raw.trim().toLowerCase();
@@ -78,7 +85,6 @@ export function sanitizeMailUrl(raw: string | null | undefined): { safe: boolean
   return { safe: true, mail, mailtoUrl: `mailto:${mail}` };
 }
 
-// 地图链接：只允许已受控域名的 http / https 链接
 const ALLOWED_MAP_HOSTS = new Set([
   "maps.google.com",
   "www.google.com",
@@ -99,31 +105,30 @@ export function sanitizeMapUrl(raw: string | null | undefined): SanitizedUrl {
     if (!ALLOWED_MAP_HOSTS.has(parsed.hostname.toLowerCase())) {
       return { safe: false, url: null, sanitized: false, hint: "unsupported-map-host" };
     }
-    return { safe: true, url: parsed.toString(), sanitized: false };
+    return { safe: true, url: parsed.toString(), sanitized: web.sanitized };
   } catch {
     return { safe: false, url: null, sanitized: false, hint: "invalid-url" };
   }
 }
 
-// 二维码：二维码数据本身不自动打开任何外部协议，只允许普通文本与 URL
 export function sanitizeQrPayload(raw: string | null | undefined): { safe: boolean; payload: string | null } {
   if (!raw || typeof raw !== "string") return { safe: false, payload: null };
   const trimmed = raw.trim();
   if (!trimmed) return { safe: false, payload: null };
-  // 若包含协议前缀：必须 http / https
   if (/^[A-Za-z][A-Za-z0-9+\-.]*:/.test(trimmed)) {
     const protocol = detectProtocol(trimmed);
-    if (!protocol) return { safe: false, payload: null };
-    if (DANGEROUS_PROTOCOLS.has(protocol)) return { safe: false, payload: null };
-    if (!ALLOWED_WEB_PROTOCOLS.has(protocol)) return { safe: false, payload: null };
+    if (!protocol || DANGEROUS_PROTOCOLS.has(protocol) || !ALLOWED_WEB_PROTOCOLS.has(protocol)) {
+      return { safe: false, payload: null };
+    }
+    const checked = sanitizePublicUrl(trimmed);
+    if (!checked.safe || !checked.url) return { safe: false, payload: null };
+    return { safe: true, payload: checked.url };
   }
-  // 控制字符清洗
   const clean = trimmed.replace(/[\u0000-\u001F\u007F]/g, "");
   if (clean.length > 2000) return { safe: false, payload: null };
   return { safe: true, payload: clean };
 }
 
-// 组件级别：根据 componentType 选择清洗函数
 export type LinkComponentType = "link" | "text" | "group-title" | "qr" | "wechat" | "phone" | "shop" | "booking" | "map";
 
 export function sanitizeLinkPayload(componentType: string | null | undefined, rawUrl: string | null | undefined, rawPayload: unknown): SanitizedUrl | { safe: boolean; payload?: unknown } {
@@ -137,14 +142,11 @@ export function sanitizeLinkPayload(componentType: string | null | undefined, ra
       return sanitizeMapUrl(rawUrl);
     case "qr":
       return sanitizeQrPayload(typeof rawPayload === "string" ? rawPayload : rawUrl);
-    case "link":
-    case "shop":
-    case "booking":
-    default:
-      return sanitizePublicUrl(rawUrl);
     case "text":
     case "group-title":
     case "wechat":
       return { safe: true, payload: rawPayload };
+    default:
+      return sanitizePublicUrl(rawUrl);
   }
 }
