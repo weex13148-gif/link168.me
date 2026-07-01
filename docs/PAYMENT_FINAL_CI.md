@@ -1,0 +1,1 @@
+Temporary marker for the final payment and membership CI validation. Do not merge.
