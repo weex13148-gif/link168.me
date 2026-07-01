@@ -1,1 +1,1 @@
-Link168 V1 CI check refreshed.
+Link168 V1 pull request build check.
