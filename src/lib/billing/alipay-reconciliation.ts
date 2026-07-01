@@ -4,7 +4,7 @@ import { recordAlipayDiagnostic } from "@/lib/billing/payment-diagnostics";
 import { ORDER_STATUS, processPaymentSuccess } from "@/lib/billing/orders";
 
 const SUCCESS_STATUSES = new Set(["TRADE_SUCCESS", "TRADE_FINISHED"]);
-const RECONCILABLE_STATUSES = new Set([
+const RECONCILABLE_STATUSES = new Set<string>([
   ORDER_STATUS.PENDING,
   ORDER_STATUS.PROCESSING,
   ORDER_STATUS.EXPIRED,
