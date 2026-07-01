@@ -1,11 +1,33 @@
 import { NextResponse } from "next/server";
 import { requireDashboardUser } from "@/lib/auth";
-import { closeExpiredOrders, createOrder, getUserOrders, updateOrderPaymentChannel, BillingPermissionError } from "@/lib/billing/orders";
+import { db } from "@/lib/db";
+import {
+  closeExpiredOrders,
+  createOrder,
+  getUserOrders,
+  updateOrderPaymentChannel,
+  BillingPermissionError,
+  type BillingOrder,
+} from "@/lib/billing/orders";
 import { createPayment, getPaymentAvailability } from "@/lib/billing/payments";
-import { getPlanDefinition, isPriceConfirmed } from "@/lib/billing/plans";
-import type { PlanCode } from "@/lib/billing/plans";
+import { PLAN_DEFINITIONS, getPlanDefinition, isPriceConfirmed, type PlanCode } from "@/lib/billing/plans";
 
 export const runtime = "nodejs";
+
+function serializeOrder(order: BillingOrder) {
+  return {
+    ...order,
+    order_no: order.orderNo,
+    plan_code: order.planCode,
+    plan_name: order.planName,
+    billing_cycle: order.billingCycle,
+    amount: order.payableAmount,
+    payment_method: order.paymentChannel,
+    paid_at: order.paidAt,
+    created_at: order.createdAt,
+    refund_amount: order.refundAmount,
+  };
+}
 
 export async function GET(request: Request) {
   const { user, response } = await requireDashboardUser(request);
@@ -14,9 +36,9 @@ export async function GET(request: Request) {
   try {
     await closeExpiredOrders();
     const orders = await getUserOrders(user.id);
-    return NextResponse.json({ success: true, orders });
-  } catch (err) {
-    console.error("[billing/orders] 获取订单失败:", err);
+    return NextResponse.json({ success: true, orders: orders.map(serializeOrder) });
+  } catch (error) {
+    console.error("[billing/orders] 获取订单失败:", error);
     return NextResponse.json({ success: false, error: "获取订单失败" }, { status: 500 });
   }
 }
@@ -25,105 +47,105 @@ export async function POST(request: Request) {
   const { user, response } = await requireDashboardUser(request);
   if (response || !user) return response;
 
+  if (!user.emailVerified) {
+    return NextResponse.json(
+      { success: false, error: "请先完成邮箱验证，再购买会员。", blockedType: "EMAIL_UNVERIFIED" },
+      { status: 403 },
+    );
+  }
+
   try {
-    const body = (await request.json()) as {
-      planCode?: string;
-      billingCycle?: string;
-      paymentChannel?: string;
-    };
+    const body = (await request.json()) as Record<string, unknown>;
+    const planCodeRaw = String(body.planCode ?? body.plan_code ?? "").trim();
+    const billingCycleRaw = String(body.billingCycle ?? body.billing_cycle ?? "yearly").trim();
+    const paymentChannelRaw = String(body.paymentChannel ?? body.payment_method ?? "alipay").trim();
 
-    const { planCode, billingCycle = "yearly", paymentChannel } = body;
-
-    if (!planCode) {
-      return NextResponse.json({ success: false, error: "缺少 planCode 参数" }, { status: 400 });
+    if (!planCodeRaw || !(planCodeRaw in PLAN_DEFINITIONS)) {
+      return NextResponse.json({ success: false, error: "请选择有效套餐" }, { status: 400 });
     }
 
-    if (billingCycle !== "monthly" && billingCycle !== "yearly") {
-      return NextResponse.json({ success: false, error: "billingCycle 必须是 monthly 或 yearly" }, { status: 400 });
+    const planCode = planCodeRaw as PlanCode;
+    if (planCode === "free") {
+      return NextResponse.json({ success: false, error: "免费版无需下单" }, { status: 400 });
+    }
+
+    if (billingCycleRaw !== "yearly") {
+      return NextResponse.json({ success: false, error: "当前正式销售仅支持年付" }, { status: 400 });
+    }
+
+    if (paymentChannelRaw === "wechat") {
+      return NextResponse.json({ success: false, error: "微信支付后续开放，当前请使用支付宝。" }, { status: 400 });
+    }
+    if (paymentChannelRaw !== "alipay") {
+      return NextResponse.json({ success: false, error: "当前仅支持支付宝" }, { status: 400 });
+    }
+
+    if (planCode === "internal_test" && user.role !== "super_admin") {
+      return NextResponse.json({ success: false, error: "无权使用内部测试套餐" }, { status: 403 });
+    }
+
+    if (!isPriceConfirmed(planCode, "yearly")) {
+      const plan = getPlanDefinition(planCode);
+      return NextResponse.json({ success: false, error: `${plan.name} 年付价格尚未确认` }, { status: 400 });
     }
 
     const availability = await getPaymentAvailability();
     if (!availability.paymentEnabled) {
-      return NextResponse.json({ success: false, error: "支付功能暂未开放" }, { status: 400 });
+      return NextResponse.json({ success: false, error: "支付功能暂未开放" }, { status: 503 });
     }
-
-    if (!availability.wechatAvailable && !availability.alipayAvailable) {
-      return NextResponse.json({ success: false, error: "暂无可用支付方式" }, { status: 400 });
-    }
-
-    if (!isPriceConfirmed(planCode as PlanCode, billingCycle)) {
-      const plan = getPlanDefinition(planCode);
+    if (!availability.alipayAvailable) {
       return NextResponse.json(
-        {
-          success: false,
-          error: `${plan.name} 的${billingCycle === "yearly" ? "年付" : "月付"}价格尚未确认，暂不支持购买`,
-        },
-        { status: 400 },
+        { success: false, error: availability.alipayReason || "支付宝暂不可用" },
+        { status: 503 },
       );
     }
 
-    // Layer 1: API 层强制校验 — 仅 super_admin 可创建 internal_test 订单
-    if (planCode === "internal_test" && user.role !== "super_admin") {
-      return NextResponse.json(
-        { success: false, error: "无权使用内部测试套餐" },
-        { status: 403 },
-      );
-    }
+    // 支付成功发放额度时依赖额度账户；下单前幂等创建，兼容历史用户。
+    await db.aiCreditAccount.upsert({
+      where: { userId: user.id },
+      create: { userId: user.id },
+      update: {},
+    });
 
     const order = await createOrder({
       userId: user.id,
-      planCode: planCode as PlanCode,
-      billingCycle,
+      planCode,
+      billingCycle: "yearly",
+      metadata: { source: "workbench_membership", paymentChannel: "alipay" },
     });
 
-    if (paymentChannel && (paymentChannel === "wechat" || paymentChannel === "alipay")) {
-      const paymentResult = await createPayment(order, paymentChannel);
-      if (!paymentResult.success) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: paymentResult.errorMessage,
-            order,
-          },
-          { status: 400 },
-        );
-      }
+    const paymentResult = await createPayment(order, "alipay");
+    if (!paymentResult.success) {
+      return NextResponse.json(
+        { success: false, error: paymentResult.errorMessage || "支付宝下单失败", order: serializeOrder(order) },
+        { status: 502 },
+      );
+    }
 
-      const processingOrder = await updateOrderPaymentChannel(order.id, user.id, paymentChannel);
-      if (!processingOrder) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "订单状态更新失败，请刷新后重试",
-            order,
-          },
-          { status: 409 },
-        );
-      }
-
-      return NextResponse.json({
-        success: true,
-        order: processingOrder,
-        payment: {
-          qrCodeUrl: paymentResult.qrCodeUrl,
-          payUrl: paymentResult.payUrl,
-          prepayId: paymentResult.prepayId,
-          orderInfo: paymentResult.orderInfo,
-        },
-      });
+    const processingOrder = await updateOrderPaymentChannel(order.id, user.id, "alipay");
+    if (!processingOrder) {
+      return NextResponse.json({ success: false, error: "订单状态更新失败，请重新下单" }, { status: 409 });
     }
 
     return NextResponse.json({
       success: true,
-      order,
-      availability,
+      order: serializeOrder(processingOrder),
+      payment: {
+        method: "alipay",
+        payUrl: paymentResult.payUrl,
+        pay_url: paymentResult.payUrl,
+        orderInfo: paymentResult.orderInfo,
+        order_info: paymentResult.orderInfo,
+      },
     });
-  } catch (err) {
-    if (err instanceof BillingPermissionError) {
-      return NextResponse.json({ success: false, error: err.message }, { status: 403 });
+  } catch (error) {
+    if (error instanceof BillingPermissionError) {
+      return NextResponse.json({ success: false, error: error.message }, { status: 403 });
     }
-    console.error("[billing/orders] 创建订单失败:", err);
-    const message = err instanceof Error ? err.message : "创建订单失败";
-    return NextResponse.json({ success: false, error: message }, { status: 500 });
+    console.error("[billing/orders] 创建订单失败:", error);
+    return NextResponse.json(
+      { success: false, error: error instanceof Error ? error.message : "创建订单失败" },
+      { status: 500 },
+    );
   }
 }
