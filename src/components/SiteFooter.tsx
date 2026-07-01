@@ -15,36 +15,28 @@ export function SiteFooter() {
       <div className="mx-auto grid w-full max-w-7xl gap-6 md:grid-cols-[1fr_1.4fr] md:items-start">
         <div>
           <BrandLogo size="footer" />
-          <p className="mt-4 text-lg font-bold text-[#1f1f2e]">Link168 连接美好生活</p>
-          <p className="mt-2 text-sm leading-6">用一个链接，整理你的内容、服务与生意。</p>
+          <p className="mt-4 text-lg font-bold text-[#1f1f2e]">个人数字名片与客户入口整理工具</p>
+          <p className="mt-2 max-w-md text-sm leading-6">用一个公开主页，集中展示你的内容、服务、联系方式和二维码。</p>
         </div>
+
         <div className="grid gap-4">
           <nav className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {footerLinks.map(({ label, href, icon: Icon }) => (
-              <Link
-                key={label}
-                href={href}
-                className="link168-card-hover link168-button-press group flex min-h-14 items-center gap-3 rounded-2xl border border-[#e5e7eb] bg-white px-4 py-3 text-[15px] font-semibold text-[#1f1f2e] shadow-sm"
-              >
-                <span className="link168-card-icon link168-wiggle-on-hover grid size-9 shrink-0 place-items-center rounded-xl bg-[#f5f3ff] text-[#8b5cf6] transition group-hover:bg-[#8b5cf6]/20 group-hover:text-[#8b5cf6]">
-                  <Icon aria-hidden className="link168-nav-icon" />
+              <Link key={label} href={href} className="group flex min-h-14 items-center gap-3 rounded-2xl border border-[#e5e7eb] bg-white px-4 py-3 text-[15px] font-semibold text-[#1f1f2e] shadow-sm transition hover:-translate-y-0.5">
+                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#f5f3ff] text-[#8b5cf6]">
+                  <Icon aria-hidden className="size-4" />
                 </span>
                 {label}
               </Link>
             ))}
           </nav>
-          <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs">
-            <a
-              href="https://beian.miit.gov.cn/"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-[#8b5cf6]"
-            >
+
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs">
+            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer" className="hover:text-[#8b5cf6]">
               皖ICP备2026018031号-1
             </a>
-            <span>公安备案办理中</span>
+            <span>合肥造梦哈勃文化传媒有限公司</span>
           </div>
-          <p className="text-xs">合肥造梦哈勃文化传媒有限公司</p>
           <p className="text-xs">Copyright © 2026 link168.me</p>
         </div>
       </div>
