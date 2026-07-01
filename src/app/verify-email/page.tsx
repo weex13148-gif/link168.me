@@ -88,18 +88,14 @@ function VerifyEmailForm() {
 
   if (verified) {
     return (
-      <section className="w-full rounded-[28px] border border-[#E8DCCB] bg-white p-7 shadow-[0_24px_70px_rgba(86,68,46,0.12)]">
-        <BrandLogo size="header" />
-        <div className="mt-7 rounded-2xl bg-[#EEF4E7] p-5 text-center">
-          <p className="text-4xl" aria-hidden>✓</p>
-          <h1 className="mt-3 text-3xl font-black text-[#2B241E]">邮箱验证成功</h1>
-          <p className="mt-3 text-sm leading-7 text-[#4F6D37]">{message}</p>
+      <section className="ui-surface w-full p-7">
+        <BrandLogo size="header" className="!w-[124px]" />
+        <div className="mt-7 rounded-[var(--ui-radius-md)] bg-[var(--ui-success-soft)] p-6 text-center">
+          <p className="text-4xl text-[var(--ui-brand)]" aria-hidden>✓</p>
+          <h1 className="ui-title mt-3 text-3xl">邮箱验证成功</h1>
+          <p className="mt-3 text-sm leading-7 text-[var(--ui-success)]">{message}</p>
         </div>
-        <button
-          type="button"
-          onClick={() => router.replace("/dashboard")}
-          className="mt-6 flex min-h-12 w-full items-center justify-center rounded-full bg-[#6F8F4E] px-5 font-black text-white"
-        >
+        <button type="button" onClick={() => router.replace("/dashboard")} className="ui-button-primary mt-6 min-h-12 w-full text-base">
           进入我的 Link168 后台
         </button>
       </section>
@@ -107,17 +103,18 @@ function VerifyEmailForm() {
   }
 
   return (
-    <section className="w-full rounded-[28px] border border-[#E8DCCB] bg-white p-7 shadow-[0_24px_70px_rgba(86,68,46,0.12)]">
-      <BrandLogo size="header" />
-      <h1 className="mt-7 text-3xl font-black text-[#2B241E]">验证你的邮箱</h1>
-      <p className="mt-3 text-sm leading-7 text-[#7A6D5E]">
-        请输入发送到{email ? <strong className="mx-1 text-[#3F5F31]">{email}</strong> : "注册邮箱"}的 6 位验证码。
+    <section className="ui-surface w-full p-7">
+      <BrandLogo size="header" className="!w-[124px]" />
+      <p className="ui-eyebrow mt-7">邮箱验证</p>
+      <h1 className="ui-title mt-3 text-3xl">输入 6 位验证码</h1>
+      <p className="ui-muted mt-3 text-sm leading-7">
+        验证码已发送到{email ? <strong className="mx-1 text-[var(--ui-brand-hover)]">{email}</strong> : "注册邮箱"}。
         验证码 10 分钟内有效，且只能使用一次。
       </p>
 
       <form onSubmit={handleVerify} className="mt-6 grid gap-4">
         <label className="grid gap-2">
-          <span className="text-sm font-black text-[#3F5F31]">6 位邮箱验证码</span>
+          <span className="text-sm font-black text-[var(--ui-ink)]">邮箱验证码</span>
           <input
             autoFocus
             required
@@ -127,33 +124,24 @@ function VerifyEmailForm() {
             value={code}
             onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
             placeholder="请输入 6 位数字"
-            className="h-14 w-full rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-center text-2xl font-black tracking-[0.35em] text-[#2B241E] outline-none focus:border-[#6F8F4E] focus:ring-4 focus:ring-[#6F8F4E]/12"
+            className="ui-input min-h-14 text-center text-2xl font-black tracking-[0.35em]"
           />
         </label>
 
-        {message ? <p className="rounded-2xl bg-[#EEF4E7] px-4 py-3 text-sm font-bold text-[#355126]">{message}</p> : null}
-        {error ? <p className="rounded-2xl bg-[#FFF1F0] px-4 py-3 text-sm font-bold text-[#B42318]">{error}</p> : null}
+        {message ? <p className="rounded-[var(--ui-radius-sm)] bg-[var(--ui-success-soft)] px-4 py-3 text-sm font-bold text-[var(--ui-success)]">{message}</p> : null}
+        {error ? <p className="rounded-[var(--ui-radius-sm)] bg-[var(--ui-danger-soft)] px-4 py-3 text-sm font-bold text-[var(--ui-danger)]">{error}</p> : null}
 
-        <button
-          type="submit"
-          disabled={loading || code.length !== 6}
-          className="flex min-h-12 items-center justify-center rounded-full bg-[#6F8F4E] px-5 font-black text-white disabled:cursor-not-allowed disabled:opacity-55"
-        >
+        <button type="submit" disabled={loading || code.length !== 6} className="ui-button-primary min-h-12 w-full text-base disabled:cursor-not-allowed disabled:opacity-55">
           {loading ? "正在验证…" : "完成邮箱验证"}
         </button>
       </form>
 
-      <div className="mt-5 flex flex-col items-center gap-3 text-sm">
-        <button
-          type="button"
-          onClick={() => void handleResend()}
-          disabled={cooldown > 0 || resending}
-          className="font-black text-[#3F5F31] disabled:cursor-not-allowed disabled:text-[#A69A8A]"
-        >
+      <div className="mt-5 flex flex-col items-center gap-3 border-t border-[var(--ui-line)] pt-5 text-sm">
+        <button type="button" onClick={() => void handleResend()} disabled={cooldown > 0 || resending} className="font-black text-[var(--ui-brand-hover)] disabled:cursor-not-allowed disabled:text-[var(--ui-faint)]">
           {resending ? "正在发送…" : cooldown > 0 ? `${cooldown} 秒后可重新发送` : "重新发送验证码"}
         </button>
-        <Link href="/dashboard" className="font-bold text-[#7A6D5E]">稍后验证，先进入后台</Link>
-        <Link href="/login" className="font-bold text-[#7A6D5E]">返回登录</Link>
+        <Link href="/dashboard" className="font-bold text-[var(--ui-muted)]">稍后验证，先进入后台</Link>
+        <Link href="/login" className="font-bold text-[var(--ui-muted)]">返回登录</Link>
       </div>
     </section>
   );
@@ -161,11 +149,12 @@ function VerifyEmailForm() {
 
 export default function VerifyEmailPage() {
   return (
-    <main className="relative mx-auto flex min-h-dvh w-full max-w-md items-center overflow-hidden px-4 py-8">
-      <div className="absolute inset-0 -z-20 bg-[linear-gradient(135deg,#FFFDF8_0%,#F7F1E7_55%,#F2E7D8_100%)]" />
-      <Suspense fallback={<p className="w-full rounded-2xl bg-white p-6 text-center">正在加载邮箱验证…</p>}>
-        <VerifyEmailForm />
-      </Suspense>
+    <main className="ui-page flex min-h-dvh items-center py-8">
+      <div className="ui-container max-w-md">
+        <Suspense fallback={<p className="ui-surface w-full p-6 text-center">正在加载邮箱验证…</p>}>
+          <VerifyEmailForm />
+        </Suspense>
+      </div>
     </main>
   );
 }
