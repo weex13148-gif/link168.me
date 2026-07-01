@@ -24,7 +24,6 @@ export type PhonePreviewAppearance = {
   linkClassName?: string;
   template?: SharePageTemplate;
   themeName?: string | null;
-  // 向后兼容：后台 dashboard 仍会传入以下字段，新的渲染器已不再使用它们
   nameStyle?: unknown;
   bioStyle?: unknown;
   linkStyle?: unknown;
@@ -47,18 +46,16 @@ type PhonePreviewProps = {
 };
 
 const defaultLinks: PhonePreviewLink[] = [
-  { id: "wechat", label: "微信公众号", caption: "最新文章和观点", url: null },
-  { id: "rednote", label: "小红书", caption: "生活方式和灵感", url: null },
-  { id: "douyin", label: "抖音", caption: "短视频内容合集", url: null },
-  { id: "channels", label: "视频号", caption: "直播和视频动态", url: null },
-  { id: "site", label: "我的网站", caption: "作品、服务和介绍", url: null },
-  { id: "shop", label: "商品橱窗", caption: "精选商品入口", url: null },
+  { id: "wechat", label: "微信公众号", caption: "最新文章和观点" },
+  { id: "rednote", label: "小红书", caption: "生活方式和灵感" },
+  { id: "douyin", label: "抖音", caption: "短视频内容合集" },
+  { id: "site", label: "我的网站", caption: "作品、服务和介绍" },
 ];
 
 export function PhonePreview({
   variant = "marketing",
   poweredLogoClickable: _poweredLogoClickable,
-  username = "yourname",
+  username = "abao",
   displayName,
   bio,
   avatarUrl,
@@ -66,21 +63,20 @@ export function PhonePreview({
   appearance,
   className = "",
 }: PhonePreviewProps) {
-  // 首页营销样机使用安全的展示链接，避免空 URL 触发真实主页的红色风控告警。
-  // Dashboard / 公开主页等非营销场景仍保留原有 URL 安全校验和降级提示。
-  const marketingFallbackUrl = variant === "marketing" ? "https://link168.me" : null;
+  // 首页和注册页只是产品样机，不应因为示例链接没有真实目标而显示红色风控提示。
+  // 真实公开主页仍必须通过服务端与渲染器的 URL 校验。
+  const exampleFallbackUrl = variant === "public" ? null : "https://link168.me";
 
   const activeLinks: SharePageLink[] = links
     .filter((link) => link.isActive !== false)
-    .map((link, idx) => ({
-      id: link.id || `link-${idx}`,
+    .map((link, index) => ({
+      id: link.id || `link-${index}`,
       title: (link.label || link.title || "链接") as string,
       description: link.caption || link.description || null,
-      url: link.href || link.url || marketingFallbackUrl,
+      url: link.href || link.url || exampleFallbackUrl,
       icon: link.icon || null,
       type: link.type || null,
     }));
-  const name = displayName || "Link168 名片";
 
   return (
     <PreviewShell
@@ -91,7 +87,7 @@ export function PhonePreview({
       <SharePageRenderer
         template={appearance?.template || "business"}
         username={username}
-        displayName={name}
+        displayName={displayName || "阿宝的名片"}
         bio={bio}
         avatarUrl={avatarUrl}
         links={activeLinks}
