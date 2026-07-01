@@ -123,11 +123,13 @@ export async function POST(request: Request) {
   if (authResponse || !user) {
     return authResponse ?? NextResponse.json({ success: false, error: "请先登录。" }, { status: 401 });
   }
+  const userId = user.id;
+  const userEmail = user.email;
 
-  const aiRestricted = await checkUserAiRestricted(user.id);
+  const aiRestricted = await checkUserAiRestricted(userId);
   if (aiRestricted.restricted) {
     await logAiRiskEvent({
-      userId: user.id,
+      userId,
       eventType: "user_ai_restricted",
       assistant: "",
       riskLevel: "high",
@@ -141,7 +143,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const enterpriseAccess = await getEnterpriseBailianAccess(user.id, user.email);
+  const enterpriseAccess = await getEnterpriseBailianAccess(userId, userEmail);
   if (!enterpriseAccess.access.allowed) {
     return NextResponse.json(
       { success: false, error: enterpriseAccess.access.reason || "当前账户没有企业 AI 权限。" },
@@ -212,7 +214,7 @@ export async function POST(request: Request) {
   const injection = detectPromptInjection(message);
   if (injection.detected) {
     await logAiRiskEvent({
-      userId: user.id,
+      userId,
       eventType: "input_blocked",
       assistant: assistantTitle,
       riskLevel: "high",
@@ -229,7 +231,7 @@ export async function POST(request: Request) {
   const sensitive = hasSensitiveContent(message);
   if (sensitive.detected) {
     await logAiRiskEvent({
-      userId: user.id,
+      userId,
       eventType: "input_blocked",
       assistant: assistantTitle,
       riskLevel: "medium",
@@ -268,7 +270,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const perUserUsage = await getAiDailyUsage(user.id, assistantTitle);
+  const perUserUsage = await getAiDailyUsage(userId, assistantTitle);
   if (perUserUsage.remaining <= 0) {
     return NextResponse.json(
       {
@@ -301,7 +303,7 @@ export async function POST(request: Request) {
     sessionId: sessionId || null,
   };
   const consumed = await consumeAiCredits({
-    userId: user.id,
+    userId,
     amount: AI_CHAT_CREDIT_COST,
     idempotencyKey: creditConsumeKey,
     referenceType: "ai_chat",
@@ -324,7 +326,7 @@ export async function POST(request: Request) {
 
   async function refundCredit(reason: string, requestId = "") {
     const refunded = await refundAiCredits({
-      userId: user.id,
+      userId,
       amount: AI_CHAT_CREDIT_COST,
       idempotencyKey: creditRefundKey,
       referenceType: "ai_chat",
@@ -346,7 +348,7 @@ export async function POST(request: Request) {
     const latencyMs = Date.now() - callStart;
     await refundCredit("百炼请求异常，自动退回 AI Credits");
     recordAiCall({
-      userId: user.id,
+      userId,
       assistant: assistantTitle,
       model: providerConfig.appId,
       provider: "bailian-app",
@@ -367,7 +369,7 @@ export async function POST(request: Request) {
   if (!result.ok) {
     await refundCredit("百炼调用失败，自动退回 AI Credits", result.requestId || "");
     await logAiRiskEvent({
-      userId: user.id,
+      userId,
       eventType: "model_error",
       assistant: assistantTitle,
       riskLevel: "medium",
@@ -382,7 +384,7 @@ export async function POST(request: Request) {
     });
 
     recordAiCall({
-      userId: user.id,
+      userId,
       assistant: assistantTitle,
       model: providerConfig.appId,
       provider: "bailian-app",
@@ -397,7 +399,7 @@ export async function POST(request: Request) {
       event: "enterprise_ai_chat",
       status: "error",
       requestId: result.requestId || "",
-      userId: user.id,
+      userId,
       provider: "bailian-app",
       statusCode: result.status,
       latencyMs,
@@ -417,7 +419,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const usageRecorded = await incrementAiUsage(user.id, assistantTitle);
+  const usageRecorded = await incrementAiUsage(userId, assistantTitle);
   if (!usageRecorded) {
     const refunded = await refundCredit("每日额度竞争失败，自动退回 AI Credits", result.requestId || "");
     return NextResponse.json(
@@ -434,7 +436,7 @@ export async function POST(request: Request) {
   if (moderated.blocked) {
     const refunded = await refundCredit("AI 输出被安全审核拦截，自动退回 Credits", result.requestId || "");
     await logAiRiskEvent({
-      userId: user.id,
+      userId,
       eventType: "output_blocked",
       assistant: assistantTitle,
       riskLevel: "high",
@@ -449,7 +451,7 @@ export async function POST(request: Request) {
     });
 
     recordAiCall({
-      userId: user.id,
+      userId,
       assistant: assistantTitle,
       model: providerConfig.appId,
       provider: "bailian-app",
@@ -465,7 +467,7 @@ export async function POST(request: Request) {
       event: "enterprise_ai_chat",
       status: "blocked",
       requestId: result.requestId || "",
-      userId: user.id,
+      userId,
       provider: "bailian-app",
       statusCode: 400,
       latencyMs,
@@ -485,9 +487,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const finalUsage = await getAiDailyUsage(user.id, assistantTitle);
+  const finalUsage = await getAiDailyUsage(userId, assistantTitle);
   recordAiCall({
-    userId: user.id,
+    userId,
     assistant: assistantTitle,
     model: providerConfig.appId,
     provider: "bailian-app",
@@ -502,7 +504,7 @@ export async function POST(request: Request) {
     event: "enterprise_ai_chat",
     status: "success",
     requestId: result.requestId || "",
-    userId: user.id,
+    userId,
     provider: "bailian-app",
     statusCode: 200,
     latencyMs,
