@@ -35,18 +35,18 @@ type DashboardSidebarProps = {
 export function DashboardSidebar({ activeNav, setActiveNav, extra }: DashboardSidebarProps) {
   return (
     <>
-      <nav className="hidden h-full w-full flex-col gap-1 rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8]/92 p-4 shadow-[0_18px_55px_rgba(86,68,46,0.08)] lg:flex">
+      <nav className="ui-surface hidden h-full w-full flex-col gap-1 p-4 lg:flex">
         <div className="mb-3 flex items-center gap-3 px-2 pt-1">
-          <div className="grid size-10 place-items-center rounded-2xl bg-[#6F8F4E] text-white shadow-sm shadow-[#6F8F4E]/20">
+          <div className="grid size-10 place-items-center rounded-[var(--ui-radius-sm)] bg-[var(--ui-brand)] text-white">
             <Sparkles aria-hidden className="size-5" />
           </div>
           <div>
-            <p className="text-sm font-black text-[#2B241E]">Link168 主页编辑器</p>
-            <p className="text-xs text-[#7A6D5E]">编辑内容，右侧实时预览</p>
+            <p className="text-sm font-black text-[var(--ui-ink)]">Link168 主页编辑器</p>
+            <p className="text-xs text-[var(--ui-muted)]">编辑内容，右侧实时预览</p>
           </div>
         </div>
 
-        <div className="grid gap-1.5">
+        <div className="grid gap-1">
           {navItems.map(({ key, label, description, icon: Icon }) => {
             const active = activeNav === key;
             return (
@@ -55,32 +55,32 @@ export function DashboardSidebar({ activeNav, setActiveNav, extra }: DashboardSi
                 type="button"
                 onClick={() => setActiveNav(key)}
                 aria-current={active ? "page" : undefined}
-                className={`flex min-h-[66px] items-start gap-3 rounded-2xl px-3 py-3 text-left transition ${
+                className={`flex min-h-[62px] items-start gap-3 rounded-[var(--ui-radius-sm)] px-3 py-3 text-left transition ${
                   active
-                    ? "bg-[#6F8F4E] text-white shadow-sm shadow-[#6F8F4E]/20"
-                    : "text-[#3F5F31] hover:bg-[#F2E7D8]"
+                    ? "bg-[var(--ui-brand)] text-white"
+                    : "text-[var(--ui-ink)] hover:bg-[var(--ui-surface-muted)]"
                 }`}
               >
-                <span className={`grid size-9 shrink-0 place-items-center rounded-xl ${active ? "bg-white/15 text-white" : "bg-[#F7F1E7] text-[#6F8F4E]"}`}>
+                <span className={`grid size-9 shrink-0 place-items-center rounded-[10px] ${active ? "bg-white/15 text-white" : "bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]"}`}>
                   <Icon aria-hidden className="size-5" />
                 </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-black">{label}</span>
-                  <span className={`mt-0.5 block text-xs leading-5 ${active ? "text-white/80" : "text-[#7A6D5E]"}`}>{description}</span>
+                  <span className={`mt-0.5 block text-xs leading-5 ${active ? "text-white/80" : "text-[var(--ui-muted)]"}`}>{description}</span>
                 </span>
               </button>
             );
           })}
         </div>
 
-        <div className="mt-auto border-t border-[#E8DCCB] pt-3">
-          <Link href="/workbench" className="flex items-center gap-2 rounded-2xl px-3 py-2 text-sm font-semibold text-[#7A6D5E] transition hover:bg-[#F2E7D8] hover:text-[#3F5F31]">
+        <div className="mt-auto border-t border-[var(--ui-line)] pt-3">
+          <Link href="/workbench" className="flex items-center gap-2 rounded-[var(--ui-radius-sm)] px-3 py-2 text-sm font-semibold text-[var(--ui-muted)] transition hover:bg-[var(--ui-surface-muted)] hover:text-[var(--ui-ink)]">
             <ArrowLeft aria-hidden className="size-4" />
             <span>返回 AI 工作台</span>
           </Link>
         </div>
 
-        {extra ? <div className="mt-3 border-t border-[#E8DCCB] pt-3">{extra}</div> : null}
+        {extra ? <div className="mt-3 border-t border-[var(--ui-line)] pt-3">{extra}</div> : null}
       </nav>
 
       <nav className="flex items-center justify-around lg:hidden">
@@ -92,7 +92,7 @@ export function DashboardSidebar({ activeNav, setActiveNav, extra }: DashboardSi
               type="button"
               onClick={() => setActiveNav(key)}
               aria-current={active ? "page" : undefined}
-              className={`flex flex-col items-center gap-1 rounded-xl px-2 py-1.5 transition ${active ? "text-[#6F8F4E]" : "text-[#7A6D5E]"}`}
+              className={`flex flex-col items-center gap-1 rounded-[10px] px-2 py-1.5 transition ${active ? "text-[var(--ui-brand)]" : "text-[var(--ui-muted)]"}`}
             >
               <Icon aria-hidden className="size-5" />
               <span className="text-[10px] font-black">{label}</span>
