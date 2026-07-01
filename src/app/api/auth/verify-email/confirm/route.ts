@@ -1,29 +1,20 @@
 import { NextResponse } from "next/server";
-import {
-  validateEmailVerificationToken,
-  consumeEmailVerificationToken,
-  sendVerificationEmailWithPolicy,
-  RestrictionQueryError,
-} from "@/lib/auth";
-import { db } from "@/lib/db";
+import { consumeEmailVerificationToken, validateEmailVerificationToken } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
 type ConfirmEmailRequest = {
+  code?: unknown;
   token?: unknown;
-  resendEmail?: unknown;
 };
 
-function ipFromRequest(request: Request): string {
-  return (
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    request.headers.get("x-real-ip") ||
-    request.headers.get("cf-connecting-ip") ||
-    ""
-  );
-}
-
 export async function POST(request: Request) {
+  const limited = await rateLimit(request, "auth:verify-email", 12, 10 * 60 * 1000);
+  if (!limited.passed) {
+    return NextResponse.json({ success: false, error: "验证码尝试过于频繁，请稍后再试。" }, { status: 429 });
+  }
+
   let body: ConfirmEmailRequest;
   try {
     body = (await request.json()) as ConfirmEmailRequest;
@@ -31,58 +22,28 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "请求格式不正确。" }, { status: 400 });
   }
 
-  const resendEmail = typeof body.resendEmail === "string" ? body.resendEmail.trim().toLowerCase() : null;
-  const ipRaw = ipFromRequest(request);
+  const credential = typeof body.code === "string"
+    ? body.code.trim()
+    : typeof body.token === "string"
+      ? body.token.trim()
+      : "";
 
-  if (resendEmail) {
-    // 查找用户以获取 userId
-    const user = await db.user.findUnique({ where: { email: resendEmail } });
-    if (!user || user.emailVerified) {
-      // 避免邮箱枚举：统一返回成功文案
-      return NextResponse.json({ success: true, message: user?.emailVerified ? "该邮箱已验证，请直接登录。" : "如果该邮箱已注册，我们已重新发送验证链接。" });
-    }
-
-    // V2-002: 使用统一发送策略（60秒间隔 / 24h次数 / IP次数 / Token生成 / 发送 / 日志）
-    let sentSuccessfully = false;
-    try {
-      const result = await sendVerificationEmailWithPolicy(user.email, user.id, ipRaw, "verify");
-      if (result.ok) {
-        sentSuccessfully = true;
-      } else if (result.reason === "rate-limit") {
-        return NextResponse.json(
-          { success: false, error: `发送过于频繁，请 ${Math.ceil((result.waitSec || 60) / 60)} 分钟后重试。` },
-          { status: 429 },
-        );
-      }
-    } catch (err) {
-      if (err instanceof RestrictionQueryError) {
-        return NextResponse.json({ success: false, error: "服务暂时不可用，请稍后重试。" }, { status: 503 });
-      }
-    }
-
-    return NextResponse.json({
-      success: sentSuccessfully,
-      message: sentSuccessfully ? "如果该邮箱已注册，我们已重新发送验证链接。" : "邮件发送失败，请稍后重试。",
-    });
+  if (!credential) {
+    return NextResponse.json({ success: false, error: "请输入邮件中的 6 位验证码。" }, { status: 400 });
+  }
+  if (/^\d+$/.test(credential) && !/^\d{6}$/.test(credential)) {
+    return NextResponse.json({ success: false, error: "验证码应为 6 位数字。" }, { status: 400 });
   }
 
-  const token = typeof body.token === "string" ? body.token.trim() : "";
-  if (!token) {
-    return NextResponse.json({ success: false, error: "验证链接无效或已过期。" }, { status: 400 });
-  }
-
-  const user = await validateEmailVerificationToken(token);
+  const user = await validateEmailVerificationToken(credential);
   if (!user) {
-    return NextResponse.json({ success: false, error: "验证链接无效或已过期，请重新发起验证。" }, { status: 400 });
+    return NextResponse.json({ success: false, error: "验证码不正确或已过期，请重新获取。" }, { status: 400 });
   }
 
-  const userId = await consumeEmailVerificationToken(token);
+  const userId = await consumeEmailVerificationToken(credential);
   if (!userId) {
-    return NextResponse.json({ success: false, error: "该验证链接已使用或已过期。" }, { status: 400 });
+    return NextResponse.json({ success: false, error: "该验证码已使用或已过期，请重新获取。" }, { status: 400 });
   }
 
-  return NextResponse.json({
-    success: true,
-    message: "邮箱验证成功！",
-  });
+  return NextResponse.json({ success: true, message: "邮箱验证成功，欢迎使用 Link168。" });
 }
