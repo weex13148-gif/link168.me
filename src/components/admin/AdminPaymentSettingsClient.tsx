@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { CheckCircle2, Copy, Loader2, Save, ShieldAlert } from "lucide-react";
+import PaymentDiagnosticsPanel from "@/components/admin/PaymentDiagnosticsPanel";
+import AiCreditAuditPanel from "@/components/admin/AiCreditAuditPanel";
 
 type PaymentConfig = {
   paymentEnabled: boolean;
@@ -165,9 +167,9 @@ export default function AdminPaymentSettingsClient() {
 
       <section className="rounded-[24px] border border-[#E8DCCB] bg-white p-5 shadow-sm sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div><p className="text-sm font-black text-[#1677FF]">支付宝收款状态</p><h2 className="mt-1 text-2xl font-black">{ready ? "可以创建正式支付宝订单" : "配置尚未完整"}</h2><p className="mt-2 text-sm leading-6 text-[#7A6D5E]">当前网站只向用户展示支付宝；微信支付统一标注为后续开放。</p></div>
+          <div><p className="text-sm font-black text-[#1677FF]">支付宝收款状态</p><h2 className="mt-1 text-2xl font-black">{ready ? "配置完整，等待真实验收" : "配置尚未完整"}</h2><p className="mt-2 text-sm leading-6 text-[#7A6D5E]">当前网站只向用户展示支付宝；微信支付统一标注为后续开放。配置完整不等于真实支付已验收。</p></div>
           <span className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-black ${ready ? "bg-[#EEF4E7] text-[#355126]" : "bg-[#FFF7ED] text-[#9A4E12]"}`}>
-            {ready ? <CheckCircle2 className="size-4" /> : <ShieldAlert className="size-4" />}{ready ? "已就绪" : "待完善"}
+            {ready ? <CheckCircle2 className="size-4" /> : <ShieldAlert className="size-4" />}{ready ? "配置完整" : "待完善"}
           </span>
         </div>
       </section>
@@ -186,11 +188,11 @@ export default function AdminPaymentSettingsClient() {
         <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">请填写支付宝开放平台应用中的真实参数。应用私钥和支付宝公钥会加密保存，页面不会回显完整值。</p>
         <div className="mt-5 grid gap-4 lg:grid-cols-2">
           <Field label="支付宝 App ID" value={form.paymentAlipayAppId} onChange={(value) => update("paymentAlipayAppId", value)} placeholder="例如 202100XXXXXXXXXX" />
-          <Field label="支付宝 Seller ID（可选但建议填写）" value={form.paymentAlipaySellerId} onChange={(value) => update("paymentAlipaySellerId", value)} placeholder="支付宝账号对应的 seller_id" />
+          <Field label="支付宝 Seller ID（建议填写）" value={form.paymentAlipaySellerId} onChange={(value) => update("paymentAlipaySellerId", value)} placeholder="支付宝账号对应的 seller_id" />
           <Field label="应用私钥" secret value={form.paymentAlipayAppPrivateKey} onChange={(value) => update("paymentAlipayAppPrivateKey", value)} placeholder={privateKeyConfigured ? "已配置；留空不修改" : "粘贴应用私钥，不是支付宝公钥"} hint={privateKeyConfigured ? "当前应用私钥已保存。重新填写才会覆盖。" : "支持带 PEM 头尾或纯密钥正文。"} />
-          <Field label="支付宝公钥" secret value={form.paymentAlipayPublicKey} onChange={(value) => update("paymentAlipayPublicKey", value)} placeholder={publicKeyConfigured ? "已配置；留空不修改" : "粘贴支付宝公钥"} hint={publicKeyConfigured ? "当前支付宝公钥已保存。重新填写才会覆盖。" : "用于验证支付宝异步通知签名。"} />
+          <Field label="支付宝公钥" secret value={form.paymentAlipayPublicKey} onChange={(value) => update("paymentAlipayPublicKey", value)} placeholder={publicKeyConfigured ? "已配置；留空不修改" : "粘贴支付宝公钥"} hint={publicKeyConfigured ? "当前支付宝公钥已保存。重新填写才会覆盖。" : "用于验证支付宝异步通知和主动查单响应签名。"} />
           <div className="lg:col-span-2">
-            <Field label="支付宝异步通知地址" value={form.paymentAlipayNotifyUrl} onChange={(value) => update("paymentAlipayNotifyUrl", value)} placeholder="https://link168.me/api/payments/alipay/notify" hint="需要同时填写到支付宝开放平台。必须为公网 HTTPS 地址。" />
+            <Field label="支付宝异步通知地址" value={form.paymentAlipayNotifyUrl} onChange={(value) => update("paymentAlipayNotifyUrl", value)} placeholder="https://link168.me/api/payments/alipay/notify" hint="必须为公网 HTTPS 地址；正式模式下不能为空，也不能使用内网、localhost 或元数据地址。" />
             <button type="button" onClick={() => void copyNotifyUrl()} className="mt-3 inline-flex items-center gap-2 rounded-xl border border-[#D9E4F4] bg-[#F3F8FF] px-4 py-2 text-sm font-black text-[#1677FF]"><Copy className="size-4" />复制通知地址</button>
           </div>
         </div>
@@ -198,12 +200,15 @@ export default function AdminPaymentSettingsClient() {
 
       <section className="rounded-[24px] border border-[#F3D3A7] bg-[#FFF9F0] p-5 text-sm leading-7 text-[#805126]">
         <p className="font-black">正式收款前检查</p>
-        <p className="mt-2">1. 支付测试模式必须关闭；2. 支付宝应用必须已经签约电脑网站支付；3. 异步通知地址必须能被支付宝公网访问；4. 首次正式测试使用 0.01 元内部测试套餐；5. 支付成功只以服务端异步通知为准。</p>
+        <p className="mt-2">1. 测试密钥格式；2. 支付宝应用完成审核和电脑网站支付签约；3. 异步通知地址可被公网访问；4. 使用 0.01 元内部套餐真实付款；5. 验证回调、主动查单、补单、会员开通和 AI Credits 发放；6. 全部通过后再关闭测试模式并开放正式收款。</p>
       </section>
+
+      <PaymentDiagnosticsPanel />
+      <AiCreditAuditPanel />
 
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#E8DCCB] bg-white/95 p-3 shadow-[0_-12px_30px_rgba(86,68,46,0.08)] backdrop-blur lg:left-[250px]">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-4 px-2 sm:px-5">
-          <p className="hidden text-sm font-bold text-[#7A6D5E] sm:block">保存后立即供订单接口读取。</p>
+          <p className="hidden text-sm font-bold text-[#7A6D5E] sm:block">保存后立即供订单、回调和主动查单接口读取。</p>
           <button type="submit" disabled={saving} className="ml-auto inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#1677FF] px-7 text-sm font-black text-white disabled:opacity-60">{saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}{saving ? "正在保存" : "保存支付宝配置"}</button>
         </div>
       </div>

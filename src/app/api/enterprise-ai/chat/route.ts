@@ -7,6 +7,12 @@ import {
   isAssistantEnabled,
 } from "@/lib/app-config";
 import { getAssistantDefinition, AI_ASSISTANT_LIST } from "@/lib/ai/assistants";
+import {
+  AI_CHAT_CREDIT_COST,
+  consumeAiCredits,
+  createAiCreditOperationId,
+  refundAiCredits,
+} from "@/lib/ai/credits";
 import { rateLimit } from "@/lib/rate-limit";
 import {
   detectPromptInjection,
@@ -79,7 +85,7 @@ function buildPrompt(args: {
 
   return [
     "You are answering for Link168 Enterprise AI.",
-    `Assistant: ${args.assistantTitle}`, 
+    `Assistant: ${args.assistantTitle}`,
     "",
     args.assistantPrompt,
     "",
@@ -115,13 +121,15 @@ export async function POST(request: Request) {
 
   const { user, response: authResponse } = await requireUser(request);
   if (authResponse || !user) {
-    return authResponse ?? NextResponse.json({ success: false, error: "Not signed in." }, { status: 401 });
+    return authResponse ?? NextResponse.json({ success: false, error: "请先登录。" }, { status: 401 });
   }
+  const userId = user.id;
+  const userEmail = user.email;
 
-  const aiRestricted = await checkUserAiRestricted(user.id);
+  const aiRestricted = await checkUserAiRestricted(userId);
   if (aiRestricted.restricted) {
     await logAiRiskEvent({
-      userId: user.id,
+      userId,
       eventType: "user_ai_restricted",
       assistant: "",
       riskLevel: "high",
@@ -130,29 +138,29 @@ export async function POST(request: Request) {
       metadata: { restrictionType: aiRestricted.type, reason: aiRestricted.reason },
     });
     return NextResponse.json(
-      { success: false, error: "This account is currently restricted from AI usage. Please contact an administrator." },
+      { success: false, error: "当前账户已被限制使用 AI，请联系管理员。" },
       { status: 403 },
     );
   }
 
-  const enterpriseAccess = await getEnterpriseBailianAccess(user.id, user.email);
+  const enterpriseAccess = await getEnterpriseBailianAccess(userId, userEmail);
   if (!enterpriseAccess.access.allowed) {
     return NextResponse.json(
-      { success: false, error: enterpriseAccess.access.reason || "This account is not allowed to use Enterprise AI." },
+      { success: false, error: enterpriseAccess.access.reason || "当前账户没有企业 AI 权限。" },
       { status: 403 },
     );
   }
 
   const { config, resolved } = enterpriseAccess;
   if (!config.aiEnabled) {
-    return NextResponse.json({ success: false, error: "AI service is not enabled." }, { status: 403 });
+    return NextResponse.json({ success: false, error: "AI 服务尚未开启。" }, { status: 403 });
   }
 
   let body: ChatPayload;
   try {
     body = (await request.json()) as ChatPayload;
   } catch {
-    return NextResponse.json({ success: false, error: "Request body must be valid JSON." }, { status: 400 });
+    return NextResponse.json({ success: false, error: "请求格式不正确。" }, { status: 400 });
   }
 
   const rawAssistant = normalizeString(body.assistant);
@@ -161,7 +169,7 @@ export async function POST(request: Request) {
   const history = normalizeHistory(body.history);
 
   if (!message) {
-    return NextResponse.json({ success: false, error: "Message is required." }, { status: 400 });
+    return NextResponse.json({ success: false, error: "请输入问题。" }, { status: 400 });
   }
 
   let assistantTitle = "Enterprise AI";
@@ -176,7 +184,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           success: false,
-          error: `Unknown assistant. Available values: ${AI_ASSISTANT_LIST.map((item) => item.title).join(", ")}`, 
+          error: `未知 AI 助理。可用助理：${AI_ASSISTANT_LIST.map((item) => item.title).join("、")}`,
         },
         { status: 400 },
       );
@@ -190,7 +198,7 @@ export async function POST(request: Request) {
 
     if (!isAssistantEnabled(config, assistantDef.displayTitle)) {
       return NextResponse.json(
-        { success: false, error: "This assistant is not enabled. Please contact an administrator." },
+        { success: false, error: "该 AI 助理尚未开启，请联系管理员。" },
         { status: 403 },
       );
     }
@@ -206,7 +214,7 @@ export async function POST(request: Request) {
   const injection = detectPromptInjection(message);
   if (injection.detected) {
     await logAiRiskEvent({
-      userId: user.id,
+      userId,
       eventType: "input_blocked",
       assistant: assistantTitle,
       riskLevel: "high",
@@ -215,7 +223,7 @@ export async function POST(request: Request) {
       metadata: { reason: injection.reason },
     });
     return NextResponse.json(
-      { success: false, error: `Prompt injection risk detected: ${injection.reason}` },
+      { success: false, error: `检测到提示词注入风险：${injection.reason}` },
       { status: 400 },
     );
   }
@@ -223,7 +231,7 @@ export async function POST(request: Request) {
   const sensitive = hasSensitiveContent(message);
   if (sensitive.detected) {
     await logAiRiskEvent({
-      userId: user.id,
+      userId,
       eventType: "input_blocked",
       assistant: assistantTitle,
       riskLevel: "medium",
@@ -232,7 +240,7 @@ export async function POST(request: Request) {
       metadata: { matchedWords: sensitive.matches },
     });
     return NextResponse.json(
-      { success: false, error: `Message contains restricted content (${sensitive.matches.slice(0, 3).join(" / ")}). Please revise and retry.` },
+      { success: false, error: `消息包含受限内容（${sensitive.matches.slice(0, 3).join(" / ")}），请修改后重试。` },
       { status: 400 },
     );
   }
@@ -257,17 +265,17 @@ export async function POST(request: Request) {
 
   if (!isBailianApplicationConfigured(providerConfig)) {
     return NextResponse.json(
-      { success: false, error: "AI service is not configured." },
+      { success: false, error: "AI 服务尚未完成配置。" },
       { status: 500 },
     );
   }
 
-  const perUserUsage = await getAiDailyUsage(user.id, assistantTitle);
+  const perUserUsage = await getAiDailyUsage(userId, assistantTitle);
   if (perUserUsage.remaining <= 0) {
     return NextResponse.json(
       {
         success: false,
-        error: `Daily limit reached (${perUserUsage.used}/${perUserUsage.limit}). Try again tomorrow.`,
+        error: `今日调用次数已用完（${perUserUsage.used}/${perUserUsage.limit}），请明天再试。`,
         usage: perUserUsage,
       },
       { status: 429 },
@@ -279,20 +287,89 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: false,
-        error: "Global daily AI quota has been exhausted. Try again tomorrow.",
+        error: "平台今日 AI 总额度已用完，请明天再试。",
         usage: globalUsage,
       },
       { status: 429 },
     );
   }
 
+  const creditOperationId = createAiCreditOperationId();
+  const creditConsumeKey = `ai-chat:${creditOperationId}:consume`;
+  const creditRefundKey = `ai-chat:${creditOperationId}:refund`;
+  const creditMetadata = {
+    assistant: assistantTitle,
+    provider: "bailian-app",
+    sessionId: sessionId || null,
+  };
+  const consumed = await consumeAiCredits({
+    userId,
+    amount: AI_CHAT_CREDIT_COST,
+    idempotencyKey: creditConsumeKey,
+    referenceType: "ai_chat",
+    referenceId: creditOperationId,
+    reason: `${assistantTitle} 对话消费`,
+    metadata: creditMetadata,
+  });
+
+  if (!consumed.success) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: consumed.error || "AI Credits 不足。",
+        creditBalance: consumed.balance,
+        creditCost: AI_CHAT_CREDIT_COST,
+      },
+      { status: 402 },
+    );
+  }
+
+  async function refundCredit(reason: string, requestId = "") {
+    const refunded = await refundAiCredits({
+      userId,
+      amount: AI_CHAT_CREDIT_COST,
+      idempotencyKey: creditRefundKey,
+      referenceType: "ai_chat",
+      referenceId: creditOperationId,
+      reason,
+      metadata: { ...creditMetadata, requestId: requestId || null },
+    });
+    if (!refunded.success) {
+      console.error("[enterprise-ai] AI Credits 自动退回失败:", refunded.error, creditOperationId);
+    }
+    return refunded;
+  }
+
   const callStart = Date.now();
-  const result = await callBailianApplication(providerConfig, prompt, sessionId || undefined);
+  let result: Awaited<ReturnType<typeof callBailianApplication>>;
+  try {
+    result = await callBailianApplication(providerConfig, prompt, sessionId || undefined);
+  } catch (error) {
+    const latencyMs = Date.now() - callStart;
+    await refundCredit("百炼请求异常，自动退回 AI Credits");
+    recordAiCall({
+      userId,
+      assistant: assistantTitle,
+      model: providerConfig.appId,
+      provider: "bailian-app",
+      status: "error",
+      httpStatus: 502,
+      errorCode: "provider_exception",
+      latencyMs,
+      ipAddress: ip,
+    });
+    console.error("[enterprise-ai] 百炼请求异常:", error);
+    return NextResponse.json(
+      { success: false, error: "AI 服务请求失败，本次 Credits 已自动退回。" },
+      { status: 502 },
+    );
+  }
   const latencyMs = Date.now() - callStart;
 
   if (!result.ok) {
+    await refundCredit("百炼调用失败，自动退回 AI Credits", result.requestId || "");
     await logAiRiskEvent({
-      userId: user.id,
+      userId,
       eventType: "model_error",
       assistant: assistantTitle,
       riskLevel: "medium",
@@ -302,11 +379,12 @@ export async function POST(request: Request) {
         error: result.error,
         status: result.status,
         requestId: result.requestId || "",
+        creditOperationId,
       },
     });
 
     recordAiCall({
-      userId: user.id,
+      userId,
       assistant: assistantTitle,
       model: providerConfig.appId,
       provider: "bailian-app",
@@ -317,23 +395,23 @@ export async function POST(request: Request) {
       ipAddress: ip,
     });
 
-    console.info(
-      JSON.stringify({
-        event: "enterprise_ai_chat",
-        status: "error",
-        requestId: result.requestId || "",
-        userId: user.id,
-        provider: "bailian-app",
-        statusCode: result.status,
-        latencyMs,
-        usage: null,
-      }),
-    );
+    console.info(JSON.stringify({
+      event: "enterprise_ai_chat",
+      status: "error",
+      requestId: result.requestId || "",
+      userId,
+      provider: "bailian-app",
+      statusCode: result.status,
+      latencyMs,
+      usage: null,
+      creditOperationId,
+      creditRefunded: true,
+    }));
 
     return NextResponse.json(
       {
         success: false,
-        error: buildSafeError(result.error, "Bailian service is temporarily unavailable."),
+        error: `${buildSafeError(result.error, "百炼服务暂时不可用。")} 本次 Credits 已自动退回。`,
         sessionId: sessionId || undefined,
         requestId: result.requestId || "",
       },
@@ -341,18 +419,24 @@ export async function POST(request: Request) {
     );
   }
 
-  const usageRecorded = await incrementAiUsage(user.id, assistantTitle);
+  const usageRecorded = await incrementAiUsage(userId, assistantTitle);
   if (!usageRecorded) {
+    const refunded = await refundCredit("每日额度竞争失败，自动退回 AI Credits", result.requestId || "");
     return NextResponse.json(
-      { success: false, error: "Daily limit reached. Try again tomorrow." },
+      {
+        success: false,
+        error: "今日调用次数已用完，本次 Credits 已自动退回。",
+        creditBalance: refunded.balance,
+      },
       { status: 429 },
     );
   }
 
   const moderated = moderateAiOutput(result.reply, result.reply);
   if (moderated.blocked) {
+    const refunded = await refundCredit("AI 输出被安全审核拦截，自动退回 Credits", result.requestId || "");
     await logAiRiskEvent({
-      userId: user.id,
+      userId,
       eventType: "output_blocked",
       assistant: assistantTitle,
       riskLevel: "high",
@@ -362,11 +446,12 @@ export async function POST(request: Request) {
       metadata: {
         reason: moderated.reason,
         requestId: result.requestId || "",
+        creditOperationId,
       },
     });
 
     recordAiCall({
-      userId: user.id,
+      userId,
       assistant: assistantTitle,
       model: providerConfig.appId,
       provider: "bailian-app",
@@ -378,28 +463,33 @@ export async function POST(request: Request) {
       ipAddress: ip,
     });
 
-    console.info(
-      JSON.stringify({
-        event: "enterprise_ai_chat",
-        status: "blocked",
-        requestId: result.requestId || "",
-        userId: user.id,
-        provider: "bailian-app",
-        statusCode: 400,
-        latencyMs,
-        usage: result.usage,
-      }),
-    );
+    console.info(JSON.stringify({
+      event: "enterprise_ai_chat",
+      status: "blocked",
+      requestId: result.requestId || "",
+      userId,
+      provider: "bailian-app",
+      statusCode: 400,
+      latencyMs,
+      usage: result.usage,
+      creditOperationId,
+      creditRefunded: true,
+    }));
 
     return NextResponse.json(
-      { success: false, error: "This question cannot be answered safely right now. Please try a different phrasing.", requestId: result.requestId || "" },
+      {
+        success: false,
+        error: "当前回答未通过安全审核，本次 Credits 已自动退回。请调整问题后重试。",
+        requestId: result.requestId || "",
+        creditBalance: refunded.balance,
+      },
       { status: 400 },
     );
   }
 
-  const finalUsage = await getAiDailyUsage(user.id, assistantTitle);
+  const finalUsage = await getAiDailyUsage(userId, assistantTitle);
   recordAiCall({
-    userId: user.id,
+    userId,
     assistant: assistantTitle,
     model: providerConfig.appId,
     provider: "bailian-app",
@@ -410,18 +500,19 @@ export async function POST(request: Request) {
     ipAddress: ip,
   });
 
-  console.info(
-    JSON.stringify({
-      event: "enterprise_ai_chat",
-      status: "success",
-      requestId: result.requestId || "",
-      userId: user.id,
-      provider: "bailian-app",
-      statusCode: 200,
-      latencyMs,
-      usage: result.usage,
-    }),
-  );
+  console.info(JSON.stringify({
+    event: "enterprise_ai_chat",
+    status: "success",
+    requestId: result.requestId || "",
+    userId,
+    provider: "bailian-app",
+    statusCode: 200,
+    latencyMs,
+    usage: result.usage,
+    creditOperationId,
+    creditCost: AI_CHAT_CREDIT_COST,
+    creditBalance: consumed.balance,
+  }));
 
   return NextResponse.json({
     success: true,
@@ -429,12 +520,14 @@ export async function POST(request: Request) {
     sessionId: result.sessionId || sessionId || "",
     requestId: result.requestId || "",
     usage: finalUsage,
+    credits: {
+      cost: AI_CHAT_CREDIT_COST,
+      balance: consumed.balance,
+      operationId: creditOperationId,
+    },
     providerMeta: {
       provider: "bailian-app",
       model: providerConfig.appId,
     },
   });
 }
-
-
-
