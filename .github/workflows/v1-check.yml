@@ -1,4 +1,4 @@
-name: Link168 V1 Check
+name: Link168 UI and V1 Check
 
 on:
   push:
@@ -52,7 +52,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: v1-verification-logs
+          name: ui-v1-verification-logs
           path: |
             typecheck.log
             build.log
