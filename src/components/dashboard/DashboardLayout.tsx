@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, type FormEvent, type ReactNode } from "react";
-import { Loader2, X } from "lucide-react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { Crown, Loader2, X } from "lucide-react";
 
 type DashboardLayoutProps = {
   sidebar: ReactNode;
@@ -25,17 +25,66 @@ export function DashboardLayout({
   const [showEmailBanner, setShowEmailBanner] = useState(true);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [avatarMessage, setAvatarMessage] = useState("");
+  const [showUpgradeGuide, setShowUpgradeGuide] = useState(false);
+  const [upgradeExpanded, setUpgradeExpanded] = useState(false);
+
+  useEffect(() => {
+    try {
+      setShowUpgradeGuide(window.localStorage.getItem("link168-v1-upgrade-guide-seen") !== "1");
+    } catch {
+      setShowUpgradeGuide(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const root = document.querySelector<HTMLElement>("main[data-dashboard-v1]");
+    if (!root) return;
+
+    function cleanV1Placeholders() {
+      root.querySelectorAll<HTMLInputElement>('input[placeholder="yourname"]').forEach((input) => {
+        input.placeholder = "例如：abao";
+      });
+
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let node = walker.nextNode();
+      while (node) {
+        if (node.nodeValue?.includes("link168.me/yourname")) {
+          node.nodeValue = node.nodeValue.replaceAll("link168.me/yourname", "尚未设置公开地址");
+        }
+        node = walker.nextNode();
+      }
+
+      root.querySelectorAll<HTMLElement>("section").forEach((section) => {
+        const heading = section.textContent || "";
+        if (heading.includes("链接与短码") || heading.includes("快速生成专属短链接")) {
+          section.style.display = "none";
+        }
+      });
+    }
+
+    cleanV1Placeholders();
+    const observer = new MutationObserver(cleanV1Placeholders);
+    observer.observe(root, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
+
+  function dismissUpgradeGuide() {
+    setShowUpgradeGuide(false);
+    try {
+      window.localStorage.setItem("link168-v1-upgrade-guide-seen", "1");
+    } catch {
+      // 浏览器禁用本地存储时，仅关闭当前提示。
+    }
+  }
 
   async function handleFileChangeCapture(event: FormEvent<HTMLElement>) {
     const input = event.target;
     if (!(input instanceof HTMLInputElement) || input.type !== "file" || !input.accept.includes("image/")) return;
-
     const file = input.files?.[0];
     if (!file) return;
 
     event.stopPropagation();
     setAvatarMessage("");
-
     if (file.size > 2 * 1024 * 1024) {
       setAvatarMessage("头像图片不能超过 2MB。");
       input.value = "";
@@ -76,16 +125,36 @@ export function DashboardLayout({
       {emailVerificationBanner && showEmailBanner ? (
         <div className="relative">
           {emailVerificationBanner}
-          <button
-            type="button"
-            onClick={() => setShowEmailBanner(false)}
-            className="absolute right-3 top-3 z-[60] grid size-8 place-items-center rounded-full border border-[#E8DCCB] bg-white/90 text-[#7A6D5E] shadow-sm hover:bg-white sm:right-5"
-            aria-label="关闭邮箱验证提醒"
-            title="关闭当前提醒"
-          >
+          <button type="button" onClick={() => setShowEmailBanner(false)} className="absolute right-3 top-3 z-[60] grid size-8 place-items-center rounded-full border border-[#E8DCCB] bg-white/90 text-[#7A6D5E] shadow-sm hover:bg-white sm:right-5" aria-label="关闭邮箱验证提醒" title="关闭当前提醒">
             <X aria-hidden className="size-4" />
           </button>
         </div>
+      ) : null}
+
+      {showUpgradeGuide ? (
+        <aside className="fixed bottom-20 right-4 z-[75] w-[min(92vw,390px)] rounded-[24px] border border-[#E2D2B5] bg-[#FFFDF8] p-5 shadow-[0_24px_70px_rgba(86,68,46,0.20)] lg:bottom-6">
+          <button type="button" onClick={dismissUpgradeGuide} className="absolute right-3 top-3 grid size-8 place-items-center rounded-full bg-[#F2E7D8] text-[#7A6D5E]" aria-label="关闭会员说明"><X className="size-4" /></button>
+          <div className="flex items-center gap-3 pr-9">
+            <span className="grid size-11 place-items-center rounded-2xl bg-[#F6E7C8] text-[#8C612E]"><Crown className="size-5" /></span>
+            <div><p className="text-sm font-black text-[#8C612E]">Link168 版本说明</p><h2 className="text-lg font-black">按需要选择适合你的版本</h2></div>
+          </div>
+          <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
+            <div className="rounded-xl bg-[#F7F1E7] p-3"><p className="font-black">免费版</p><p className="mt-1 text-[#7A6D5E]">主页与基础链接</p></div>
+            <div className="rounded-xl bg-[#EEF4E7] p-3"><p className="font-black text-[#355126]">会员版</p><p className="mt-1 text-[#4F633F]">188 元/年</p></div>
+            <div className="rounded-xl bg-[#EEF3FF] p-3"><p className="font-black text-[#334E9E]">企业版</p><p className="mt-1 text-[#5F6F9F]">团队与 AI 服务</p></div>
+          </div>
+          {upgradeExpanded ? (
+            <div className="mt-3 rounded-xl bg-white p-3 text-xs leading-6 text-[#6F6255]">
+              <p><strong>会员版：</strong>高级主题、自定义装修、访问数据与高级二维码。</p>
+              <p><strong>企业版：</strong>企业资料库、AI 助手、团队服务与更高使用额度。</p>
+              <p className="mt-1">可在“账户与安全 → 升级会员”中再次查看。</p>
+            </div>
+          ) : null}
+          <div className="mt-4 flex gap-2">
+            <button type="button" onClick={() => setUpgradeExpanded((value) => !value)} className="min-h-10 flex-1 rounded-xl bg-[#6F8F4E] px-4 text-sm font-black text-white">{upgradeExpanded ? "收起说明" : "查看版本区别"}</button>
+            <button type="button" onClick={dismissUpgradeGuide} className="min-h-10 rounded-xl border border-[#E8DCCB] bg-white px-4 text-sm font-black text-[#6F6255]">暂不提醒</button>
+          </div>
+        </aside>
       ) : null}
 
       {avatarUploading || avatarMessage ? (
@@ -97,10 +166,7 @@ export function DashboardLayout({
       ) : null}
 
       <header className="sticky top-0 z-40 border-b border-[#E8DCCB]/90 bg-[#FFFDF8]/90 px-3 py-2 backdrop-blur sm:px-6 sm:py-3 lg:px-8">
-        <div className="mx-auto flex w-full max-w-[1760px] items-center justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-2">{brand}</div>
-          <div className="flex min-w-0 items-center gap-2">{statusBar}{headerActions}</div>
-        </div>
+        <div className="mx-auto flex w-full max-w-[1760px] items-center justify-between gap-3"><div className="flex min-w-0 items-center gap-2">{brand}</div><div className="flex min-w-0 items-center gap-2">{statusBar}{headerActions}</div></div>
       </header>
 
       <div className="mx-auto w-full max-w-[1760px] px-3 py-5 pb-20 sm:px-6 sm:py-7 sm:pb-24 lg:px-8 lg:pb-8 xl:px-10">
