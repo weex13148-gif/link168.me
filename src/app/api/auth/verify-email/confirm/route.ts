@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { consumeEmailVerificationToken, validateEmailVerificationToken } from "@/lib/auth";
+import {
+  consumeEmailVerificationToken,
+  requireAuthenticatedUser,
+  validateEmailVerificationToken,
+} from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -31,13 +35,25 @@ export async function POST(request: Request) {
   if (!credential) {
     return NextResponse.json({ success: false, error: "请输入邮件中的 6 位验证码。" }, { status: 400 });
   }
-  if (/^\d+$/.test(credential) && !/^\d{6}$/.test(credential)) {
+
+  const isSixDigitCode = /^\d{6}$/.test(credential);
+  if (/^\d+$/.test(credential) && !isSixDigitCode) {
     return NextResponse.json({ success: false, error: "验证码应为 6 位数字。" }, { status: 400 });
   }
 
-  const user = await validateEmailVerificationToken(credential);
-  if (!user) {
+  const tokenUser = await validateEmailVerificationToken(credential);
+  if (!tokenUser) {
     return NextResponse.json({ success: false, error: "验证码不正确或已过期，请重新获取。" }, { status: 400 });
+  }
+
+  if (isSixDigitCode) {
+    const authenticated = await requireAuthenticatedUser(request);
+    if (authenticated.response || !authenticated.user) {
+      return NextResponse.json({ success: false, error: "登录状态已失效，请重新登录后验证邮箱。" }, { status: 401 });
+    }
+    if (authenticated.user.id !== tokenUser.id) {
+      return NextResponse.json({ success: false, error: "该验证码与当前账号不匹配，请重新获取。" }, { status: 400 });
+    }
   }
 
   const userId = await consumeEmailVerificationToken(credential);
