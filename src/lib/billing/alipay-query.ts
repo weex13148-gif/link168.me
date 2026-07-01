@@ -80,6 +80,48 @@ function verifyResponse(content: string, signature: string, publicKey: string) {
   }
 }
 
+function extractRawJsonValue(rawText: string, key: string) {
+  const token = `"${key}"`;
+  const keyIndex = rawText.indexOf(token);
+  if (keyIndex < 0) return "";
+
+  let cursor = keyIndex + token.length;
+  while (cursor < rawText.length && /\s/.test(rawText[cursor])) cursor += 1;
+  if (rawText[cursor] !== ":") return "";
+  cursor += 1;
+  while (cursor < rawText.length && /\s/.test(rawText[cursor])) cursor += 1;
+
+  const start = cursor;
+  const opening = rawText[start];
+  if (opening !== "{" && opening !== "[") return "";
+  const closing = opening === "{" ? "}" : "]";
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let index = start; index < rawText.length; index += 1) {
+    const character = rawText[index];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (character === "\\") escaped = true;
+      else if (character === '"') inString = false;
+      continue;
+    }
+
+    if (character === '"') {
+      inString = true;
+      continue;
+    }
+    if (character === opening) depth += 1;
+    else if (character === closing) {
+      depth -= 1;
+      if (depth === 0) return rawText.slice(start, index + 1);
+    }
+  }
+
+  return "";
+}
+
 function fingerprint(key: crypto.KeyObject) {
   const publicKey = key.type === "public" ? key : crypto.createPublicKey(key);
   const der = publicKey.export({ type: "spki", format: "der" });
@@ -195,8 +237,9 @@ export async function queryAlipayTrade(orderNo: string): Promise<AlipayTradeQuer
       };
     }
 
-    const responseContent = JSON.stringify(data);
-    const responseVerified = Boolean(payload.sign) && verifyResponse(responseContent, payload.sign || "", config.alipayPublicKey);
+    const responseContent = extractRawJsonValue(rawText, "alipay_trade_query_response");
+    const responseVerified = Boolean(responseContent && payload.sign)
+      && verifyResponse(responseContent, payload.sign || "", config.alipayPublicKey);
     if (!responseVerified) {
       return {
         success: false,
