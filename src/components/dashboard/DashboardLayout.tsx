@@ -37,15 +37,16 @@ export function DashboardLayout({
   }, []);
 
   useEffect(() => {
-    const root = document.querySelector<HTMLElement>("main[data-dashboard-v1]");
-    if (!root) return;
+    const matchedRoot = document.querySelector<HTMLElement>("main[data-dashboard-v1]");
+    if (!matchedRoot) return;
+    const rootElement: HTMLElement = matchedRoot;
 
     function cleanV1Placeholders() {
-      root.querySelectorAll<HTMLInputElement>('input[placeholder="yourname"]').forEach((input) => {
+      rootElement.querySelectorAll<HTMLInputElement>('input[placeholder="yourname"]').forEach((input) => {
         input.placeholder = "例如：abao";
       });
 
-      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const walker = document.createTreeWalker(rootElement, NodeFilter.SHOW_TEXT);
       let node = walker.nextNode();
       while (node) {
         if (node.nodeValue?.includes("link168.me/yourname")) {
@@ -54,7 +55,7 @@ export function DashboardLayout({
         node = walker.nextNode();
       }
 
-      root.querySelectorAll<HTMLElement>("section").forEach((section) => {
+      rootElement.querySelectorAll<HTMLElement>("section").forEach((section) => {
         const heading = section.textContent || "";
         if (heading.includes("链接与短码") || heading.includes("快速生成专属短链接")) {
           section.style.display = "none";
@@ -64,7 +65,7 @@ export function DashboardLayout({
 
     cleanV1Placeholders();
     const observer = new MutationObserver(cleanV1Placeholders);
-    observer.observe(root, { childList: true, subtree: true });
+    observer.observe(rootElement, { childList: true, subtree: true });
     return () => observer.disconnect();
   }, []);
 
