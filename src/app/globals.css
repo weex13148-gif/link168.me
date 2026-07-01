@@ -1,20 +1,55 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #1f1f2e;
-  --link168-white: #ffffff;
-  --link168-purple-light: #f5f3ff;
-  --link168-purple: #8b5cf6;
-  --link168-purple-dark: #6d28d9;
-  --link168-purple-soft: #ede9fe;
-  --link168-blue: #3b82f6;
-  --link168-blue-soft: #dbeafe;
-  --link168-ink: #1f1f2e;
-  --link168-muted: #6b7280;
-  --link168-faint: #9ca3af;
-  --link168-line: #e5e7eb;
-  --link168-card: #f9fafb;
+  color-scheme: light;
+
+  /* Link168 唯一 UI 配置 */
+  --ui-page: #f7f5f0;
+  --ui-surface: #fffdfa;
+  --ui-surface-strong: #ffffff;
+  --ui-surface-muted: #f1ede5;
+  --ui-ink: #29251f;
+  --ui-muted: #70685f;
+  --ui-faint: #9a9187;
+  --ui-line: #e4ddd2;
+  --ui-brand: #5f7f45;
+  --ui-brand-hover: #4e6d38;
+  --ui-brand-soft: #eaf1e4;
+  --ui-accent: #bd9450;
+  --ui-accent-soft: #f6ead4;
+  --ui-danger: #b42318;
+  --ui-danger-soft: #fff1f0;
+  --ui-success: #355126;
+  --ui-success-soft: #eef4e7;
+  --ui-info: #3f5f8f;
+  --ui-info-soft: #edf3fb;
+
+  --ui-radius-sm: 12px;
+  --ui-radius-md: 18px;
+  --ui-radius-lg: 24px;
+  --ui-radius-xl: 30px;
+  --ui-shadow-sm: 0 1px 2px rgb(41 37 31 / 5%), 0 8px 24px rgb(86 68 46 / 5%);
+  --ui-shadow-md: 0 18px 48px rgb(86 68 46 / 10%);
+  --ui-shadow-lg: 0 28px 80px rgb(86 68 46 / 14%);
+  --ui-container: 1200px;
+  --ui-admin-container: 1760px;
+
+  --background: var(--ui-page);
+  --foreground: var(--ui-ink);
+
+  /* 兼容旧组件，统一映射到同一品牌体系 */
+  --link168-white: var(--ui-surface-strong);
+  --link168-purple-light: var(--ui-brand-soft);
+  --link168-purple: var(--ui-brand);
+  --link168-purple-dark: var(--ui-brand-hover);
+  --link168-purple-soft: var(--ui-brand-soft);
+  --link168-blue: var(--ui-info);
+  --link168-blue-soft: var(--ui-info-soft);
+  --link168-ink: var(--ui-ink);
+  --link168-muted: var(--ui-muted);
+  --link168-faint: var(--ui-faint);
+  --link168-line: var(--ui-line);
+  --link168-card: var(--ui-surface);
   --link168-font:
     Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
     "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans CJK JP",
@@ -26,13 +61,15 @@
 }
 
 html {
-  background: var(--background);
+  background: var(--ui-page);
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  background: var(--background);
-  color: var(--foreground);
+  min-width: 320px;
+  background: var(--ui-page);
+  color: var(--ui-ink);
   font-family: var(--link168-font);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -50,10 +87,151 @@ select {
   font: inherit;
 }
 
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
 input,
 textarea,
 select {
   font-size: 16px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgb(95 127 69 / 22%);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--ui-brand);
+  color: #fff;
+}
+
+/* 全站通用产品界面 */
+.ui-page {
+  min-height: 100dvh;
+  background: var(--ui-page);
+  color: var(--ui-ink);
+}
+
+.ui-container {
+  width: min(calc(100% - 32px), var(--ui-container));
+  margin-inline: auto;
+}
+
+.ui-admin-container {
+  width: min(calc(100% - 32px), var(--ui-admin-container));
+  margin-inline: auto;
+}
+
+.ui-surface {
+  border: 1px solid var(--ui-line);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow-sm);
+}
+
+.ui-surface-plain {
+  border: 1px solid var(--ui-line);
+  border-radius: var(--ui-radius-md);
+  background: var(--ui-surface);
+}
+
+.ui-button-primary,
+.ui-button-secondary,
+.ui-button-quiet {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--ui-radius-sm);
+  padding: 0 18px;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  transition: transform 150ms ease, background 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.ui-button-primary {
+  border: 1px solid var(--ui-brand);
+  background: var(--ui-brand);
+  color: #fff;
+  box-shadow: 0 8px 20px rgb(95 127 69 / 18%);
+}
+
+.ui-button-primary:hover {
+  background: var(--ui-brand-hover);
+  border-color: var(--ui-brand-hover);
+  transform: translateY(-1px);
+}
+
+.ui-button-secondary {
+  border: 1px solid var(--ui-line);
+  background: var(--ui-surface-strong);
+  color: var(--ui-ink);
+}
+
+.ui-button-secondary:hover {
+  border-color: rgb(95 127 69 / 38%);
+  color: var(--ui-brand-hover);
+}
+
+.ui-button-quiet {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ui-muted);
+}
+
+.ui-button-quiet:hover {
+  background: var(--ui-surface-muted);
+  color: var(--ui-ink);
+}
+
+.ui-eyebrow {
+  color: var(--ui-brand);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.ui-title {
+  color: var(--ui-ink);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+}
+
+.ui-muted {
+  color: var(--ui-muted);
+}
+
+.ui-divider {
+  border-color: var(--ui-line);
+}
+
+.ui-input {
+  min-height: 46px;
+  width: 100%;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-surface-strong);
+  padding: 0 14px;
+  color: var(--ui-ink);
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.ui-input:focus {
+  border-color: var(--ui-brand);
+  box-shadow: 0 0 0 4px rgb(95 127 69 / 10%);
 }
 
 .link168-break-anywhere {
@@ -72,7 +250,8 @@ select {
   height: 18px;
 }
 
-.link168-feature-icon {
+.link168-feature-icon,
+.link168-data-icon {
   width: 24px;
   height: 24px;
 }
@@ -82,11 +261,6 @@ select {
   height: 30px;
 }
 
-.link168-data-icon {
-  width: 24px;
-  height: 24px;
-}
-
 .link168-phone-link-icon {
   width: 22px;
   height: 22px;
@@ -94,101 +268,67 @@ select {
 
 .link168-phone-shell {
   aspect-ratio: 390 / 844;
-  border-radius: 36px;
-  border: 1px solid rgb(43 36 30 / 18%);
-  background: linear-gradient(145deg, #221b16 0%, #3b332a 46%, #16120f 100%);
-  box-shadow: 0 24px 70px rgb(86 68 46 / 18%);
+  border-radius: 34px;
+  border: 1px solid rgb(41 37 31 / 18%);
+  background: linear-gradient(145deg, #27231e 0%, #3a342c 46%, #171411 100%);
+  box-shadow: var(--ui-shadow-lg);
 }
 
 .link168-phone-screen {
-  border-radius: 28px;
-}
-
-::selection {
-  background: #8b5cf6;
-  color: #ffffff;
+  border-radius: 27px;
 }
 
 @keyframes link168-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 
 @keyframes link168-soft-wiggle {
-  0%,
-  100% {
-    transform: rotate(0deg);
-  }
-  25% {
-    transform: rotate(1.8deg);
-  }
-  75% {
-    transform: rotate(-1.8deg);
-  }
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(1.4deg); }
+  75% { transform: rotate(-1.4deg); }
 }
 
 @keyframes link168-aurora {
-  0% {
-    background-position: 0% 50%;
-    opacity: 0.82;
-  }
-  50% {
-    background-position: 100% 50%;
-    opacity: 1;
-  }
-  100% {
-    background-position: 0% 50%;
-    opacity: 0.82;
-  }
+  0%, 100% { background-position: 0% 50%; opacity: 0.86; }
+  50% { background-position: 100% 50%; opacity: 1; }
 }
 
 .link168-float {
-  animation: link168-float 5.5s ease-in-out infinite;
+  animation: link168-float 6s ease-in-out infinite;
 }
 
 .link168-card-hover {
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease,
-    filter 180ms ease;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
 .link168-card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 18px 45px rgb(139 92 246 / 15%);
+  transform: translateY(-2px);
+  border-color: rgb(95 127 69 / 28%);
+  box-shadow: var(--ui-shadow-md);
 }
 
 .link168-button-press {
-  transition:
-    transform 140ms ease,
-    filter 160ms ease;
+  transition: transform 140ms ease, filter 160ms ease;
 }
 
 .link168-button-press:active {
   transform: scale(0.98);
 }
 
-.link168-wiggle-on-hover:hover {
-  animation: link168-soft-wiggle 420ms ease-in-out;
-}
-
+.link168-wiggle-on-hover:hover,
 .link168-card-hover:hover .link168-card-icon {
   animation: link168-soft-wiggle 420ms ease-in-out;
 }
 
 .link168-aurora {
   background-size: 220% 220%;
-  animation: link168-aurora 9s ease-in-out infinite;
+  animation: link168-aurora 10s ease-in-out infinite;
 }
 
 .phone-preview-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgb(139 92 246 / 42%) transparent;
+  scrollbar-color: rgb(95 127 69 / 34%) transparent;
 }
 
 .phone-preview-scroll::-webkit-scrollbar {
@@ -200,7 +340,7 @@ select {
 }
 
 .phone-preview-scroll::-webkit-scrollbar-thumb {
-  background: rgb(139 92 246 / 35%);
+  background: rgb(95 127 69 / 30%);
   border-radius: 999px;
 }
 
@@ -217,7 +357,7 @@ select {
 }
 
 .legal-content a {
-  color: #6d28d9;
+  color: var(--ui-brand-hover);
   font-weight: 900;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -235,7 +375,7 @@ select {
   z-index: 20;
   transform: translateX(-50%) translateY(4px);
   border-radius: 999px;
-  background: #111827;
+  background: var(--ui-ink);
   color: #fff;
   font-size: 12px;
   font-weight: 800;
@@ -244,9 +384,7 @@ select {
   opacity: 0;
   pointer-events: none;
   white-space: nowrap;
-  transition:
-    opacity 140ms ease,
-    transform 140ms ease;
+  transition: opacity 140ms ease, transform 140ms ease;
 }
 
 .link168-tooltip:hover::after {
@@ -254,6 +392,7 @@ select {
   transform: translateX(-50%) translateY(0);
 }
 
+/* 会员主题只影响已明确启用主题的页面，不污染默认 UI */
 html[data-link168-ui-theme="vip"] {
   --background: #07110c;
   --foreground: #f8f1d1;
@@ -293,12 +432,6 @@ html[data-link168-ui-theme="vip"] aside > div {
   box-shadow: 0 22px 70px rgb(0 0 0 / 28%) !important;
 }
 
-html[data-link168-ui-theme="vip"] .link168-button-press,
-html[data-link168-ui-theme="vip"] button,
-html[data-link168-ui-theme="vip"] a {
-  border-radius: 14px;
-}
-
 html[data-link168-ui-theme="creator"] {
   --background: #fffaf0;
   --foreground: #1f2937;
@@ -319,22 +452,16 @@ html[data-link168-ui-theme="creator"] header {
 html[data-link168-ui-theme="creator"] .link168-card-hover,
 html[data-link168-ui-theme="creator"] article,
 html[data-link168-ui-theme="creator"] aside > div {
-  border-radius: 34px !important;
+  border-radius: 30px !important;
   box-shadow: 0 18px 44px rgb(99 102 241 / 12%) !important;
 }
 
-html[data-link168-ui-theme="creator"] .link168-card-icon,
-html[data-link168-ui-theme="creator"] svg {
-  transform-origin: center;
-}
-
-html[data-link168-ui-theme="creator"] .link168-button-press,
-html[data-link168-ui-theme="creator"] button,
-html[data-link168-ui-theme="creator"] a {
-  border-radius: 999px;
-}
-
 @media (max-width: 640px) {
+  .ui-container,
+  .ui-admin-container {
+    width: min(calc(100% - 24px), var(--ui-container));
+  }
+
   button,
   input,
   select,
