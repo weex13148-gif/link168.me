@@ -1,1 +1,1 @@
-Link168 V1 pull request build check with downloadable logs.
+Link168 V1 pull request build check after dashboard type fix.
