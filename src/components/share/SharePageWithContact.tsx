@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle, Loader, MessageCircle, X } from "lucide-react";
+import { PublicAiAssistant } from "@/components/share/PublicAiAssistant";
 import { PublicProductsSection, type ProductDto } from "@/components/share/PublicProductsSection";
 import { QrCodeModal } from "@/components/share/QrCodeModal";
 import { ShareModal } from "@/components/share/ShareModal";
@@ -128,7 +129,7 @@ function ContactForm({
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-[#2B241E]/45 p-4" onClick={onClose} role="presentation">
+    <div className="fixed inset-0 z-[60] grid place-items-center bg-[#2B241E]/45 p-4" onClick={onClose} role="presentation">
       <section
         className="w-full max-w-sm rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8] p-6 shadow-[0_24px_80px_rgba(43,36,30,0.22)]"
         role="dialog"
@@ -168,7 +169,7 @@ function ContactForm({
               <input value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} maxLength={50} placeholder="如何称呼你" className="rounded-xl border border-[#E8DCCB] bg-white px-4 py-3" />
             </label>
             <label className="grid gap-1.5 text-sm">
-              <span className="font-black">邮箱或电话</span>
+              <span className="font-black">邮箱、电话或微信</span>
               <input value={form.contact} onChange={(event) => setForm((current) => ({ ...current, contact: event.target.value }))} maxLength={100} placeholder="方便联系你的方式" className="rounded-xl border border-[#E8DCCB] bg-white px-4 py-3" />
             </label>
             <label className="grid gap-1.5 text-sm">
@@ -218,12 +219,21 @@ export function SharePageWithContact(props: Props) {
       {props.showBrandFoot !== false ? <div className="flex justify-center"><BrandFooter /></div> : null}
       {props.products?.length ? <PublicProductsSection products={props.products} username={props.username} /> : null}
 
-      {!props.reportUrl ? (
-        <button type="button" onClick={() => setShowContact(true)} className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-[#6F8F4E] px-5 py-3 text-sm font-black text-white shadow-lg hover:bg-[#5E7F3F]" aria-label="联系">
-          <MessageCircle className="size-5" />
-          联系
-        </button>
-      ) : null}
+      <button
+        type="button"
+        onClick={() => setShowContact(true)}
+        className="fixed bottom-6 left-5 z-40 flex min-h-12 items-center gap-2 rounded-full border border-[#DCE7D1] bg-white px-4 text-sm font-black text-[#4F6D37] shadow-lg hover:bg-[#F8FBF5]"
+        aria-label="联系主页所有者"
+      >
+        <MessageCircle className="size-5" />
+        联系
+      </button>
+
+      <PublicAiAssistant
+        username={props.username}
+        displayName={props.displayName}
+        onOpenContact={() => setShowContact(true)}
+      />
 
       {showContact ? <ContactForm username={props.username} products={props.products} interestedProductId={props.interestedProductId} onClose={() => setShowContact(false)} /> : null}
       <QrCodeModal isOpen={showQrCode} onClose={() => setShowQrCode(false)} pageUrl={pageUrl} displayName={props.displayName} username={props.username} />
