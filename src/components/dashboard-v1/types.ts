@@ -60,17 +60,12 @@ export type DashboardResponse = {
   profile?: DashboardProfile | null;
   links?: DashboardLink[];
   leadsCount?: number;
-  meta?: {
-    hasUnverifiedEmail?: boolean;
-  };
+  meta?: { hasUnverifiedEmail?: boolean };
 };
 
 export type EntitlementsResponse = {
   success?: boolean;
-  data?: {
-    planCode?: string;
-    isPaid?: boolean;
-  };
+  data?: { planCode?: string; isPaid?: boolean };
   error?: string;
 };
 
@@ -82,7 +77,7 @@ export type LinkDraft = {
   description: string;
   iconType: string;
   iconValue: string;
-  componentType: LinkComponentType;
+  componentType?: LinkComponentType;
 };
 
 export const emptyLinkDraft: LinkDraft = {
