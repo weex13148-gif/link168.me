@@ -164,8 +164,8 @@ export default function AdminUsersDesktopTable({ currentUserRole }: { currentUse
     setMembershipError("");
   }
 
-  function closeMembershipModal() {
-    if (membershipSaving) return;
+  function closeMembershipModal(force = false) {
+    if (membershipSaving && !force) return;
     setMembershipUser(null);
     setMembershipAction(null);
     setMembershipError("");
@@ -200,7 +200,7 @@ export default function AdminUsersDesktopTable({ currentUserRole }: { currentUse
       }
 
       setNotice(result.data?.message || (membershipAction === "grant" ? "会员已开通。" : "会员已注销。"));
-      closeMembershipModal();
+      closeMembershipModal(true);
       await load();
     } catch {
       setMembershipError("网络连接失败，会员操作未完成。");
@@ -331,7 +331,7 @@ export default function AdminUsersDesktopTable({ currentUserRole }: { currentUse
       </div>
 
       {membershipUser && membershipAction ? (
-        <div className="fixed inset-0 z-[90] grid place-items-center bg-[#2B241E]/55 p-4" onClick={closeMembershipModal} role="presentation">
+        <div className="fixed inset-0 z-[90] grid place-items-center bg-[#2B241E]/55 p-4" onClick={() => closeMembershipModal()} role="presentation">
           <section className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8] p-6 shadow-[0_30px_100px_rgba(43,36,30,0.3)]" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -339,7 +339,7 @@ export default function AdminUsersDesktopTable({ currentUserRole }: { currentUse
                 <h3 className="mt-1 text-xl font-black text-[#2B241E]">{membershipAction === "grant" ? (hasActiveMembership(membershipUser) ? "调整或续期会员" : "添加会员") : "注销会员"}</h3>
                 <p className="mt-2 break-all text-sm text-[#7A6D5E]">客户：{membershipUser.email}</p>
               </div>
-              <button type="button" onClick={closeMembershipModal} className="grid size-10 place-items-center rounded-xl bg-[#F2E7D8] text-xl text-[#7A6D5E]" aria-label="关闭">×</button>
+              <button type="button" onClick={() => closeMembershipModal()} className="grid size-10 place-items-center rounded-xl bg-[#F2E7D8] text-xl text-[#7A6D5E]" aria-label="关闭">×</button>
             </div>
 
             {membershipAction === "grant" ? (
@@ -384,7 +384,7 @@ export default function AdminUsersDesktopTable({ currentUserRole }: { currentUse
             {membershipError ? <p className="mt-4 rounded-xl bg-[#FFF1F0] px-4 py-3 text-sm font-bold text-[#B42318]">{membershipError}</p> : null}
 
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <button type="button" onClick={closeMembershipModal} disabled={membershipSaving} className="min-h-12 rounded-xl border border-[#E8DCCB] bg-white text-sm font-black text-[#6F6255] disabled:opacity-50">取消</button>
+              <button type="button" onClick={() => closeMembershipModal()} disabled={membershipSaving} className="min-h-12 rounded-xl border border-[#E8DCCB] bg-white text-sm font-black text-[#6F6255] disabled:opacity-50">取消</button>
               <button type="button" onClick={() => void submitMembership()} disabled={membershipSaving || !reason.trim()} className={`min-h-12 rounded-xl text-sm font-black text-white disabled:opacity-50 ${membershipAction === "grant" ? "bg-[#6F8F4E]" : "bg-[#B42318]"}`}>{membershipSaving ? "正在处理…" : membershipAction === "grant" ? "确认开通会员" : "确认注销会员"}</button>
             </div>
           </section>
