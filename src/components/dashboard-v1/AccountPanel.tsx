@@ -13,6 +13,11 @@ export function AccountPanel({
   user,
   planLabel,
   isPaid,
+  isLegacyActive,
+  isGracePeriod,
+  gracePeriodDays,
+  daysRemaining,
+  currentPeriodEnd,
   canUpgrade,
   sessions,
   sessionsLoading,
@@ -28,6 +33,11 @@ export function AccountPanel({
   user: DashboardUser;
   planLabel: string;
   isPaid: boolean;
+  isLegacyActive: boolean;
+  isGracePeriod: boolean;
+  gracePeriodDays: number;
+  daysRemaining: number;
+  currentPeriodEnd: string | null;
   canUpgrade: boolean;
   sessions: DashboardSession[];
   sessionsLoading: boolean;
@@ -54,6 +64,16 @@ export function AccountPanel({
       setConfirmPassword("");
     }
   }
+
+  const membershipDescription = !isPaid
+    ? "免费版包含公开主页、基础资料、无限链接、免费主题和二维码。"
+    : isGracePeriod
+      ? `会员已到期，当前处于 ${gracePeriodDays} 天宽限期，请尽快续费。`
+      : isLegacyActive
+        ? "当前会员已开通，历史会员周期将在服务器统一校准后补齐。"
+        : currentPeriodEnd
+          ? `会员有效期至 ${formatDateTime(currentPeriodEnd)}，剩余约 ${daysRemaining} 天。`
+          : "当前版本已解锁更多主题和高级能力。";
 
   return (
     <div className="grid gap-5">
@@ -84,10 +104,10 @@ export function AccountPanel({
               <span className="grid size-10 place-items-center rounded-xl bg-[var(--ui-accent-soft)] text-[#8C612E]"><Crown className="size-5" /></span>
               <div><h2 className="font-black">当前版本</h2><p className="mt-1 text-sm ui-muted">{planLabel}</p></div>
             </div>
-            <span className="rounded-full bg-[var(--ui-brand-soft)] px-2.5 py-1 text-xs font-black text-[var(--ui-brand-hover)]">{planLabel}</span>
+            <span className={`rounded-full px-2.5 py-1 text-xs font-black ${isGracePeriod ? "bg-[var(--ui-accent-soft)] text-[#8C612E]" : "bg-[var(--ui-brand-soft)] text-[var(--ui-brand-hover)]"}`}>{isGracePeriod ? "宽限期" : planLabel}</span>
           </div>
-          <p className="mt-4 text-sm leading-6 ui-muted">{!isPaid ? "免费版包含公开主页、基础资料、无限链接、免费主题和二维码。" : "当前版本已解锁更多主题和高级能力。"}</p>
-          {canUpgrade ? <button type="button" onClick={onUpgrade} className="ui-button-secondary mt-5"><Crown className="size-4 text-[var(--ui-accent)]" />查看会员版本</button> : null}
+          <p className="mt-4 text-sm leading-6 ui-muted">{membershipDescription}</p>
+          {canUpgrade ? <button type="button" onClick={onUpgrade} className="ui-button-secondary mt-5"><Crown className="size-4 text-[var(--ui-accent)]" />{isGracePeriod ? "立即续费" : "查看会员版本"}</button> : null}
         </section>
       </div>
 
