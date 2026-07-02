@@ -1,10 +1,6 @@
 import Link from "next/link";
 import { PreviewShell, type PreviewShellVariant } from "@/components/preview/PreviewShell";
-import {
-  SharePageRenderer,
-  type SharePageTemplate,
-  type SharePageLink,
-} from "@/components/share/SharePageRenderer";
+import { SharePageRenderer, type SharePageTemplate, type SharePageLink } from "@/components/share/SharePageRenderer";
 
 export type PhonePreviewLink = {
   id?: string;
@@ -16,6 +12,8 @@ export type PhonePreviewLink = {
   href?: string | null;
   icon?: string | null;
   type?: string | null;
+  componentType?: string | null;
+  payload?: string | null;
   isActive?: boolean;
 };
 
@@ -44,6 +42,8 @@ type PhonePreviewProps = {
   links?: PhonePreviewLink[];
   appearance?: PhonePreviewAppearance;
   className?: string;
+  onQrCodeClick?: () => void;
+  onShareClick?: () => void;
 };
 
 const defaultLinks: PhonePreviewLink[] = [
@@ -53,58 +53,27 @@ const defaultLinks: PhonePreviewLink[] = [
   { id: "site", label: "我的网站", caption: "作品、服务和介绍" },
 ];
 
-export function PhonePreview({
-  variant = "marketing",
-  poweredLogoClickable = false,
-  username = "abao",
-  displayName,
-  bio,
-  avatarUrl,
-  links = defaultLinks,
-  appearance,
-  className = "",
-}: PhonePreviewProps) {
+export function PhonePreview({ variant = "marketing", poweredLogoClickable = false, username = "abao", displayName, bio, avatarUrl, links = defaultLinks, appearance, className = "", onQrCodeClick, onShareClick }: PhonePreviewProps) {
   const exampleFallbackUrl = variant === "public" ? null : "https://link168.me";
   const showPowered = appearance?.showPowered !== false;
 
-  const activeLinks: SharePageLink[] = links
-    .filter((link) => link.isActive !== false)
-    .map((link, index) => ({
-      id: link.id || `link-${index}`,
-      title: (link.label || link.title || "链接") as string,
-      description: link.caption || link.description || null,
-      url: link.href || link.url || exampleFallbackUrl,
-      icon: link.icon || null,
-      type: link.type || null,
-    }));
+  const activeLinks: SharePageLink[] = links.filter((link) => link.isActive !== false).map((link, index) => ({
+    id: link.id || `link-${index}`,
+    title: (link.label || link.title || "链接") as string,
+    description: link.caption || link.description || null,
+    url: link.href || link.url || exampleFallbackUrl,
+    icon: link.icon || null,
+    type: link.type || null,
+    componentType: link.componentType || link.type || null,
+    payload: link.payload || null,
+  }));
 
-  const brandMark = (
-    <span className="mx-auto mt-4 inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 px-3 py-1.5 text-[11px] font-black text-[#4F6D37] shadow-sm">
-      <span className="grid size-5 place-items-center rounded-lg bg-[#6F8F4E] text-[9px] text-white">L</span>
-      由 Link168 提供
-    </span>
-  );
+  const brandMark = <span className="mx-auto mt-4 inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/80 px-3 py-1.5 text-[11px] font-black text-[#4F6D37] shadow-sm"><span className="grid size-5 place-items-center rounded-lg bg-[#6F8F4E] text-[9px] text-white">L</span>由 Link168 提供</span>;
 
   return (
     <PreviewShell variant={variant} className={className} surfaceClassName={appearance?.surfaceClassName}>
-      <SharePageRenderer
-        template={appearance?.template || "business"}
-        username={username}
-        displayName={displayName || "阿宝的名片"}
-        bio={bio}
-        avatarUrl={avatarUrl}
-        links={activeLinks}
-        themeName={appearance?.themeName}
-        surfaceClassName={appearance?.surfaceClassName}
-        cardClassName={appearance?.cardClassName}
-        linkClassName={appearance?.linkClassName}
-        showBrandFoot={false}
-      />
-      {showPowered ? (
-        <div className="flex justify-center">
-          {poweredLogoClickable ? <Link href="/">{brandMark}</Link> : brandMark}
-        </div>
-      ) : null}
+      <SharePageRenderer template={appearance?.template || "business"} username={username} displayName={displayName || "阿宝的名片"} bio={bio} avatarUrl={avatarUrl} links={activeLinks} themeName={appearance?.themeName} surfaceClassName={appearance?.surfaceClassName} cardClassName={appearance?.cardClassName} linkClassName={appearance?.linkClassName} showBrandFoot={false} onQrCodeClick={onQrCodeClick} onShareClick={onShareClick} />
+      {showPowered ? <div className="flex justify-center">{poweredLogoClickable ? <Link href="/">{brandMark}</Link> : brandMark}</div> : null}
     </PreviewShell>
   );
 }
