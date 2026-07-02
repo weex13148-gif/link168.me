@@ -23,7 +23,7 @@ type Summary = {
 };
 
 const shortcuts = [
-  { href: "/jeepwork/users", title: "用户管理", description: "邮箱验证、会员、账号状态和最近登录" },
+  { href: "/jeepwork/users", title: "用户与会员", description: "搜索客户，手动添加、续期、调整或注销会员" },
   { href: "/jeepwork/settings/api", title: "邮箱与系统配置", description: "验证码、忘记密码、AI、支付与存储" },
   { href: "/jeepwork/logs", title: "访问与安全日志", description: "登录、会话、管理员操作和原始 IP" },
   { href: "/jeepwork/reports", title: "举报管理", description: "处理用户举报和违规主页" },
@@ -196,7 +196,7 @@ export default function JeepworkHomePage() {
         ) : (
           <section className="ui-surface p-6">
             <h2 className="text-lg font-black text-[var(--ui-ink)]">管理员工作台</h2>
-            <p className="ui-muted mt-2 text-sm leading-6">当前账号可处理主页与举报。系统配置、用户角色和安全日志仅超级管理员可见。</p>
+            <p className="ui-muted mt-2 text-sm leading-6">当前账号可以处理普通客户会员、主页与举报。系统配置、用户角色、安全日志和原始 IP 仅超级管理员可见。</p>
           </section>
         )}
 
@@ -207,7 +207,7 @@ export default function JeepworkHomePage() {
           </div>
           <div className="grid sm:grid-cols-2 xl:grid-cols-3">
             {shortcuts
-              .filter((item) => user?.role === "super_admin" || ["/jeepwork/reports", "/jeepwork/profiles"].includes(item.href))
+              .filter((item) => user?.role === "super_admin" || ["/jeepwork/users", "/jeepwork/reports", "/jeepwork/profiles"].includes(item.href))
               .map((item) => (
                 <Link key={item.href} href={item.href} className="border-b border-[var(--ui-line)] p-5 transition hover:bg-[var(--ui-surface-muted)] sm:border-r xl:[&:nth-child(3n)]:border-r-0">
                   <h3 className="font-black text-[var(--ui-ink)]">{item.title}</h3>
