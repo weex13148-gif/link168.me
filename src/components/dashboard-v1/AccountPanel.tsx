@@ -5,20 +5,15 @@ import { CheckCircle2, Crown, Laptop, Loader2, LockKeyhole, LogOut, Mail, Refres
 import type { DashboardSession, DashboardUser } from "@/components/dashboard-v1/types";
 import { formatDateTime } from "@/components/dashboard-v1/types";
 
-function planLabel(planCode: string) {
-  const code = planCode.toLowerCase();
-  if (code.includes("enterprise")) return "企业版";
-  if (code.includes("plus") || code.includes("pro") || code.includes("member")) return "会员版";
-  return "免费版";
-}
-
 function DeviceIcon({ device }: { device: string }) {
   return /安卓|iOS|手机/i.test(device) ? <Smartphone className="size-5" /> : <Laptop className="size-5" />;
 }
 
 export function AccountPanel({
   user,
-  planCode,
+  planLabel,
+  isPaid,
+  canUpgrade,
   sessions,
   sessionsLoading,
   resendingEmail,
@@ -31,7 +26,9 @@ export function AccountPanel({
   onLogout,
 }: {
   user: DashboardUser;
-  planCode: string;
+  planLabel: string;
+  isPaid: boolean;
+  canUpgrade: boolean;
   sessions: DashboardSession[];
   sessionsLoading: boolean;
   resendingEmail: boolean;
@@ -85,12 +82,12 @@ export function AccountPanel({
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-start gap-3">
               <span className="grid size-10 place-items-center rounded-xl bg-[var(--ui-accent-soft)] text-[#8C612E]"><Crown className="size-5" /></span>
-              <div><h2 className="font-black">当前版本</h2><p className="mt-1 text-sm ui-muted">{planLabel(planCode)}</p></div>
+              <div><h2 className="font-black">当前版本</h2><p className="mt-1 text-sm ui-muted">{planLabel}</p></div>
             </div>
-            <span className="rounded-full bg-[var(--ui-brand-soft)] px-2.5 py-1 text-xs font-black text-[var(--ui-brand-hover)]">{planLabel(planCode)}</span>
+            <span className="rounded-full bg-[var(--ui-brand-soft)] px-2.5 py-1 text-xs font-black text-[var(--ui-brand-hover)]">{planLabel}</span>
           </div>
-          <p className="mt-4 text-sm leading-6 ui-muted">{planCode === "free" ? "免费版包含公开主页、基础资料、最多 10 个链接、免费主题和二维码。" : "当前版本已解锁更多主题和高级能力。"}</p>
-          {planCode === "free" ? <button type="button" onClick={onUpgrade} className="ui-button-secondary mt-5"><Crown className="size-4 text-[var(--ui-accent)]" />查看会员版本</button> : null}
+          <p className="mt-4 text-sm leading-6 ui-muted">{!isPaid ? "免费版包含公开主页、基础资料、无限链接、免费主题和二维码。" : "当前版本已解锁更多主题和高级能力。"}</p>
+          {canUpgrade ? <button type="button" onClick={onUpgrade} className="ui-button-secondary mt-5"><Crown className="size-4 text-[var(--ui-accent)]" />查看会员版本</button> : null}
         </section>
       </div>
 

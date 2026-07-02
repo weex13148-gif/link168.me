@@ -248,6 +248,11 @@ export default async function PublicProfilePage({ params, searchParams }: Public
   const themeName = profile.theme || "Link168 草木默认";
   const surfaceClass = getThemeClasses(themeName).surfaceClassName;
 
+  const rawAvatarUrl = profile.avatarUrl || null;
+  const avatarUrlWithCacheBust = rawAvatarUrl
+    ? `${rawAvatarUrl.split("?")[0]}?t=${profile.updatedAt.getTime()}`
+    : null;
+
   return (
     <main className={`mx-auto flex min-h-dvh w-full max-w-2xl flex-col px-4 py-6 sm:py-10 ${surfaceClass}`}>
       {query.preview === "1" ? (
@@ -259,7 +264,7 @@ export default async function PublicProfilePage({ params, searchParams }: Public
           username={profile.username}
           displayName={profile.displayName || `@${profile.username}`}
           bio={profile.bio}
-          avatarUrl={profile.avatarUrl || null}
+          avatarUrl={avatarUrlWithCacheBust}
           links={links}
           themeName={themeName}
           showBrandFoot

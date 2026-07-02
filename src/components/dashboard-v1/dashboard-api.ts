@@ -26,11 +26,44 @@ export async function fetchDashboard(): Promise<ApiResult<DashboardResponse>> {
   return { ok: true, data };
 }
 
-export async function fetchPlan(): Promise<ApiResult<{ planCode: string; isPaid: boolean }>> {
+export async function fetchPlan(): Promise<ApiResult<{
+  planCode: string;
+  planName: string;
+  planLabel: string;
+  status: string;
+  isPaid: boolean;
+  isGracePeriod: boolean;
+  gracePeriodDays: number;
+  daysRemaining: number;
+  currentPeriodStart: string | null;
+  currentPeriodEnd: string | null;
+  features: Record<string, boolean>;
+  limits: Record<string, unknown>;
+  customThemes: string[];
+  canUpgrade: boolean;
+}>> {
   const response = await fetch("/api/dashboard/entitlements", { cache: "no-store" });
   const data = await readJson<EntitlementsResponse>(response);
   if (!response.ok || !data.success || !data.data) return { ok: false, error: data.error || "版本信息加载失败。", status: response.status };
-  return { ok: true, data: { planCode: data.data.planCode || "free", isPaid: Boolean(data.data.isPaid) } };
+  return {
+    ok: true,
+    data: {
+      planCode: data.data.planCode || "free",
+      planName: data.data.planName || "免费版",
+      planLabel: data.data.planLabel || "免费版",
+      status: data.data.status || "inactive",
+      isPaid: Boolean(data.data.isPaid),
+      isGracePeriod: Boolean(data.data.isGracePeriod),
+      gracePeriodDays: data.data.gracePeriodDays || 0,
+      daysRemaining: data.data.daysRemaining || 0,
+      currentPeriodStart: data.data.currentPeriodStart ?? null,
+      currentPeriodEnd: data.data.currentPeriodEnd ?? null,
+      features: (data.data.features as Record<string, boolean>) || {},
+      limits: data.data.limits || {},
+      customThemes: data.data.customThemes || [],
+      canUpgrade: data.data.canUpgrade ?? true,
+    },
+  };
 }
 
 export async function saveProfileRequest(payload: { username: string; displayName: string; bio: string }): Promise<ApiResult<DashboardProfile>> {

@@ -24,6 +24,34 @@ export async function POST(request: Request) {
 
   const amount = PLAN_PRICE[planCode];
 
+  // One pending order per user: return existing pending order if exists
+  const existingPending = await db.paymentOrder.findFirst({
+    where: {
+      userId: user.id,
+      planCode,
+      status: "pending"
+    },
+    orderBy: { createdAt: "desc" }
+  });
+
+  if (existingPending) {
+    const order = createAlipayOrder({
+      userId: user.id,
+      planCode,
+      amount
+    });
+    return NextResponse.json({
+      success: true,
+      data: {
+        orderId: existingPending.orderId,
+        payUrl: order.payUrl,
+        amount: existingPending.amount,
+        planCode: existingPending.planCode,
+        reused: true
+      }
+    });
+  }
+
   const order = createAlipayOrder({
     userId: user.id,
     planCode,

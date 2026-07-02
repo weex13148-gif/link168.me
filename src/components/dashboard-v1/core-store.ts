@@ -7,6 +7,40 @@ import { fetchDashboard, fetchPlan, saveAppearanceRequest, saveProfileRequest, u
 
 const emptyUser: DashboardUser = { email: "", emailVerified: false };
 
+type PlanEntitlements = {
+  planCode: string;
+  planName: string;
+  planLabel: string;
+  status: string;
+  isPaid: boolean;
+  isGracePeriod: boolean;
+  gracePeriodDays: number;
+  daysRemaining: number;
+  currentPeriodStart: string | null;
+  currentPeriodEnd: string | null;
+  features: Record<string, boolean>;
+  limits: Record<string, unknown>;
+  customThemes: string[];
+  canUpgrade: boolean;
+};
+
+const emptyPlan: PlanEntitlements = {
+  planCode: "free",
+  planName: "免费版",
+  planLabel: "免费版",
+  status: "inactive",
+  isPaid: false,
+  isGracePeriod: false,
+  gracePeriodDays: 0,
+  daysRemaining: 0,
+  currentPeriodStart: null,
+  currentPeriodEnd: null,
+  features: {},
+  limits: {},
+  customThemes: [],
+  canUpgrade: true,
+};
+
 function withAvatarCacheBust(profile: DashboardProfile): DashboardProfile {
   if (!profile.avatar_url) return profile;
   const [base] = profile.avatar_url.split("?");
@@ -24,6 +58,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
   const [user, setUser] = useState<DashboardUser>(emptyUser);
   const [profile, setProfile] = useState<DashboardProfile | null>(null);
   const [planCode, setPlanCode] = useState("free");
+  const [planEntitlements, setPlanEntitlements] = useState<PlanEntitlements>(emptyPlan);
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
@@ -51,7 +86,10 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
       onLinksLoaded(result.links || []);
       setSaveState("saved");
       const plan = await fetchPlan();
-      if (plan.ok) setPlanCode(plan.data.planCode);
+      if (plan.ok) {
+        setPlanCode(plan.data.planCode);
+        setPlanEntitlements(plan.data);
+      }
     } catch {
       setLoadError("网络连接失败，无法加载用户后台。");
     } finally {
@@ -128,5 +166,23 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
     }
   }, [onUpgrade, showToast]);
 
-  return { loading, loadError, user, profile, planCode, username, displayName, bio, saveState, uploadingAvatar, appearanceSaving, setUsername, setDisplayName, setBio, setSaveState, load, markDirty, saveProfile, uploadAvatar, saveAppearance };
+  const refreshEntitlements = useCallback(async () => {
+    try {
+      const plan = await fetchPlan();
+      if (plan.ok) {
+        setPlanCode(plan.data.planCode);
+        setPlanEntitlements(plan.data);
+      }
+    } catch {
+      // 静默失败，不干扰用户操作
+    }
+  }, []);
+
+  return {
+    loading, loadError, user, profile, planCode, planEntitlements,
+    username, displayName, bio, saveState, uploadingAvatar, appearanceSaving,
+    setUsername, setDisplayName, setBio, setSaveState,
+    load, markDirty, saveProfile, uploadAvatar, saveAppearance,
+    refreshEntitlements,
+  };
 }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireDashboardUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { toProfileDto } from "@/lib/dashboard-data";
+import { getUserEntitlements } from "@/lib/billing/entitlements";
 
 export const runtime = "nodejs";
 
@@ -34,12 +35,9 @@ export async function PUT(request: Request) {
     return NextResponse.json({ success: false, error: "请选择有效的主页布局。" }, { status: 400 });
   }
 
-  const subscription = await db.membershipSubscription.findUnique({
-    where: { userId: user.id },
-    select: { planCode: true, status: true },
-  });
-  const isPaid = subscription?.status === "active" && subscription.planCode !== "free";
-  if (!isPaid && !FREE_THEMES.has(theme)) {
+  const entitlements = await getUserEntitlements(user.id);
+  const canUsePaidThemes = entitlements.features.removeBranding && entitlements.hasActiveMembership;
+  if (!canUsePaidThemes && !FREE_THEMES.has(theme)) {
     return NextResponse.json({ success: false, error: "该主题为会员功能，请升级后使用。", upgradeRequired: true }, { status: 403 });
   }
 

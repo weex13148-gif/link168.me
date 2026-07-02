@@ -6,7 +6,29 @@ export const runtime = "nodejs";
 
 const sandboxProvider = new SandboxPaymentProvider();
 
+function isSandboxAllowed(): boolean {
+  const env = process.env.NODE_ENV;
+  const paymentMode = process.env.PAYMENT_MODE || "sandbox";
+  if (env === "production" && paymentMode === "live") {
+    return false;
+  }
+  return true;
+}
+
+function sandboxGuard() {
+  if (!isSandboxAllowed()) {
+    return NextResponse.json(
+      { success: false, error: "沙箱模式在生产环境已禁用" },
+      { status: 403 }
+    );
+  }
+  return null;
+}
+
 export async function GET(request: Request) {
+  const guardError = sandboxGuard();
+  if (guardError) return guardError;
+
   const { user, response } = await requireDashboardUser(request);
   if (response || !user) return response;
 
@@ -43,6 +65,9 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const guardError = sandboxGuard();
+  if (guardError) return guardError;
+
   const { user, response } = await requireDashboardUser(request);
   if (response || !user) return response;
 

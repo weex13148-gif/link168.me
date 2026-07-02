@@ -65,7 +65,36 @@ export type DashboardResponse = {
 
 export type EntitlementsResponse = {
   success?: boolean;
-  data?: { planCode?: string; isPaid?: boolean };
+  data?: {
+    planCode?: string;
+    planName?: string;
+    planLabel?: string;
+    status?: string;
+    isPaid?: boolean;
+    isGracePeriod?: boolean;
+    gracePeriodDays?: number;
+    daysRemaining?: number;
+    currentPeriodStart?: string | null;
+    currentPeriodEnd?: string | null;
+    features?: {
+      aiEnabled?: boolean;
+      advancedModels?: boolean;
+      fileUpload?: boolean;
+      enterpriseMemory?: boolean;
+      removeBranding?: boolean;
+      advancedStats?: boolean;
+      customDomain?: boolean;
+      prioritySupport?: boolean;
+    };
+    limits?: {
+      products?: { max: number; remaining: number };
+      knowledgeDocs?: { max: number; remaining: number };
+      aiChatsPerMonth?: { max: number; used: number; remaining: number };
+      teamSeats?: { max: number };
+    };
+    customThemes?: string[];
+    canUpgrade?: boolean;
+  };
   error?: string;
 };
 
