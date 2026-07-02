@@ -74,12 +74,15 @@ export type EntitlementsResponse = {
   error?: string;
 };
 
+export type LinkComponentType = "link" | "text" | "group-title" | "qr" | "wechat" | "phone" | "map";
+
 export type LinkDraft = {
   title: string;
   url: string;
   description: string;
   iconType: string;
   iconValue: string;
+  componentType: LinkComponentType;
 };
 
 export const emptyLinkDraft: LinkDraft = {
@@ -88,6 +91,7 @@ export const emptyLinkDraft: LinkDraft = {
   description: "",
   iconType: "default",
   iconValue: "",
+  componentType: "link",
 };
 
 export function isTemporaryUsername(username: string | null | undefined) {
