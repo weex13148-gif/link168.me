@@ -44,7 +44,9 @@ const emptyPlan: PlanEntitlements = {
 function withAvatarCacheBust(profile: DashboardProfile): DashboardProfile {
   if (!profile.avatar_url) return profile;
   const [base] = profile.avatar_url.split("?");
-  return { ...profile, avatar_url: `${base}?v=${Date.now()}` };
+  const updatedAt = profile.updated_at ? new Date(profile.updated_at).getTime() : Number.NaN;
+  const version = Number.isFinite(updatedAt) ? updatedAt : Date.now();
+  return { ...profile, avatar_url: `${base}?v=${version}` };
 }
 
 export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, showToast }: {
@@ -77,7 +79,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
         return;
       }
       const result = dashboard.data;
-      const nextProfile = result.profile || null;
+      const nextProfile = result.profile ? withAvatarCacheBust(result.profile) : null;
       setUser({ id: result.user?.id, email: result.user?.email || "", emailVerified: Boolean(result.user?.emailVerified), role: result.user?.role });
       setProfile(nextProfile);
       setUsername(nextProfile && !isTemporaryUsername(nextProfile.username) ? nextProfile.username : "");
@@ -106,10 +108,11 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
     try {
       const result = await saveProfileRequest({ username, displayName, bio });
       if (!result.ok) { setSaveState("error"); showToast(result.error, "error"); return; }
-      setProfile(result.data);
-      setUsername(result.data.username);
-      setDisplayName(result.data.display_name || "");
-      setBio(result.data.bio || "");
+      const nextProfile = withAvatarCacheBust(result.data);
+      setProfile(nextProfile);
+      setUsername(nextProfile.username);
+      setDisplayName(nextProfile.display_name || "");
+      setBio(nextProfile.bio || "");
       setSaveState("saved");
       showToast("名片资料已保存。");
     } catch {
@@ -133,19 +136,14 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
       setDisplayName(nextProfile.display_name || "");
       setBio(nextProfile.bio || "");
       setSaveState("saved");
-      showToast("头像已更新。");
-      const refreshed = await fetchDashboard();
-      if (refreshed.ok && refreshed.data.profile) {
-        setProfile(withAvatarCacheBust(refreshed.data.profile));
-        onLinksLoaded(refreshed.data.links || []);
-      }
+      showToast("头像已更新，并已同步到预览和公开主页。");
     } catch {
       setSaveState("error");
       showToast("头像上传失败，请稍后重试。", "error");
     } finally {
       setUploadingAvatar(false);
     }
-  }, [onLinksLoaded, showToast]);
+  }, [showToast]);
 
   const saveAppearance = useCallback(async (theme: string, template: string) => {
     setAppearanceSaving(true);
@@ -153,7 +151,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
     try {
       const result = await saveAppearanceRequest(theme, template);
       if (!result.ok) { setSaveState("error"); if (result.upgradeRequired) onUpgrade(); showToast(result.error, "error"); return false; }
-      setProfile(result.data);
+      setProfile(withAvatarCacheBust(result.data));
       setSaveState("saved");
       showToast("主题和布局已保存。");
       return true;
