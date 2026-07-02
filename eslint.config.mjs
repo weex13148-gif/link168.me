@@ -6,8 +6,6 @@ export default defineConfig([
   {
     ignores: [
       "src/generated/prisma/**",
-      "prototype/**",
-      "scripts/gen-doc*.js",
     ],
   },
   ...nextVitals,
