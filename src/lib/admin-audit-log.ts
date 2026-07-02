@@ -132,6 +132,8 @@ export const AUDIT_ACTION = {
   UNFREEZE_USER: "admin.unfreeze_user",
   BAN_USER: "admin.ban_user",
   UNBAN_USER: "admin.unban_user",
+  GRANT_USER_MEMBERSHIP: "admin.grant_user_membership",
+  REVOKE_USER_MEMBERSHIP: "admin.revoke_user_membership",
   UPLOAD_COMPETITION_FILE: "admin.upload_competition_file",
   DOWNLOAD_COMPETITION_FILE: "admin.download_competition_file",
   REPLACE_COMPETITION_FILE: "admin.replace_competition_file",
