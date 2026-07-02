@@ -7,12 +7,13 @@ import { fetchDashboard, fetchPlan, saveAppearanceRequest, saveProfileRequest, u
 
 const emptyUser: DashboardUser = { email: "", emailVerified: false };
 
-export function useDashboardCore({
-  onUnauthorized,
-  onLinksLoaded,
-  onUpgrade,
-  showToast,
-}: {
+function withAvatarCacheBust(profile: DashboardProfile): DashboardProfile {
+  if (!profile.avatar_url) return profile;
+  const [base] = profile.avatar_url.split("?");
+  return { ...profile, avatar_url: `${base}?v=${Date.now()}` };
+}
+
+export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, showToast }: {
   onUnauthorized: () => void;
   onLinksLoaded: (links: DashboardLink[]) => void;
   onUpgrade: () => void;
@@ -40,22 +41,15 @@ export function useDashboardCore({
         else setLoadError(dashboard.error);
         return;
       }
-
       const result = dashboard.data;
       const nextProfile = result.profile || null;
-      setUser({
-        id: result.user?.id,
-        email: result.user?.email || "",
-        emailVerified: Boolean(result.user?.emailVerified),
-        role: result.user?.role,
-      });
+      setUser({ id: result.user?.id, email: result.user?.email || "", emailVerified: Boolean(result.user?.emailVerified), role: result.user?.role });
       setProfile(nextProfile);
       setUsername(nextProfile && !isTemporaryUsername(nextProfile.username) ? nextProfile.username : "");
       setDisplayName(nextProfile?.display_name || "");
       setBio(nextProfile?.bio || "");
       onLinksLoaded(result.links || []);
       setSaveState("saved");
-
       const plan = await fetchPlan();
       if (plan.ok) setPlanCode(plan.data.planCode);
     } catch {
@@ -65,24 +59,15 @@ export function useDashboardCore({
     }
   }, [onLinksLoaded, onUnauthorized]);
 
-  function markDirty() {
-    setSaveState((current) => current === "saving" ? current : "dirty");
-  }
+  function markDirty() { setSaveState((current) => current === "saving" ? current : "dirty"); }
 
   const saveProfile = useCallback(async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if ((!profile || isTemporaryUsername(profile.username)) && !username.trim()) {
-      showToast("请先设置公开主页地址。", "error");
-      return;
-    }
+    if ((!profile || isTemporaryUsername(profile.username)) && !username.trim()) { showToast("请先设置公开主页地址。", "error"); return; }
     setSaveState("saving");
     try {
       const result = await saveProfileRequest({ username, displayName, bio });
-      if (!result.ok) {
-        setSaveState("error");
-        showToast(result.error, "error");
-        return;
-      }
+      if (!result.ok) { setSaveState("error"); showToast(result.error, "error"); return; }
       setProfile(result.data);
       setUsername(result.data.username);
       setDisplayName(result.data.display_name || "");
@@ -97,42 +82,39 @@ export function useDashboardCore({
 
   const uploadAvatar = useCallback(async (file: File | null) => {
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-      showToast("头像图片不能超过 2MB。", "error");
-      return;
-    }
-    if (!file.type.startsWith("image/")) {
-      showToast("请选择图片文件。", "error");
-      return;
-    }
-
+    if (file.size > 2 * 1024 * 1024) { showToast("头像图片不能超过 2MB。", "error"); return; }
+    if (!file.type.startsWith("image/")) { showToast("请选择图片文件。", "error"); return; }
     setUploadingAvatar(true);
+    setSaveState("saving");
     try {
       const result = await uploadAvatarRequest(file);
-      if (!result.ok) {
-        showToast(result.error, "error");
-        return;
-      }
-      setProfile(result.data);
+      if (!result.ok) { setSaveState("error"); showToast(result.error, "error"); return; }
+      const nextProfile = withAvatarCacheBust(result.data);
+      setProfile(nextProfile);
+      setUsername(nextProfile.username);
+      setDisplayName(nextProfile.display_name || "");
+      setBio(nextProfile.bio || "");
+      setSaveState("saved");
       showToast("头像已更新。");
+      const refreshed = await fetchDashboard();
+      if (refreshed.ok && refreshed.data.profile) {
+        setProfile(withAvatarCacheBust(refreshed.data.profile));
+        onLinksLoaded(refreshed.data.links || []);
+      }
     } catch {
+      setSaveState("error");
       showToast("头像上传失败，请稍后重试。", "error");
     } finally {
       setUploadingAvatar(false);
     }
-  }, [showToast]);
+  }, [onLinksLoaded, showToast]);
 
   const saveAppearance = useCallback(async (theme: string, template: string) => {
     setAppearanceSaving(true);
     setSaveState("saving");
     try {
       const result = await saveAppearanceRequest(theme, template);
-      if (!result.ok) {
-        setSaveState("error");
-        if (result.upgradeRequired) onUpgrade();
-        showToast(result.error, "error");
-        return false;
-      }
+      if (!result.ok) { setSaveState("error"); if (result.upgradeRequired) onUpgrade(); showToast(result.error, "error"); return false; }
       setProfile(result.data);
       setSaveState("saved");
       showToast("主题和布局已保存。");
@@ -146,26 +128,5 @@ export function useDashboardCore({
     }
   }, [onUpgrade, showToast]);
 
-  return {
-    loading,
-    loadError,
-    user,
-    profile,
-    planCode,
-    username,
-    displayName,
-    bio,
-    saveState,
-    uploadingAvatar,
-    appearanceSaving,
-    setUsername,
-    setDisplayName,
-    setBio,
-    setSaveState,
-    load,
-    markDirty,
-    saveProfile,
-    uploadAvatar,
-    saveAppearance,
-  };
+  return { loading, loadError, user, profile, planCode, username, displayName, bio, saveState, uploadingAvatar, appearanceSaving, setUsername, setDisplayName, setBio, setSaveState, load, markDirty, saveProfile, uploadAvatar, saveAppearance };
 }
