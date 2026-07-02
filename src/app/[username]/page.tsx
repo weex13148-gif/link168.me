@@ -94,16 +94,55 @@ type CurrentProfile = Extract<Awaited<ReturnType<typeof resolveUsername>>, { typ
 export async function generateMetadata({ params }: PublicProfilePageProps): Promise<Metadata> {
   const { username } = await params;
   const result = await resolveUsername(username);
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://link168.me").replace(/\/$/, "");
+
   if (result.type !== "current") {
     return {
-      title: `@${username} | Link168`,
+      title: `@${username}`,
       description: `访问 @${username} 的 Link168 公开主页。`,
+      robots: { index: false, follow: false },
     };
   }
+
   const profile = result.profile;
+  const title = profile.displayName || `@${profile.username}`;
+  const description = profile.bio || `访问 @${profile.username} 的 Link168 公开主页。`;
+  const canonicalPath = `/${profile.username}`;
+  const avatarUrl = profile.avatarUrl
+    ? `${profile.avatarUrl.split("?")[0]}?v=${profile.updatedAt.getTime()}`
+    : null;
+
+  let indexable = profile.isPublic;
+  try {
+    const [owner, restrictions] = await Promise.all([
+      db.user.findUnique({ where: { id: profile.userId }, select: { emailVerified: true } }),
+      getActiveRestrictions(profile.userId),
+    ]);
+    indexable = Boolean(profile.isPublic && owner?.emailVerified && canShowPublicProfile(restrictions).ok);
+  } catch {
+    indexable = false;
+  }
+
   return {
-    title: `${profile.displayName || `@${profile.username}`} | Link168`,
-    description: profile.bio || `访问 @${profile.username} 的 Link168 公开主页。`,
+    title,
+    description,
+    alternates: { canonical: canonicalPath },
+    robots: { index: indexable, follow: indexable },
+    openGraph: {
+      type: "profile",
+      locale: "zh_CN",
+      siteName: "Link168",
+      title,
+      description,
+      url: `${appUrl}${canonicalPath}`,
+      images: avatarUrl ? [{ url: avatarUrl, alt: `${title} 的头像` }] : undefined,
+    },
+    twitter: {
+      card: avatarUrl ? "summary" : "summary_large_image",
+      title,
+      description,
+      images: avatarUrl ? [avatarUrl] : undefined,
+    },
   };
 }
 
@@ -212,7 +251,6 @@ export default async function PublicProfilePage({ params, searchParams }: Public
     id: item.id,
     title: item.title,
     description: item.description || null,
-    // V1 公开主页直接使用数据库中的原始 URL，不生成 /go 短链。
     url: item.url?.trim() || null,
     icon: item.iconUrl || item.iconValue || null,
     type: item.iconType || null,
