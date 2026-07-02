@@ -13,6 +13,7 @@ type PlanEntitlements = {
   planLabel: string;
   status: string;
   isPaid: boolean;
+  isLegacyActive: boolean;
   isGracePeriod: boolean;
   gracePeriodDays: number;
   daysRemaining: number;
@@ -30,6 +31,7 @@ const emptyPlan: PlanEntitlements = {
   planLabel: "免费版",
   status: "inactive",
   isPaid: false,
+  isLegacyActive: false,
   isGracePeriod: false,
   gracePeriodDays: 0,
   daysRemaining: 0,
