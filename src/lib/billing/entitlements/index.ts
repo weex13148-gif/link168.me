@@ -11,6 +11,7 @@ export type EntitlementCheck = {
 
 export type UserEntitlements = {
   hasActiveMembership: boolean;
+  isLegacyActive: boolean;
   planCode: PlanCode;
   plan: PlanDefinition;
   currentPeriodStart: Date | null;
@@ -61,21 +62,32 @@ export async function getUserEntitlements(userId: string): Promise<UserEntitleme
   const now = new Date();
 
   let effectivePlanCode: PlanCode = "free";
-  let currentPeriodStart: Date | null = subscription?.currentPeriodStart ?? null;
-  let currentPeriodEnd: Date | null = subscription?.currentPeriodEnd ?? null;
+  const currentPeriodStart: Date | null = subscription?.currentPeriodStart ?? null;
+  const currentPeriodEnd: Date | null = subscription?.currentPeriodEnd ?? null;
   let hasActiveMembership = false;
+  let isLegacyActive = false;
   let isGracePeriod = false;
   let gracePeriodDays = 0;
 
-  if (subscription?.status === "active" && currentPeriodEnd && currentPeriodEnd > now) {
-    effectivePlanCode = normalizePlanCode(subscription.planCode);
-    hasActiveMembership = effectivePlanCode !== "free";
-  } else if (subscription?.status === "active" && currentPeriodEnd) {
-    const daysSinceExpired = Math.floor((now.getTime() - currentPeriodEnd.getTime()) / 86_400_000);
-    if (daysSinceExpired <= GRACE_PERIOD_DAYS) {
-      effectivePlanCode = normalizePlanCode(subscription.planCode);
-      isGracePeriod = effectivePlanCode !== "free";
-      gracePeriodDays = Math.max(0, GRACE_PERIOD_DAYS - daysSinceExpired);
+  if (subscription?.status === "active") {
+    const normalized = normalizePlanCode(subscription.planCode);
+    if (normalized !== "free") {
+      if (!currentPeriodEnd) {
+        // 兼容早期已经开通但尚未补齐周期字段的会员数据。
+        effectivePlanCode = normalized;
+        hasActiveMembership = true;
+        isLegacyActive = true;
+      } else if (currentPeriodEnd > now) {
+        effectivePlanCode = normalized;
+        hasActiveMembership = true;
+      } else {
+        const daysSinceExpired = Math.floor((now.getTime() - currentPeriodEnd.getTime()) / 86_400_000);
+        if (daysSinceExpired <= GRACE_PERIOD_DAYS) {
+          effectivePlanCode = normalized;
+          isGracePeriod = true;
+          gracePeriodDays = Math.max(0, GRACE_PERIOD_DAYS - daysSinceExpired);
+        }
+      }
     }
   }
 
@@ -96,28 +108,31 @@ export async function getUserEntitlements(userId: string): Promise<UserEntitleme
 
   const aiUsed = Math.abs(usage._sum.amount ?? 0);
   const aiLimit = plan.limits.aiChatsPerMonth;
-  const paid = effectivePlanCode !== "free";
+  const paid = effectivePlanCode !== "free" && (hasActiveMembership || isGracePeriod);
   const proOrAbove = ["pro", "enterprise", "enterprise_pro_plus", "internal_test"].includes(effectivePlanCode);
   const enterprise = ["enterprise", "enterprise_pro_plus", "internal_test"].includes(effectivePlanCode);
 
   return {
     hasActiveMembership,
+    isLegacyActive,
     planCode: effectivePlanCode,
     plan,
     currentPeriodStart,
     currentPeriodEnd,
-    daysRemaining: currentPeriodEnd ? Math.max(0, Math.ceil((currentPeriodEnd.getTime() - now.getTime()) / 86_400_000)) : 0,
+    daysRemaining: currentPeriodEnd && currentPeriodEnd > now
+      ? Math.max(0, Math.ceil((currentPeriodEnd.getTime() - now.getTime()) / 86_400_000))
+      : 0,
     isGracePeriod,
     gracePeriodDays,
     features: {
       aiEnabled: paid && aiLimit !== 0,
       advancedModels: paid,
       fileUpload: paid,
-      enterpriseMemory: enterprise,
-      removeBranding: plan.limits.removeBranding,
-      advancedStats: proOrAbove,
-      customDomain: plan.limits.customDomain,
-      prioritySupport: plan.limits.prioritySupport,
+      enterpriseMemory: paid && enterprise,
+      removeBranding: paid && plan.limits.removeBranding,
+      advancedStats: paid && proOrAbove,
+      customDomain: paid && plan.limits.customDomain,
+      prioritySupport: paid && plan.limits.prioritySupport,
     },
     limits: {
       products: { max: plan.limits.products, remaining: remaining(plan.limits.products, productsUsed) },
