@@ -28,12 +28,27 @@ export function ProfilePanel({ profile, username, displayName, bio, saveState, u
             <p className="text-sm font-black">头像</p>
             <div className="mt-3 flex items-center gap-4 xl:block">
               <div className="grid size-24 shrink-0 place-items-center overflow-hidden rounded-[24px] border border-[var(--ui-line)] bg-[var(--ui-brand-soft)] text-[var(--ui-brand-hover)] xl:size-36">
-                {profile?.avatar_url ? <img src={profile.avatar_url} alt="当前头像" className="size-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : <UserRound className="size-11 xl:size-14" />}
-                {profile?.avatar_url ? <span className="hidden text-2xl font-black">{(displayName || username || "L").slice(0, 1).toUpperCase()}</span> : null}
+                {profile?.avatar_url ? (
+                  <>
+                    <img
+                      key={profile.avatar_url}
+                      src={profile.avatar_url}
+                      alt="当前头像"
+                      className="size-full object-cover"
+                      decoding="async"
+                      onError={(event) => {
+                        event.currentTarget.style.display = "none";
+                        const fallback = event.currentTarget.nextElementSibling;
+                        if (fallback instanceof HTMLElement) fallback.classList.remove("hidden");
+                      }}
+                    />
+                    <span className="hidden text-2xl font-black">{(displayName || username || "L").slice(0, 1).toUpperCase()}</span>
+                  </>
+                ) : <UserRound className="size-11 xl:size-14" />}
               </div>
               <div className="xl:mt-4">
                 <label className="ui-button-secondary cursor-pointer"><Camera className="size-4" />{uploadingAvatar ? "正在上传…" : "更换头像"}<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" disabled={uploadingAvatar} onChange={(event) => { onUploadAvatar(event.target.files?.[0] || null); event.currentTarget.value = ""; }} /></label>
-                <p className="mt-2 text-xs leading-5 ui-muted">支持 JPG、PNG、WebP、GIF，最大 2MB。</p>
+                <p className="mt-2 text-xs leading-5 ui-muted">支持 JPG、PNG、WebP、GIF，最大 2MB。上传成功后会立即同步到预览和公开主页。</p>
               </div>
             </div>
           </div>
