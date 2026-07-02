@@ -4,6 +4,17 @@ import { useCallback, useMemo, useState } from "react";
 import type { DashboardLink, LinkDraft, SaveState } from "@/components/dashboard-v1/types";
 import { createLinkRequest, deleteLinkRequest, reorderLinksRequest, updateLinkRequest } from "@/components/dashboard-v1/dashboard-api";
 
+function draftFromLink(link: DashboardLink): LinkDraft {
+  return {
+    title: link.title,
+    url: link.url,
+    description: link.description || "",
+    iconType: link.icon_type || "default",
+    iconValue: link.icon_value || "",
+    componentType: (link.type || "link") as LinkDraft["componentType"],
+  };
+}
+
 export function useDashboardLinks({
   initialLinks,
   profileReady,
@@ -46,11 +57,11 @@ export function useDashboardLinks({
       }
       setLinks((current) => [...current, result.data].sort((a, b) => a.position - b.position));
       setGlobalSaveState("saved");
-      showToast("链接已保存并公开。");
+      showToast("内容已保存并公开。");
       return true;
     } catch {
       setGlobalSaveState("error");
-      showToast("链接创建失败，请稍后重试。", "error");
+      showToast("内容创建失败，请稍后重试。", "error");
       return false;
     } finally {
       setCreating(false);
@@ -69,11 +80,11 @@ export function useDashboardLinks({
       }
       setLinks((current) => current.map((item) => item.id === link.id ? result.data : item));
       setGlobalSaveState("saved");
-      showToast("链接修改已保存。");
+      showToast("内容修改已保存。");
       return true;
     } catch {
       setGlobalSaveState("error");
-      showToast("链接保存失败，请稍后重试。", "error");
+      showToast("内容保存失败，请稍后重试。", "error");
       return false;
     } finally {
       setBusyLinkId("");
@@ -84,13 +95,7 @@ export function useDashboardLinks({
     setBusyLinkId(link.id);
     setGlobalSaveState("saving");
     try {
-      const result = await updateLinkRequest(link, {
-        title: link.title,
-        url: link.url,
-        description: link.description || "",
-        iconType: link.icon_type,
-        iconValue: link.icon_value || "",
-      }, !link.is_active);
+      const result = await updateLinkRequest(link, draftFromLink(link), !link.is_active);
       if (!result.ok) {
         setGlobalSaveState("error");
         showToast(result.error, "error");
@@ -98,10 +103,10 @@ export function useDashboardLinks({
       }
       setLinks((current) => current.map((item) => item.id === link.id ? result.data : item));
       setGlobalSaveState("saved");
-      showToast(result.data.is_active ? "链接已公开。" : "链接已隐藏。");
+      showToast(result.data.is_active ? "内容已公开。" : "内容已隐藏。");
     } catch {
       setGlobalSaveState("error");
-      showToast("链接状态更新失败。", "error");
+      showToast("内容状态更新失败。", "error");
     } finally {
       setBusyLinkId("");
     }
@@ -117,9 +122,9 @@ export function useDashboardLinks({
         return;
       }
       setLinks((current) => current.filter((item) => item.id !== link.id));
-      showToast("链接已删除。");
+      showToast("内容已删除。");
     } catch {
-      showToast("链接删除失败，请稍后重试。", "error");
+      showToast("内容删除失败，请稍后重试。", "error");
     } finally {
       setBusyLinkId("");
     }
@@ -146,7 +151,7 @@ export function useDashboardLinks({
         return;
       }
       setGlobalSaveState("saved");
-      showToast("链接顺序已保存。");
+      showToast("顺序已保存。");
     } catch {
       setLinks(previous);
       setGlobalSaveState("error");
