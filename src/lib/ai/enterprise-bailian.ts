@@ -131,7 +131,10 @@ async function getContext(user: EnterpriseBailianUser | null) {
     getUserEntitlements(user.id),
     isAiTester(user.email),
   ]);
-  const allowed = entitlements.hasActiveMembership && ENTERPRISE_BAILIAN_ALLOWED_PLANS.has(entitlements.planCode);
+  const membershipUsable = entitlements.hasActiveMembership || entitlements.isGracePeriod;
+  const allowed = membershipUsable
+    && entitlements.features.aiEnabled
+    && ENTERPRISE_BAILIAN_ALLOWED_PLANS.has(entitlements.planCode);
   return {
     user,
     config,
@@ -141,7 +144,11 @@ async function getContext(user: EnterpriseBailianUser | null) {
     access: {
       allowed,
       planCode: entitlements.planCode,
-      reason: allowed ? null : `AI 服务需要有效的 Plus、Pro 或企业会员。当前套餐：${entitlements.plan.name}`,
+      reason: allowed
+        ? null
+        : entitlements.isGracePeriod
+          ? "当前会员宽限期内 AI 权限不可用，请完成续费后重试。"
+          : `AI 服务需要有效的 Plus、Pro 或企业会员。当前套餐：${entitlements.plan.name}`,
       isTester: tester,
       isConfigured: resolved.configured,
     } satisfies EnterpriseBailianAccess,
