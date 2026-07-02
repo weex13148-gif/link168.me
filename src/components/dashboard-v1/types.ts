@@ -71,6 +71,7 @@ export type EntitlementsResponse = {
     planLabel?: string;
     status?: string;
     isPaid?: boolean;
+    isLegacyActive?: boolean;
     isGracePeriod?: boolean;
     gracePeriodDays?: number;
     daysRemaining?: number;
