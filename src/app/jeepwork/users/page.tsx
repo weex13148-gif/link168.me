@@ -23,7 +23,7 @@ export default function JeepworkUsersPage() {
           if (!cancelled) router.replace("/jeepwork/login");
           return;
         }
-        if (result.user.role !== "super_admin") {
+        if (result.user.role !== "admin" && result.user.role !== "super_admin") {
           if (!cancelled) router.replace("/jeepwork");
           return;
         }
@@ -45,29 +45,33 @@ export default function JeepworkUsersPage() {
 
   return (
     <AdminShell
-      currentPageLabel="用户管理"
+      currentPageLabel="用户与会员"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
       onLogout={loggingOut ? undefined : onLogout}
       pageHeader={{
-        eyebrow: "用户与会员",
-        title: "用户管理",
-        subtitle: "查看用户邮箱验证、会员等级、账号状态和最近登录；冻结、封禁、角色与批量操作保留在高级管理区。",
+        eyebrow: "客户与会员",
+        title: "用户与会员管理",
+        subtitle: user?.role === "super_admin"
+          ? "搜索客户，手动开通、续期、调整或注销会员；超级管理员还可以进入高级区域处理角色、冻结、封禁和批量操作。"
+          : "搜索普通客户，手动开通、续期、调整或注销会员。所有会员操作都会写入审计日志。",
         highlight: "#5B6FFF",
       }}
     >
       <div className="grid gap-6">
-        <AdminUsersDesktopTable />
+        <AdminUsersDesktopTable currentUserRole={user?.role} />
 
-        <details id="advanced-user-management" className="rounded-[24px] border border-[#E8DCCB] bg-white shadow-sm">
-          <summary className="cursor-pointer list-none px-5 py-4 text-sm font-black text-[#2B241E] marker:hidden">
-            高级用户管理：角色、冻结、封禁、批量导出
-            <span className="ml-2 text-xs font-bold text-[#7A6D5E]">点击展开</span>
-          </summary>
-          <div className="border-t border-[#E8DCCB] p-5">
-            <AdminUsersClient currentUserEmail={user?.email} />
-          </div>
-        </details>
+        {user?.role === "super_admin" ? (
+          <details id="advanced-user-management" className="rounded-[24px] border border-[#E8DCCB] bg-white shadow-sm">
+            <summary className="cursor-pointer list-none px-5 py-4 text-sm font-black text-[#2B241E] marker:hidden">
+              超级管理员高级区：角色、冻结、封禁、批量导出
+              <span className="ml-2 text-xs font-bold text-[#7A6D5E]">点击展开</span>
+            </summary>
+            <div className="border-t border-[#E8DCCB] p-5">
+              <AdminUsersClient currentUserEmail={user?.email} />
+            </div>
+          </details>
+        ) : null}
       </div>
     </AdminShell>
   );
