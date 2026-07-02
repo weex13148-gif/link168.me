@@ -10,6 +10,7 @@ import { moderateImageContent } from "@/lib/content-safety";
 export const runtime = "nodejs";
 
 const MAX_AVATAR_SIZE = 2 * 1024 * 1024;
+const AVATAR_PUBLIC_PREFIX = "/uploads/avatars/";
 const ALLOWED_TYPES: Record<string, { extension: string; signature: number[]; offset?: number }> = {
   "image/jpeg": { extension: ".jpg", signature: [0xff, 0xd8, 0xff] },
   "image/jpg": { extension: ".jpg", signature: [0xff, 0xd8, 0xff] },
@@ -34,6 +35,15 @@ function specFromFile(file: File, head: Uint8Array) {
   if (direct && matchesMagicBytes(head, direct)) return direct;
   for (const spec of Object.values(ALLOWED_TYPES)) if (matchesMagicBytes(head, spec)) return spec;
   return null;
+}
+
+function localAvatarPath(avatarUrl: string | null) {
+  if (!avatarUrl) return null;
+  const pathname = avatarUrl.split("?")[0];
+  if (!pathname.startsWith(AVATAR_PUBLIC_PREFIX)) return null;
+  const fileName = pathname.slice(AVATAR_PUBLIC_PREFIX.length);
+  if (!fileName || fileName !== path.basename(fileName)) return null;
+  return path.join(process.cwd(), "public", "uploads", "avatars", fileName);
 }
 
 export async function POST(request: Request) {
@@ -70,12 +80,28 @@ export async function POST(request: Request) {
   await mkdir(uploadDir, { recursive: true });
 
   let createdFile: string | null = null;
+  const previousFile = localAvatarPath(profile.avatarUrl);
   try {
     createdFile = path.join(uploadDir, fileName);
     await writeFile(createdFile, Buffer.from(arrayBuffer));
-    const avatarUrl = `/uploads/avatars/${fileName}`;
+    const avatarUrl = `${AVATAR_PUBLIC_PREFIX}${fileName}`;
     const updatedProfile = await db.profile.update({ where: { id: profile.id }, data: { avatarUrl } });
-    return NextResponse.json({ success: true, profile: toProfileDto(updatedProfile), avatarUrl });
+
+    if (previousFile && previousFile !== createdFile) {
+      await rm(previousFile, { force: true }).catch((error) => {
+        console.warn("[dashboard:avatar] old avatar cleanup failed", error instanceof Error ? error.message : String(error));
+      });
+    }
+
+    const versionedAvatarUrl = `${avatarUrl}?v=${updatedProfile.updatedAt.getTime()}`;
+    return NextResponse.json(
+      {
+        success: true,
+        profile: { ...toProfileDto(updatedProfile), avatar_url: versionedAvatarUrl },
+        avatarUrl: versionedAvatarUrl,
+      },
+      { headers: { "Cache-Control": "no-store" } },
+    );
   } catch (err) {
     if (createdFile) await rm(createdFile, { force: true }).catch(() => undefined);
     console.error("[dashboard:avatar] upload failed", err && (err as { message?: unknown }).message ? String((err as { message?: unknown }).message) : String(err));

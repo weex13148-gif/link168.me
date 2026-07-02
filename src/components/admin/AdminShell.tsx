@@ -13,7 +13,7 @@ type NavItem = {
 
 const ALL_NAV_ITEMS: NavItem[] = [
   { href: "/jeepwork", label: "后台首页", icon: "◎" },
-  { href: "/jeepwork/users", label: "用户管理", icon: "◇", tone: "info", superAdminOnly: true },
+  { href: "/jeepwork/users", label: "用户与会员", icon: "◇", tone: "info" },
   { href: "/jeepwork/profiles", label: "主页管理", icon: "◇" },
   { href: "/jeepwork/reports", label: "举报管理", icon: "!", tone: "danger" },
   { href: "/jeepwork/competition-center", label: "比赛中心", icon: "赛", tone: "brand", superAdminOnly: true },

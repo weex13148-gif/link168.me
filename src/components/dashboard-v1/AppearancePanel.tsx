@@ -18,36 +18,36 @@ const templates = [
   { value: "conversion", label: "转化主页", description: "强调核心行动按钮和咨询入口。" },
 ];
 
-function isPaidPlan(planCode: string) {
-  return planCode.toLowerCase() !== "free";
-}
-
 export function AppearancePanel({
   theme,
   template,
-  planCode,
+  customThemes,
   saving,
   onSave,
   onUpgrade,
 }: {
   theme: string;
   template: string;
-  planCode: string;
+  customThemes: string[];
   saving: boolean;
   onSave: (theme: string, template: string) => Promise<boolean>;
   onUpgrade: () => void;
 }) {
   const [selectedTheme, setSelectedTheme] = useState(theme || "Link168 草木默认");
   const [selectedTemplate, setSelectedTemplate] = useState(template || "business");
-  const paid = isPaidPlan(planCode);
 
   useEffect(() => setSelectedTheme(theme || "Link168 草木默认"), [theme]);
   useEffect(() => setSelectedTemplate(template || "business"), [template]);
 
   const dirty = useMemo(() => selectedTheme !== theme || selectedTemplate !== template, [selectedTheme, selectedTemplate, theme, template]);
 
+  function canUseTheme(item: (typeof themes)[number]): boolean {
+    if (item.free) return true;
+    return customThemes.includes(item.label);
+  }
+
   function chooseTheme(item: (typeof themes)[number]) {
-    if (!item.free && !paid) {
+    if (!canUseTheme(item)) {
       onUpgrade();
       return;
     }
@@ -70,7 +70,7 @@ export function AppearancePanel({
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {themes.map((item) => {
-            const locked = !item.free && !paid;
+            const locked = !canUseTheme(item);
             const selected = selectedTheme === item.name;
             return (
               <button key={item.name} type="button" onClick={() => chooseTheme(item)} className={`relative overflow-hidden rounded-[18px] border p-3 text-left transition ${selected ? "border-[var(--ui-brand)] ring-2 ring-[color:var(--ui-brand)]/15" : "border-[var(--ui-line)] hover:border-[color:var(--ui-brand)]/35"}`}>

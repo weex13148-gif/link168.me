@@ -7,10 +7,48 @@ import { fetchDashboard, fetchPlan, saveAppearanceRequest, saveProfileRequest, u
 
 const emptyUser: DashboardUser = { email: "", emailVerified: false };
 
+type PlanEntitlements = {
+  planCode: string;
+  planName: string;
+  planLabel: string;
+  status: string;
+  isPaid: boolean;
+  isLegacyActive: boolean;
+  isGracePeriod: boolean;
+  gracePeriodDays: number;
+  daysRemaining: number;
+  currentPeriodStart: string | null;
+  currentPeriodEnd: string | null;
+  features: Record<string, boolean>;
+  limits: Record<string, unknown>;
+  customThemes: string[];
+  canUpgrade: boolean;
+};
+
+const emptyPlan: PlanEntitlements = {
+  planCode: "free",
+  planName: "免费版",
+  planLabel: "免费版",
+  status: "inactive",
+  isPaid: false,
+  isLegacyActive: false,
+  isGracePeriod: false,
+  gracePeriodDays: 0,
+  daysRemaining: 0,
+  currentPeriodStart: null,
+  currentPeriodEnd: null,
+  features: {},
+  limits: {},
+  customThemes: [],
+  canUpgrade: true,
+};
+
 function withAvatarCacheBust(profile: DashboardProfile): DashboardProfile {
   if (!profile.avatar_url) return profile;
   const [base] = profile.avatar_url.split("?");
-  return { ...profile, avatar_url: `${base}?v=${Date.now()}` };
+  const updatedAt = profile.updated_at ? new Date(profile.updated_at).getTime() : Number.NaN;
+  const version = Number.isFinite(updatedAt) ? updatedAt : Date.now();
+  return { ...profile, avatar_url: `${base}?v=${version}` };
 }
 
 export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, showToast }: {
@@ -24,6 +62,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
   const [user, setUser] = useState<DashboardUser>(emptyUser);
   const [profile, setProfile] = useState<DashboardProfile | null>(null);
   const [planCode, setPlanCode] = useState("free");
+  const [planEntitlements, setPlanEntitlements] = useState<PlanEntitlements>(emptyPlan);
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [bio, setBio] = useState("");
@@ -42,7 +81,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
         return;
       }
       const result = dashboard.data;
-      const nextProfile = result.profile || null;
+      const nextProfile = result.profile ? withAvatarCacheBust(result.profile) : null;
       setUser({ id: result.user?.id, email: result.user?.email || "", emailVerified: Boolean(result.user?.emailVerified), role: result.user?.role });
       setProfile(nextProfile);
       setUsername(nextProfile && !isTemporaryUsername(nextProfile.username) ? nextProfile.username : "");
@@ -51,7 +90,10 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
       onLinksLoaded(result.links || []);
       setSaveState("saved");
       const plan = await fetchPlan();
-      if (plan.ok) setPlanCode(plan.data.planCode);
+      if (plan.ok) {
+        setPlanCode(plan.data.planCode);
+        setPlanEntitlements(plan.data);
+      }
     } catch {
       setLoadError("网络连接失败，无法加载用户后台。");
     } finally {
@@ -68,10 +110,11 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
     try {
       const result = await saveProfileRequest({ username, displayName, bio });
       if (!result.ok) { setSaveState("error"); showToast(result.error, "error"); return; }
-      setProfile(result.data);
-      setUsername(result.data.username);
-      setDisplayName(result.data.display_name || "");
-      setBio(result.data.bio || "");
+      const nextProfile = withAvatarCacheBust(result.data);
+      setProfile(nextProfile);
+      setUsername(nextProfile.username);
+      setDisplayName(nextProfile.display_name || "");
+      setBio(nextProfile.bio || "");
       setSaveState("saved");
       showToast("名片资料已保存。");
     } catch {
@@ -95,19 +138,14 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
       setDisplayName(nextProfile.display_name || "");
       setBio(nextProfile.bio || "");
       setSaveState("saved");
-      showToast("头像已更新。");
-      const refreshed = await fetchDashboard();
-      if (refreshed.ok && refreshed.data.profile) {
-        setProfile(withAvatarCacheBust(refreshed.data.profile));
-        onLinksLoaded(refreshed.data.links || []);
-      }
+      showToast("头像已更新，并已同步到预览和公开主页。");
     } catch {
       setSaveState("error");
       showToast("头像上传失败，请稍后重试。", "error");
     } finally {
       setUploadingAvatar(false);
     }
-  }, [onLinksLoaded, showToast]);
+  }, [showToast]);
 
   const saveAppearance = useCallback(async (theme: string, template: string) => {
     setAppearanceSaving(true);
@@ -115,7 +153,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
     try {
       const result = await saveAppearanceRequest(theme, template);
       if (!result.ok) { setSaveState("error"); if (result.upgradeRequired) onUpgrade(); showToast(result.error, "error"); return false; }
-      setProfile(result.data);
+      setProfile(withAvatarCacheBust(result.data));
       setSaveState("saved");
       showToast("主题和布局已保存。");
       return true;
@@ -128,5 +166,23 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
     }
   }, [onUpgrade, showToast]);
 
-  return { loading, loadError, user, profile, planCode, username, displayName, bio, saveState, uploadingAvatar, appearanceSaving, setUsername, setDisplayName, setBio, setSaveState, load, markDirty, saveProfile, uploadAvatar, saveAppearance };
+  const refreshEntitlements = useCallback(async () => {
+    try {
+      const plan = await fetchPlan();
+      if (plan.ok) {
+        setPlanCode(plan.data.planCode);
+        setPlanEntitlements(plan.data);
+      }
+    } catch {
+      // 静默失败，不干扰用户操作
+    }
+  }, []);
+
+  return {
+    loading, loadError, user, profile, planCode, planEntitlements,
+    username, displayName, bio, saveState, uploadingAvatar, appearanceSaving,
+    setUsername, setDisplayName, setBio, setSaveState,
+    load, markDirty, saveProfile, uploadAvatar, saveAppearance,
+    refreshEntitlements,
+  };
 }

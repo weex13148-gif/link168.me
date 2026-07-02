@@ -1,19 +1,31 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireJeepworkSuperAdmin } from "@/lib/jeepwork-auth";
+import { getJeepworkSessionUser, requireJeepworkAdmin } from "@/lib/jeepwork-auth";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 30;
 
 export async function GET(request: Request) {
-  const forbidden = await requireJeepworkSuperAdmin(request);
+  const forbidden = await requireJeepworkAdmin(request);
   if (forbidden) return forbidden;
+
+  const actor = await getJeepworkSessionUser(request);
+  if (!actor) {
+    return NextResponse.json(
+      { success: false, data: null, error: { code: "UNAUTHORIZED", message: "未授权" } },
+      { status: 401 },
+    );
+  }
 
   const url = new URL(request.url);
   const page = Math.max(1, Number.parseInt(url.searchParams.get("page") || "1", 10) || 1);
   const keyword = (url.searchParams.get("q") || "").trim().slice(0, 80);
-  const role = url.searchParams.get("role") || "";
+  const requestedRole = url.searchParams.get("role") || "";
+  const role = actor.role === "super_admin"
+    ? requestedRole
+    : "user";
 
   const where = {
     AND: [
@@ -41,10 +53,17 @@ export async function GET(request: Request) {
         email: true,
         emailVerified: true,
         role: true,
+        isSystem: true,
         createdAt: true,
         profile: { select: { username: true, displayName: true, avatarUrl: true, isPublic: true } },
         membershipSubscription: {
-          select: { planCode: true, status: true, currentPeriodEnd: true },
+          select: {
+            planCode: true,
+            status: true,
+            currentPeriodStart: true,
+            currentPeriodEnd: true,
+            updatedAt: true,
+          },
         },
         sessions: {
           orderBy: { lastActive: "desc" },
@@ -73,18 +92,28 @@ export async function GET(request: Request) {
         email: user.email,
         emailVerified: user.emailVerified,
         role: user.role,
+        isSystem: Boolean(user.isSystem),
         createdAt: user.createdAt,
         profile: user.profile,
         membership: user.membershipSubscription || {
           planCode: "free",
-          status: "active",
+          status: "inactive",
+          currentPeriodStart: null,
           currentPeriodEnd: null,
+          updatedAt: null,
         },
         lastLoginAt: user.sessions[0]?.lastActive || null,
-        lastLoginIp: user.sessions[0]?.ipAddress || null,
+        lastLoginIp: actor.role === "super_admin" ? user.sessions[0]?.ipAddress || null : null,
         restrictions: user.freezeRecords,
       })),
+      permissions: {
+        canManageMembership: true,
+        canViewRawIp: actor.role === "super_admin",
+        canViewAllRoles: actor.role === "super_admin",
+      },
     },
     error: null,
+  }, {
+    headers: { "Cache-Control": "private, no-store, max-age=0" },
   });
 }

@@ -32,13 +32,6 @@ const primaryItems: Array<{ key: DashboardTab; label: string; icon: typeof Home 
 
 const mobilePrimary: DashboardTab[] = ["home", "links", "profile", "appearance"];
 
-function planLabel(planCode: string) {
-  const code = planCode.toLowerCase();
-  if (code.includes("enterprise")) return "企业版";
-  if (code.includes("plus") || code.includes("pro") || code.includes("member")) return "会员版";
-  return "免费版";
-}
-
 function SaveStatus({ state }: { state: SaveState }) {
   const config = {
     saved: { text: "已保存", className: "bg-[var(--ui-success-soft)] text-[var(--ui-success)]" },
@@ -54,7 +47,7 @@ export function DashboardFrame({
   activeTab,
   setActiveTab,
   userEmail,
-  planCode,
+  planLabel,
   saveState,
   onShare,
   onLogout,
@@ -64,7 +57,7 @@ export function DashboardFrame({
   activeTab: DashboardTab;
   setActiveTab: (tab: DashboardTab) => void;
   userEmail: string;
-  planCode: string;
+  planLabel: string;
   saveState: SaveState;
   onShare: () => void;
   onLogout: () => void;
@@ -91,7 +84,7 @@ export function DashboardFrame({
             <SaveStatus state={saveState} />
             <button type="button" onClick={() => selectTab("account")} className="hidden min-h-9 items-center gap-2 rounded-xl border border-[var(--ui-line)] bg-white px-3 text-xs font-black text-[var(--ui-muted)] sm:inline-flex">
               <Crown className="size-4 text-[var(--ui-accent)]" />
-              {planLabel(planCode)}
+              {planLabel}
             </button>
             <button type="button" onClick={onShare} className="ui-button-primary min-h-10 px-3 sm:px-4">
               <Share2 className="size-4" />
@@ -110,7 +103,7 @@ export function DashboardFrame({
             <nav className="ui-surface p-3" aria-label="用户后台导航">
               <div className="mb-2 px-3 py-2">
                 <p className="truncate text-sm font-black text-[var(--ui-ink)]" title={userEmail}>{userEmail}</p>
-                <p className="mt-1 text-xs text-[var(--ui-muted)]">{planLabel(planCode)}</p>
+                <p className="mt-1 text-xs text-[var(--ui-muted)]">{planLabel}</p>
               </div>
               <div className="grid gap-1">
                 {primaryItems.map(({ key, label, icon: Icon }) => {
