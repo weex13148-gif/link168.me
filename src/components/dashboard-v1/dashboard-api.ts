@@ -32,6 +32,7 @@ export async function fetchPlan(): Promise<ApiResult<{
   planLabel: string;
   status: string;
   isPaid: boolean;
+  isLegacyActive: boolean;
   isGracePeriod: boolean;
   gracePeriodDays: number;
   daysRemaining: number;
@@ -53,6 +54,7 @@ export async function fetchPlan(): Promise<ApiResult<{
       planLabel: data.data.planLabel || "免费版",
       status: data.data.status || "inactive",
       isPaid: Boolean(data.data.isPaid),
+      isLegacyActive: Boolean(data.data.isLegacyActive),
       isGracePeriod: Boolean(data.data.isGracePeriod),
       gracePeriodDays: data.data.gracePeriodDays || 0,
       daysRemaining: data.data.daysRemaining || 0,
@@ -76,7 +78,7 @@ export async function saveProfileRequest(payload: { username: string; displayNam
 export async function uploadAvatarRequest(file: File): Promise<ApiResult<DashboardProfile>> {
   const formData = new FormData();
   formData.append("avatar", file);
-  const response = await fetch("/api/dashboard/avatar", { method: "POST", body: formData });
+  const response = await fetch("/api/dashboard/avatar", { method: "POST", body: formData, cache: "no-store" });
   const data = await readJson<{ success?: boolean; profile?: DashboardProfile; error?: string }>(response);
   if (!response.ok || !data.success || !data.profile) return { ok: false, error: data.error || "头像上传失败。", status: response.status };
   return { ok: true, data: data.profile };
