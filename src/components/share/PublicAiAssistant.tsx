@@ -129,7 +129,7 @@ export function PublicAiAssistant({
     if (!action?.label) return null;
     if (action.url) {
       const checked = sanitizePublicUrl(action.url);
-      if (checked.safe) {
+      if (checked.safe && checked.url) {
         return <a href={checked.url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-9 items-center rounded-full bg-[#6F8F4E] px-4 text-xs font-black text-white">{action.label}</a>;
       }
     }
