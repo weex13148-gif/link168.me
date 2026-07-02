@@ -3,6 +3,7 @@ import { requireDashboardUser } from "@/lib/auth";
 import { getUserEntitlements } from "@/lib/billing/entitlements";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 function planLabel(planCode: string, planName: string): string {
   if (planName && planName.trim()) return planName;
@@ -17,6 +18,13 @@ export async function GET(request: Request) {
   if (response || !user) return response;
 
   const entitlements = await getUserEntitlements(user.id);
+  const status = entitlements.isLegacyActive
+    ? "legacy_active"
+    : entitlements.hasActiveMembership
+      ? "active"
+      : entitlements.isGracePeriod
+        ? "grace_period"
+        : "inactive";
 
   return NextResponse.json({
     success: true,
@@ -24,8 +32,9 @@ export async function GET(request: Request) {
       planCode: entitlements.planCode,
       planName: entitlements.plan.name,
       planLabel: planLabel(entitlements.planCode, entitlements.plan.name),
-      status: entitlements.hasActiveMembership ? "active" : (entitlements.isGracePeriod ? "grace_period" : "inactive"),
+      status,
       isPaid: entitlements.hasActiveMembership || entitlements.isGracePeriod,
+      isLegacyActive: entitlements.isLegacyActive,
       isGracePeriod: entitlements.isGracePeriod,
       gracePeriodDays: entitlements.gracePeriodDays,
       daysRemaining: entitlements.daysRemaining,
@@ -42,6 +51,11 @@ export async function GET(request: Request) {
         ? ["商务黑", "蓝色科技", "橙色活力", "浅绿清新"]
         : [],
       canUpgrade: entitlements.planCode !== "enterprise_pro_plus" && entitlements.planCode !== "internal_test",
+    },
+  }, {
+    headers: {
+      "Cache-Control": "private, no-store, max-age=0",
+      Pragma: "no-cache",
     },
   });
 }
