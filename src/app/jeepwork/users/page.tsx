@@ -5,13 +5,14 @@ import { useEffect, useState } from "react";
 import AdminUsersClient from "@/components/admin/AdminUsersClient";
 import AdminUsersDesktopTable from "@/components/admin/AdminUsersDesktopTable";
 import AdminShell from "@/components/admin/AdminShell";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 
 type AdminUser = { email: string; role: string };
 
 export default function JeepworkUsersPage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
+  const logout = useJeepworkLogout(router);
 
   useEffect(() => {
     let cancelled = false;
@@ -35,20 +36,12 @@ export default function JeepworkUsersPage() {
     return () => { cancelled = true; };
   }, [router]);
 
-  async function onLogout() {
-    if (!window.confirm("确定要退出管理员后台吗？")) return;
-    setLoggingOut(true);
-    await fetch("/api/jeepwork/auth/logout", { method: "POST" }).catch(() => undefined);
-    router.replace("/jeepwork/login");
-    router.refresh();
-  }
-
   return (
     <AdminShell
       currentPageLabel="用户与会员"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "客户与会员",
         title: "用户与会员管理",
@@ -73,6 +66,7 @@ export default function JeepworkUsersPage() {
           </details>
         ) : null}
       </div>
+      {logout.Modal}
     </AdminShell>
   );
 }

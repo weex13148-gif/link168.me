@@ -23,7 +23,6 @@ export async function GET(request: NextRequest, context: RouteContext) {
     return NextResponse.json({ success: false, error: "Forbidden." }, { status: 403 });
   }
 
-  // TODO: 返回完整统计数据（等待 ShortLinkClick 模型添加后）
   return NextResponse.json({
     success: true,
     shortLink: {
@@ -31,9 +30,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
       slug: shortLink.slug,
       targetUrl: shortLink.targetUrl,
       totalClicks: shortLink.totalClicks,
-      isEnabled: true, // TODO: 等待 schema 更新
-      expiresAt: null,
-      channelLabel: null,
+      isEnabled: shortLink.isEnabled,
+      channelLabel: shortLink.channelLabel,
+      expiresAt: shortLink.expiresAt ? shortLink.expiresAt.toISOString() : null,
       createdAt: shortLink.createdAt.toISOString(),
       updatedAt: shortLink.updatedAt.toISOString(),
     },
@@ -106,7 +105,22 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   if (body.targetUrl !== undefined) {
     updateData.targetUrl = (body.targetUrl as string).trim();
   }
-  // TODO: isEnabled 和 expiresAt 需要 schema 支持后更新
+  if (body.isEnabled !== undefined) {
+    updateData.isEnabled = Boolean(body.isEnabled);
+  }
+  if (body.channelLabel !== undefined) {
+    updateData.channelLabel = body.channelLabel === null ? null : String(body.channelLabel).trim().slice(0, 50) || null;
+  }
+  if (body.expiresAt !== undefined) {
+    if (body.expiresAt === null) {
+      updateData.expiresAt = null;
+    } else if (typeof body.expiresAt === "string") {
+      const parsed = new Date(body.expiresAt);
+      if (!isNaN(parsed.getTime())) {
+        updateData.expiresAt = parsed;
+      }
+    }
+  }
 
   // 如果没有需要更新的字段
   if (Object.keys(updateData).length === 0) {
@@ -117,9 +131,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         slug: shortLink.slug,
         targetUrl: shortLink.targetUrl,
         totalClicks: shortLink.totalClicks,
-        isEnabled: true,
-        expiresAt: null,
-        channelLabel: null,
+        isEnabled: shortLink.isEnabled,
+        channelLabel: shortLink.channelLabel,
+        expiresAt: shortLink.expiresAt ? shortLink.expiresAt.toISOString() : null,
         createdAt: shortLink.createdAt.toISOString(),
         updatedAt: shortLink.updatedAt.toISOString(),
       },
@@ -138,9 +152,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       slug: updated.slug,
       targetUrl: updated.targetUrl,
       totalClicks: updated.totalClicks,
-      isEnabled: true, // TODO: 等待 schema 更新
-      expiresAt: null,
-      channelLabel: null,
+      isEnabled: updated.isEnabled,
+      channelLabel: updated.channelLabel,
+      expiresAt: updated.expiresAt ? updated.expiresAt.toISOString() : null,
       createdAt: updated.createdAt.toISOString(),
       updatedAt: updated.updatedAt.toISOString(),
     },

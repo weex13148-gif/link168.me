@@ -1,22 +1,30 @@
 import { NextResponse } from "next/server";
 import { requireDashboardUser } from "@/lib/auth";
 import { getMembershipWithUsage } from "@/lib/billing/membership";
-import { PLAN_DEFINITIONS, PLAN_ORDER } from "@/lib/billing/plans";
+import {
+  PLAN_DEFINITIONS,
+  PUBLIC_PLAN_ORDER,
+  formatPriceDisplay,
+  getPlanPriceCents,
+} from "@/lib/billing/plans";
 import { getPaymentAvailability } from "@/lib/billing/payments";
 
 export const runtime = "nodejs";
-
-function yuan(value: number | null) {
-  return value === null ? null : value / 100;
-}
 
 function serializePlanDefinition(plan: (typeof PLAN_DEFINITIONS)[keyof typeof PLAN_DEFINITIONS]) {
   return {
     code: plan.code,
     name: plan.name,
     description: plan.description,
-    price_monthly: yuan(plan.priceMonthly),
-    price_yearly: yuan(plan.priceYearly),
+    price_cents: {
+      monthly: getPlanPriceCents(plan.code, "monthly"),
+      yearly: getPlanPriceCents(plan.code, "yearly"),
+    },
+    price_display: {
+      monthly: formatPriceDisplay(plan.code, "monthly"),
+      yearly: formatPriceDisplay(plan.code, "yearly"),
+    },
+    currency: plan.currency,
     features: plan.features,
     limits: {
       ai_chats_per_month: plan.limits.aiChatsPerMonth,
@@ -41,7 +49,7 @@ export async function GET(request: Request) {
   const availability = await getPaymentAvailability();
   const planDefinitions: Record<string, ReturnType<typeof serializePlanDefinition>> = {};
 
-  for (const code of PLAN_ORDER) {
+  for (const code of PUBLIC_PLAN_ORDER) {
     planDefinitions[code] = serializePlanDefinition(PLAN_DEFINITIONS[code]);
   }
 
@@ -61,13 +69,13 @@ export async function GET(request: Request) {
     ai_usage: data.aiUsage,
     credit_balance: data.creditBalance,
     plan_definitions: planDefinitions,
-    plan_order: PLAN_ORDER,
+    plan_order: PUBLIC_PLAN_ORDER,
     payment: {
       enabled: availability.paymentEnabled && availability.alipayAvailable,
       alipay_available: availability.alipayAvailable,
       alipay_reason: availability.alipayReason ?? null,
       wechat_available: false,
-      wechat_status: "微信支付后续开放",
+      wechat_status: "微信支付暂不可用",
       sandbox_available: process.env.NODE_ENV === "development",
     },
   });

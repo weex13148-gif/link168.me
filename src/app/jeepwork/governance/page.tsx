@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AdminShell from "@/components/admin/AdminShell";
+import { AdminAlertBanner } from "@/components/admin/AdminKit";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 import { RISK_OPERATIONS, ROLE_LABELS } from "@/lib/admin-governance/permissions";
 
 type AdminUser = { email: string; role: string };
@@ -22,7 +24,6 @@ type GovernanceStats = {
 export default function JeepworkGovernancePage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
   const [stats, setStats] = useState<GovernanceStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
   const [statsError, setStatsError] = useState("");
@@ -100,18 +101,7 @@ export default function JeepworkGovernancePage() {
     };
   }, [user]);
 
-  async function onLogout() {
-    const confirmed = window.confirm("确定要退出管理员后台吗？");
-    if (!confirmed) return;
-    setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // ignore
-    }
-    router.push("/jeepwork/login");
-    router.refresh();
-  }
+  const logout = useJeepworkLogout(router);
 
   const isSuper = user?.role === "super_admin";
 
@@ -120,7 +110,7 @@ export default function JeepworkGovernancePage() {
       currentPageLabel="平台治理"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "Governance",
         title: "平台治理",
@@ -128,6 +118,7 @@ export default function JeepworkGovernancePage() {
         highlight: "#5B6FFF",
       }}
     >
+      <AdminAlertBanner tone="warning" title="已知限制：部分治理统计为占位数据"><p>totalAdmins / banned / frozen 等统计当前为占位 0 值，待后端补全聚合查询后自动接入。权限矩阵为静态展示，未与 RISK_OPERATIONS 实时联动。</p></AdminAlertBanner>
       <div className="grid gap-6">
         {/* 角色权限边界 */}
         <section className="rounded-[28px] border border-[#E8DCCB] bg-white p-6 shadow-sm">
@@ -245,6 +236,7 @@ export default function JeepworkGovernancePage() {
           </ul>
         </section>
       </div>
+      {logout.Modal}
     </AdminShell>
   );
 }

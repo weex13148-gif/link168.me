@@ -12,7 +12,11 @@ async function getShortLinks(userId: string) {
       slug: true,
       targetUrl: true,
       totalClicks: true,
+      isEnabled: true,
+      channelLabel: true,
+      expiresAt: true,
       createdAt: true,
+      updatedAt: true,
     },
   });
 
@@ -21,10 +25,11 @@ async function getShortLinks(userId: string) {
     slug: sl.slug,
     targetUrl: sl.targetUrl,
     totalClicks: sl.totalClicks,
-    isEnabled: true, // TODO: 等待 schema 更新
-    expiresAt: null,
-    channelLabel: null,
+    isEnabled: sl.isEnabled,
+    channelLabel: sl.channelLabel,
+    expiresAt: sl.expiresAt ? sl.expiresAt.toISOString() : null,
     createdAt: sl.createdAt.toISOString(),
+    updatedAt: sl.updatedAt.toISOString(),
   }));
 }
 

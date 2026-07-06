@@ -1,18 +1,34 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  AdminAlertBanner,
+  AdminPasswordInput,
+  adminInputClass,
+} from "@/components/admin/AdminKit";
 
+/**
+ * /jeepwork/login — 平台管理员登录入口
+ *
+ * 仅做界面整理：
+ *  - 明确"平台管理员入口"标识，避免普通用户误入
+ *  - 密码字段支持可见性切换
+ *  - 错误状态使用统一 AdminAlertBanner
+ *  - 不修改任何认证 Cookie、登录 API 或角色判断
+ *  - 不暴露管理员账号、默认密码、测试密码、系统密钥
+ */
 export default function JeepworkLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setMessage("");
+    setError(null);
     setLoading(true);
     try {
       const response = await fetch("/api/jeepwork/auth/login", {
@@ -20,57 +36,90 @@ export default function JeepworkLoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      const result = (await response.json()) as { success?: boolean; error?: string };
+      const result = (await response.json()) as { success?: boolean; error?: { message?: string } };
       if (!response.ok || !result.success) {
-        setMessage("账号或密码错误。");
+        setError(result.error?.message || "账号或密码错误，请重试。");
         setLoading(false);
         return;
       }
       router.push("/jeepwork");
       router.refresh();
     } catch {
-      setMessage("账号或密码错误。");
+      setError("网络连接失败，请检查网络后重试。");
       setLoading(false);
     }
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center px-4 py-10">
-      <section className="rounded-[28px] border border-[#E8DCCB] bg-white p-7 shadow-[0_24px_80px_rgba(86,68,46,0.10)]">
-        <h1 className="text-2xl font-black text-[#2B241E]">内部工作台</h1>
-        <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">请使用管理员账号登录。</p>
-        <form onSubmit={onSubmit} className="mt-6 grid gap-4">
+    <main className="ui-page flex min-h-dvh items-center justify-center px-4 py-10">
+      <section className="ui-surface w-full max-w-md overflow-hidden p-7">
+        {/* 顶部标识：明确为平台管理员入口 */}
+        <div className="mb-5 flex items-center gap-3 border-b border-[var(--ui-line)] pb-5">
+          <span className="grid size-12 place-items-center rounded-[var(--ui-radius-sm)] bg-[var(--ui-brand)] text-lg font-black text-white">
+            L
+          </span>
+          <div className="min-w-0">
+            <p className="ui-eyebrow text-[var(--ui-brand)]">Platform Admin</p>
+            <h1 className="ui-title mt-1 text-xl">Link168 管理后台</h1>
+          </div>
+        </div>
+
+        <p className="text-sm font-black text-[var(--ui-ink)]">
+          仅限平台管理员登录
+        </p>
+        <p className="ui-muted mt-1 text-xs leading-5">
+          本入口为平台控制平面专用，普通用户请前往
+          <Link
+            href="/login"
+            className="ml-1 font-bold text-[var(--ui-brand)] hover:underline"
+          >
+            用户登录页
+          </Link>
+          。
+        </p>
+
+        <form onSubmit={onSubmit} className="mt-5 grid gap-4">
           <label className="grid gap-2">
-            <span className="text-sm font-bold text-[#2B241E]">邮箱</span>
+            <span className="text-sm font-bold text-[var(--ui-ink)]">管理员邮箱</span>
             <input
               required
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="min-h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm text-[#2B241E] outline-none focus:border-[#6F8F4E]"
+              autoComplete="username"
+              placeholder="you@example.com"
+              className={adminInputClass}
             />
           </label>
+
           <label className="grid gap-2">
-            <span className="text-sm font-bold text-[#2B241E]">密码</span>
-            <input
-              required
-              type="password"
+            <span className="text-sm font-bold text-[var(--ui-ink)]">密码</span>
+            <AdminPasswordInput
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="min-h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm text-[#2B241E] outline-none focus:border-[#6F8F4E]"
+              onChange={setPassword}
+              autoComplete="current-password"
+              placeholder="请输入管理员密码"
             />
           </label>
+
+          {error ? (
+            <AdminAlertBanner tone="danger" title="登录失败">
+              {error}
+            </AdminAlertBanner>
+          ) : null}
+
           <button
             type="submit"
             disabled={loading}
-            className="min-h-11 rounded-2xl bg-[#6F8F4E] text-sm font-black text-white disabled:opacity-60"
+            className="ui-button-primary min-h-11 w-full disabled:opacity-60"
           >
             {loading ? "登录中…" : "登录"}
           </button>
-          {message ? (
-            <p className="mt-2 rounded-2xl bg-[#FFF1F0] px-4 py-3 text-sm font-bold text-[#B42318]">{message}</p>
-          ) : null}
         </form>
+
+        <p className="ui-muted mt-5 text-center text-[11px] leading-5">
+          本系统记录登录 IP 与操作日志，所有操作均审计留痕。
+        </p>
       </section>
     </main>
   );

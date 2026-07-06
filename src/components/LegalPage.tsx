@@ -73,7 +73,7 @@ export function LegalPage({ title, englishTitle, subtitle, sections }: LegalPage
             </div>
 
             <div className="rounded-[32px] border border-white/20 bg-white/20 p-5 text-white shadow-2xl shadow-black/15 backdrop-blur">
-              <p className="text-sm font-black text-[#FACC15]">最后更新时间：2026-06-12</p>
+              <p className="text-sm font-black text-[#FACC15]">最后更新时间：2026-07-05</p>
               <p className="mt-4 text-2xl font-black leading-snug">请在使用 Link168 前完整阅读本页面内容。</p>
               <p className="mt-4 text-sm leading-7 text-white/80">
                 本法律中心用于说明平台服务边界、用户责任、信息处理规则与平台合规处置方式。继续使用 Link168，即表示你已理解相关条款。

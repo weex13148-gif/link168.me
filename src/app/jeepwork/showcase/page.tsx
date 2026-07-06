@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdminShell from "@/components/admin/AdminShell";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 import ShowcaseAdminClient from "@/components/showcase/ShowcaseAdminClient";
 
 type AdminUser = { email: string; role: string };
@@ -10,7 +11,6 @@ type AdminUser = { email: string; role: string };
 export default function JeepworkShowcasePage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
   const [tab, setTab] = useState<"config" | "files">("files");
 
   useEffect(() => {
@@ -46,25 +46,14 @@ export default function JeepworkShowcasePage() {
     if (t === "files" || t === "config") setTab(t);
   }, []);
 
-  async function onLogout() {
-    const confirmed = window.confirm("确定要退出管理员后台吗？");
-    if (!confirmed) return;
-    setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // 忽略网络错误
-    }
-    router.push("/jeepwork/login");
-    router.refresh();
-  }
+  const logout = useJeepworkLogout(router);
 
   return (
     <AdminShell
       currentPageLabel="比赛文件管理"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "Competition Files",
         title: "比赛文件管理",
@@ -86,6 +75,7 @@ export default function JeepworkShowcasePage() {
         </div>
         <ShowcaseAdminClient />
       </div>
+      {logout.Modal}
     </AdminShell>
   );
 }

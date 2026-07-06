@@ -20,6 +20,7 @@ import {
 } from "@/lib/content-safety";
 import { sanitizePublicUrl } from "@/lib/public-url-security";
 import { checkLimitEntitlement } from "@/lib/billing/entitlements";
+import { revalidatePublicProfileByUser } from "@/lib/cache/public-profile";
 
 export const runtime = "nodejs";
 
@@ -189,6 +190,8 @@ export async function POST(request: Request) {
       allowAiRecommendation,
     },
   });
+
+  await revalidatePublicProfileByUser(user.id);
 
   return NextResponse.json(
     { success: true, product: toProductDto(product) },

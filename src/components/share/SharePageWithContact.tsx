@@ -9,6 +9,22 @@ import { ShareModal } from "@/components/share/ShareModal";
 import { SharePageRenderer, type SharePageTemplate } from "@/components/share/SharePageRenderer";
 import { sanitizePublicUrl } from "@/lib/public-url-security";
 
+const VISITOR_ID_KEY = "link168_visitor_id";
+
+function getOrCreateVisitorId(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    let visitorId = window.localStorage.getItem(VISITOR_ID_KEY);
+    if (!visitorId) {
+      visitorId = crypto.randomUUID();
+      window.localStorage.setItem(VISITOR_ID_KEY, visitorId);
+    }
+    return visitorId;
+  } catch {
+    return "";
+  }
+}
+
 type Props = {
   username: string;
   displayName: string;
@@ -16,11 +32,23 @@ type Props = {
   avatarUrl: string | null;
   links: Parameters<typeof SharePageRenderer>[0]["links"];
   themeName: string;
+  customTheme?: string | null;
   reportUrl?: string;
   template?: SharePageTemplate;
   showBrandFoot?: boolean;
   products?: ProductDto[];
   interestedProductId?: string;
+  company?: string | null;
+  jobTitle?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  wechat?: string | null;
+  city?: string | null;
+  address?: string | null;
+  website?: string | null;
+  contactVisibility?: string;
+  onQrCodeClick?: () => void;
+  onShareClick?: () => void;
 };
 
 function originalUrlFromPayload(payloadRaw: string | null | undefined) {
@@ -110,11 +138,12 @@ function ContactForm({
           name: form.name.trim(),
           contact: form.contact.trim(),
           message: form.message.trim(),
-          sourceComponent: "contact_fab",
+          sourceComponent: "contact_form",
+          sourcePage: `/${username}`,
           interestedProductId: form.productId || undefined,
         }),
       });
-      const result = await response.json() as { success?: boolean; error?: string };
+      const result = (await response.json()) as { success?: boolean; error?: string };
       if (!response.ok || !result.success) {
         setError(result.error || "提交失败，请稍后重试。");
         return;
@@ -151,7 +180,7 @@ function ContactForm({
           <div className="mt-6 rounded-2xl bg-[#EEF4E7] p-6 text-center">
             <CheckCircle className="mx-auto size-12 text-[#6F8F4E]" />
             <p className="mt-3 font-black text-[#355126]">提交成功</p>
-            <p className="mt-2 text-sm text-[#4F633F]">主页所有者会尽快与你联系。</p>
+            <p className="mt-2 text-sm text-[#4F633F]">主页所有者会在客户线索中查看你的信息。</p>
           </div>
         ) : (
           <form onSubmit={submit} className="mt-5 grid gap-3">
@@ -174,12 +203,12 @@ function ContactForm({
             </label>
             <label className="grid gap-1.5 text-sm">
               <span className="font-black">留言（选填）</span>
-              <textarea value={form.message} onChange={(event) => setForm((current) => ({ ...current, message: event.target.value }))} rows={3} maxLength={500} placeholder="有什么想了解的？" className="resize-none rounded-xl border border-[#E8DCCB] bg-white px-4 py-3" />
+              <textarea value={form.message} onChange={(event) => setForm((current) => ({ ...current, message: event.target.value }))} rows={3} maxLength={500} placeholder="你想咨询什么内容？" className="resize-none rounded-xl border border-[#E8DCCB] bg-white px-4 py-3" />
             </label>
             {error ? <p className="rounded-xl bg-[#FFF1F0] px-4 py-3 text-sm font-bold text-[#B42318]">{error}</p> : null}
             <button type="submit" disabled={loading} className="mt-1 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#6F8F4E] text-sm font-black text-white disabled:opacity-50">
               {loading ? <Loader className="size-4 animate-spin" /> : <MessageCircle className="size-4" />}
-              {loading ? "提交中…" : "提交联系信息"}
+              {loading ? "提交中..." : "提交联系信息"}
             </button>
           </form>
         )}
@@ -198,7 +227,28 @@ export function SharePageWithContact(props: Props) {
     url: normalizePublicLinkUrl(link.url, link.payload),
   })), [props.links]);
 
+  const hasAiChatModule = useMemo(() => {
+    return props.links.some((link) => {
+      const componentType = link.componentType || (link.type || "").toLowerCase();
+      return componentType === "ai-chat";
+    });
+  }, [props.links]);
+
   const pageUrl = typeof window === "undefined" ? "" : window.location.href;
+
+  useEffect(() => {
+    const visitorId = getOrCreateVisitorId();
+    if (!visitorId) return;
+
+    fetch(`/api/public/${props.username}/visit`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        visitorId,
+        referer: document.referrer || null,
+      }),
+    }).catch(() => undefined);
+  }, [props.username]);
 
   return (
     <>
@@ -210,10 +260,20 @@ export function SharePageWithContact(props: Props) {
         avatarUrl={props.avatarUrl}
         links={directLinks}
         themeName={props.themeName}
+        customTheme={props.customTheme}
         showBrandFoot={false}
         reportUrl={props.reportUrl || undefined}
         onQrCodeClick={() => setShowQrCode(true)}
         onShareClick={() => setShowShare(true)}
+        company={props.company}
+        jobTitle={props.jobTitle}
+        phone={props.phone}
+        email={props.email}
+        wechat={props.wechat}
+        city={props.city}
+        address={props.address}
+        website={props.website}
+        contactVisibility={props.contactVisibility}
       />
 
       {props.showBrandFoot !== false ? <div className="flex justify-center"><BrandFooter /></div> : null}
@@ -229,11 +289,13 @@ export function SharePageWithContact(props: Props) {
         联系
       </button>
 
-      <PublicAiAssistant
-        username={props.username}
-        displayName={props.displayName}
-        onOpenContact={() => setShowContact(true)}
-      />
+      {!hasAiChatModule ? (
+        <PublicAiAssistant
+          username={props.username}
+          displayName={props.displayName}
+          onOpenContact={() => setShowContact(true)}
+        />
+      ) : null}
 
       {showContact ? <ContactForm username={props.username} products={props.products} interestedProductId={props.interestedProductId} onClose={() => setShowContact(false)} /> : null}
       <QrCodeModal isOpen={showQrCode} onClose={() => setShowQrCode(false)} pageUrl={pageUrl} displayName={props.displayName} username={props.username} />

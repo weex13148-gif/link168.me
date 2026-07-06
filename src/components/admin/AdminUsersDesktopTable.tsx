@@ -307,7 +307,7 @@ export default function AdminUsersDesktopTable({ currentUserRole }: { currentUse
                     {canViewRawIp ? <td className="px-4 py-3 whitespace-nowrap font-mono text-xs">{user.lastLoginIp || "—"}</td> : null}
                     <td className="px-4 py-3">
                       <div className="flex min-w-[250px] flex-wrap gap-2">
-                        {user.profile ? <Link href={`/${user.profile.username}`} target="_blank" className="rounded-lg border border-[#E8DCCB] bg-white px-3 py-2 text-xs font-black text-[#3F5F31]">查看主页</Link> : null}
+                        {user.profile ? <Link href={`/${user.profile.username}`} target="_blank" rel="noopener noreferrer" className="rounded-lg border border-[#E8DCCB] bg-white px-3 py-2 text-xs font-black text-[#3F5F31]">查看主页</Link> : null}
                         {customerAccount ? (
                           <>
                             <button type="button" onClick={() => openGrant(user)} className="rounded-lg bg-[#6F8F4E] px-3 py-2 text-xs font-black text-white">{activeMembership ? "调整/续期会员" : "添加会员"}</button>

@@ -852,3 +852,48 @@ export async function changePassword(userId: string, oldPassword: string, newPas
 
   return true;
 }
+
+// ====== 账号注销（软删除） ======
+// 注销流程：
+// 1. 设置 user.accountStatus = "deactivated"
+// 2. 记录 deactivatedAt 和 deactivationReason
+// 3. 删除该用户所有 session
+// 4. 设置 profile.isPublic = false
+// 5. 匿名化公开昵称、头像、简介
+// 6. 标记 displayNameAnonymized = true
+
+export async function deactivateUserAccount(userId: string, reason?: string): Promise<boolean> {
+  try {
+    const now = new Date();
+
+    await db.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          accountStatus: "deactivated",
+          deactivatedAt: now,
+          deactivationReason: reason || null,
+        },
+      });
+
+      await tx.session.deleteMany({
+        where: { userId },
+      });
+
+      await tx.profile.update({
+        where: { userId },
+        data: {
+          isPublic: false,
+          displayName: "已注销用户",
+          avatarUrl: null,
+          bio: null,
+          displayNameAnonymized: true,
+        },
+      });
+    });
+
+    return true;
+  } catch {
+    return false;
+  }
+}

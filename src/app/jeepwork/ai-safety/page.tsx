@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AdminShell from "@/components/admin/AdminShell";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 import AiSafetyTestRunner from "@/components/ai-safety/AiSafetyTestRunner";
 
 type AdminUser = { email: string; role: string };
@@ -19,9 +20,9 @@ export default function AiSafetyPage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [loggingOut, setLoggingOut] = useState(false);
   const [stats, setStats] = useState<TestStats | null>(null);
   const [showRunner, setShowRunner] = useState(false);
+  const logout = useJeepworkLogout(router);
 
   useEffect(() => {
     let cancelled = false;
@@ -72,19 +73,6 @@ export default function AiSafetyPage() {
     };
   }, [user]);
 
-  async function onLogout() {
-    const confirmed = window.confirm("确定要退出管理员后台吗？");
-    if (!confirmed) return;
-    setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // 忽略网络错误
-    }
-    router.push("/jeepwork/login");
-    router.refresh();
-  }
-
   const isSuper = user?.role === "super_admin";
 
   if (loading) {
@@ -93,6 +81,7 @@ export default function AiSafetyPage() {
         currentPageLabel="AI 安全测试"
         currentUserEmail={user?.email}
         currentUserRole={user?.role}
+        onLogout={logout.open}
         pageHeader={{
           eyebrow: "AI Safety",
           title: "AI 安全测试",
@@ -103,6 +92,7 @@ export default function AiSafetyPage() {
         <div className="flex items-center justify-center py-12">
           <p className="text-sm text-[#7A6D5E]">加载中...</p>
         </div>
+        {logout.Modal}
       </AdminShell>
     );
   }
@@ -139,7 +129,7 @@ export default function AiSafetyPage() {
       currentPageLabel="AI 安全测试"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "AI Safety",
         title: "AI 安全测试",
@@ -264,6 +254,7 @@ export default function AiSafetyPage() {
           <li>空输入：检测空输入是否被正确拒绝</li>
         </ul>
       </section>
-    </AdminShell>
+      {logout.Modal}
+  </AdminShell>
   );
 }

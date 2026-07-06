@@ -19,6 +19,9 @@ model User {
   usernameChanges        Int                      @default(1) @map("username_changes")
   role                   String                   @default("user")
   isSystem               Boolean                  @default(false) @map("is_system")
+  accountStatus          String                   @default("active") @map("account_status")
+  deactivatedAt          DateTime?                @map("deactivated_at") @db.Timestamptz(6)
+  deactivationReason     String?                  @map("deactivation_reason")
   createdAt              DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt              DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
   profile                Profile?
@@ -38,6 +41,8 @@ model User {
   aiCreditAccount        AiCreditAccount?
   membershipSubscription MembershipSubscription?
   orders                 Order[]
+  workspaceMemberships   WorkspaceMember[]
+  ownedWorkspaces        Workspace[]              @relation("WorkspaceOwner")
 
   @@map("users")
 }
@@ -102,49 +107,68 @@ model UsernameRegistry {
 }
 
 model Profile {
-  id              String           @id @db.Uuid
-  userId          String           @unique @map("user_id") @db.Uuid
-  username        String           @unique
-  displayName     String?          @map("display_name")
-  bio             String?
-  avatarUrl       String?          @map("avatar_url")
-  theme           String           @default("default")
-  customTheme     String?          @map("custom_theme")
+  id                         String           @id @db.Uuid
+  userId                     String           @unique @map("user_id") @db.Uuid
+  username                   String           @unique
+  displayName                String?          @map("display_name")
+  displayNameAnonymized      Boolean          @default(false) @map("display_name_anonymized")
+  bio                        String?
+  avatarUrl                  String?          @map("avatar_url")
+  avatarModerationStatus     String           @default("legacy_approved") @map("avatar_moderation_status")
+  coverImageUrl              String?          @map("cover_image_url")
+  coverImageModerationStatus String           @default("pending") @map("cover_image_moderation_status")
+  theme                      String           @default("default")
+  customTheme                String?          @map("custom_theme")
   // V2-004: 模板选择持久化 — business / creator / conversion
-  template        String           @default("business")
-  language        String           @default("zh")
-  isPublic        Boolean          @default(true) @map("is_public")
-  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  links           Link[]
-  leads           Lead[]
+  template                   String           @default("business")
+  language                   String           @default("zh")
+  isPublic                   Boolean          @default(true) @map("is_public")
+  // 联系方式字段
+  company                    String?          @map("company")
+  jobTitle                   String?          @map("job_title")
+  phone                      String?          @map("phone")
+  email                      String?          @map("email")
+  wechat                     String?          @map("wechat")
+  city                       String?          @map("city")
+  address                    String?          @map("address")
+  website                    String?          @map("website")
+  // 社交账号 JSON（如微博、Twitter、LinkedIn 等）
+  socialLinks                Json?            @map("social_links") @db.JsonB
+  // 联系方式可见性：public / contacts_only / private
+  contactVisibility          String           @default("public") @map("contact_visibility")
+  createdAt                  DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                  DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user                       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links                      Link[]
+  leads                      Lead[]
   // AI 对话：公开主页访客与 AI 客服的对话记录
-  aiConversations AiConversation[]
+  aiConversations            AiConversation[]
+  visits                     ProfileVisit[]
 
   @@map("profiles")
 }
 
 model Link {
-  id          String      @id @db.Uuid
-  profileId   String      @map("profile_id") @db.Uuid
+  id                   String      @id @db.Uuid
+  profileId            String      @map("profile_id") @db.Uuid
   // V2-005: 组件类型 — link/text/group-title/qr/wechat/shop/booking/map/phone
-  type        String      @default("link")
+  type                 String      @default("link")
   // V2-005: 组件扩展字段（微信账号、商品价格、预约时间段、地图坐标等）
-  payloadJson String?     @map("payload_json")
-  title       String
-  url         String
-  description String?
-  iconType    String      @default("default") @map("icon_type")
-  iconValue   String?     @map("icon_value")
-  iconUrl     String?     @map("icon_url")
-  position    Int         @default(0)
-  isActive    Boolean     @default(true) @map("is_active")
-  totalClicks Int         @default(0) @map("total_clicks")
-  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
-  profile     Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  clicks      LinkClick[]
+  payloadJson          String?     @map("payload_json")
+  title                String
+  url                  String
+  description          String?
+  iconType             String      @default("default") @map("icon_type")
+  iconValue            String?     @map("icon_value")
+  iconUrl              String?     @map("icon_url")
+  iconModerationStatus String      @default("legacy_approved") @map("icon_moderation_status")
+  position             Int         @default(0)
+  isActive             Boolean     @default(true) @map("is_active")
+  totalClicks          Int         @default(0) @map("total_clicks")
+  createdAt            DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  profile              Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  clicks               LinkClick[]
 
   @@index([profileId, type])
   @@map("links")
@@ -169,16 +193,40 @@ model LinkClick {
   @@map("link_clicks")
 }
 
+model ProfileVisit {
+  id        String   @id @default(uuid()) @db.Uuid
+  profileId String   @map("profile_id") @db.Uuid
+  visitorId String?  @map("visitor_id")
+  ipHash    String?  @map("ip_hash")
+  userAgent String?  @map("user_agent")
+  referer   String?
+  country   String?
+  city      String?
+  device    String?
+  os        String?  @map("os")
+  browser   String?
+  isBot     Boolean  @default(false) @map("is_bot")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, createdAt])
+  @@index([visitorId])
+  @@map("profile_visits")
+}
+
 model ShortLink {
-  id          String           @id @db.Uuid
-  userId      String           @map("user_id") @db.Uuid
-  slug        String           @unique
-  targetUrl   String           @map("target_url")
-  totalClicks Int              @default(0) @map("total_clicks")
-  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
-  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  clicks      ShortLinkClick[]
+  id           String           @id @db.Uuid
+  userId       String           @map("user_id") @db.Uuid
+  slug         String           @unique
+  targetUrl    String           @map("target_url")
+  isEnabled    Boolean          @default(true) @map("is_enabled")
+  channelLabel String?          @map("channel_label")
+  expiresAt    DateTime?        @map("expires_at") @db.Timestamptz(6)
+  totalClicks  Int              @default(0) @map("total_clicks")
+  createdAt    DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clicks       ShortLinkClick[]
 
   @@index([slug])
   @@index([userId, createdAt])
@@ -472,6 +520,9 @@ model AiServiceConfig {
   tone                       String   @default("friendly") // friendly / professional / concise
   allowProductRecommendation Boolean  @default(true) @map("allow_product_recommendation")
   collectLead                Boolean  @default(true) @map("collect_lead")
+  allowReport                Boolean  @default(true) @map("allow_report")
+  allowTransferToHuman       Boolean  @default(true) @map("allow_transfer_to_human")
+  privacyNoticeText          String?  @map("privacy_notice_text")
   // providerMode：mock / 真实模型名（如 "gpt-4o-mini"）。具体模型的 API Key 不存本表
   providerMode               String   @default("mock") @map("provider_mode")
   createdAt                  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -785,4 +836,75 @@ model ShowcasePromptDraft {
   @@index([assistant, published])
   @@index([authorId, createdAt])
   @@map("showcase_prompt_drafts")
+}
+
+model ContentModerationRecord {
+  id           String    @id @db.Uuid
+  contentType  String    @map("content_type")
+  contentRef   String    @map("content_ref")
+  status       String    @default("pending") @map("status")
+  riskLevel    String?   @map("risk_level")
+  hits         Json?     @db.JsonB
+  reason       String?
+  provider     String    @default("local")
+  reviewedAt   DateTime? @map("reviewed_at") @db.Timestamptz(6)
+  reviewerId   String?   @map("reviewer_id") @db.Uuid
+  appealStatus String    @default("none") @map("appeal_status")
+  appealedAt   DateTime? @map("appealed_at") @db.Timestamptz(6)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([contentType, contentRef])
+  @@index([status, createdAt])
+  @@map("content_moderation_records")
+}
+
+// ============================================
+// V2-011: Workspace 工作空间模型
+// ============================================
+
+model Workspace {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String
+  slug          String   @unique
+  description   String?
+  // personal / team / enterprise
+  workspaceType String   @default("team") @map("workspace_type")
+  planCode      String   @default("free") @map("plan_code")
+  // 拥有者 User ID（不设 unique：一个用户可拥有多个 Workspace）
+  ownerId       String   @map("owner_id") @db.Uuid
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  owner   User              @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  members WorkspaceMember[]
+
+  @@index([isActive, createdAt])
+  @@map("workspaces")
+}
+
+model WorkspaceMember {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @map("workspace_id") @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  // owner / admin / member / viewer
+  role        String    @default("member")
+  // invited / active / disabled / removed
+  status      String    @default("invited")
+  invitedBy   String?   @map("invited_by") @db.Uuid
+  invitedAt   DateTime  @default(now()) @map("invited_at") @db.Timestamptz(6)
+  joinedAt    DateTime? @map("joined_at") @db.Timestamptz(6)
+  disabledAt  DateTime? @map("disabled_at") @db.Timestamptz(6)
+  removedAt   DateTime? @map("removed_at") @db.Timestamptz(6)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([workspaceId, status])
+  @@index([userId, status])
+  @@map("workspace_members")
 }

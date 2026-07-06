@@ -121,6 +121,9 @@ const ASSISTANT_LABELS: Record<keyof typeof AI_ASSISTANT_TITLES, string> = {
   market: "市场调研助理",
   design: "设计助理",
   social: "社媒运营助理",
+  sales: "销售顾问助理",
+  customerService: "业务客服",
+  salesAgent: "产品咨询",
 };
 
 function formatDate(value: string) {

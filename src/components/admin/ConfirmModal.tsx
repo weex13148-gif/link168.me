@@ -35,7 +35,7 @@ const DANGER_CONFIG = {
 export interface ConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void | Promise<void>;
+  onConfirm?: () => void | Promise<void>;
   title: string;
   description: string;
   dangerLevel?: ConfirmModalDangerLevel;
@@ -50,6 +50,24 @@ export interface ConfirmModalProps {
   /** 如果设置，则要求输入框内容与 confirmText 完全匹配才允许确认 */
   inputConfirmMatch?: string;
   loading?: boolean;
+  /**
+   * 操作原因输入。设置后弹窗内出现必填原因输入框。
+   * onConfirm 收到的不是原函数，而是包装后的：原 onConfirm 仍可读取
+   * 外部闭包变量；reason 通过 onConfirmWithReason 传出。
+   */
+  requireReason?: boolean;
+  /** 原因最少字符数（默认 10） */
+  reasonMinLength?: number;
+  /** 原因占位提示 */
+  reasonPlaceholder?: string;
+  /** 操作完成后通过 onConfirm(reason) 形式调用 */
+  onConfirmWithReason?: (reason: string) => void | Promise<void>;
+  /** 影响范围说明（列表条目，每项一行） */
+  impactList?: string[];
+  /** 不可逆提示文案；设置后显示醒目提示条 */
+  irreversibleNotice?: string;
+  /** 影响对象数量提示（如"将影响 3 个用户"） */
+  impactSummary?: string;
 }
 
 /**
@@ -73,14 +91,26 @@ export function ConfirmModal({
   inputPlaceholder,
   inputConfirmMatch,
   loading = false,
+  requireReason = false,
+  reasonMinLength = 10,
+  reasonPlaceholder,
+  onConfirmWithReason,
+  impactList,
+  irreversibleNotice,
+  impactSummary,
 }: ConfirmModalProps) {
   const [inputValue, setInputValue] = useState("");
+  const [reason, setReason] = useState("");
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
   const config = DANGER_CONFIG[dangerLevel];
-  const canConfirm = !loading && (!inputConfirmMatch || inputValue === inputConfirmMatch);
+  const reasonValid = !requireReason || reason.trim().length >= reasonMinLength;
+  const canConfirm =
+    !loading &&
+    (!inputConfirmMatch || inputValue === inputConfirmMatch) &&
+    reasonValid;
 
   // 打开时聚焦到关闭按钮；关闭时清空输入
   useEffect(() => {
@@ -90,6 +120,7 @@ export function ConfirmModal({
     } else {
       document.body.style.overflow = "";
       setInputValue("");
+      setReason("");
     }
     return () => {
       document.body.style.overflow = "";
@@ -182,9 +213,36 @@ export function ConfirmModal({
         <div className="px-6 py-5">
           <p className="text-sm leading-6 text-[#2B241E]">{description}</p>
 
+          {impactSummary ? (
+            <div className={`mt-3 rounded-2xl border px-4 py-3 text-xs font-bold ${config.colorHeader} ${config.bgHeader} ${config.borderHeader} border`}>
+              影响范围：{impactSummary}
+            </div>
+          ) : null}
+
           {extraInfo ? (
             <div className="mt-3 rounded-2xl bg-[#F9F6F1] px-4 py-3 text-xs leading-5 text-[#7A6D5E]">
               {extraInfo}
+            </div>
+          ) : null}
+
+          {impactList && impactList.length > 0 ? (
+            <div className="mt-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 py-3">
+              <p className="text-xs font-black text-[#2B241E]">操作将产生以下影响：</p>
+              <ul className="mt-2 space-y-1">
+                {impactList.map((item, i) => (
+                  <li key={i} className="flex items-start gap-2 text-xs leading-5 text-[#7A6D5E]">
+                    <span aria-hidden className="mt-0.5 text-[#B42318]">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {irreversibleNotice ? (
+            <div className="mt-3 rounded-2xl border border-[#B42318] bg-[#FFF1F0] px-4 py-3 text-xs font-black text-[#B42318]">
+              <span aria-hidden className="mr-1">⛔ 不可逆：</span>
+              {irreversibleNotice}
             </div>
           ) : null}
 
@@ -202,6 +260,30 @@ export function ConfirmModal({
                 autoComplete="off"
                 className="min-h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 text-sm text-[#2B241E] outline-none"
               />
+            </div>
+          ) : null}
+
+          {requireReason ? (
+            <div className="mt-4 grid gap-2">
+              <label htmlFor="confirm-reason" className="text-sm font-bold text-[#2B241E]">
+                操作原因 <span className="text-[#B42318]">*</span>
+                <span className="ml-2 text-xs font-normal text-[#7A6D5E]">
+                  （不少于 {reasonMinLength} 字，将写入审计日志）
+                </span>
+              </label>
+              <textarea
+                id="confirm-reason"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                placeholder={reasonPlaceholder || "请说明本次操作的具体原因，例如：经核查确认存在违规行为，已与当事人核实。"}
+                rows={3}
+                className="min-h-11 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 py-3 text-sm text-[#2B241E] outline-none focus:border-[#6F8F4E]"
+              />
+              {requireReason && reason.length > 0 && reason.trim().length < reasonMinLength ? (
+                <p className="text-xs font-bold text-[#B42318]">
+                  原因至少 {reasonMinLength} 字，当前 {reason.trim().length} 字
+                </p>
+              ) : null}
             </div>
           ) : null}
         </div>
@@ -230,7 +312,13 @@ export function ConfirmModal({
               <button
                 ref={confirmButtonRef}
                 type="button"
-                onClick={() => void onConfirm()}
+                onClick={() => {
+                  if (onConfirmWithReason) {
+                    void onConfirmWithReason(reason.trim());
+                  } else if (onConfirm) {
+                    void onConfirm();
+                  }
+                }}
                 disabled={!canConfirm}
                 className={`min-h-11 rounded-2xl px-5 text-sm font-black text-white transition ${config.bgButton} ${config.bgButtonHover} disabled:opacity-50`}
               >

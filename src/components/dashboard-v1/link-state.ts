@@ -11,7 +11,9 @@ function draftFromLink(link: DashboardLink): LinkDraft {
     description: link.description || "",
     iconType: link.icon_type || "default",
     iconValue: link.icon_value || "",
+    iconUrl: link.icon_url || "",
     componentType: (link.type || "link") as LinkDraft["componentType"],
+    payloadJson: link.payload_json || "",
   };
 }
 

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import AdminShell from "@/components/admin/AdminShell";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 
 type AdminUser = { email: string; role: string };
 
@@ -71,7 +72,7 @@ function roleLabel(role: string) {
 export default function JeepworkAuditPage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
+  const logout = useJeepworkLogout(router);
   const [loading, setLoading] = useState(true);
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [total, setTotal] = useState(0);
@@ -153,19 +154,6 @@ export default function JeepworkAuditPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, page, showIp, ipReason]);
 
-  async function onLogout() {
-    const confirmed = window.confirm("确定要退出管理员后台吗？");
-    if (!confirmed) return;
-    setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // ignore
-    }
-    router.push("/jeepwork/login");
-    router.refresh();
-  }
-
   async function handleViewIp() {
     if (!ipReason.trim()) {
       setActionMsg("查看原始 IP 必须填写原因");
@@ -180,7 +168,7 @@ export default function JeepworkAuditPage() {
       currentPageLabel="审计日志"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "Audit",
         title: "审计日志",
@@ -393,6 +381,7 @@ export default function JeepworkAuditPage() {
           </button>
         </section>
       )}
+      {logout.Modal}
     </AdminShell>
   );
 }

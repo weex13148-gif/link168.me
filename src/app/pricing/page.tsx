@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Check, Crown, Sparkles, Building2, X, Loader2, QrCode, CreditCard, Zap, AlertCircle } from "lucide-react";
+import { Check, Crown, Sparkles, Building2, X, Loader2, CreditCard, Zap, AlertCircle } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
@@ -10,8 +10,9 @@ type PlanDef = {
   code: string;
   name: string;
   description: string;
-  price_monthly: number;
-  price_yearly: number;
+  price_cents: { monthly: number | null; yearly: number | null };
+  price_display: { monthly: string; yearly: string };
+  currency: string;
   features: string[];
   limits: Record<string, number | boolean>;
   highlight?: boolean;
@@ -26,15 +27,11 @@ type MembershipData = {
   payment: { enabled: boolean; wechat_available: boolean; alipay_available: boolean; sandbox_available: boolean };
 };
 
-const PLAN_ORDER = ["free", "member_basic", "member_plus", "enterprise"];
-
 export default function PricingPage() {
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("yearly");
   const [membershipData, setMembershipData] = useState<MembershipData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<"wechat" | "alipay">("wechat");
   const [orderLoading, setOrderLoading] = useState(false);
   const [orderResult, setOrderResult] = useState<{
     order_id?: string;
@@ -52,7 +49,6 @@ export default function PricingPage() {
   } | null>(null);
   const [sandboxAction, setSandboxAction] = useState<"success" | "fail" | "cancel" | "timeout">("success");
   const [sandboxDelay, setSandboxDelay] = useState(0);
-  const [isSandboxPayment, setIsSandboxPayment] = useState(false);
 
   const fetchMembership = async () => {
     try {
@@ -75,6 +71,7 @@ export default function PricingPage() {
   }, []);
 
   const plans = membershipData?.plan_definitions;
+  const planOrder = membershipData?.plan_order ?? ["free", "pro", "enterprise"];
   const currentPlanCode = membershipData?.subscription?.plan_code ?? "free";
   const paymentEnabled = membershipData?.payment.enabled ?? false;
   const sandboxAvailable = membershipData?.payment.sandbox_available ?? false;
@@ -87,7 +84,8 @@ export default function PricingPage() {
       return;
     }
 
-    if ((billingCycle === "yearly" ? plan.price_yearly : plan.price_monthly) <= 0) {
+    const priceCents = plan.price_cents?.yearly;
+    if (priceCents === null || priceCents === undefined || priceCents <= 0) {
       return;
     }
 
@@ -95,13 +93,13 @@ export default function PricingPage() {
     setShowPaymentModal(true);
     setOrderResult(null);
     setPollingStatus("idle");
-    setIsSandboxPayment(false);
   };
 
   const handleSelectSandboxPlan = (planCode: string) => {
     const plan = plans?.[planCode];
     if (!plan || plan.contact_sales) return;
-    if ((billingCycle === "yearly" ? plan.price_yearly : plan.price_monthly) <= 0) return;
+    const priceCents = plan.price_cents?.yearly;
+    if (priceCents === null || priceCents === undefined || priceCents <= 0) return;
 
     setSelectedPlan(planCode);
     setShowSandboxModal(true);
@@ -120,7 +118,7 @@ export default function PricingPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           plan_code: selectedPlan,
-          billing_cycle: billingCycle,
+          billing_cycle: "yearly",
         }),
       });
 
@@ -135,7 +133,7 @@ export default function PricingPage() {
       const payRes = await fetch(`/api/billing/orders/${orderId}?action=pay`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ payment_method: paymentMethod }),
+        body: JSON.stringify({ payment_method: "alipay" }),
       });
 
       const payJson = await payRes.json();
@@ -172,7 +170,7 @@ export default function PricingPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           plan_code: selectedPlan,
-          billing_cycle: billingCycle,
+          billing_cycle: "yearly",
           is_test: true,
         }),
       });
@@ -280,22 +278,20 @@ export default function PricingPage() {
 
             <div className="mt-8 inline-flex items-center gap-1 rounded-full border border-[#E8DCCB] bg-[#FFFDF8] p-1 shadow-sm">
               <button
-                onClick={() => setBillingCycle("monthly")}
-                className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
-                  billingCycle === "monthly" ? "bg-[#6F8F4E] text-white shadow" : "text-[#5F5347] hover:text-[#2B241E]"
-                }`}
+                disabled
+                className="rounded-full px-5 py-2 text-sm font-semibold text-[#A89888] cursor-not-allowed"
               >
                 按月付费
+                <span className="ml-2 rounded-full bg-[#F5F0E8] px-2 py-0.5 text-[10px] font-black text-[#A89888]">
+                  不可用
+                </span>
               </button>
               <button
-                onClick={() => setBillingCycle("yearly")}
-                className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold transition ${
-                  billingCycle === "yearly" ? "bg-[#6F8F4E] text-white shadow" : "text-[#5F5347] hover:text-[#2B241E]"
-                }`}
+                className="inline-flex items-center gap-2 rounded-full bg-[#6F8F4E] px-5 py-2 text-sm font-semibold text-white shadow"
               >
                 按年付费
                 <span className="rounded-full bg-[#F6E7C8] px-2 py-0.5 text-[10px] font-black text-[#8C612E]">
-                  省更多
+                  推荐
                 </span>
               </button>
             </div>
@@ -304,13 +300,13 @@ export default function PricingPage() {
 
         <section className="px-4 pb-20 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <div className="grid gap-5 lg:grid-cols-4">
-              {PLAN_ORDER.map((planCode) => {
+            <div className="grid gap-5 lg:grid-cols-3">
+              {planOrder.map((planCode) => {
                 const plan = plans?.[planCode];
                 if (!plan) return null;
 
                 const isCurrentPlan = currentPlanCode === planCode;
-                const price = billingCycle === "yearly" ? plan.price_yearly : plan.price_monthly;
+                const priceDisplay = plan.price_display?.yearly ?? "不可用";
 
                 return (
                   <div
@@ -343,24 +339,20 @@ export default function PricingPage() {
                     <div className="mt-5">
                       {plan.contact_sales ? (
                         <p className="text-2xl font-black tracking-tight">联系销售</p>
-                      ) : price === 0 ? (
+                      ) : priceDisplay === "免费" ? (
                         <p className="text-3xl font-black tracking-tight">
                           免费
                           <span className="text-sm font-normal text-[#7A6D5E]"> / 永久</span>
                         </p>
                       ) : (
                         <p className="text-3xl font-black tracking-tight">
-                          ¥ {price}
-                          <span className="text-sm font-normal text-[#7A6D5E]">
-                            {" "}
-                            / {billingCycle === "yearly" ? "年" : "月"}
-                          </span>
+                          {priceDisplay}
                         </p>
                       )}
                     </div>
 
                     <ul className="mt-5 flex-1 space-y-3">
-                      {plan.features.slice(0, 6).map((feature, idx) => (
+                      {plan.features.map((feature, idx) => (
                         <li key={idx} className="flex items-start gap-2 text-sm">
                           <Check aria-hidden className="mt-0.5 size-4 shrink-0 text-[#6F8F4E]" />
                           <span className="text-[#2B241E]">{feature}</span>
@@ -377,7 +369,7 @@ export default function PricingPage() {
                           <Building2 aria-hidden className="size-4" />
                           联系销售
                         </Link>
-                      ) : price <= 0 ? (
+                      ) : priceDisplay === "免费" ? (
                         <Link
                           href="/register"
                           className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[#E8DCCB] bg-white px-4 text-xs font-black text-[#2B241E] transition hover:bg-[#F2E7D8]"
@@ -424,7 +416,7 @@ export default function PricingPage() {
               <div className="mt-8 rounded-[24px] border border-[#E8DCCB] bg-[#FFFDF8] p-6 text-center">
                 <p className="text-sm font-semibold text-[#7A6D5E]">
                   <AlertCircle aria-hidden className="mr-2 inline size-4 text-[#C8A45D]" />
-                  正式在线支付功能暂未开放，目前仅支持内部沙箱测试。
+                  正式在线支付功能暂不可用，目前仅支持内部沙箱测试。
                 </p>
               </div>
             )}
@@ -437,20 +429,20 @@ export default function PricingPage() {
             <div className="mt-10 grid gap-4 sm:grid-cols-2">
               {[
                 {
-                  q: "可以随时升级或降级套餐吗？",
-                  a: "可以随时升级套餐，升级后立即生效并按比例补差价。降级需等到当前周期结束。",
+                  q: "可以随时升级套餐吗？",
+                  a: "可以随时升级套餐，升级后立即生效。",
                 },
                 {
                   q: "支持哪些支付方式？",
-                  a: "支持微信支付和支付宝。企业版支持对公转账和合同签署。",
+                  a: "当前支持支付宝支付。",
                 },
                 {
                   q: "AI 额度怎么计算？",
-                  a: "AI 额度按月重置，当月未用完不累计到下月。可单独购买额度包。",
+                  a: "AI 额度按月重置，当月未用完不累计到下月。",
                 },
                 {
-                  q: "可以退款吗？",
-                  a: "开通后 7 天内如未使用核心功能，可申请全额退款。具体以退款政策为准。",
+                  q: "退款政策是怎样的？",
+                  a: "退款政策以服务条款为准。",
                 },
               ].map((faq, idx) => (
                 <div key={idx} className="rounded-[24px] border border-[#E8DCCB] bg-[#F7F1E7] p-5">
@@ -473,7 +465,7 @@ export default function PricingPage() {
                   开通 {plans?.[selectedPlan]?.name}
                 </p>
                 <p className="mt-1 text-sm text-[#7A6D5E]">
-                  {billingCycle === "yearly" ? "按年付费" : "按月付费"}
+                  按年付费
                 </p>
               </div>
               <button
@@ -488,35 +480,16 @@ export default function PricingPage() {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[#7A6D5E]">应付金额</span>
                 <span className="text-2xl font-black text-[#2B241E]">
-                  ¥{" "}
-                  {billingCycle === "yearly"
-                    ? plans?.[selectedPlan]?.price_yearly
-                    : plans?.[selectedPlan]?.price_monthly}
+                  {plans?.[selectedPlan]?.price_display?.yearly}
                 </span>
               </div>
             </div>
 
             <div className="mt-5">
               <p className="mb-3 text-sm font-semibold text-[#2B241E]">选择支付方式</p>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3">
                 <button
-                  onClick={() => setPaymentMethod("wechat")}
-                  className={`flex items-center justify-center gap-2 rounded-2xl border py-3 text-sm font-semibold transition ${
-                    paymentMethod === "wechat"
-                      ? "border-[#07C160] bg-[#07C160]/10 text-[#07C160]"
-                      : "border-[#E8DCCB] bg-white text-[#2B241E] hover:bg-[#F7F1E7]"
-                  }`}
-                >
-                  <QrCode aria-hidden className="size-4" />
-                  微信支付
-                </button>
-                <button
-                  onClick={() => setPaymentMethod("alipay")}
-                  className={`flex items-center justify-center gap-2 rounded-2xl border py-3 text-sm font-semibold transition ${
-                    paymentMethod === "alipay"
-                      ? "border-[#1677FF] bg-[#1677FF]/10 text-[#1677FF]"
-                      : "border-[#E8DCCB] bg-white text-[#2B241E] hover:bg-[#F7F1E7]"
-                  }`}
+                  className="flex items-center justify-center gap-2 rounded-2xl border border-[#1677FF] bg-[#1677FF]/10 py-3 text-sm font-semibold text-[#1677FF]"
                 >
                   <CreditCard aria-hidden className="size-4" />
                   支付宝
@@ -527,7 +500,7 @@ export default function PricingPage() {
             <div className="mt-4 rounded-2xl bg-[#FFFBEB] p-4">
               <p className="text-xs text-[#B45309]">
                 <AlertCircle aria-hidden className="mr-1 inline size-3" />
-                正式支付暂未开放，请使用沙箱测试功能体验完整流程。
+                当前为沙箱测试环境，请使用沙箱测试功能体验完整流程。
               </p>
             </div>
 
@@ -549,7 +522,7 @@ export default function PricingPage() {
                 )}
                 {pollingStatus === "success" && (
                   <p className="mt-2 text-sm font-black text-[#3F5F31]">
-                    ✅ 支付成功！会员已开通
+                    支付成功！会员已开通
                   </p>
                 )}
                 {pollingStatus === "failed" && (
@@ -588,7 +561,7 @@ export default function PricingPage() {
                   沙箱测试支付
                 </p>
                 <p className="mt-1 text-sm text-[#7A6D5E]">
-                  套餐：{plans?.[selectedPlan]?.name} | {billingCycle === "yearly" ? "按年" : "按月"}
+                  套餐：{plans?.[selectedPlan]?.name} | 按年
                 </p>
               </div>
               <button
@@ -613,10 +586,7 @@ export default function PricingPage() {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[#7A6D5E]">测试金额</span>
                 <span className="text-2xl font-black text-[#2B241E]">
-                  ¥{" "}
-                  {billingCycle === "yearly"
-                    ? plans?.[selectedPlan]?.price_yearly
-                    : plans?.[selectedPlan]?.price_monthly}
+                  {plans?.[selectedPlan]?.price_display?.yearly}
                 </span>
               </div>
             </div>
@@ -632,7 +602,7 @@ export default function PricingPage() {
                       : "border-[#E8DCCB] bg-white text-[#2B241E] hover:bg-[#F7F1E7]"
                   }`}
                 >
-                  ✅ 支付成功
+                  支付成功
                 </button>
                 <button
                   onClick={() => setSandboxAction("fail")}
@@ -642,7 +612,7 @@ export default function PricingPage() {
                       : "border-[#E8DCCB] bg-white text-[#2B241E] hover:bg-[#F7F1E7]"
                   }`}
                 >
-                  ❌ 支付失败
+                  支付失败
                 </button>
                 <button
                   onClick={() => setSandboxAction("cancel")}
@@ -652,7 +622,7 @@ export default function PricingPage() {
                       : "border-[#E8DCCB] bg-white text-[#2B241E] hover:bg-[#F7F1E7]"
                   }`}
                 >
-                  ⏹️ 用户取消
+                  用户取消
                 </button>
                 <button
                   onClick={() => setSandboxAction("timeout")}
@@ -662,7 +632,7 @@ export default function PricingPage() {
                       : "border-[#E8DCCB] bg-white text-[#2B241E] hover:bg-[#F7F1E7]"
                   }`}
                 >
-                  ⏱️ 超时
+                  超时
                 </button>
               </div>
             </div>
@@ -689,7 +659,7 @@ export default function PricingPage() {
             {sandboxResult && (
               <div className={`mt-4 rounded-2xl p-4 ${sandboxResult.success ? "bg-[#DDE8CD]" : "bg-red-50"}`}>
                 <p className={`text-sm font-semibold ${sandboxResult.success ? "text-[#3F5F31]" : "text-red-600"}`}>
-                  {sandboxResult.success ? "✅" : "❌"} {sandboxResult.message}
+                  {sandboxResult.success ? "" : ""} {sandboxResult.message}
                 </p>
                 {sandboxResult.order_no && (
                   <p className="mt-1 text-xs text-[#5F5347]">订单号：{sandboxResult.order_no}</p>
@@ -702,7 +672,7 @@ export default function PricingPage() {
                 )}
                 {pollingStatus === "success" && (
                   <p className="mt-2 text-sm font-black text-[#3F5F31]">
-                    ✅ 支付成功！会员已开通
+                    支付成功！会员已开通
                   </p>
                 )}
                 {pollingStatus === "failed" && (

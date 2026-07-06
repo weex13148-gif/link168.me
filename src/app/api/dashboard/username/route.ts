@@ -7,6 +7,8 @@ import {
   MAX_USERNAME_LENGTH,
 } from "@/lib/username-registry";
 import { hasSensitiveContent } from "@/lib/content-safety";
+import { db } from "@/lib/db";
+import { revalidateUsernameChange } from "@/lib/cache/public-profile";
 
 export const runtime = "nodejs";
 
@@ -59,6 +61,13 @@ export async function PUT(request: Request) {
     );
   }
 
+  // 获取旧用户名
+  const existingProfile = await db.profile.findUnique({
+    where: { userId: user.id },
+    select: { username: true },
+  });
+  const oldUsername = existingProfile?.username;
+
   // 可用性检查
   const availability = await checkUsernameAvailability(raw, user.id);
   if (!availability.available) {
@@ -75,6 +84,10 @@ export async function PUT(request: Request) {
       { success: false, error: "用户名分配失败，请稍后重试。", reason: result.error },
       { status: 500 },
     );
+  }
+
+  if (oldUsername && result.username && oldUsername !== result.username) {
+    await revalidateUsernameChange(oldUsername, result.username);
   }
 
   return NextResponse.json({

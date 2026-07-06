@@ -104,7 +104,7 @@ export function PublicAiAssistant({
       const result = await response.json() as AgentResponse;
       if (!response.ok || !result.success || !result.data?.reply) {
         const fallback = result.code === "MEMBERSHIP_REQUIRED" || result.code === "AI_DISABLED"
-          ? "该主页暂未开通 AI 接待，你可以直接留下联系方式。"
+          ? "该主页当前关闭 AI 接待，你可以直接留下联系方式。"
           : result.error || "AI 接待暂时不可用，请稍后再试。";
         setMessages((current) => [...current, { id: makeId(), role: "assistant", content: fallback }]);
         return;

@@ -7,6 +7,7 @@ export const AI_ASSISTANTS = {
   market: "市场调研 AI Agent",
   design: "设计 AI Agent",
   social: "社媒运营 AI Agent",
+  sales: "销售顾问 AI Agent",
 } as const;
 
 export type AiAssistantKey = keyof typeof AI_ASSISTANTS;
@@ -45,6 +46,7 @@ export type AppConfigValues = {
   aiAssistantMarketEnabled: boolean;
   aiAssistantDesignEnabled: boolean;
   aiAssistantSocialEnabled: boolean;
+  aiAssistantSalesEnabled: boolean;
 
   mailEnabled: boolean;
   smtpHost: string;
@@ -122,6 +124,7 @@ export const DEFAULT_CONFIG: AppConfigValues = {
   aiAssistantMarketEnabled: false,
   aiAssistantDesignEnabled: false,
   aiAssistantSocialEnabled: false,
+  aiAssistantSalesEnabled: false,
   aiRequestTimeout: 45,
   aiMaxOutputTokens: 1500,
   aiTemperature: 0.3,
@@ -193,6 +196,7 @@ const CONFIG_DEFS: ConfigDef[] = [
   { key: "aiAssistantMarketEnabled", dbKey: "ai.assistant.market.enabled", type: "boolean" },
   { key: "aiAssistantDesignEnabled", dbKey: "ai.assistant.design.enabled", type: "boolean" },
   { key: "aiAssistantSocialEnabled", dbKey: "ai.assistant.social.enabled", type: "boolean" },
+  { key: "aiAssistantSalesEnabled", dbKey: "ai.assistant.sales.enabled", type: "boolean" },
   { key: "aiRequestTimeout", dbKey: "ai.requestTimeout", type: "number" },
   { key: "aiMaxOutputTokens", dbKey: "ai.maxOutputTokens", type: "number" },
   { key: "aiTemperature", dbKey: "ai.temperature", type: "number" },
@@ -256,12 +260,14 @@ const ASSISTANT_ENABLE_KEY_MAP: Record<string, keyof Pick<
   | "aiAssistantMarketEnabled"
   | "aiAssistantDesignEnabled"
   | "aiAssistantSocialEnabled"
+  | "aiAssistantSalesEnabled"
 >> = {
   [AI_ASSISTANTS.tax]: "aiAssistantTaxEnabled",
   [AI_ASSISTANTS.legal]: "aiAssistantLegalEnabled",
   [AI_ASSISTANTS.market]: "aiAssistantMarketEnabled",
   [AI_ASSISTANTS.design]: "aiAssistantDesignEnabled",
   [AI_ASSISTANTS.social]: "aiAssistantSocialEnabled",
+  [AI_ASSISTANTS.sales]: "aiAssistantSalesEnabled",
 };
 
 // Re-export for use in server-only config functions

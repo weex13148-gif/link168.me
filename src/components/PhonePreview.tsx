@@ -30,6 +30,8 @@ export type PhonePreviewAppearance = {
   linkIcon?: unknown;
   showSearch?: unknown;
   showPowered?: unknown;
+  customTheme?: string | null;
+  contactVisibility?: string | null;
 };
 
 type PhonePreviewProps = {
@@ -72,7 +74,7 @@ export function PhonePreview({ variant = "marketing", poweredLogoClickable = fal
 
   return (
     <PreviewShell variant={variant} className={className} surfaceClassName={appearance?.surfaceClassName}>
-      <SharePageRenderer template={appearance?.template || "business"} username={username} displayName={displayName || "阿宝的名片"} bio={bio} avatarUrl={avatarUrl} links={activeLinks} themeName={appearance?.themeName} surfaceClassName={appearance?.surfaceClassName} cardClassName={appearance?.cardClassName} linkClassName={appearance?.linkClassName} showBrandFoot={false} onQrCodeClick={onQrCodeClick} onShareClick={onShareClick} />
+      <SharePageRenderer template={appearance?.template || "business"} username={username} displayName={displayName || "阿宝的名片"} bio={bio} avatarUrl={avatarUrl} links={activeLinks} themeName={appearance?.themeName} customTheme={appearance?.customTheme || null} contactVisibility={appearance?.contactVisibility || undefined} surfaceClassName={appearance?.surfaceClassName} cardClassName={appearance?.cardClassName} linkClassName={appearance?.linkClassName} showBrandFoot={false} onQrCodeClick={onQrCodeClick} onShareClick={onShareClick} />
       {showPowered ? <div className="flex justify-center">{poweredLogoClickable ? <Link href="/">{brandMark}</Link> : brandMark}</div> : null}
     </PreviewShell>
   );

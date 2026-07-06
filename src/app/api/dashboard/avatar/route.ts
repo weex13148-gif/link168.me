@@ -6,45 +6,25 @@ import { requireDashboardUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getOwnedProfile, toProfileDto } from "@/lib/dashboard-data";
 import { moderateImageContent } from "@/lib/content-safety";
+import { deletePreviousAvatar } from "./cleanup";
+import { revalidatePublicProfileByUser } from "@/lib/cache/public-profile";
+import {
+  getAvatarUploadDir,
+  getLegacyAvatarDirs,
+  isSafeAvatarFileName,
+  detectMimeTypeFromBuffer,
+  hasForbiddenExtension,
+  hasForbiddenMimeType,
+  isAllowedMimeType,
+  getExtensionForMime,
+  validateUploadPathWithDate,
+  getDateSubdirectory,
+  UPLOAD_CONFIGS,
+} from "@/lib/upload-storage";
 
 export const runtime = "nodejs";
 
-const MAX_AVATAR_SIZE = 2 * 1024 * 1024;
-const AVATAR_PUBLIC_PREFIX = "/uploads/avatars/";
-const ALLOWED_TYPES: Record<string, { extension: string; signature: number[]; offset?: number }> = {
-  "image/jpeg": { extension: ".jpg", signature: [0xff, 0xd8, 0xff] },
-  "image/jpg": { extension: ".jpg", signature: [0xff, 0xd8, 0xff] },
-  "image/pjpeg": { extension: ".jpg", signature: [0xff, 0xd8, 0xff] },
-  "image/png": { extension: ".png", signature: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a] },
-  "image/webp": { extension: ".webp", signature: [0x52, 0x49, 0x46, 0x46], offset: 0 },
-  "image/gif": { extension: ".gif", signature: [0x47, 0x49, 0x46] },
-};
-
-function matchesMagicBytes(buffer: Uint8Array, spec: { extension: string; signature: number[]; offset?: number }) {
-  const offset = spec.offset ?? 0;
-  if (buffer.length < offset + spec.signature.length) return false;
-  for (let i = 0; i < spec.signature.length; i++) if (buffer[offset + i] !== spec.signature[i]) return false;
-  if (spec.extension === ".webp") return buffer.length >= 12 && buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50;
-  return true;
-}
-
-function specFromFile(file: File, head: Uint8Array) {
-  const declared = (file.type || "").toLowerCase();
-  if (declared.includes("svg")) return null;
-  const direct = ALLOWED_TYPES[declared];
-  if (direct && matchesMagicBytes(head, direct)) return direct;
-  for (const spec of Object.values(ALLOWED_TYPES)) if (matchesMagicBytes(head, spec)) return spec;
-  return null;
-}
-
-function localAvatarPath(avatarUrl: string | null) {
-  if (!avatarUrl) return null;
-  const pathname = avatarUrl.split("?")[0];
-  if (!pathname.startsWith(AVATAR_PUBLIC_PREFIX)) return null;
-  const fileName = pathname.slice(AVATAR_PUBLIC_PREFIX.length);
-  if (!fileName || fileName !== path.basename(fileName)) return null;
-  return path.join(process.cwd(), "public", "uploads", "avatars", fileName);
-}
+const AVATAR_API_PREFIX = "/api/avatar/";
 
 export async function POST(request: Request) {
   const { user, response } = await requireDashboardUser(request);
@@ -58,40 +38,102 @@ export async function POST(request: Request) {
 
   const file = formData.get("avatar");
   if (!(file instanceof File)) return NextResponse.json({ success: false, error: "请选择头像图片。" }, { status: 400 });
-  if (!file.size || file.size > MAX_AVATAR_SIZE) return NextResponse.json({ success: false, error: "头像图片不能超过 2MB。" }, { status: 400 });
-  if ((file.type || "").toLowerCase().includes("svg") || file.name.toLowerCase().endsWith(".svg")) return NextResponse.json({ success: false, error: "不支持 SVG 格式的头像图片，仅支持 jpg、png、webp 或 gif。" }, { status: 400 });
 
-  const arrayBuffer = await file.arrayBuffer();
-  const head = new Uint8Array(arrayBuffer, 0, Math.min(16, arrayBuffer.byteLength));
-  const typeSpec = specFromFile(file, head);
-  if (!typeSpec) return NextResponse.json({ success: false, error: "头像仅支持 jpg、png、webp 或 gif。" }, { status: 400 });
+  const config = UPLOAD_CONFIGS.avatar;
 
-  try {
-    const moderated = moderateImageContent({ size: file.size, mimeType: file.type || `image/${typeSpec.extension.slice(1)}`, fileName: file.name });
-    if (!moderated.ok || moderated.blocked) return NextResponse.json({ success: false, error: "该图片未能通过内容安全审核，请更换其他图片。" }, { status: 400 });
-  } catch (err) {
-    console.error("[dashboard:avatar] image moderation failed", err && (err as { message?: unknown }).message ? String((err as { message?: unknown }).message) : String(err));
-    return NextResponse.json({ success: false, error: "该图片未能通过内容安全审核，请更换其他图片。" }, { status: 400 });
+  if (!file.size || file.size > config.maxSize) {
+    return NextResponse.json({ success: false, error: `头像图片不能超过 ${config.maxSize / 1024 / 1024}MB。` }, { status: 400 });
   }
 
-  const safeNamePart = (profile.username || `user-${user.id}`).replace(/[^a-z0-9_-]/gi, "").slice(0, 32) || "avatar";
-  const fileName = `${safeNamePart}-${Date.now()}-${crypto.randomUUID()}${typeSpec.extension}`;
-  const uploadDir = path.join(process.cwd(), "public", "uploads", "avatars");
+  const declaredType = (file.type || "").toLowerCase();
+  const originalName = file.name || "";
+
+  if (hasForbiddenExtension(originalName)) {
+    return NextResponse.json({ success: false, error: "不支持该文件格式，仅支持 jpg、png、webp 或 gif。" }, { status: 400 });
+  }
+
+  if (hasForbiddenMimeType(declaredType)) {
+    return NextResponse.json({ success: false, error: "不支持该文件格式，仅支持 jpg、png、webp 或 gif。" }, { status: 400 });
+  }
+
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  const detectedMime = detectMimeTypeFromBuffer(buffer);
+  if (!detectedMime || !isAllowedMimeType(detectedMime)) {
+    return NextResponse.json({ success: false, error: "头像仅支持 jpg、png、webp 或 gif。" }, { status: 400 });
+  }
+
+  if (declaredType && !declaredType.includes(detectedMime.split("/")[1]) && detectedMime !== declaredType) {
+    const declaredExt = path.extname(originalName).toLowerCase();
+    const expectedExt = detectedMime === "image/jpeg" ? ".jpg" : detectedMime === "image/png" ? ".png" : detectedMime === "image/gif" ? ".gif" : ".webp";
+    if (declaredExt && declaredExt !== expectedExt && !(expectedExt === ".jpg" && declaredExt === ".jpeg")) {
+      return NextResponse.json({ success: false, error: "文件扩展名与实际内容类型不一致。" }, { status: 400 });
+    }
+  }
+
+  let moderationStatus = "pending_manual_review";
+  try {
+    const moderated = await moderateImageContent({
+      size: file.size,
+      mimeType: detectedMime,
+      fileName: originalName,
+    });
+    if (moderated.status === "rejected") {
+      return NextResponse.json({ success: false, error: "该图片未能通过内容安全审核，请更换其他图片。" }, { status: 400 });
+    }
+    moderationStatus = moderated.status;
+  } catch (err) {
+    console.error("[dashboard:avatar] image moderation failed", err && (err as { message?: unknown }).message ? String((err as { message?: unknown }).message) : String(err));
+    moderationStatus = "pending_manual_review";
+  }
+
+  const username = profile.username || `user-${user.id}`;
+  const safeNamePart = username.replace(/[^a-z0-9_-]/gi, "").slice(0, 32) || "avatar";
+  const safeProfilePart = profile.id.replace(/[^a-z0-9_-]/gi, "").slice(0, 64) || "profile";
+  const uuidPart = crypto.randomUUID().replace(/-/g, "");
+  const ext = getExtensionForMime(detectedMime) || ".jpg";
+  const fileName = `${safeNamePart}-${safeProfilePart}-${uuidPart}${ext}`;
+
+  const uploadBaseDir = getAvatarUploadDir();
+  const dateSubdir = getDateSubdirectory();
+  const uploadDir = path.join(uploadBaseDir, dateSubdir);
+
+  const pathValidation = validateUploadPathWithDate(uploadBaseDir, fileName);
+  if (!pathValidation.valid) {
+    return NextResponse.json({ success: false, error: "文件名不安全。" }, { status: 400 });
+  }
+
   await mkdir(uploadDir, { recursive: true });
 
   let createdFile: string | null = null;
-  const previousFile = localAvatarPath(profile.avatarUrl);
+  const previousAvatarUrl = profile.avatarUrl;
   try {
-    createdFile = path.join(uploadDir, fileName);
-    await writeFile(createdFile, Buffer.from(arrayBuffer));
-    const avatarUrl = `${AVATAR_PUBLIC_PREFIX}${fileName}`;
-    const updatedProfile = await db.profile.update({ where: { id: profile.id }, data: { avatarUrl } });
+    createdFile = pathValidation.fullPath;
+    await writeFile(createdFile, buffer);
 
-    if (previousFile && previousFile !== createdFile) {
-      await rm(previousFile, { force: true }).catch((error) => {
-        console.warn("[dashboard:avatar] old avatar cleanup failed", error instanceof Error ? error.message : String(error));
-      });
-    }
+    const avatarUrl = `${AVATAR_API_PREFIX}${username}`;
+
+    const updatedProfile = await db.profile.update({
+      where: { id: profile.id },
+      data: {
+        avatarUrl,
+        avatarModerationStatus: moderationStatus,
+      },
+    });
+
+    await deletePreviousAvatar({
+      previousAvatarUrl,
+      profileId: profile.id,
+      username,
+      currentFilePath: createdFile,
+      currentFileName: fileName,
+      avatarUploadDir: uploadBaseDir,
+      legacyAvatarDirs: getLegacyAvatarDirs(),
+      isSafeAvatarFileName,
+    });
+
+    await revalidatePublicProfileByUser(user.id);
 
     const versionedAvatarUrl = `${avatarUrl}?v=${updatedProfile.updatedAt.getTime()}`;
     return NextResponse.json(
@@ -99,6 +141,7 @@ export async function POST(request: Request) {
         success: true,
         profile: { ...toProfileDto(updatedProfile), avatar_url: versionedAvatarUrl },
         avatarUrl: versionedAvatarUrl,
+        moderationStatus,
       },
       { headers: { "Cache-Control": "no-store" } },
     );

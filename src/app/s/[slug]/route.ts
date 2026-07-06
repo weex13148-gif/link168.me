@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getActiveRestrictions, canShowPublicProfile } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { parseDeviceInfo, hashIp, getClientIp, isPotentialBot, generateVisitorId } from "@/lib/analytics/events";
 import { parseUTMParams, inferChannel } from "@/lib/analytics/attribution";
@@ -19,13 +20,25 @@ export async function GET(request: NextRequest, context: RouteContext) {
     return NextResponse.redirect(new URL("/", request.url), 302);
   }
 
-  // TODO: 检查 isEnabled 和 expiresAt（ShortLink 表暂无这些字段，等待 schema 更新）
-  // if (!shortLink.isEnabled) {
-  //   return NextResponse.redirect(new URL("/expired", request.url), 302);
-  // }
-  // if (shortLink.expiresAt && new Date(shortLink.expiresAt) < new Date()) {
-  //   return NextResponse.redirect(new URL("/expired", request.url), 302);
-  // }
+  // 检查启用状态
+  if (!shortLink.isEnabled) {
+    return NextResponse.redirect(new URL("/", request.url), 302);
+  }
+
+  // 检查过期时间
+  if (shortLink.expiresAt && new Date(shortLink.expiresAt) < new Date()) {
+    return NextResponse.redirect(new URL("/", request.url), 302);
+  }
+
+  // 检查 owner 冻结/封禁状态
+  try {
+    const restrictions = await getActiveRestrictions(shortLink.userId);
+    if (!canShowPublicProfile(restrictions).ok) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+  } catch {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
 
   // 机器人检测
   if (isPotentialBot(request)) {
@@ -49,12 +62,21 @@ export async function GET(request: NextRequest, context: RouteContext) {
   const attribution = inferChannel(referer, utmParams);
 
   // 为该短链接创建点击记录（ShortLinkClick 模型已存在）
+  // 查询 Profile.id（ShortLinkClick.profileId 指向 Profile.id，不是 User.id）
+  let profileId: string | null = null;
+  try {
+    const profile = await db.profile.findUnique({ where: { userId: shortLink.userId } });
+    profileId = profile?.id ?? null;
+  } catch {
+    // 查询 Profile 失败不阻断跳转
+  }
+
   try {
     await db.shortLinkClick.create({
       data: {
         id: crypto.randomUUID(),
         shortLinkId: shortLink.id,
-        profileId: shortLink.userId, // ShortLink.userId 即为关联的用户ID
+        profileId,
         visitorId,
         ipHash,
         device: deviceInfo.device,

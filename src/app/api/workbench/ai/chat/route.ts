@@ -6,9 +6,12 @@ import { callAssistant, getProviderConfig, isProviderConfigured } from "@/lib/ai
 import { rateLimit } from "@/lib/rate-limit";
 import { detectPromptInjection, sanitizeUserMessage, hasSensitiveContent, moderateAiOutput } from "@/lib/content-safety";
 import { getAiQuota, consumeCredit, refundCredit, checkUserAiRestricted } from "@/lib/ai/permissions";
+import { assertAiEntitlement, buildAiUsageMetadata } from "@/lib/ai/entitlement-guard";
 import { createConversation, addMessage, getConversation } from "@/lib/ai/conversations";
 import { logAiRiskEvent } from "@/lib/ai/risk-log";
-import { recordAiCall } from "@/lib/ai/telemetry";
+import { createAiTraceContext, setTraceIdOnNextResponse, logAiTraceInfo } from "@/lib/observability/ai-trace";
+import { recordAiMetrics, recordSafetyRejection } from "@/lib/observability/ai-metrics";
+import { mapProviderErrorToAiCode, getAiErrorMessage, type AiErrorCode } from "@/lib/ai/provider-error";
 import crypto from "crypto";
 
 export const runtime = "nodejs";
@@ -36,13 +39,18 @@ function getClientIp(request: Request): string {
 
 export async function POST(request: Request) {
   const ip = getClientIp(request);
+  // ===== AI 调用链路追踪：生成 traceId，贯穿整个请求 =====
+  const traceCtx = createAiTraceContext({ headers: request.headers, requestSource: "workbench-ai:chat" });
+  logAiTraceInfo(traceCtx, "ai_request_received", { ip });
 
   const rl = await rateLimit(request, "workbench-ai:chat", 20, 60 * 1000);
   if (!rl.passed) {
-    return NextResponse.json(
-      { success: false, error: `请求过于频繁，请 ${Math.ceil(rl.resetMs / 1000)} 秒后重试。` },
+    const resp = NextResponse.json(
+      { success: false, error: `请求过于频繁，请 ${Math.ceil(rl.resetMs / 1000)} 秒后重试。`, code: "AI_RATE_LIMITED" as AiErrorCode, traceId: traceCtx.traceId },
       { status: 429 },
     );
+    setTraceIdOnNextResponse(resp, traceCtx.traceId);
+    return resp;
   }
 
   const { user, response: authResponse } = await requireDashboardUser(request);
@@ -50,32 +58,36 @@ export async function POST(request: Request) {
     return authResponse ?? NextResponse.json({ success: false, error: "未登录。" }, { status: 401 });
   }
 
-  // ===== AI 冻结/封禁检查 =====
-  const aiRestricted = await checkUserAiRestricted(user.id);
-  if (aiRestricted.restricted) {
-    await logAiRiskEvent({
-      userId: user.id,
-      eventType: "user_ai_restricted",
-      assistant: "",
-      riskLevel: "high",
-      userMessage: null,
-      ipAddress: ip,
-      metadata: { restrictionType: aiRestricted.type, reason: aiRestricted.reason },
-    });
-    return NextResponse.json(
-      { success: false, error: "当前账号 AI 功能已被限制，请联系管理员。" },
-      { status: 403 },
-    );
-  }
-
-  // 使用新的配额系统（套餐月度 + 每日风控 + Credit）
-  const quota = await getAiQuota(user.id);
-  if (!quota.canCall) {
-    return NextResponse.json(
+  // ===== 统一 AI 权益守卫（business_ai）=====
+  // 所有真实 AI 调用必须先通过此守卫，确保免费用户、过期会员、未知套餐、
+  // AI 冻结用户无法绕过服务端校验直接调用 API。
+  const guard = await assertAiEntitlement(user.id, "business_ai");
+  if (!guard.ok) {
+    const aiRestricted = guard.restriction?.restricted ? guard.restriction : await checkUserAiRestricted(user.id);
+    if (aiRestricted.restricted) {
+      await logAiRiskEvent({
+        userId: user.id,
+        eventType: "user_ai_restricted",
+        assistant: "",
+        riskLevel: "high",
+        userMessage: null,
+        ipAddress: ip,
+        metadata: { restrictionType: aiRestricted.type, reason: aiRestricted.reason },
+      });
+    }
+    // 返回统一错误结构 + 兼容 UI 所需的 quota 字段
+    const quota = await getAiQuota(user.id);
+    const resp = NextResponse.json(
       {
+        ok: false,
+        code: guard.code,
+        message: guard.message,
+        // 兼容旧 UI（success/error/upgradeRequired/quota）
         success: false,
-        error: quota.reason || "您没有使用 AI 助手的权限，请升级会员。",
-        upgradeRequired: true,
+        error: guard.message,
+        upgradeRequired: guard.code === "AI_ENTITLEMENT_REQUIRED" || guard.code === "AI_MEMBERSHIP_EXPIRED",
+        usageType: guard.usageType,
+        traceId: traceCtx.traceId,
         quota: {
           planCode: quota.planCode,
           isActiveMember: quota.isActiveMember,
@@ -84,9 +96,24 @@ export async function POST(request: Request) {
           creditBalance: quota.creditBalance,
         },
       },
-      { status: 403 },
+      { status: guard.status },
     );
+    setTraceIdOnNextResponse(resp, traceCtx.traceId);
+    recordAiMetrics({
+      traceCtx,
+      userId: user.id,
+      usageType: "business_ai",
+      success: false,
+      errorCode: guard.code,
+      httpStatus: guard.status,
+      ipAddress: ip,
+      assistant: "unknown",
+    });
+    return resp;
   }
+
+  // 兼容旧 UI：仍查询 quota 用于响应
+  const quota = await getAiQuota(user.id);
 
   const config = await getConfig();
   if (!config.aiEnabled) {
@@ -143,12 +170,22 @@ export async function POST(request: Request) {
       riskLevel: "high",
       userMessage: message,
       ipAddress: ip,
-      metadata: { reason: injection.reason },
+      metadata: { reason: injection.reason, traceId: traceCtx.traceId },
     });
-    return NextResponse.json(
-      { success: false, error: `检测到潜在的提示词注入风险：${injection.reason}。请重新组织问题。` },
+    recordSafetyRejection({
+      traceCtx,
+      userId: user.id,
+      usageType: "business_ai",
+      stage: "input",
+      reason: `prompt_injection: ${injection.reason}`,
+      requestSource: "workbench-ai:chat",
+    });
+    const resp = NextResponse.json(
+      { success: false, error: `检测到潜在的提示词注入风险：${injection.reason}。请重新组织问题。`, code: "AI_SAFETY_REJECTED" as AiErrorCode, traceId: traceCtx.traceId },
       { status: 400 },
     );
+    setTraceIdOnNextResponse(resp, traceCtx.traceId);
+    return resp;
   }
 
   const sensitive = hasSensitiveContent(message);
@@ -160,12 +197,22 @@ export async function POST(request: Request) {
       riskLevel: "medium",
       userMessage: message,
       ipAddress: ip,
-      metadata: { matchedWords: sensitive.matches },
+      metadata: { matchedWords: sensitive.matches, traceId: traceCtx.traceId },
     });
-    return NextResponse.json(
-      { success: false, error: `消息内容包含受限关键词（${sensitive.matches.slice(0, 3).join(" / ")}），请修改后再试。` },
+    recordSafetyRejection({
+      traceCtx,
+      userId: user.id,
+      usageType: "business_ai",
+      stage: "input",
+      reason: `sensitive_content: ${sensitive.matches.slice(0, 3).join(",")}`,
+      requestSource: "workbench-ai:chat",
+    });
+    const resp = NextResponse.json(
+      { success: false, error: `消息内容包含受限关键词（${sensitive.matches.slice(0, 3).join(" / ")}），请修改后再试。`, code: "AI_SAFETY_REJECTED" as AiErrorCode, traceId: traceCtx.traceId },
       { status: 400 },
     );
+    setTraceIdOnNextResponse(resp, traceCtx.traceId);
+    return resp;
   }
 
   const sanitizedMessage = sanitizeUserMessage(message);
@@ -218,7 +265,13 @@ export async function POST(request: Request) {
     creditCost,
     "ai_message",
     messageId,
-    { assistant: assistantDef.title, model: providerConfig.model, conversationId: convId },
+    buildAiUsageMetadata({
+      usageType: "business_ai",
+      assistant: assistantDef.title,
+      provider: providerConfig.provider,
+      conversationId: convId,
+      extra: { model: providerConfig.model },
+    }),
   );
 
   if (!creditResult.success) {
@@ -252,48 +305,56 @@ export async function POST(request: Request) {
       riskLevel: "medium",
       userMessage: sanitizedMessage,
       ipAddress: ip,
-      metadata: { error: result.error, status: result.status, model: providerConfig.model },
+      metadata: { error: result.error, status: result.status, model: providerConfig.model, traceId: traceCtx.traceId },
     });
 
-    // 记录到 telemetry（失败）
+    // 统一指标（recordAiMetrics 内部已调用 recordAiCall，避免双重计数）
     const httpStatus = result.status ?? 502;
-    const errorCode = result.status === 401 ? "AUTH_ERROR" : result.status === 404 ? "NOT_FOUND" : result.status === 429 ? "RATE_LIMIT" : "SERVER_ERROR";
-    recordAiCall({
+    const providerErrorType = result.status === 401 ? "AUTH_ERROR" : result.status === 404 ? "NOT_FOUND" : result.status === 429 ? "RATE_LIMIT" : result.status === 504 ? "TIMEOUT" : "SERVER_ERROR";
+    const aiErrorCode = mapProviderErrorToAiCode(providerErrorType as any) as AiErrorCode;
+    recordAiMetrics({
+      traceCtx,
       userId: user.id,
-      assistant: assistantDef.title as string,
-      model: providerConfig.model,
+      usageType: "business_ai",
       provider: "bailian",
-      status: "error",
+      model: providerConfig.model,
+      success: false,
+      errorCode: aiErrorCode,
       httpStatus,
-      errorCode,
-      latencyMs: 0,
       ipAddress: ip,
+      assistant: assistantDef.title,
     });
 
     await addMessage(convId, "assistant", result.error || "AI 服务暂时不可用。", 0, { messageId, error: result.error });
-    return NextResponse.json(
+    const resp = NextResponse.json(
       {
         success: false,
         error: result.error || "AI 服务暂时不可用。",
+        code: aiErrorCode,
+        traceId: traceCtx.traceId,
         conversationId: convId,
         providerMeta: result.providerMeta,
       },
       { status: result.status ?? 502 },
     );
+    setTraceIdOnNextResponse(resp, traceCtx.traceId);
+    return resp;
   }
 
-  // 记录到 telemetry（成功）
+  // 统一指标（recordAiMetrics 内部已调用 recordAiCall，避免双重计数）
   if (result.bailianResult) {
-    recordAiCall({
+    recordAiMetrics({
+      traceCtx,
       userId: user.id,
-      assistant: assistantDef.title as string,
-      model: result.bailianResult.model,
+      usageType: "business_ai",
       provider: "bailian",
-      status: "success",
+      model: result.bailianResult.model,
       inputTokens: result.bailianResult.inputTokens,
       outputTokens: result.bailianResult.outputTokens,
-      latencyMs: result.bailianResult.latencyMs,
+      durationMs: result.bailianResult.latencyMs,
+      success: true,
       ipAddress: ip,
+      assistant: assistantDef.title,
     });
   }
 
@@ -309,17 +370,29 @@ export async function POST(request: Request) {
       userMessage: sanitizedMessage,
       aiResponse: result.reply.content,
       ipAddress: ip,
-      metadata: { reason: moderated.reason, model: providerConfig.model },
+      metadata: { reason: moderated.reason, model: providerConfig.model, traceId: traceCtx.traceId },
+    });
+    recordSafetyRejection({
+      traceCtx,
+      userId: user.id,
+      usageType: "business_ai",
+      stage: "output",
+      reason: moderated.reason ?? "内容审核拒绝",
+      requestSource: "workbench-ai:chat",
     });
     await addMessage(convId, "assistant", "该问题无法提供有效回答，请换一种方式提问。", creditCost, { messageId, blocked: true });
-    return NextResponse.json(
+    const resp = NextResponse.json(
       {
         success: false,
         error: "该问题无法提供有效回答，请换一种方式提问。",
+        code: "AI_SAFETY_REJECTED" as AiErrorCode,
+        traceId: traceCtx.traceId,
         conversationId: convId,
       },
       { status: 400 },
     );
+    setTraceIdOnNextResponse(resp, traceCtx.traceId);
+    return resp;
   }
 
   // ===== 构造带 AI 标识的回复（每条强制追加【内容由人工智能生成】）=====
@@ -358,8 +431,9 @@ export async function POST(request: Request) {
   // 返回更新后的配额
   const updatedQuota = await getAiQuota(user.id);
 
-  return NextResponse.json({
+  const resp = NextResponse.json({
     success: true,
+    traceId: traceCtx.traceId,
     conversationId: convId,
     messageId,
     reply: fullReplyText,
@@ -379,4 +453,6 @@ export async function POST(request: Request) {
     creditSource: creditResult.source,
     providerMeta: result.providerMeta,
   });
+  setTraceIdOnNextResponse(resp, traceCtx.traceId);
+  return resp;
 }

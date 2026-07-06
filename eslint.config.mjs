@@ -6,6 +6,7 @@ export default defineConfig([
   {
     ignores: [
       "src/generated/prisma/**",
+      "src/app/admin/[[...admin]]/**",
     ],
   },
   ...nextVitals,

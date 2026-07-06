@@ -98,8 +98,8 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <main className="ui-page flex min-h-dvh items-center py-8">
-      <div className="ui-container max-w-md">
+    <main className="ui-page flex min-h-dvh items-center py-6 safe-area-pt safe-area-pb sm:py-8">
+      <div className="ui-container max-w-md px-4 sm:px-0">
         <Suspense fallback={<section className="ui-surface w-full p-6 text-center">正在加载密码重置页面…</section>}>
           <ResetPasswordForm />
         </Suspense>

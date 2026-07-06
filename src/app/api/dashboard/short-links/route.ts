@@ -9,18 +9,7 @@ export const runtime = "nodejs";
 
 const SLUG_PATTERN = /^[a-z0-9-_]{3,32}$/;
 
-// 短链接扩展字段（存储在 payload_json 或独立字段）
-// 注意：当前 schema 暂无这些字段，扩展字段使用 jsonb 存储或等待 schema 更新
-interface ShortLinkExtensions {
-  isEnabled: boolean;
-  expiresAt: string | null;
-  channelLabel: string | null;
-  utmSource: string | null;
-  utmMedium: string | null;
-  utmCampaign: string | null;
-  utmContent: string | null;
-  description: string | null;
-}
+
 
 function generateRandomSlug(): string {
   return crypto.randomBytes(6).toString("base64url").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 6);
@@ -86,15 +75,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: "短链接不存在。" }, { status: 404 });
     }
 
-    // 获取该短链接的统计
-    const profile = await db.profile.findUnique({ where: { userId: user.id } });
-    if (!profile) {
-      return NextResponse.json({ success: false, error: "用户资料不存在。" }, { status: 400 });
-    }
-
-    // TODO: 等待 ShortLinkClick 模型添加后，从该表获取统计
-    // 当前使用 LinkClick 统计作为占位
-
     return NextResponse.json({
       success: true,
       shortLink: {
@@ -102,9 +82,9 @@ export async function GET(request: NextRequest) {
         slug: shortLink.slug,
         targetUrl: shortLink.targetUrl,
         totalClicks: shortLink.totalClicks,
-        isEnabled: true, // TODO: 等待 schema 更新
-        expiresAt: null, // TODO: 等待 schema 更新
-        channelLabel: null, // TODO: 等待 schema 更新
+        isEnabled: shortLink.isEnabled,
+        channelLabel: shortLink.channelLabel,
+        expiresAt: shortLink.expiresAt ? shortLink.expiresAt.toISOString() : null,
         createdAt: shortLink.createdAt.toISOString(),
         updatedAt: shortLink.updatedAt.toISOString(),
       },
@@ -124,9 +104,9 @@ export async function GET(request: NextRequest) {
       slug: sl.slug,
       targetUrl: sl.targetUrl,
       totalClicks: sl.totalClicks,
-      isEnabled: true, // TODO: 等待 schema 更新
-      expiresAt: null, // TODO: 等待 schema 更新
-      channelLabel: null, // TODO: 等待 schema 更新
+      isEnabled: sl.isEnabled,
+      channelLabel: sl.channelLabel,
+      expiresAt: sl.expiresAt ? sl.expiresAt.toISOString() : null,
       createdAt: sl.createdAt.toISOString(),
       updatedAt: sl.updatedAt.toISOString(),
     })),
@@ -216,13 +196,14 @@ export async function POST(request: NextRequest) {
     slug = generated;
   }
 
-  // TODO: 创建时支持扩展字段（等待 schema 更新）
   const shortLink = await db.shortLink.create({
     data: {
       id: crypto.randomUUID(),
       userId: user.id,
       slug,
       targetUrl,
+      channelLabel,
+      expiresAt,
     },
   });
 
@@ -233,14 +214,9 @@ export async function POST(request: NextRequest) {
       slug: shortLink.slug,
       targetUrl: shortLink.targetUrl,
       totalClicks: shortLink.totalClicks,
-      isEnabled: true,
-      expiresAt: expiresAt?.toISOString() || null,
-      channelLabel,
-      utmSource,
-      utmMedium,
-      utmCampaign,
-      utmContent,
-      description,
+      isEnabled: shortLink.isEnabled,
+      expiresAt: shortLink.expiresAt?.toISOString() || null,
+      channelLabel: shortLink.channelLabel,
       createdAt: shortLink.createdAt.toISOString(),
       updatedAt: shortLink.updatedAt.toISOString(),
     },

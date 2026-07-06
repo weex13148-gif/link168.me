@@ -1,8 +1,12 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
+  BarChart3,
+  Bell,
   ChevronLeft,
   ChevronRight,
   Crown,
@@ -20,25 +24,42 @@ import {
 } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import type { DashboardTab, SaveState } from "@/components/dashboard-v1/types";
+import { SHARED_NAV_ITEMS } from "@/components/layout/console-navigation";
 
+// 装修器内部 tab（保留不变，不属于顶层路由导航）
 const primaryItems: Array<{ key: DashboardTab; label: string; icon: typeof Home }> = [
   { key: "home", label: "我的主页", icon: Home },
   { key: "profile", label: "名片资料", icon: UserRound },
   { key: "links", label: "我的链接", icon: Link2 },
   { key: "appearance", label: "主题装修", icon: Palette },
   { key: "share", label: "分享与二维码", icon: QrCode },
+  { key: "stats", label: "数据中心", icon: BarChart3 },
   { key: "account", label: "账户与安全", icon: ShieldCheck },
 ];
 
-const mobilePrimary: DashboardTab[] = ["home", "links", "profile", "appearance"];
+// D11: 引用共享导航配置，与 Console/Workbench 一致
+const MODULE_NAV_ITEMS = SHARED_NAV_ITEMS.filter(
+  (item) => item.status === "live" || item.status === "beta",
+);
 
-function SaveStatus({ state }: { state: SaveState }) {
+const mobilePrimary: DashboardTab[] = ["home", "links", "profile", "stats"];
+
+function SaveStatus({ state, mobile = false }: { state: SaveState; mobile?: boolean }) {
   const config = {
-    saved: { text: "已保存", className: "bg-[var(--ui-success-soft)] text-[var(--ui-success)]" },
-    dirty: { text: "有未保存修改", className: "bg-[var(--ui-accent-soft)] text-[#8C612E]" },
-    saving: { text: "正在保存", className: "bg-[var(--ui-info-soft)] text-[var(--ui-info)]" },
-    error: { text: "保存失败", className: "bg-[var(--ui-danger-soft)] text-[var(--ui-danger)]" },
+    saved: { text: "已保存", dot: "bg-[var(--ui-success)]", className: "bg-[var(--ui-success-soft)] text-[var(--ui-success)]" },
+    dirty: { text: "未保存", dot: "bg-[var(--ui-accent)]", className: "bg-[var(--ui-accent-soft)] text-[#8C612E]" },
+    saving: { text: "保存中", dot: "bg-[var(--ui-info)]", className: "bg-[var(--ui-info-soft)] text-[var(--ui-info)]" },
+    error: { text: "保存失败", dot: "bg-[var(--ui-danger)]", className: "bg-[var(--ui-danger-soft)] text-[var(--ui-danger)]" },
   }[state];
+
+  if (mobile) {
+    return (
+      <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[11px] font-black ${config.className}`}>
+        <span className={`size-1.5 rounded-full ${config.dot}`} />
+        {config.text}
+      </span>
+    );
+  }
 
   return <span className={`hidden rounded-full px-3 py-1.5 text-xs font-black sm:inline-flex ${config.className}`}>{config.text}</span>;
 }
@@ -66,6 +87,28 @@ export function DashboardFrame({
 }) {
   const [previewOpen, setPreviewOpen] = useState(true);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    void loadNotificationCount();
+  }, []);
+
+  async function loadNotificationCount() {
+    try {
+      const res = await fetch("/api/notifications?summary=true");
+      const data = await res.json();
+      if (data?.success && data.data) {
+        setUnreadCount(data.data.unread || 0);
+      }
+    } catch {
+      // 静默失败
+    }
+  }
+
+  function goToNotifications() {
+    window.location.href = "/workbench/notifications";
+  }
 
   function selectTab(tab: DashboardTab) {
     setActiveTab(tab);
@@ -73,14 +116,15 @@ export function DashboardFrame({
   }
 
   return (
-    <main className="ui-page min-h-dvh overflow-x-hidden pb-20 lg:pb-0">
+    <main className="ui-page min-h-dvh pb-24 lg:pb-0">
       <header className="sticky top-0 z-40 border-b border-[var(--ui-line)] bg-[color:var(--ui-surface)]/96 backdrop-blur">
-        <div className="ui-admin-container flex min-h-16 items-center justify-between gap-4">
+        <div className="ui-admin-container flex min-h-14 items-center justify-between gap-2 sm:min-h-16 sm:gap-4">
           <button type="button" onClick={() => selectTab("home")} className="shrink-0" aria-label="返回我的主页">
-            <BrandLogo size="header" className="!w-[118px]" />
+            <BrandLogo size="header" className="!w-[104px] sm:!w-[118px]" />
           </button>
 
-          <div className="flex min-w-0 items-center gap-2">
+          <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
+            <SaveStatus state={saveState} mobile={saveState !== "saved"} />
             <SaveStatus state={saveState} />
             <button type="button" onClick={() => selectTab("account")} className="hidden min-h-9 items-center gap-2 rounded-xl border border-[var(--ui-line)] bg-white px-3 text-xs font-black text-[var(--ui-muted)] sm:inline-flex">
               <Crown className="size-4 text-[var(--ui-accent)]" />
@@ -90,7 +134,21 @@ export function DashboardFrame({
               <Share2 className="size-4" />
               <span className="hidden sm:inline">分享主页</span>
             </button>
-            <button type="button" onClick={onLogout} className="grid size-10 place-items-center rounded-xl border border-[var(--ui-line)] bg-white text-[var(--ui-muted)] hover:text-[var(--ui-danger)]" title="退出登录" aria-label="退出登录">
+            <button
+              type="button"
+              onClick={goToNotifications}
+              className="relative grid size-10 shrink-0 place-items-center rounded-xl border border-[var(--ui-line)] bg-white text-[var(--ui-muted)] hover:text-[var(--ui-ink)]"
+              title="通知中心"
+              aria-label="通知中心"
+            >
+              <Bell className="size-4" />
+              {unreadCount > 0 ? (
+                <span className="absolute -right-0.5 -top-0.5 grid min-h-[18px] min-w-[18px] place-items-center rounded-full bg-[var(--ui-danger)] px-1 text-[10px] font-black text-white">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              ) : null}
+            </button>
+            <button type="button" onClick={onLogout} className="hidden shrink-0 place-items-center rounded-xl border border-[var(--ui-line)] bg-white text-[var(--ui-muted)] hover:text-[var(--ui-danger)] sm:grid sm:size-10" title="退出登录" aria-label="退出登录">
               <LogOut className="size-4" />
             </button>
           </div>
@@ -105,6 +163,35 @@ export function DashboardFrame({
                 <p className="truncate text-sm font-black text-[var(--ui-ink)]" title={userEmail}>{userEmail}</p>
                 <p className="mt-1 text-xs text-[var(--ui-muted)]">{planLabel}</p>
               </div>
+
+              {/* D11: 模块切换 - 引用 SHARED_NAV_ITEMS，与 Console/Workbench 一致 */}
+              <div className="mb-3 border-b border-[var(--ui-line)] pb-3">
+                <p className="mb-1 px-3 text-[10px] font-black uppercase tracking-[0.15em] text-[var(--ui-muted)]">模块切换</p>
+                <div className="grid max-h-[280px] gap-1 overflow-y-auto pr-1">
+                  {MODULE_NAV_ITEMS.map((item) => {
+                    const Icon = item.icon;
+                    const active = pathname === item.href;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`flex min-h-10 items-center gap-3 rounded-xl px-3 text-left text-sm font-black transition ${active ? "bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]" : "text-[var(--ui-muted)] hover:bg-[var(--ui-surface-muted)] hover:text-[var(--ui-ink)]"}`}
+                      >
+                        <Icon className="size-4 shrink-0" />
+                        <span className="truncate">{item.label}</span>
+                        {item.badge ? (
+                          <span className={`ml-auto rounded-full px-1.5 py-0.5 text-[9px] font-black ${item.badgeTone || "bg-[var(--ui-surface-muted)] text-[var(--ui-muted)]"}`}>
+                            {item.badge}
+                          </span>
+                        ) : null}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 名片装修（装修器内部 tab，保留不变） */}
+              <p className="mb-1 px-3 text-[10px] font-black uppercase tracking-[0.15em] text-[var(--ui-muted)]">名片装修</p>
               <div className="grid gap-1">
                 {primaryItems.map(({ key, label, icon: Icon }) => {
                   const active = activeTab === key;
@@ -125,7 +212,7 @@ export function DashboardFrame({
 
             <div className="ui-surface-plain p-4 text-xs leading-6 text-[var(--ui-muted)]">
               <div className="flex items-center gap-2 font-black text-[var(--ui-ink)]"><LayoutGrid className="size-4 text-[var(--ui-brand)]" />Link168 主页编辑器</div>
-              <p className="mt-2">资料、链接、主题和分享入口都在这里完成，不再使用短码或未开放模块。</p>
+              <p className="mt-2">资料、链接、主题和分享入口都在这里完成。</p>
             </div>
           </div>
         </aside>
@@ -157,20 +244,20 @@ export function DashboardFrame({
         </aside>
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--ui-line)] bg-[color:var(--ui-surface)]/96 px-2 py-2 backdrop-blur lg:hidden safe-area-pb" aria-label="手机端后台导航">
-        <div className="mx-auto flex max-w-lg items-center justify-around">
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--ui-line)] bg-[color:var(--ui-surface)]/96 px-1 py-1 backdrop-blur lg:hidden safe-area-pb" aria-label="手机端后台导航">
+        <div className="mx-auto flex max-w-lg items-center justify-between gap-1 px-2">
           {mobilePrimary.map((key) => {
             const item = primaryItems.find((entry) => entry.key === key)!;
             const Icon = item.icon;
             const active = activeTab === key;
             return (
-              <button key={key} type="button" onClick={() => selectTab(key)} className={`flex min-w-16 flex-col items-center gap-1 rounded-xl px-2 py-1.5 text-[10px] font-black ${active ? "text-[var(--ui-brand)]" : "text-[var(--ui-muted)]"}`}>
+              <button key={key} type="button" onClick={() => selectTab(key)} className={`flex min-w-[44px] min-h-[56px] flex-col items-center justify-center gap-1 rounded-xl px-3 py-2 text-[10px] font-black transition ${active ? "bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]" : "text-[var(--ui-muted)] hover:bg-[var(--ui-surface-muted)]"}`}>
                 <Icon className="size-5" />
                 {item.label}
               </button>
             );
           })}
-          <button type="button" onClick={() => setMoreOpen(true)} className={`flex min-w-16 flex-col items-center gap-1 rounded-xl px-2 py-1.5 text-[10px] font-black ${activeTab === "share" || activeTab === "account" ? "text-[var(--ui-brand)]" : "text-[var(--ui-muted)]"}`}>
+          <button type="button" onClick={() => setMoreOpen(true)} className={`flex min-w-[44px] min-h-[56px] flex-col items-center justify-center gap-1 rounded-xl px-3 py-2 text-[10px] font-black transition ${activeTab === "share" || activeTab === "account" || activeTab === "appearance" ? "bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]" : "text-[var(--ui-muted)] hover:bg-[var(--ui-surface-muted)]"}`}>
             <Menu className="size-5" />
             更多
           </button>
@@ -182,12 +269,22 @@ export function DashboardFrame({
           <section className="w-full rounded-[24px] bg-[var(--ui-surface)] p-4 shadow-[var(--ui-shadow-lg)]" onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-label="更多功能">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-black">更多功能</h2>
-              <button type="button" onClick={() => setMoreOpen(false)} className="grid size-9 place-items-center rounded-xl bg-[var(--ui-surface-muted)]" aria-label="关闭"><X className="size-4" /></button>
+              <button type="button" onClick={() => setMoreOpen(false)} className="grid size-[44px] place-items-center rounded-xl bg-[var(--ui-surface-muted)]" aria-label="关闭"><X className="size-5" /></button>
             </div>
-            <div className="mt-4 grid gap-2">
-              <button type="button" onClick={() => selectTab("share")} className="flex min-h-13 items-center gap-3 rounded-xl border border-[var(--ui-line)] bg-white px-4 text-left font-black"><QrCode className="size-5 text-[var(--ui-brand)]" />分享与二维码</button>
-              <button type="button" onClick={() => selectTab("account")} className="flex min-h-13 items-center gap-3 rounded-xl border border-[var(--ui-line)] bg-white px-4 text-left font-black"><ShieldCheck className="size-5 text-[var(--ui-brand)]" />账户与安全</button>
-              <button type="button" onClick={onLogout} className="flex min-h-13 items-center gap-3 rounded-xl border border-[var(--ui-line)] bg-white px-4 text-left font-black text-[var(--ui-danger)]"><LogOut className="size-5" />退出登录</button>
+            <div className="mt-4 grid gap-3">
+              <button type="button" onClick={() => { setMoreOpen(false); goToNotifications(); }} className="relative flex min-h-[48px] items-center gap-3 rounded-xl border border-[var(--ui-line)] bg-white px-4 text-left font-black transition hover:bg-[var(--ui-surface-muted)]">
+                <Bell className="size-5 text-[var(--ui-brand)]" />
+                通知中心
+                {unreadCount > 0 ? (
+                  <span className="ml-auto grid min-h-[20px] min-w-[20px] place-items-center rounded-full bg-[var(--ui-danger)] px-1.5 text-[11px] font-black text-white">
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                ) : null}
+              </button>
+              <button type="button" onClick={() => selectTab("appearance")} className="flex min-h-[48px] items-center gap-3 rounded-xl border border-[var(--ui-line)] bg-white px-4 text-left font-black transition hover:bg-[var(--ui-surface-muted)]"><Palette className="size-5 text-[var(--ui-brand)]" />主题装修</button>
+              <button type="button" onClick={() => selectTab("share")} className="flex min-h-[48px] items-center gap-3 rounded-xl border border-[var(--ui-line)] bg-white px-4 text-left font-black transition hover:bg-[var(--ui-surface-muted)]"><QrCode className="size-5 text-[var(--ui-brand)]" />分享与二维码</button>
+              <button type="button" onClick={() => selectTab("account")} className="flex min-h-[48px] items-center gap-3 rounded-xl border border-[var(--ui-line)] bg-white px-4 text-left font-black transition hover:bg-[var(--ui-surface-muted)]"><ShieldCheck className="size-5 text-[var(--ui-brand)]" />账户与安全</button>
+              <button type="button" onClick={onLogout} className="flex min-h-[48px] items-center gap-3 rounded-xl border border-[var(--ui-line)] bg-white px-4 text-left font-black text-[var(--ui-danger)] transition hover:bg-[var(--ui-danger-soft)]"><LogOut className="size-5" />退出登录</button>
             </div>
           </section>
         </div>

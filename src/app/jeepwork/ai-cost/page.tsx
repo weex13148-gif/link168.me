@@ -4,13 +4,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AiCostDashboard from "@/components/ai-usage/AiCostDashboard";
 import AdminShell from "@/components/admin/AdminShell";
+import { AdminAlertBanner } from "@/components/admin/AdminKit";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 
 type AdminUser = { email: string; role: string };
 
 export default function JeepworkAiCostPage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -38,25 +39,14 @@ export default function JeepworkAiCostPage() {
     };
   }, [router]);
 
-  async function onLogout() {
-    const confirmed = window.confirm("确定要退出管理员后台吗？");
-    if (!confirmed) return;
-    setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // 忽略网络错误
-    }
-    router.push("/jeepwork/login");
-    router.refresh();
-  }
+  const logout = useJeepworkLogout(router);
 
   return (
     <AdminShell
       currentPageLabel="AI 成本分析"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "AI Cost",
         title: "AI 成本分析",
@@ -64,7 +54,9 @@ export default function JeepworkAiCostPage() {
         highlight: "#8C612E",
       }}
     >
+      <AdminAlertBanner tone="warning" title="已知限制：AI 成本数据为 Credit 计数"><p>当前 AI 成本页仅展示 Credit 计数，未对接真实供应商账单。实际金额请以供应商账单为准。</p></AdminAlertBanner>
       <AiCostDashboard />
+      {logout.Modal}
     </AdminShell>
   );
 }

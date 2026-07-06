@@ -1,38 +1,43 @@
 import type { MetadataRoute } from "next";
 import { db } from "@/lib/db";
 
-export const dynamic = "force-dynamic";
+const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://link168.me").replace(/\/$/, "");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://link168.me").replace(/\/$/, "");
-  const staticPages: MetadataRoute.Sitemap = [
-    { url: baseUrl, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
-    { url: `${baseUrl}/privacy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
-    { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
+  // 基础页面
+  const staticRoutes: MetadataRoute.Sitemap = [
+    { url: `${appUrl}/`, lastModified: new Date(), changeFrequency: "daily", priority: 1 },
+    { url: `${appUrl}/pricing`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${appUrl}/login`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: `${appUrl}/register`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
+    { url: `${appUrl}/showcase`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 },
+    { url: `${appUrl}/help`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
+    { url: `${appUrl}/privacy`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
+    { url: `${appUrl}/terms`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
+    { url: `${appUrl}/report`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
   ];
 
+  // 公开主页
+  let publicProfiles: MetadataRoute.Sitemap = [];
   try {
     const profiles = await db.profile.findMany({
-      where: {
-        isPublic: true,
-        user: { emailVerified: true },
+      where: { isPublic: true },
+      select: {
+        username: true,
+        updatedAt: true,
       },
-      select: { username: true, updatedAt: true },
-      orderBy: { updatedAt: "desc" },
-      take: 20_000,
+      take: 5000,
     });
 
-    return [
-      ...staticPages,
-      ...profiles.map((profile) => ({
-        url: `${baseUrl}/${encodeURIComponent(profile.username)}`,
-        lastModified: profile.updatedAt,
-        changeFrequency: "weekly" as const,
-        priority: 0.7,
-      })),
-    ];
-  } catch (error) {
-    console.error("[sitemap] public profile query failed", error);
-    return staticPages;
+    publicProfiles = profiles.map((profile) => ({
+      url: `${appUrl}/${profile.username}`,
+      lastModified: profile.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }));
+  } catch {
+    // 静默失败，只返回静态路由
   }
+
+  return [...staticRoutes, ...publicProfiles];
 }

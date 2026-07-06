@@ -112,7 +112,7 @@ export async function canCreatePayment(): Promise<{ can: boolean; reason?: strin
   const config = await getPaymentConfig();
 
   if (!config.enabled) {
-    return { can: false, reason: "支付功能暂未开放" };
+    return { can: false, reason: "当前环境暂不支持在线支付" };
   }
 
   const availability = await getPaymentAvailability();

@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import AdminShell from "@/components/admin/AdminShell";
+import { ConfirmModal, type ConfirmModalDangerLevel } from "@/components/admin/ConfirmModal";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 
 type AdminUser = { email: string; role: string };
 type LogType = "login" | "admin_audit" | "session";
@@ -55,7 +57,7 @@ function statusBadge(ok: boolean, text?: string) {
 export default function JeepworkLogsPage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
+  const logout = useJeepworkLogout(router);
   const [logType, setLogType] = useState<LogType>("login");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -64,6 +66,21 @@ export default function JeepworkLogsPage() {
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [message, setMessage] = useState("");
+  const [confirmModal, setConfirmModal] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    dangerLevel: ConfirmModalDangerLevel;
+    onConfirm: () => void | Promise<void>;
+    onConfirmWithReason?: (reason: string) => void | Promise<void>;
+    impactList?: string[];
+    irreversibleNotice?: string;
+    requireReason?: boolean;
+    reasonMinLength?: number;
+    reasonPlaceholder?: string;
+    inputConfirmMatch?: string;
+    inputPlaceholder?: string;
+  } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -112,27 +129,39 @@ export default function JeepworkLogsPage() {
     return logs.filter((item) => JSON.stringify(item).toLowerCase().includes(keyword));
   }, [logs, query]);
 
-  async function logout() {
-    setLoggingOut(true);
-    await fetch("/api/jeepwork/auth/logout", { method: "POST" }).catch(() => undefined);
-    router.replace("/jeepwork/login");
-    router.refresh();
-  }
-
-  async function cleanup() {
-    if (!window.confirm("确定清理 180 天前的历史日志吗？")) return;
-    try {
-      const response = await fetch("/api/jeepwork/logs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "cleanup" }),
-      });
-      const result = await response.json() as { success?: boolean; data?: { message?: string }; error?: { message?: string } };
-      setMessage(result.success ? result.data?.message || "清理完成。" : result.error?.message || "清理失败。");
-      if (result.success) await loadLogs();
-    } catch {
-      setMessage("网络连接失败，清理未完成。");
-    }
+  function cleanup() {
+    setConfirmModal({
+      open: true,
+      title: "确认清理历史日志",
+      description: "确定清理 180 天前的历史日志吗？",
+      dangerLevel: "danger",
+      impactList: [
+        "将永久删除 180 天前的所有访问日志",
+        "此操作不可逆",
+        "审计记录将保留管理员操作日志",
+      ],
+      irreversibleNotice: "删除后日志将无法恢复",
+      requireReason: true,
+      reasonMinLength: 10,
+      onConfirm: async () => {
+        /* handled by onConfirmWithReason */
+      },
+      onConfirmWithReason: async () => {
+        try {
+          const response = await fetch("/api/jeepwork/logs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "cleanup" }),
+          });
+          const result = await response.json() as { success?: boolean; data?: { message?: string }; error?: { message?: string } };
+          setMessage(result.success ? result.data?.message || "清理完成。" : result.error?.message || "清理失败。");
+          if (result.success) await loadLogs();
+        } catch {
+          setMessage("网络连接失败，清理未完成。");
+        }
+        setConfirmModal(null);
+      },
+    });
   }
 
   function renderRows() {
@@ -185,7 +214,7 @@ export default function JeepworkLogsPage() {
       currentPageLabel="访问与安全日志"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : logout}
+      onLogout={logout.open}
       pageHeader={{ eyebrow: "日志与安全", title: "访问与安全日志", subtitle: "超级管理员可直接查看登录、会话和管理员操作的原始 IP。日志默认保留 180 天。", highlight: "#5B6FFF" }}
     >
       <div className="grid gap-5">
@@ -235,6 +264,25 @@ export default function JeepworkLogsPage() {
           </div>
         </section>
       </div>
+      {confirmModal && (
+        <ConfirmModal
+          isOpen={confirmModal.open}
+          onClose={() => setConfirmModal(null)}
+          onConfirm={confirmModal.onConfirm}
+          title={confirmModal.title}
+          description={confirmModal.description}
+          dangerLevel={confirmModal.dangerLevel}
+          impactList={confirmModal.impactList}
+          irreversibleNotice={confirmModal.irreversibleNotice}
+          requireReason={confirmModal.requireReason}
+          reasonMinLength={confirmModal.reasonMinLength}
+          reasonPlaceholder={confirmModal.reasonPlaceholder}
+          inputConfirmMatch={confirmModal.inputConfirmMatch}
+          inputPlaceholder={confirmModal.inputPlaceholder}
+          onConfirmWithReason={confirmModal.onConfirmWithReason}
+        />
+      )}
+      {logout.Modal}
     </AdminShell>
   );
 }

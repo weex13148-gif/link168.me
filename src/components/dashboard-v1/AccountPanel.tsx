@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Crown, Laptop, Loader2, LockKeyhole, LogOut, Mail, RefreshCcw, ShieldCheck, Smartphone, Trash2 } from "lucide-react";
+import { CheckCircle2, Crown, Laptop, Loader2, LockKeyhole, LogOut, Mail, RefreshCcw, ShieldCheck, Smartphone, Trash2, AlertTriangle, X } from "lucide-react";
 import type { DashboardSession, DashboardUser } from "@/components/dashboard-v1/types";
 import { formatDateTime } from "@/components/dashboard-v1/types";
 
@@ -23,12 +23,14 @@ export function AccountPanel({
   sessionsLoading,
   resendingEmail,
   passwordSaving,
+  deactivating,
   onResendEmail,
   onChangePassword,
   onRevokeSession,
   onRevokeOthers,
   onUpgrade,
   onLogout,
+  onDeactivate,
 }: {
   user: DashboardUser;
   planLabel: string;
@@ -43,17 +45,22 @@ export function AccountPanel({
   sessionsLoading: boolean;
   resendingEmail: boolean;
   passwordSaving: boolean;
+  deactivating: boolean;
   onResendEmail: () => Promise<void>;
   onChangePassword: (payload: { oldPassword: string; newPassword: string; confirmPassword: string; logoutOtherDevices: boolean }) => Promise<boolean>;
   onRevokeSession: (sessionId: string) => Promise<void>;
   onRevokeOthers: () => Promise<void>;
   onUpgrade: () => void;
   onLogout: () => void;
+  onDeactivate: (password: string) => Promise<boolean>;
 }) {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [logoutOtherDevices, setLogoutOtherDevices] = useState(true);
+  const [deactivateModalOpen, setDeactivateModalOpen] = useState(false);
+  const [deactivatePassword, setDeactivatePassword] = useState("");
+  const [deactivateError, setDeactivateError] = useState("");
 
   async function submitPassword(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -76,7 +83,8 @@ export function AccountPanel({
           : "当前版本已解锁更多主题和高级能力。";
 
   return (
-    <div className="grid gap-5">
+    <>
+      <div className="grid gap-5">
       <header>
         <p className="ui-eyebrow">账户与安全</p>
         <h1 className="mt-1 text-2xl ui-title sm:text-3xl">管理登录、邮箱和版本</h1>
@@ -148,9 +156,57 @@ export function AccountPanel({
       </section>
 
       <section className="flex flex-col gap-4 rounded-[18px] border border-[var(--ui-danger)]/18 bg-[var(--ui-danger-soft)] p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div><h2 className="font-black text-[var(--ui-danger)]">注销账号</h2><p className="mt-1 text-sm text-[var(--ui-danger)]/75">注销后账号及所有数据将被永久删除，无法恢复。</p></div>
+        <button type="button" onClick={() => { setDeactivateModalOpen(true); setDeactivateError(""); setDeactivatePassword(""); }} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--ui-danger)]/30 bg-white/60 px-4 text-sm font-black text-[var(--ui-danger)]"><AlertTriangle className="size-4" />注销账号</button>
+      </section>
+
+      <section className="flex flex-col gap-4 rounded-[18px] border border-[var(--ui-danger)]/18 bg-[var(--ui-danger-soft)] p-5 sm:flex-row sm:items-center sm:justify-between">
         <div><h2 className="font-black text-[var(--ui-danger)]">退出当前账号</h2><p className="mt-1 text-sm text-[var(--ui-danger)]/75">退出后需要重新输入邮箱和密码登录。</p></div>
         <button type="button" onClick={onLogout} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--ui-danger)] px-4 text-sm font-black text-white"><LogOut className="size-4" />退出登录</button>
       </section>
     </div>
+
+    {deactivateModalOpen ? (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+        <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <span className="grid size-10 place-items-center rounded-xl bg-[var(--ui-danger-soft)] text-[var(--ui-danger)]"><AlertTriangle className="size-5" /></span>
+              <div>
+                <h3 className="text-lg font-black">确认注销账号</h3>
+                <p className="mt-1 text-xs ui-muted">此操作不可撤销，请谨慎操作。</p>
+              </div>
+            </div>
+            <button type="button" onClick={() => setDeactivateModalOpen(false)} className="grid size-8 place-items-center rounded-lg text-[var(--ui-muted)] hover:bg-[var(--ui-surface-muted)]"><X className="size-4" /></button>
+          </div>
+          <div className="mt-4 space-y-3">
+            <p className="text-sm text-[var(--ui-text)]">注销后将永久删除：</p>
+            <ul className="list-disc space-y-1 pl-5 text-sm ui-muted">
+              <li>您的账号信息和个人资料</li>
+              <li>所有名片链接和模块数据</li>
+              <li>主题、外观和自定义设置</li>
+              <li>统计数据和访问记录</li>
+            </ul>
+            <label className="mt-4 grid gap-2">
+              <span className="text-sm font-black">请输入登录密码确认</span>
+              <input type="password" autoComplete="current-password" value={deactivatePassword} onChange={(event) => { setDeactivatePassword(event.target.value); setDeactivateError(""); }} className="ui-input" placeholder="输入密码以确认注销" />
+              {deactivateError ? <p className="text-xs text-[var(--ui-danger)]">{deactivateError}</p> : null}
+            </label>
+          </div>
+          <div className="mt-6 flex gap-3">
+            <button type="button" onClick={() => setDeactivateModalOpen(false)} className="ui-button-secondary flex-1">取消</button>
+            <button type="button" disabled={deactivating || !deactivatePassword} onClick={async () => {
+              if (!deactivatePassword) return;
+              const ok = await onDeactivate(deactivatePassword);
+              if (!ok) setDeactivateError("密码错误或注销失败，请重试。");
+            }} className="ui-button flex-1 items-center justify-center gap-2 bg-[var(--ui-danger)] text-white hover:bg-[var(--ui-danger)]/90 disabled:cursor-not-allowed disabled:opacity-45">
+              {deactivating ? <Loader2 className="size-4 animate-spin" /> : <AlertTriangle className="size-4" />}
+              {deactivating ? "注销中…" : "确认注销"}
+            </button>
+          </div>
+        </div>
+      </div>
+    ) : null}
+    </>
   );
 }

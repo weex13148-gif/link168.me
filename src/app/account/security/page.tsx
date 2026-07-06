@@ -103,11 +103,11 @@ export default function AccountSecurityPage() {
             <span className="text-sm font-black text-[#3F5F31]">新密码</span>
             <input
               required
-              minLength={6}
+              minLength={8}
               type="password"
               value={newPassword}
               onChange={(event) => setNewPassword(event.target.value)}
-              placeholder="至少 6 位"
+              placeholder="至少 8 位"
               className="mt-2 h-12 w-full rounded-2xl border border-[#E8DCCB] bg-[#F7F1E7] px-4 text-[#2B241E] outline-none transition placeholder:text-[#A69A8A] focus:border-[#6F8F4E] focus:bg-[#FFFDF8] focus:ring-4 focus:ring-[#6F8F4E]/12"
             />
           </label>

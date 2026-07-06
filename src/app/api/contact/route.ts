@@ -24,6 +24,13 @@ export const runtime = "nodejs";
 const MAX_NAME_LENGTH = 50;
 const MAX_CONTACT_LENGTH = 100;
 const MAX_MESSAGE_LENGTH = 500;
+const VALID_SOURCE_COMPONENTS = new Set([
+  "contact_form",
+  "product_card",
+  "booking",
+  "quote",
+  "ai-chat",
+]);
 
 // 简单内存频率限制（每次部署重置，生产环境应使用 Redis）
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -89,6 +96,61 @@ function isHoneypotTriggered(body: Record<string, unknown>): boolean {
   return false;
 }
 
+function stringField(body: Record<string, unknown>, key: string, maxLength: number): string {
+  return typeof body[key] === "string" ? body[key].trim().slice(0, maxLength) : "";
+}
+
+function normalizeEmail(value: string): string | null {
+  const email = value.trim().slice(0, MAX_CONTACT_LENGTH);
+  if (!email) return null;
+  return email.includes("@") && email.includes(".") ? email : null;
+}
+
+function normalizePhone(value: string): string | null {
+  const cleaned = value.replace(/[^\d+]/g, "").slice(0, 32);
+  return cleaned.length >= 7 ? cleaned : null;
+}
+
+function normalizeWechat(value: string): string | null {
+  const trimmed = value.trim().slice(0, MAX_CONTACT_LENGTH);
+  if (!trimmed) return null;
+  return trimmed.replace(/[^\w\-@.]/g, "").slice(0, MAX_CONTACT_LENGTH) || null;
+}
+
+function buildMessage(body: Record<string, unknown>, baseMessage: string, sourceComponent: string): string {
+  const preferredDate = stringField(body, "preferredDate", 30);
+  const preferredTime = stringField(body, "preferredTime", 30);
+  const productName = stringField(body, "productName", 80);
+  const serviceName = stringField(body, "serviceName", 80);
+  const offerTitle = stringField(body, "offerTitle", 80);
+  const couponCode = stringField(body, "couponCode", 80);
+
+  if (sourceComponent === "booking") {
+    const lines = [
+      productName || serviceName ? `预约项目：${productName || serviceName}` : "",
+      preferredDate ? `预约日期：${preferredDate}` : "",
+      preferredTime ? `预约时间：${preferredTime}` : "",
+      baseMessage ? `备注：${baseMessage}` : "",
+    ].filter(Boolean);
+    return lines.join("\n").slice(0, MAX_MESSAGE_LENGTH);
+  }
+
+  if (sourceComponent === "quote") {
+    const lines = [
+      offerTitle ? `报价咨询：${offerTitle}` : "",
+      couponCode ? `优惠码：${couponCode}` : "",
+      baseMessage ? `需求说明：${baseMessage}` : "",
+    ].filter(Boolean);
+    return lines.join("\n").slice(0, MAX_MESSAGE_LENGTH);
+  }
+
+  if (sourceComponent === "product_card" && productName && !baseMessage) {
+    return `产品咨询：${productName}`.slice(0, MAX_MESSAGE_LENGTH);
+  }
+
+  return baseMessage;
+}
+
 export async function POST(request: Request) {
   // 频率限制
   const ip =
@@ -124,14 +186,19 @@ export async function POST(request: Request) {
 
   const username = typeof body.username === "string" ? body.username.trim().toLowerCase() : "";
   const name = typeof body.name === "string" ? body.name.trim().slice(0, MAX_NAME_LENGTH) : "";
-  const contact = typeof body.contact === "string" ? body.contact.trim().slice(0, MAX_CONTACT_LENGTH) : "";
-  const message = typeof body.message === "string" ? body.message.trim().slice(0, MAX_MESSAGE_LENGTH) : "";
-  const sourceComponent = typeof body.sourceComponent === "string" ? body.sourceComponent.trim() : "contact_form";
-  const sourcePage = typeof body.sourcePage === "string" ? body.sourcePage.trim() : null;
-  const interestedProductId = typeof body.interestedProductId === "string" ? body.interestedProductId.trim() : null;
+  const contact = stringField(body, "contact", MAX_CONTACT_LENGTH);
+  const rawPhone = stringField(body, "phone", MAX_CONTACT_LENGTH);
+  const rawEmail = stringField(body, "email", MAX_CONTACT_LENGTH);
+  const rawWechat = stringField(body, "wechat", MAX_CONTACT_LENGTH);
+  const rawMessage = stringField(body, "message", MAX_MESSAGE_LENGTH);
+  const requestedSource = stringField(body, "sourceComponent", 50);
+  const sourceComponent = VALID_SOURCE_COMPONENTS.has(requestedSource) ? requestedSource : "contact_form";
+  const message = buildMessage(body, rawMessage, sourceComponent);
+  const sourcePage = stringField(body, "sourcePage", 200) || null;
+  const interestedProductId = stringField(body, "interestedProductId", 80) || null;
 
   // 至少需要姓名或联系方式
-  if (!name && !contact) {
+  if (!name && !contact && !rawPhone && !rawEmail && !rawWechat) {
     return NextResponse.json(
       { success: false, error: "请填写姓名或联系方式。" },
       { status: 400 }
@@ -139,7 +206,8 @@ export async function POST(request: Request) {
   }
 
   // 重复提交检测
-  if (contact && !checkDuplicateSubmission(contact)) {
+  const duplicateKey = [rawPhone, rawEmail, rawWechat, contact].find(Boolean) || "";
+  if (duplicateKey && !checkDuplicateSubmission(duplicateKey)) {
     return NextResponse.json(
       { success: false, error: "请勿重复提交。" },
       { status: 429 }
@@ -147,7 +215,7 @@ export async function POST(request: Request) {
   }
 
   // 内容安全检查
-  const fieldsToCheck = [name, contact, message];
+  const fieldsToCheck = [name, contact, rawPhone, rawEmail, rawWechat, message];
   for (const field of fieldsToCheck) {
     if (field && hasSensitiveContent(field).detected) {
       return NextResponse.json(
@@ -157,20 +225,19 @@ export async function POST(request: Request) {
     }
   }
 
-  // 解析联系方式（邮箱 vs 电话）
-  let email: string | null = null;
-  let phone: string | null = null;
+  let email: string | null = normalizeEmail(rawEmail);
+  let phone: string | null = normalizePhone(rawPhone);
+  let wechat: string | null = normalizeWechat(rawWechat);
 
   if (contact) {
-    if (contact.includes("@") && contact.includes(".")) {
-      email = contact;
+    if (!email && contact.includes("@") && contact.includes(".")) {
+      email = normalizeEmail(contact);
     } else {
-      // 清理电话号码（只保留数字/+）
-      const cleaned = contact.replace(/[^\d+]/g, "");
-      if (cleaned.length >= 7) {
-        phone = cleaned;
-      } else {
-        email = contact; // 当作其他联系方式保存
+      const parsedPhone = normalizePhone(contact);
+      if (!phone && parsedPhone) {
+        phone = parsedPhone;
+      } else if (!wechat) {
+        wechat = normalizeWechat(contact);
       }
     }
   }
@@ -235,6 +302,7 @@ export async function POST(request: Request) {
         name: name || null,
         email: email ?? undefined,
         phone: phone ?? undefined,
+        wechat: wechat ?? undefined,
         message: message || null,
         sourceComponent,
         sourcePage: sourcePage || `/${username}`,

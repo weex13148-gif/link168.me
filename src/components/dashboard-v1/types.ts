@@ -1,4 +1,4 @@
-export type DashboardTab = "home" | "profile" | "links" | "appearance" | "share" | "account";
+export type DashboardTab = "home" | "profile" | "links" | "appearance" | "share" | "stats" | "account";
 
 export type SaveState = "saved" | "dirty" | "saving" | "error";
 
@@ -20,6 +20,16 @@ export type DashboardProfile = {
   language: string;
   custom_theme: string | null;
   is_public: boolean;
+  company: string | null;
+  job_title: string | null;
+  phone: string | null;
+  email: string | null;
+  wechat: string | null;
+  city: string | null;
+  address: string | null;
+  website: string | null;
+  social_links: unknown;
+  contact_visibility: string;
   created_at: string;
   updated_at: string;
 };
@@ -99,7 +109,30 @@ export type EntitlementsResponse = {
   error?: string;
 };
 
-export type LinkComponentType = "link" | "text" | "group-title" | "qr" | "wechat" | "phone" | "map";
+export type LinkComponentType =
+  | "link"
+  | "text"
+  | "group-title"
+  | "qr"
+  | "wechat"
+  | "phone"
+  | "map"
+  | "shop"
+  | "booking"
+  | "product-card"
+  | "service-card"
+  | "offer"
+  | "copy-text"
+  | "divider"
+  | "cover-image"
+  | "popup-image"
+  | "carousel"
+  | "bilibili-video"
+  | "youtube-video"
+  | "video-link"
+  | "netease-music"
+  | "music-link"
+  | "ai-chat";
 
 export type LinkDraft = {
   title: string;
@@ -107,7 +140,9 @@ export type LinkDraft = {
   description: string;
   iconType: string;
   iconValue: string;
+  iconUrl: string;
   componentType?: LinkComponentType;
+  payloadJson: string;
 };
 
 export const emptyLinkDraft: LinkDraft = {
@@ -116,7 +151,9 @@ export const emptyLinkDraft: LinkDraft = {
   description: "",
   iconType: "default",
   iconValue: "",
+  iconUrl: "",
   componentType: "link",
+  payloadJson: "",
 };
 
 export function isTemporaryUsername(username: string | null | undefined) {

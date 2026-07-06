@@ -1,59 +1,65 @@
 import { db } from "@/lib/db";
 import crypto from "crypto";
+import { getUserEntitlements } from "@/lib/billing/entitlements";
+import type { PlanCode } from "@/lib/billing/plans";
 
-// 套餐月度额度（产品规则：免费用户可预览 AI 助手，正式调用需升级会员）
-// 注意：此处的额度限制用于 AI 正式调用，预览模式不消耗额度
-// 免费用户：50 次/月预览额度（不消耗正式额度），正式调用需升级
-// starter/member_basic: 200 次/月
-// pro/member_plus: 2000 次/月
-// enterprise: -1 表示无限额度（仍受每日风控上限保护）
-export const PLAN_AI_LIMITS: Record<string, number> = {
-  free: 0, // 免费用户正式调用额度为 0，只能预览
-  starter: 200, // 旧套餐名兼容
-  member_basic: 200,
-  pro: 2000, // 旧套餐名兼容
-  member_plus: 2000,
-  enterprise: -1,
-};
-
-// 每日风控上限（防止短时间滥用，独立于套餐额度）
-export const DAILY_LIMITS: Record<string, number> = {
-  free: 0, // 免费用户无正式调用权限
-  starter: 50, // 旧套餐名兼容
-  member_basic: 50,
-  pro: 200, // 旧套餐名兼容
-  member_plus: 200,
-  enterprise: 500,
-};
+// ============================================================================
+// AI 权限与额度服务（单一权威来源：src/lib/billing/plans.ts + entitlements）
+// ----------------------------------------------------------------------------
+// 历史 BUG：本文件曾维护独立的 PLAN_AI_LIMITS / DAILY_LIMITS 常量，与
+// plans.ts 中的 aiChatsPerMonth 不一致（member_basic 200 vs 300、
+// member_plus 2000 vs 300、enterprise -1 vs 10000、缺 enterprise_pro_plus /
+// internal_test）。现已删除所有独立额度数字，全部委托 entitlements 服务，
+// 确保套餐额度只有 plans.ts 一套权威来源。
+// ============================================================================
 
 export type AiAccessLevel = "none" | "preview" | "full";
 
+// 兼容旧调用：返回用户当前套餐与状态（已委托 entitlements）
 export async function getMembershipPlan(userId: string): Promise<{ planCode: string; status: string }> {
-  const sub = await db.membershipSubscription.findUnique({
-    where: { userId },
-    select: { planCode: true, status: true },
-  });
-  return {
-    planCode: sub?.planCode ?? "free", status: sub?.status ?? "inactive" };
+  const entitlements = await getUserEntitlements(userId);
+  const status = entitlements.isLegacyActive
+    ? "active"
+    : entitlements.hasActiveMembership
+      ? "active"
+      : entitlements.isGracePeriod
+        ? "grace_period"
+        : "inactive";
+  return { planCode: entitlements.planCode, status };
 }
 
+// AI 访问级别：免费用户仅可预览，付费且有效会员可正式调用
 export async function getAiAccessLevel(userId: string): Promise<{
-  access: AiAccessLevel; planCode: string; isActiveMember: boolean; reason?: string }> {
-  const { planCode, status } = await getMembershipPlan(userId);
-  const isActive = status === "active";
+  access: AiAccessLevel;
+  planCode: string;
+  isActiveMember: boolean;
+  reason?: string;
+}> {
+  const entitlements = await getUserEntitlements(userId);
+  const isActiveMember = entitlements.hasActiveMembership || entitlements.isLegacyActive || entitlements.isGracePeriod;
 
-  // 产品规则：免费用户不能正式使用五大 AI 助手
-  if (planCode === "free") {
-    return { access: "preview", planCode, isActiveMember: false, reason: "免费用户仅可预览AI助手介绍，升级会员即可使用全部AI能力" };
+  if (entitlements.planCode === "free" || !entitlements.features.aiEnabled) {
+    return {
+      access: "preview",
+      planCode: entitlements.planCode,
+      isActiveMember: false,
+      reason: "免费用户仅可预览 AI 助手介绍，升级会员即可使用全部 AI 能力",
+    };
   }
 
-  if (!isActive) {
-    return { access: "preview", planCode, isActiveMember: false, reason: "会员已过期，请续费后继续使用" };
+  if (!isActiveMember) {
+    return {
+      access: "preview",
+      planCode: entitlements.planCode,
+      isActiveMember: false,
+      reason: "会员已过期，请续费后继续使用",
+    };
   }
 
-  return { access: "full", planCode, isActiveMember: true };
+  return { access: "full", planCode: entitlements.planCode, isActiveMember: true };
 }
 
+// 获取或创建用户 Credit 账户
 export async function getOrCreateCreditAccount(userId: string) {
   let account = await db.aiCreditAccount.findUnique({
     where: { userId },
@@ -72,48 +78,33 @@ export async function getOrCreateCreditAccount(userId: string) {
   return account;
 }
 
-// 获取套餐月度使用情况（不含 Credit）
+// 套餐月度使用情况（委托 entitlements，额度来自 plans.ts 单一权威来源）
 export async function getMonthlyPlanUsage(userId: string): Promise<{
-  used: number; limit: number; remaining: number; percent: number | null }> {
-  const { planCode, status } = await getMembershipPlan(userId);
-  const isActive = status === "active";
-  const planLimit = isActive ? (PLAN_AI_LIMITS[planCode] ?? 0) : 0;
-
-  const account = await getOrCreateCreditAccount(userId);
-
-  const monthStart = new Date();
-  monthStart.setDate(1);
-  monthStart.setHours(0, 0, 0, 0);
-
-  const usageCount = await db.aiCreditLedger.aggregate({
-    where: {
-      accountId: account.id,
-      createdAt: { gte: monthStart },
-      entryType: "consume",
-    },
-    _sum: { amount: true },
-  });
-
-  const used = usageCount._sum.amount ? Math.abs(usageCount._sum.amount) : 0;
-  const remaining = planLimit === -1 ? -1 : Math.max(0, planLimit - used);
+  used: number;
+  limit: number;
+  remaining: number;
+  percent: number | null;
+}> {
+  const entitlements = await getUserEntitlements(userId);
+  const limit = entitlements.limits.aiChatsPerMonth.max;
+  const used = entitlements.limits.aiChatsPerMonth.used;
+  const remaining = entitlements.limits.aiChatsPerMonth.remaining;
 
   return {
     used,
-    limit: planLimit,
+    limit,
     remaining,
-    percent: planLimit === -1 ? null : (planLimit > 0 ? Math.min(100, Math.round((used / planLimit) * 100)) : null),
+    percent: limit === -1 ? null : limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : null,
   };
 }
 
-// 获取每日风控使用情况
+// 每日使用情况（仅统计，不再维护独立 DAILY_LIMITS；短时滥用由 route 层 rate-limit 控制）
 export async function getDailyUsage(userId: string): Promise<{
-  used: number; limit: number; remaining: number }> {
-  const { planCode, status } = await getMembershipPlan(userId);
-  const isActive = status === "active";
-  const dailyLimit = isActive ? (DAILY_LIMITS[planCode] ?? 0) : 0;
-
+  used: number;
+  limit: number;
+  remaining: number;
+}> {
   const account = await getOrCreateCreditAccount(userId);
-
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
 
@@ -127,12 +118,11 @@ export async function getDailyUsage(userId: string): Promise<{
   });
 
   const used = usageCount._sum.amount ? Math.abs(usageCount._sum.amount) : 0;
-  const remaining = dailyLimit === -1 ? -1 : Math.max(0, dailyLimit - used);
-
-  return { used, limit: dailyLimit, remaining };
+  // limit/remaining 仅作占位，不再用作拦截条件（统一由套餐月度额度 + Credit 控制）
+  return { used, limit: -1, remaining: -1 };
 }
 
-// 获取综合配额信息（套餐月度 + 每日风控 + Credit）
+// 综合配额信息（套餐月度 + Credit；委托 entitlements 单一权威来源）
 export async function getAiQuota(userId: string): Promise<{
   access: AiAccessLevel;
   planCode: string;
@@ -143,10 +133,14 @@ export async function getAiQuota(userId: string): Promise<{
   canCall: boolean;
   reason?: string;
 }> {
-  const accessInfo = await getAiAccessLevel(userId);
+  const [accessInfo, entitlements, account] = await Promise.all([
+    getAiAccessLevel(userId),
+    getUserEntitlements(userId),
+    getOrCreateCreditAccount(userId),
+  ]);
+
   const planUsage = await getMonthlyPlanUsage(userId);
   const dailyUsage = await getDailyUsage(userId);
-  const account = await getOrCreateCreditAccount(userId);
   const creditBalance = account.balance;
 
   // 判断是否可以调用
@@ -156,10 +150,7 @@ export async function getAiQuota(userId: string): Promise<{
   if (accessInfo.access !== "full") {
     canCall = false;
     reason = accessInfo.reason || "当前套餐无 AI 调用权限";
-  } else if (dailyUsage.remaining === 0 && dailyUsage.limit !== -1) {
-    canCall = false;
-    reason = `今日调用已达上限（${dailyUsage.used}/${dailyUsage.limit}），请明天再试`;
-  } else if (planUsage.remaining === 0 && planUsage.limit !== -1 && creditBalance <= 0) {
+  } else if (planUsage.limit !== -1 && planUsage.remaining <= 0 && creditBalance <= 0) {
     canCall = false;
     reason = "本月套餐额度已用完且无额外 Credit，请升级套餐或购买额度包";
   } else {
@@ -196,7 +187,7 @@ export async function consumeCredit(
 
   // 确定扣减来源：优先套餐额度，其次 Credit
   let source: "plan" | "credit" = "plan";
-  if (quota.planUsage.remaining === 0 && quota.planUsage.limit !== -1) {
+  if (quota.planUsage.limit !== -1 && quota.planUsage.remaining <= 0) {
     if (quota.creditBalance >= amount) {
       source = "credit";
     } else {
@@ -487,3 +478,6 @@ export async function freezeUserSingleAssistant(
     return { success: false, error: e instanceof Error ? e.message : String(e) };
   }
 }
+
+// 保留 PlanCode 类型导入以便类型对齐（避免 unused import 警告）
+export type { PlanCode };

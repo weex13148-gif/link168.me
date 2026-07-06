@@ -154,7 +154,7 @@ export async function handleAlipayNotify(params: Record<string, string>): Promis
       });
     }
 
-    if ([ORDER_STATUS.REFUNDED, ORDER_STATUS.PARTIALLY_REFUNDED, ORDER_STATUS.REFUND_PENDING].includes(order.status as never)) {
+    if ([ORDER_STATUS.REFUNDED, ORDER_STATUS.PARTIALLY_REFUNDED, ORDER_STATUS.REFUND_PROCESSING, ORDER_STATUS.REFUND_FAILED].includes(order.status as never)) {
       return fail("CALLBACK_REFUND_STATE", `订单处于退款状态，不能重新开通：${order.status}`);
     }
 

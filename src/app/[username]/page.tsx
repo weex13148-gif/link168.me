@@ -1,7 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { SharePageWithContact } from "@/components/share/SharePageWithContact";
+import { PublicProfileClientWrapper } from "@/components/public-profile/PublicProfileClientWrapper";
+import {
+  StatePage,
+  NotPublishedState,
+  FrozenState,
+  BannedState,
+} from "@/components/public-profile/StatePage";
+import {
+  buildPublicProfileMetadata,
+  buildRestrictedProfileMetadata,
+} from "@/lib/seo/public-profile";
+import {
+  generatePersonSchema,
+  generateProfilePageSchema,
+  serializeSchema,
+} from "@/lib/seo/json-ld";
 import type { SharePageTemplate } from "@/components/share/SharePageRenderer";
 import { getThemeClasses } from "@/components/theme/presetThemes";
 import {
@@ -12,6 +27,10 @@ import {
 } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { sanitizePublicUrl } from "@/lib/public-url-security";
+
+export const dynamic = "force-dynamic";
+
+const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://link168.me").replace(/\/$/, "");
 
 type PublicProfilePageProps = {
   params: Promise<{ username: string }>;
@@ -38,21 +57,25 @@ async function resolveUsername(rawUsername: string) {
   const normalized = normalizeUsername(rawUsername);
   if (!normalized) return { type: "missing" as const };
 
-  const direct = await db.profile.findUnique({
-    where: { username: normalized },
-    include: {
-      links: {
-        where: { isActive: true },
-        orderBy: { position: "asc" },
+  const direct = await db.profile
+    .findUnique({
+      where: { username: normalized },
+      include: {
+        links: {
+          where: { isActive: true },
+          orderBy: { position: "asc" },
+        },
       },
-    },
-  }).catch(() => null);
+    })
+    .catch(() => null);
   if (direct) return { type: "current" as const, profile: direct };
 
-  const registry = await db.usernameRegistry.findUnique({
-    where: { normalizedUsername: normalized },
-    select: { userId: true, status: true, reservedUntil: true },
-  }).catch(() => null);
+  const registry = await db.usernameRegistry
+    .findUnique({
+      where: { normalizedUsername: normalized },
+      select: { userId: true, status: true, reservedUntil: true },
+    })
+    .catch(() => null);
 
   if (registry?.status === "CURRENT" && registry.userId) {
     const profile = await loadProfileByUserId(registry.userId).catch(() => null);
@@ -69,19 +92,23 @@ async function resolveUsername(rawUsername: string) {
     registry.reservedUntil &&
     registry.reservedUntil > new Date()
   ) {
-    const currentProfile = await db.profile.findUnique({
-      where: { userId: registry.userId },
-      select: { username: true },
-    }).catch(() => null);
+    const currentProfile = await db.profile
+      .findUnique({
+        where: { userId: registry.userId },
+        select: { username: true },
+      })
+      .catch(() => null);
     if (currentProfile && normalizeUsername(currentProfile.username) !== normalized) {
       return { type: "redirect" as const, username: currentProfile.username };
     }
   }
 
-  const history = await db.usernameHistory.findFirst({
-    where: { normalizedUsername: normalized },
-    orderBy: { createdAt: "desc" },
-  }).catch(() => null);
+  const history = await db.usernameHistory
+    .findFirst({
+      where: { normalizedUsername: normalized },
+      orderBy: { createdAt: "desc" },
+    })
+    .catch(() => null);
   if (history?.replacedBy && history.reservedUntil && history.reservedUntil > new Date()) {
     return { type: "redirect" as const, username: history.replacedBy };
   }
@@ -89,29 +116,20 @@ async function resolveUsername(rawUsername: string) {
   return { type: "missing" as const };
 }
 
-type CurrentProfile = Extract<Awaited<ReturnType<typeof resolveUsername>>, { type: "current" }>["profile"];
+type CurrentProfile = Extract<
+  Awaited<ReturnType<typeof resolveUsername>>,
+  { type: "current" }
+>["profile"];
 
 export async function generateMetadata({ params }: PublicProfilePageProps): Promise<Metadata> {
   const { username } = await params;
   const result = await resolveUsername(username);
-  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://link168.me").replace(/\/$/, "");
 
   if (result.type !== "current") {
-    return {
-      title: `@${username}`,
-      description: `访问 @${username} 的 Link168 公开主页。`,
-      robots: { index: false, follow: false },
-    };
+    return buildRestrictedProfileMetadata(username, appUrl);
   }
 
   const profile = result.profile;
-  const title = profile.displayName || `@${profile.username}`;
-  const description = profile.bio || `访问 @${profile.username} 的 Link168 公开主页。`;
-  const canonicalPath = `/${profile.username}`;
-  const avatarUrl = profile.avatarUrl
-    ? `${profile.avatarUrl.split("?")[0]}?v=${profile.updatedAt.getTime()}`
-    : null;
-
   let indexable = profile.isPublic;
   try {
     const [owner, restrictions] = await Promise.all([
@@ -123,27 +141,21 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
     indexable = false;
   }
 
-  return {
-    title,
-    description,
-    alternates: { canonical: canonicalPath },
-    robots: { index: indexable, follow: indexable },
-    openGraph: {
-      type: "profile",
-      locale: "zh_CN",
-      siteName: "Link168",
-      title,
-      description,
-      url: `${appUrl}${canonicalPath}`,
-      images: avatarUrl ? [{ url: avatarUrl, alt: `${title} 的头像` }] : undefined,
-    },
-    twitter: {
-      card: avatarUrl ? "summary" : "summary_large_image",
-      title,
-      description,
-      images: avatarUrl ? [avatarUrl] : undefined,
-    },
-  };
+  const avatarUrl = profile.avatarUrl
+    ? `${profile.avatarUrl.split("?")[0]}?v=${profile.updatedAt.getTime()}`
+    : null;
+
+  return buildPublicProfileMetadata({
+    username: profile.username,
+    displayName: profile.displayName,
+    bio: profile.bio,
+    avatarUrl,
+    isPublic: profile.isPublic,
+    isIndexable: indexable,
+    updatedAt: profile.updatedAt,
+    pageUrl: `${appUrl}/${profile.username}`,
+    appUrl,
+  });
 }
 
 function resolveTemplate(profile: CurrentProfile, requested?: string): SharePageTemplate {
@@ -153,45 +165,30 @@ function resolveTemplate(profile: CurrentProfile, requested?: string): SharePage
   return "business";
 }
 
-function BrandFooter() {
-  return (
-    <Link href="/" className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#E8DCCB] bg-white px-4 py-2 text-xs font-black text-[#4F6D37] shadow-sm">
-      <span className="grid size-6 place-items-center rounded-lg bg-[#6F8F4E] text-[10px] text-white">L</span>
-      由 Link168 提供
-    </Link>
-  );
-}
-
-function StatePage({ title, description, action }: { title: string; description: string; action?: React.ReactNode }) {
-  return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center px-4 py-10">
-      <section className="w-full rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8] p-8 text-center shadow-sm">
-        <h1 className="text-2xl font-black text-[#2B241E]">{title}</h1>
-        <p className="mt-3 text-sm leading-7 text-[#7A6D5E]">{description}</p>
-        {action ? <div className="mt-6">{action}</div> : null}
-      </section>
-      <BrandFooter />
-    </main>
-  );
-}
-
 function restrictionPage(restrictions: ActiveRestriction[]) {
   const types = restrictions.map((item) => item.type);
   if (types.includes("BANNED")) {
-    return <StatePage title="该账号已被封禁" description="该账号因违反平台规则，公开主页已停止展示。" />;
+    return <BannedState />;
   }
   if (types.includes("ADMIN_FREEZE")) {
-    return <StatePage title="该主页暂不可访问" description="管理员已暂停该主页展示。" />;
+    return <FrozenState reason="管理员已暂停该主页展示。" />;
   }
   if (types.includes("SECURITY_RISK")) {
-    return <StatePage title="该主页正在安全审核" description="为保障用户安全，该主页暂时停止公开展示。" />;
+    return <FrozenState reason="为保障用户安全，该主页暂时停止公开展示。" />;
   }
   if (types.includes("EMAIL_UNVERIFIED")) {
     return (
       <StatePage
         title="该主页尚未完成邮箱验证"
         description="注册超过 30 天仍未验证邮箱的主页会暂停公开展示。请主页所有者登录后台完成验证。"
-        action={<Link href="/login" className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#6F8F4E] px-6 text-sm font-black text-white">登录后台验证</Link>}
+        action={
+          <Link
+            href="/login"
+            className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#6F8F4E] px-6 text-sm font-black text-white"
+          >
+            登录后台验证
+          </Link>
+        }
       />
     );
   }
@@ -205,14 +202,26 @@ export default async function PublicProfilePage({ params, searchParams }: Public
 
   if (result.type === "missing") notFound();
   if (result.type === "reserved") {
-    return <StatePage title={`@${username} 已被保留`} description="该公开地址由系统保留，当前没有可展示的用户主页。" />;
+    return (
+      <StatePage
+        title={`@${username} 已被保留`}
+        description="该公开地址由系统保留，当前没有可展示的用户主页。"
+      />
+    );
   }
   if (result.type === "redirect") {
     return (
       <StatePage
         title="该主页地址已更新"
         description={`新的公开主页地址是 link168.me/${result.username}`}
-        action={<Link href={`/${result.username}`} className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#6F8F4E] px-6 text-sm font-black text-white">前往新主页</Link>}
+        action={
+          <Link
+            href={`/${result.username}`}
+            className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#6F8F4E] px-6 text-sm font-black text-white"
+          >
+            前往新主页
+          </Link>
+        }
       />
     );
   }
@@ -234,44 +243,50 @@ export default async function PublicProfilePage({ params, searchParams }: Public
 
   const visibility = canShowPublicProfile(restrictions);
   if (!visibility.ok) {
-    return restrictionPage(restrictions) || <StatePage title="该主页暂不可访问" description="该主页当前处于限制状态。" />;
+    return restrictionPage(restrictions) || <FrozenState />;
   }
 
   if (!profile.isPublic) {
-    return (
-      <StatePage
-        title="该主页暂未公开"
-        description="主页所有者尚未公开此页面。"
-        action={<Link href="/register" className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#6F8F4E] px-6 text-sm font-black text-white">免费创建我的主页</Link>}
-      />
-    );
+    return <NotPublishedState />;
   }
 
-  const links = profile.links.map((item) => ({
-    id: item.id,
-    title: item.title,
-    description: item.description || null,
-    url: item.url?.trim() || null,
-    icon: item.iconUrl || item.iconValue || null,
-    type: item.iconType || null,
-    componentType: item.type || null,
-    payload: item.payloadJson || null,
-  }));
+  const links = profile.links.map((item) => {
+    // D7 读取侧：图标 moderationStatus !== "approved" 时显示占位（不显示原图）
+    // 历史兼容：null / "legacy_approved" 视为 approved
+    const iconModerationApproved =
+      !item.iconModerationStatus ||
+      item.iconModerationStatus === "approved" ||
+      item.iconModerationStatus === "legacy_approved";
+    return {
+      id: item.id,
+      title: item.title,
+      description: item.description || null,
+      url: item.url?.trim() || null,
+      icon: iconModerationApproved
+        ? item.iconUrl || item.iconValue || null
+        : item.iconValue || null,
+      type: item.iconType || null,
+      componentType: item.type || null,
+      payload: item.payloadJson || null,
+    };
+  });
 
-  const rawProducts = await db.product.findMany({
-    where: { userId: profile.userId, isActive: true },
-    orderBy: { sortOrder: "asc" },
-    select: {
-      id: true,
-      name: true,
-      category: true,
-      description: true,
-      priceText: true,
-      coverImageUrl: true,
-      ctaLabel: true,
-      ctaUrl: true,
-    },
-  }).catch(() => []);
+  const rawProducts = await db.product
+    .findMany({
+      where: { userId: profile.userId, isActive: true },
+      orderBy: { sortOrder: "asc" },
+      select: {
+        id: true,
+        name: true,
+        category: true,
+        description: true,
+        priceText: true,
+        coverImageUrl: true,
+        ctaLabel: true,
+        ctaUrl: true,
+      },
+    })
+    .catch(() => []);
 
   const products = rawProducts.map((product) => {
     const checked = product.ctaUrl ? sanitizePublicUrl(product.ctaUrl) : null;
@@ -281,7 +296,6 @@ export default async function PublicProfilePage({ params, searchParams }: Public
     };
   });
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://link168.me";
   const reportUrl = `/report?url=${encodeURIComponent(`${appUrl}/${profile.username}`)}`;
   const themeName = profile.theme || "Link168 草木默认";
   const surfaceClass = getThemeClasses(themeName).surfaceClassName;
@@ -290,14 +304,40 @@ export default async function PublicProfilePage({ params, searchParams }: Public
   const avatarUrlWithCacheBust = rawAvatarUrl
     ? `${rawAvatarUrl.split("?")[0]}?t=${profile.updatedAt.getTime()}`
     : null;
+  const contactIsPublic = profile.contactVisibility === "public";
+
+  // JSON-LD 结构化数据
+  const personSchema = generatePersonSchema({
+    name: profile.displayName || `@${profile.username}`,
+    username: profile.username,
+    bio: profile.bio,
+    avatarUrl: avatarUrlWithCacheBust,
+    pageUrl: `${appUrl}/${profile.username}`,
+    jobTitle: profile.jobTitle,
+    company: profile.company,
+    email: contactIsPublic ? profile.email : null,
+    phone: contactIsPublic ? profile.phone : null,
+    city: contactIsPublic ? profile.city : null,
+    address: contactIsPublic ? profile.address : null,
+    website: contactIsPublic ? profile.website : null,
+    socialLinks: contactIsPublic ? profile.socialLinks as Record<string, string> | null : null,
+  });
+
+  const profilePageSchema = generateProfilePageSchema({
+    person: personSchema,
+    pageUrl: `${appUrl}/${profile.username}`,
+    updatedAt: profile.updatedAt,
+    createdAt: profile.createdAt,
+  });
 
   return (
-    <main className={`mx-auto flex min-h-dvh w-full max-w-2xl flex-col px-4 py-6 sm:py-10 ${surfaceClass}`}>
-      {query.preview === "1" ? (
-        <Link href="/dashboard" className="mb-4 inline-flex w-fit items-center rounded-full bg-[#6F8F4E] px-4 py-2 text-sm font-black text-white shadow-sm">返回操作后台</Link>
-      ) : null}
-      <div className="mx-auto w-full max-w-md">
-        <SharePageWithContact
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeSchema(profilePageSchema) }}
+      />
+      <main className={`mx-auto flex min-h-dvh w-full max-w-2xl flex-col px-4 py-6 sm:py-10 ${surfaceClass}`}>
+        <PublicProfileClientWrapper
           template={resolveTemplate(profile, query.template)}
           username={profile.username}
           displayName={profile.displayName || `@${profile.username}`}
@@ -305,11 +345,22 @@ export default async function PublicProfilePage({ params, searchParams }: Public
           avatarUrl={avatarUrlWithCacheBust}
           links={links}
           themeName={themeName}
-          showBrandFoot
+          customTheme={profile.customTheme}
+          showBrandFoot={true}
           reportUrl={reportUrl}
           products={products}
+          company={profile.company}
+          jobTitle={profile.jobTitle}
+          phone={contactIsPublic ? profile.phone : null}
+          email={contactIsPublic ? profile.email : null}
+          wechat={contactIsPublic ? profile.wechat : null}
+          city={contactIsPublic ? profile.city : null}
+          address={contactIsPublic ? profile.address : null}
+          website={contactIsPublic ? profile.website : null}
+          contactVisibility={profile.contactVisibility}
+          isPreview={query.preview === "1"}
         />
-      </div>
-    </main>
+      </main>
+    </>
   );
 }

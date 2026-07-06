@@ -6,10 +6,14 @@ import {
   BarChart3,
   Palette,
   Megaphone,
+  TrendingUp,
   ArrowRight,
   Sparkles,
   Crown,
   AlertTriangle,
+  BookOpen,
+  Bot,
+  UserPlus,
 } from "lucide-react";
 import WorkbenchShell from "@/components/workbench/WorkbenchShell";
 import { getCurrentUserFromCookies } from "@/lib/auth";
@@ -21,27 +25,30 @@ import { getProviderConfig, isProviderConfigured } from "@/lib/ai/provider";
 export const runtime = "nodejs";
 
 const ASSISTANT_ICONS: Record<string, typeof Calculator> = {
-  tax: Calculator,
-  legal: Scale,
-  market: BarChart3,
-  design: Palette,
-  social: Megaphone,
+  财税助理: Calculator,
+  法务助理: Scale,
+  市场调研助理: BarChart3,
+  设计助理: Palette,
+  社媒运营助理: Megaphone,
+  销售顾问助理: TrendingUp,
 };
 
 const ASSISTANT_COLORS: Record<string, string> = {
-  tax: "bg-[#DDE8CD] text-[#3F5F31]",
-  legal: "bg-[#EAF3FF] text-[#2563EB]",
-  market: "bg-[#F6E7C8] text-[#8C612E]",
-  design: "bg-[#FFE6E2] text-[#B42318]",
-  social: "bg-[#E8E6FF] text-[#5B6FFF]",
+  财税助理: "bg-[#DDE8CD] text-[#3F5F31]",
+  法务助理: "bg-[#EAF3FF] text-[#2563EB]",
+  市场调研助理: "bg-[#F6E7C8] text-[#8C612E]",
+  设计助理: "bg-[#FFE6E2] text-[#B42318]",
+  社媒运营助理: "bg-[#E8E6FF] text-[#5B6FFF]",
+  销售顾问助理: "bg-[#D1FADF] text-[#0A8E4A]",
 };
 
 const ASSISTANT_GRADIENTS: Record<string, string> = {
-  tax: "from-[#DDE8CD] to-[#B8D0A0]",
-  legal: "from-[#EAF3FF] to-[#BFDBFE]",
-  market: "from-[#F6E7C8] to-[#E8D096]",
-  design: "from-[#FFE6E2] to-[#FECACA]",
-  social: "from-[#E8E6FF] to-[#C7D2FE]",
+  财税助理: "from-[#DDE8CD] to-[#B8D0A0]",
+  法务助理: "from-[#EAF3FF] to-[#BFDBFE]",
+  市场调研助理: "from-[#F6E7C8] to-[#E8D096]",
+  设计助理: "from-[#FFE6E2] to-[#FECACA]",
+  社媒运营助理: "from-[#E8E6FF] to-[#C7D2FE]",
+  销售顾问助理: "from-[#D1FADF] to-[#7BE3A4]",
 };
 
 export default async function WorkbenchAiPage() {
@@ -54,27 +61,29 @@ export default async function WorkbenchAiPage() {
   const providerConfig = await getProviderConfig(firstAssistant);
   const isConfigured = isProviderConfigured(providerConfig) && config.aiEnabled;
 
-  const assistants = AI_ASSISTANT_LIST.map((assistant) => {
-    const displayTitle = assistant.displayTitle;
-    const enabled = isAssistantEnabled(config, displayTitle);
-    const Icon = ASSISTANT_ICONS[assistant.title] || Sparkles;
-    const colorClass = ASSISTANT_COLORS[assistant.title] || ASSISTANT_COLORS.tax;
-    const gradientClass = ASSISTANT_GRADIENTS[assistant.title] || ASSISTANT_GRADIENTS.tax;
+  const assistants = AI_ASSISTANT_LIST
+    .filter((assistant) => ASSISTANT_ICONS[assistant.title])
+    .map((assistant) => {
+      const displayTitle = assistant.displayTitle;
+      const enabled = isAssistantEnabled(config, displayTitle);
+      const Icon = ASSISTANT_ICONS[assistant.title] || Sparkles;
+      const colorClass = ASSISTANT_COLORS[assistant.title] || ASSISTANT_COLORS["财税助理"];
+      const gradientClass = ASSISTANT_GRADIENTS[assistant.title] || ASSISTANT_GRADIENTS["财税助理"];
 
-    return {
-      key: assistant.title,
-      title: assistant.title,
-      displayTitle: assistant.displayTitle,
-      category: assistant.category,
-      role: assistant.role,
-      capabilities: assistant.capabilities,
-      riskNotice: assistant.riskNotice,
-      enabled,
-      Icon,
-      colorClass,
-      gradientClass,
-    };
-  });
+      return {
+        key: assistant.title,
+        title: assistant.title,
+        displayTitle: assistant.displayTitle,
+        category: assistant.category,
+        role: assistant.role,
+        capabilities: assistant.capabilities,
+        riskNotice: assistant.riskNotice,
+        enabled,
+        Icon,
+        colorClass,
+        gradientClass,
+      };
+    });
 
   const canUse = quota.canCall && isConfigured;
   const showUpgrade = !quota.isActiveMember || quota.planCode === "free";
@@ -83,7 +92,7 @@ export default async function WorkbenchAiPage() {
     <WorkbenchShell
       eyebrow="AI Assistants"
       title="AI 助手中心"
-      subtitle="五大专业 AI 助手，帮你搞定财税、法务、市场调研、品牌设计和社媒运营。"
+      subtitle="六大专业 AI 助手，帮你搞定财税、法务、市场调研、品牌设计、社媒运营和销售转化。"
     >
       {!isConfigured && (
         <div className="mb-6 flex items-start gap-3 rounded-[28px] border border-[#FFE6E2] bg-[#FFF5F3] p-5">
@@ -103,7 +112,7 @@ export default async function WorkbenchAiPage() {
           <div>
             <p className="text-sm font-black text-[#8C612E]">免费用户仅可预览 AI 助手介绍</p>
             <p className="mt-1 text-xs text-[#7A6D5E]">
-              升级会员基础版、Plus 或企业版即可正式使用五大 AI 助手。免费用户无正式调用额度。
+              升级会员基础版、Plus 或企业版即可正式使用六大 AI 助手。免费用户无正式调用额度。
             </p>
             <Link
               href="/workbench/membership"
@@ -190,6 +199,48 @@ export default async function WorkbenchAiPage() {
             </div>
           );
         })}
+      </section>
+
+      <section className="mt-6 grid gap-4 sm:grid-cols-2">
+        <Link
+          href="/workbench/knowledge"
+          className="group flex items-start gap-4 rounded-[28px] border border-[#E8DCCB] bg-white p-5 shadow-sm transition hover:shadow-md"
+        >
+          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#DDE8CD] text-[#3F5F31]">
+            <BookOpen className="size-6" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-black text-[#2B241E]">统一企业资料库</p>
+              <ArrowRight className="size-4 text-[#7A6D5E] transition group-hover:translate-x-1" />
+            </div>
+            <p className="mt-1 text-xs text-[#7A6D5E]">
+              集中管理公司资料、产品资料、FAQ、品牌语气、客户画像、SOP 和文档，让 AI 助手基于你的真实业务数据回答问题。
+            </p>
+          </div>
+        </Link>
+
+        <Link
+          href="/workbench/ai/reception"
+          className="group flex items-start gap-4 rounded-[28px] border border-[#E8DCCB] bg-white p-5 shadow-sm transition hover:shadow-md"
+        >
+          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#EAF3FF] text-[#2563EB]">
+            <Bot className="size-6" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-black text-[#2B241E]">访客 AI 接待</p>
+              <ArrowRight className="size-4 text-[#7A6D5E] transition group-hover:translate-x-1" />
+            </div>
+            <p className="mt-1 text-xs text-[#7A6D5E]">
+              配置公开名片的 AI 客服，自动接待访客咨询。访客主动留下联系方式时，自动创建客户线索，可在客户线索中查看。
+            </p>
+            <p className="mt-2 inline-flex items-center gap-1 rounded-full bg-[#F7F1E7] px-2 py-0.5 text-[10px] font-black text-[#8C612E]">
+              <UserPlus className="size-3" />
+              AI 转线索
+            </p>
+          </div>
+        </Link>
       </section>
 
       <section className="mt-6 grid gap-4 lg:grid-cols-3">

@@ -4,13 +4,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdminPaymentSettingsClient from "@/components/admin/AdminPaymentSettingsClient";
 import AdminShell from "@/components/admin/AdminShell";
+import { AdminAlertBanner } from "@/components/admin/AdminKit";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 
 type AdminUser = { email: string; role: string };
 
 export default function JeepworkPaymentSettingsPage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -36,23 +37,14 @@ export default function JeepworkPaymentSettingsPage() {
     return () => { cancelled = true; };
   }, [router]);
 
-  async function onLogout() {
-    if (!window.confirm("确定要退出管理员后台吗？")) return;
-    setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } finally {
-      router.push("/jeepwork/login");
-      router.refresh();
-    }
-  }
+  const logout = useJeepworkLogout(router);
 
   return (
     <AdminShell
       currentPageLabel="支付宝与收费"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "收款配置",
         title: "支付宝与会员收费",
@@ -60,7 +52,9 @@ export default function JeepworkPaymentSettingsPage() {
         highlight: "#1677FF",
       }}
     >
+      <AdminAlertBanner tone="danger" title="已知限制：退款未调用支付宝接口"><p>当前退款流程仅更新本地订单状态，未调用支付宝退款 API。需人工在支付宝后台确认退款到账。</p></AdminAlertBanner>
       <AdminPaymentSettingsClient />
+      {logout.Modal}
     </AdminShell>
   );
 }

@@ -73,12 +73,23 @@ export interface ShortLinkStat {
 }
 
 /**
- * 获取时间范围
+ * 获取时间范围（统一使用 Asia/Shanghai 时区计算当日零点）
  */
-export function getTimeRange(range: "7d" | "30d" | "90d"): { start: Date; days: number } {
+export function getTimeRange(range: "today" | "7d" | "30d" | "90d"): { start: Date; days: number } {
+  // 计算 Asia/Shanghai 当天的 00:00 对应的 UTC 时间
+  // 上海时区 UTC+8：取当前 UTC 时间 +8 小时的日期部分，再减回 8 小时得到 UTC 零点
+  const now = new Date();
+  const shanghaiOffsetMs = 8 * 60 * 60 * 1000;
+  const shanghaiNow = new Date(now.getTime() + shanghaiOffsetMs);
+  const shanghaiStartOfDay = new Date(shanghaiNow);
+  shanghaiStartOfDay.setUTCHours(0, 0, 0, 0);
+  const utcStartOfDay = new Date(shanghaiStartOfDay.getTime() - shanghaiOffsetMs);
+
+  if (range === "today") {
+    return { start: utcStartOfDay, days: 1 };
+  }
   const days = range === "7d" ? 7 : range === "30d" ? 30 : 90;
-  const start = new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000);
-  start.setHours(0, 0, 0, 0);
+  const start = new Date(utcStartOfDay.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
   return { start, days };
 }
 
@@ -88,7 +99,7 @@ export function getTimeRange(range: "7d" | "30d" | "90d"): { start: Date; days: 
 export async function getAnalyticsStats(params: {
   profileId: string;
   userId: string;
-  range?: "7d" | "30d" | "90d";
+  range?: "today" | "7d" | "30d" | "90d";
 }) {
   const { profileId, userId, range = "7d" } = params;
   const { start, days } = getTimeRange(range);
@@ -267,7 +278,7 @@ export async function getAnalyticsStats(params: {
  */
 export async function calculateConversionFunnel(params: {
   profileId: string;
-  range?: "7d" | "30d" | "90d";
+  range?: "today" | "7d" | "30d" | "90d";
 }): Promise<ConversionFunnel> {
   const { profileId, range = "30d" } = params;
   const { start, days } = getTimeRange(range);
@@ -362,7 +373,7 @@ export async function calculateConversionFunnel(params: {
  */
 export async function getGeoStats(params: {
   profileId: string;
-  range?: "7d" | "30d" | "90d";
+  range?: "today" | "7d" | "30d" | "90d";
 }) {
   const { profileId, range = "7d" } = params;
   const { start } = getTimeRange(range);
@@ -403,7 +414,7 @@ export async function getGeoStats(params: {
  */
 export async function getShortLinkStatsByUser(params: {
   userId: string;
-  range?: "7d" | "30d" | "90d";
+  range?: "today" | "7d" | "30d" | "90d";
 }): Promise<ShortLinkStat[]> {
   const { userId, range = "7d" } = params;
   const { start, days } = getTimeRange(range);
@@ -541,7 +552,7 @@ export async function getShortLinkStatsByUser(params: {
 export async function getSingleShortLinkStat(params: {
   shortLinkId: string;
   userId: string;
-  range?: "7d" | "30d" | "90d";
+  range?: "today" | "7d" | "30d" | "90d";
 }): Promise<ShortLinkStat | null> {
   const { shortLinkId, userId, range = "7d" } = params;
   const { start, days } = getTimeRange(range);

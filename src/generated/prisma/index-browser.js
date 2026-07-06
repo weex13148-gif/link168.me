@@ -130,6 +130,9 @@ exports.Prisma.UserScalarFieldEnum = {
   usernameChanges: 'usernameChanges',
   role: 'role',
   isSystem: 'isSystem',
+  accountStatus: 'accountStatus',
+  deactivatedAt: 'deactivatedAt',
+  deactivationReason: 'deactivationReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -178,13 +181,27 @@ exports.Prisma.ProfileScalarFieldEnum = {
   userId: 'userId',
   username: 'username',
   displayName: 'displayName',
+  displayNameAnonymized: 'displayNameAnonymized',
   bio: 'bio',
   avatarUrl: 'avatarUrl',
+  avatarModerationStatus: 'avatarModerationStatus',
+  coverImageUrl: 'coverImageUrl',
+  coverImageModerationStatus: 'coverImageModerationStatus',
   theme: 'theme',
   customTheme: 'customTheme',
   template: 'template',
   language: 'language',
   isPublic: 'isPublic',
+  company: 'company',
+  jobTitle: 'jobTitle',
+  phone: 'phone',
+  email: 'email',
+  wechat: 'wechat',
+  city: 'city',
+  address: 'address',
+  website: 'website',
+  socialLinks: 'socialLinks',
+  contactVisibility: 'contactVisibility',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -200,6 +217,7 @@ exports.Prisma.LinkScalarFieldEnum = {
   iconType: 'iconType',
   iconValue: 'iconValue',
   iconUrl: 'iconUrl',
+  iconModerationStatus: 'iconModerationStatus',
   position: 'position',
   isActive: 'isActive',
   totalClicks: 'totalClicks',
@@ -221,11 +239,30 @@ exports.Prisma.LinkClickScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ProfileVisitScalarFieldEnum = {
+  id: 'id',
+  profileId: 'profileId',
+  visitorId: 'visitorId',
+  ipHash: 'ipHash',
+  userAgent: 'userAgent',
+  referer: 'referer',
+  country: 'country',
+  city: 'city',
+  device: 'device',
+  os: 'os',
+  browser: 'browser',
+  isBot: 'isBot',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.ShortLinkScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   slug: 'slug',
   targetUrl: 'targetUrl',
+  isEnabled: 'isEnabled',
+  channelLabel: 'channelLabel',
+  expiresAt: 'expiresAt',
   totalClicks: 'totalClicks',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -428,6 +465,9 @@ exports.Prisma.AiServiceConfigScalarFieldEnum = {
   tone: 'tone',
   allowProductRecommendation: 'allowProductRecommendation',
   collectLead: 'collectLead',
+  allowReport: 'allowReport',
+  allowTransferToHuman: 'allowTransferToHuman',
+  privacyNoticeText: 'privacyNoticeText',
   providerMode: 'providerMode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -610,6 +650,51 @@ exports.Prisma.ShowcasePromptDraftScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ContentModerationRecordScalarFieldEnum = {
+  id: 'id',
+  contentType: 'contentType',
+  contentRef: 'contentRef',
+  status: 'status',
+  riskLevel: 'riskLevel',
+  hits: 'hits',
+  reason: 'reason',
+  provider: 'provider',
+  reviewedAt: 'reviewedAt',
+  reviewerId: 'reviewerId',
+  appealStatus: 'appealStatus',
+  appealedAt: 'appealedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WorkspaceScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  workspaceType: 'workspaceType',
+  planCode: 'planCode',
+  ownerId: 'ownerId',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WorkspaceMemberScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  userId: 'userId',
+  role: 'role',
+  status: 'status',
+  invitedBy: 'invitedBy',
+  invitedAt: 'invitedAt',
+  joinedAt: 'joinedAt',
+  disabledAt: 'disabledAt',
+  removedAt: 'removedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -645,6 +730,7 @@ exports.Prisma.ModelName = {
   Profile: 'Profile',
   Link: 'Link',
   LinkClick: 'LinkClick',
+  ProfileVisit: 'ProfileVisit',
   ShortLink: 'ShortLink',
   ShortLinkClick: 'ShortLinkClick',
   Session: 'Session',
@@ -672,7 +758,10 @@ exports.Prisma.ModelName = {
   ShowcaseSequence: 'ShowcaseSequence',
   ShowcaseAIDemoCall: 'ShowcaseAIDemoCall',
   ShowcaseAIDebugLog: 'ShowcaseAIDebugLog',
-  ShowcasePromptDraft: 'ShowcasePromptDraft'
+  ShowcasePromptDraft: 'ShowcasePromptDraft',
+  ContentModerationRecord: 'ContentModerationRecord',
+  Workspace: 'Workspace',
+  WorkspaceMember: 'WorkspaceMember'
 };
 
 /**

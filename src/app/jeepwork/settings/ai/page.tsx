@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminShell from "@/components/admin/AdminShell";
+import { ConfirmModal, type ConfirmModalDangerLevel } from "@/components/admin/ConfirmModal";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 
 type AdminUser = { email: string; role: string };
 
@@ -22,7 +24,6 @@ type AiTestResult = {
 export default function JeepworkSettingsAiPage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -54,25 +55,14 @@ export default function JeepworkSettingsAiPage() {
     };
   }, [router]);
 
-  async function onLogout() {
-    const confirmed = window.confirm("确定要退出管理员后台吗？");
-    if (!confirmed) return;
-    setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // 忽略网络错误
-    }
-    router.push("/jeepwork/login");
-    router.refresh();
-  }
+  const logout = useJeepworkLogout(router);
 
   return (
     <AdminShell
       currentPageLabel="AI 配置"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "AI Settings",
         title: "AI 服务配置",
@@ -81,6 +71,7 @@ export default function JeepworkSettingsAiPage() {
       }}
     >
       <AiSettingsClient />
+      {logout.Modal}
     </AdminShell>
   );
 }
@@ -141,6 +132,21 @@ function AiSettingsClient() {
   const [testResult, setTestResult] = useState<AiTestResult | null>(null);
   const [testing, setTesting] = useState(false);
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
+  const [confirmModal, setConfirmModal] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    dangerLevel: ConfirmModalDangerLevel;
+    onConfirm: () => void | Promise<void>;
+    onConfirmWithReason?: (reason: string) => void | Promise<void>;
+    impactList?: string[];
+    irreversibleNotice?: string;
+    requireReason?: boolean;
+    reasonMinLength?: number;
+    reasonPlaceholder?: string;
+    inputConfirmMatch?: string;
+    inputPlaceholder?: string;
+  } | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -179,41 +185,54 @@ function AiSettingsClient() {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
-  async function onSave(event: React.FormEvent<HTMLFormElement>) {
+  function onSave(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const confirmed = window.confirm("确定要保存当前配置吗？修改后会立即生效。");
-    if (!confirmed) return;
-    setSaving(true);
-    setError("");
-    setSuccess("");
+    setConfirmModal({
+      open: true,
+      title: "确认保存配置",
+      description: "确定要保存当前配置吗？修改后会立即生效。",
+      dangerLevel: "warn",
+      impactList: [
+        "配置修改后将立即生效",
+        "所有 AI 调用将使用新配置",
+        "如出现问题可再次修改",
+      ],
+      onConfirm: async () => {
+        setSaving(true);
+        setError("");
+        setSuccess("");
 
-    const payload = {
-      ...form,
-      aiTesterEmails: aiTesterEmailsText
-        .split(/[,;\n]/)
-        .map((item) => item.trim().toLowerCase())
-        .filter(Boolean),
-    };
+        const payload = {
+          ...form,
+          aiTesterEmails: aiTesterEmailsText
+            .split(/[,;\n]/)
+            .map((item) => item.trim().toLowerCase())
+            .filter(Boolean),
+        };
 
-    try {
-      const response = await fetch("/api/jeepwork/settings/ai", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const result = (await response.json()) as { success?: boolean; data?: unknown; error?: { message?: string } };
-      if (!response.ok || result.success !== true) {
-        setSaving(false);
-        setError(result.error?.message || "保存失败");
-        return;
-      }
-      setSaving(false);
-      setSuccess("配置已保存");
-      setTestResult(null);
-    } catch {
-      setSaving(false);
-      setError("网络错误，保存失败");
-    }
+        try {
+          const response = await fetch("/api/jeepwork/settings/ai", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const result = (await response.json()) as { success?: boolean; data?: unknown; error?: { message?: string } };
+          if (!response.ok || result.success !== true) {
+            setSaving(false);
+            setError(result.error?.message || "保存失败");
+            setConfirmModal(null);
+            return;
+          }
+          setSaving(false);
+          setSuccess("配置已保存");
+          setTestResult(null);
+        } catch {
+          setSaving(false);
+          setError("网络错误，保存失败");
+        }
+        setConfirmModal(null);
+      },
+    });
   }
 
   async function onTestConnection() {
@@ -251,6 +270,7 @@ function AiSettingsClient() {
   }
 
   return (
+    <>
     <form onSubmit={onSave} className="grid gap-6 pb-12">
       <section className="rounded-[28px] border border-[#E8DCCB] bg-[linear-gradient(180deg,#FFFDF8_0%,#F8F1E7_100%)] p-6 shadow-sm">
         <p className="text-sm font-black uppercase tracking-[0.2em] text-[#8B612E]">AI Service</p>
@@ -566,6 +586,20 @@ function AiSettingsClient() {
         )}
       </section>
 
+      <section className="rounded-[28px] border border-[#E8DCCB] bg-[#FFFDF8] p-6 shadow-sm">
+        <p className="text-sm font-black uppercase tracking-[0.2em] text-[#B42318]">Content Safety</p>
+        <h2 className="mt-3 text-2xl font-black text-[#2B241E]">内容安全审核</h2>
+        <div className="mt-4 rounded-2xl border border-[#F2C9A5] bg-[#FFF7ED] p-4">
+          <div className="flex items-center gap-3">
+            <span className="rounded-full bg-[#9A4E12] px-3 py-1 text-xs font-black text-white">人工复核模式</span>
+            <p className="text-sm text-[#9A673F]">当前使用本地启发式审核，图片内容需人工复核。云内容安全服务（阿里云/腾讯云）尚未接入。</p>
+          </div>
+          <p className="mt-2 text-xs text-[#BA7A31]">
+            管理员可在媒体审核后台查看待审核内容并进行批准/拒绝操作。
+          </p>
+        </div>
+      </section>
+
       <div className="flex flex-col gap-3 rounded-[28px] border border-[#E8DCCB] bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs leading-6 text-[#7A6D5E]">
           保存时敏感字段（API Key）如果保留脱敏值或包含 **** ，后端会直接拒绝。
@@ -579,5 +613,25 @@ function AiSettingsClient() {
         </button>
       </div>
     </form>
+    {confirmModal && (
+      <ConfirmModal
+        isOpen={confirmModal.open}
+        onClose={() => setConfirmModal(null)}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        description={confirmModal.description}
+        dangerLevel={confirmModal.dangerLevel}
+        impactList={confirmModal.impactList}
+        irreversibleNotice={confirmModal.irreversibleNotice}
+        requireReason={confirmModal.requireReason}
+        reasonMinLength={confirmModal.reasonMinLength}
+        reasonPlaceholder={confirmModal.reasonPlaceholder}
+        inputConfirmMatch={confirmModal.inputConfirmMatch}
+        inputPlaceholder={confirmModal.inputPlaceholder}
+        onConfirmWithReason={confirmModal.onConfirmWithReason}
+        loading={saving}
+      />
+    )}
+    </>
   );
 }

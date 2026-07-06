@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { SandboxPaymentProvider } from "@/lib/billing/providers";
-import { processPaymentSuccess, processRefund } from "@/lib/billing/orders";
+import { processPaymentSuccess } from "@/lib/billing/orders";
+import { requestRefund } from "@/lib/billing/refund-service";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -83,10 +84,12 @@ export async function POST(request: Request) {
             headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
           });
         }
-        const result = await processRefund({
+        const result = await requestRefund({
           orderId: order.id,
+          actorUserId: "system",
+          actorRole: "super_admin",
           reason: "沙箱模拟退款",
-          refundedBy: "system",
+          operator: "sandbox",
         });
 
         if (!result.success) {

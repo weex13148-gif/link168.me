@@ -19,6 +19,7 @@ import {
   sanitizePublicText,
 } from "@/lib/content-safety";
 import { sanitizePublicUrl } from "@/lib/public-url-security";
+import { revalidatePublicProfileByUser } from "@/lib/cache/public-profile";
 
 export const runtime = "nodejs";
 
@@ -170,6 +171,8 @@ export async function PUT(
     },
   });
 
+  await revalidatePublicProfileByUser(user.id);
+
   return NextResponse.json({ success: true, product: toProductDto(updated) });
 }
 
@@ -193,6 +196,8 @@ export async function DELETE(
   }
 
   await db.product.delete({ where: { id } });
+
+  await revalidatePublicProfileByUser(user.id);
 
   return NextResponse.json({ success: true });
 }

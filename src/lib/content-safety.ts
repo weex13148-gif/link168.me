@@ -1,8 +1,26 @@
-// UGC 文本内容安全：XSS 标签剥离 / prompt injection 初筛 / 敏感词词表
-// 新增：AI 输出审核 moderateAiOutput；图片内容审核 moderateImageContent
-// 注意：此为本地启发式过滤，不等同于正式合规审核，后续应接入外部内容安全 API
+import {
+  getContentSafetyProvider,
+  type ContentSafetyProvider,
+  type ModerationStatus,
+  type RiskLevel,
+  type AppealStatus,
+  type ModerateTextInput,
+  type ModerateTextResult,
+  type ModerateImageInput,
+  type ModerateImageResult,
+} from "./content-safety/provider";
 
-// 分类风险词表（可配置化来源）
+export type {
+  ModerationStatus,
+  RiskLevel,
+  AppealStatus,
+  ModerateTextInput,
+  ModerateTextResult,
+  ModerateImageInput,
+  ModerateImageResult,
+  ContentSafetyProvider,
+};
+
 const SENSITIVE_CATEGORIES = {
   violence: ["暴力破解", "黑产", "博彩", "1040阳光工程"],
   adult: ["色情", "裸聊"],
@@ -13,7 +31,6 @@ const SENSITIVE_CATEGORIES = {
 
 const SENSITIVE_WORDS = Object.values(SENSITIVE_CATEGORIES).flat();
 
-// 常见 prompt injection 模式
 const INJECTION_PATTERNS: { reason: string; regex: RegExp }[] = [
   { reason: "要求复述或改变 system prompt", regex: /(system prompt|系统提示词|原始提示|提示词原文|prompt override|ignore.*previous|忽略.*之前|忽略所有|忽略前面|不要遵守)/i },
   { reason: "要求切换角色或调试模式", regex: /(切换角色|切换成|扮演|调试模式|developer mode|调试助理|system mode|切换到调试)/i },
@@ -22,7 +39,6 @@ const INJECTION_PATTERNS: { reason: string; regex: RegExp }[] = [
   { reason: "包含常见 HTML / script 注入", regex: /(<script|<\/script|onerror\s*=|onload\s*=|javascript:)/i },
 ];
 
-// AI 输出高风险模式：在本地启发式下用于替代回复
 const OUTPUT_HIGH_RISK_RE: { reason: string; regex: RegExp }[] = [
   { reason: "可能包含暴力攻击步骤", regex: /(暴力破解|爆破|ddos|拒绝服务|sqlmap|sql injection|xss payload|payload\s*:)/i },
   { reason: "可能包含博彩/非法金融", regex: /(博彩|赔率|下注|赌场|在线赌场|bitcoin.*翻倍|刷单|套利.*平台)/i },
@@ -37,15 +53,29 @@ const SAFE_REPLACEMENT_CONTENT =
 const SAFE_DISCLAIMER =
   "以上内容由 AI 生成，仅供参考，不替代专业意见。请勿用于非法用途或违反平台使用规范。";
 
-// 基础 XSS / HTML 注入字符
 const HTML_TAG_RE = /<\/?[a-zA-Z][^>]*>/g;
 const DANGEROUS_PROTOCOL_RE = /\b(javascript|vbscript|data)\s*:/gi;
+
+export interface ContentModerationRecord {
+  id: string;
+  contentType: "text" | "image";
+  contentRef: string;
+  status: ModerationStatus;
+  riskLevel?: RiskLevel;
+  hits?: string[];
+  reason?: string;
+  provider: string;
+  reviewedAt?: string;
+  reviewerId?: string;
+  appealStatus: AppealStatus;
+  appealedAt?: string;
+  createdAt: string;
+}
 
 export function sanitizeUserMessage(text: string): string {
   let safe = text;
   safe = safe.replace(HTML_TAG_RE, "");
   safe = safe.replace(DANGEROUS_PROTOCOL_RE, "[blocked-protocol]");
-  // 去除控制字符（保留换行和制表）
   safe = safe.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
   return safe.trim();
 }
@@ -55,7 +85,6 @@ export function sanitizePublicText(text: string | null | undefined): string | nu
   let safe = String(text);
   safe = safe.replace(HTML_TAG_RE, "");
   safe = safe.replace(DANGEROUS_PROTOCOL_RE, "[blocked]");
-  // 去控制字符
   safe = safe.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
   return safe.trim() || null;
 }
@@ -82,10 +111,6 @@ export function hasSensitiveContent(text: string): { detected: boolean; matches:
   return { detected: hits.length > 0, matches: hits };
 }
 
-// AI 输出审核：
-//   * 返回 { ok, reason, replacementSummary, replacementContent, disclaimer }
-//   * 命中高风险模式时，返回安全替代文案；原始输出不会被写回前端
-//   * 日志中只记录"命中的风险类型"，不记录完整敏感文本
 export type ModerateAiOutputResult = {
   ok: boolean;
   blocked: boolean;
@@ -100,7 +125,6 @@ export function moderateAiOutput(rawSummary: string | null | undefined, rawConte
   const content = typeof rawContent === "string" ? rawContent : "";
   const combined = `${summary}\n${content}`;
 
-  // 先跑 XSS / 协议过滤
   const safeSummary = sanitizePublicText(summary) || "";
   const safeContent = sanitizePublicText(content) || "";
 
@@ -136,34 +160,163 @@ export function moderateAiOutput(rawSummary: string | null | undefined, rawConte
   };
 }
 
-// 图片内容审核：
-//   * 当前实现为 no-op；真实上线请接入腾讯内容安全 / 阿里云内容安全 / 自研 NSFW 模型。
-//   * 返回 { ok, blocked, reason }；blocked=true 时，服务端应删除已上传文件并返回统一错误。
-//   * 接口结构预留：fileMeta 中可传递 fileSize / mime / magicBytes / fileName 等信息给外部 API。
+export type TextModerationResult = {
+  ok: boolean;
+  status: ModerationStatus;
+  riskLevel?: RiskLevel;
+  reason?: string;
+  hits?: string[];
+  provider: string;
+};
+
+export async function moderateTextContent(input: ModerateTextInput): Promise<TextModerationResult> {
+  const provider = getContentSafetyProvider();
+
+  try {
+    const result = await provider.moderateText(input);
+
+    if (!result.ok) {
+      return {
+        ok: false,
+        status: "pending_manual_review",
+        reason: result.reason || "内容审核服务异常，转人工复核",
+        provider: provider.name,
+      };
+    }
+
+    if (result.passed) {
+      return {
+        ok: true,
+        status: "approved",
+        riskLevel: result.riskLevel || "low",
+        hits: result.hits,
+        reason: result.reason,
+        provider: provider.name,
+      };
+    }
+
+    if (result.riskLevel === "high") {
+      return {
+        ok: true,
+        status: "rejected",
+        riskLevel: "high",
+        reason: result.reason || "内容不符合规范",
+        hits: result.hits,
+        provider: provider.name,
+      };
+    }
+
+    return {
+      ok: true,
+      status: "pending_manual_review",
+      riskLevel: result.riskLevel || "medium",
+      reason: result.reason || "需人工复核",
+      hits: result.hits,
+      provider: provider.name,
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      status: "pending_manual_review",
+      reason: err instanceof Error ? err.message : "内容审核异常，转人工复核",
+      provider: provider.name,
+    };
+  }
+}
+
 export type ImageModerationResult = {
   ok: boolean;
-  blocked: boolean;
-  reason: string | null;
-  provider?: string;
+  status: ModerationStatus;
+  riskLevel?: RiskLevel;
+  reason?: string;
+  label?: string;
+  provider: string;
 };
 
 export type ImageModerationInput = {
-  size: number; // 字节数
+  size: number;
   mimeType: string;
   fileName?: string;
-  // 可选：用于外部 API 的临时本地路径或公网可访问 URL
   localPath?: string;
   publicUrl?: string;
 };
 
-export function moderateImageContent(_input: ImageModerationInput): ImageModerationResult {
-  // TODO(security): 接入真实图片内容安全 API。
-  // 当前为 no-op：所有通过 MIME + magic bytes 校验的图片都放行。
-  return {
-    ok: true,
-    blocked: false,
-    reason: null,
-    provider: "local-noop",
-  };
+export async function moderateImageContent(input: ImageModerationInput): Promise<ImageModerationResult> {
+  const provider = getContentSafetyProvider();
+
+  try {
+    const result = await provider.moderateImage({
+      url: input.publicUrl,
+      localPath: input.localPath,
+      mimeType: input.mimeType,
+      size: input.size,
+      fileName: input.fileName,
+    });
+
+    if (!result.ok) {
+      return {
+        ok: false,
+        status: "pending_manual_review",
+        reason: result.reason || "图片审核服务异常，转人工复核",
+        provider: provider.name,
+      };
+    }
+
+    if (result.passed) {
+      return {
+        ok: true,
+        status: "approved",
+        riskLevel: result.riskLevel || "low",
+        label: result.label,
+        reason: result.reason,
+        provider: provider.name,
+      };
+    }
+
+    if (result.riskLevel === "high" && result.label && result.label !== "pending_manual_review") {
+      return {
+        ok: true,
+        status: "rejected",
+        riskLevel: "high",
+        reason: result.reason || "图片内容不符合规范",
+        label: result.label,
+        provider: provider.name,
+      };
+    }
+
+    return {
+      ok: true,
+      status: "pending_manual_review",
+      riskLevel: result.riskLevel || "medium",
+      reason: result.reason || "需人工复核",
+      label: result.label,
+      provider: provider.name,
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      status: "pending_manual_review",
+      reason: err instanceof Error ? err.message : "图片审核异常，转人工复核",
+      provider: provider.name,
+    };
+  }
 }
 
+export function isContentApproved(status: ModerationStatus): boolean {
+  return status === "approved";
+}
+
+export function isContentRejected(status: ModerationStatus): boolean {
+  return status === "rejected";
+}
+
+export function isContentPendingReview(status: ModerationStatus): boolean {
+  return status === "pending" || status === "pending_manual_review";
+}
+
+export function canDisplayLegacyMedia(hasModerationRecord: boolean, status?: ModerationStatus): boolean {
+  if (!hasModerationRecord) {
+    return true;
+  }
+  return status === "approved";
+}

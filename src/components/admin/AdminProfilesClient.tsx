@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { ConfirmModal, type ConfirmModalDangerLevel } from "@/components/admin/ConfirmModal";
 
 type AdminEnvelope<T> = {
   success?: unknown;
@@ -48,6 +49,19 @@ export default function AdminProfilesClient() {
   const [totalPages, setTotalPages] = useState(1);
   const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [action, setAction] = useState<ActionState>({ loading: false, message: "", isError: false });
+  const [confirmModal, setConfirmModal] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    dangerLevel: ConfirmModalDangerLevel;
+    onConfirm: () => void | Promise<void>;
+    onConfirmWithReason?: (reason: string) => void | Promise<void>;
+    impactList?: string[];
+    irreversibleNotice?: string;
+    requireReason?: boolean;
+    reasonMinLength?: number;
+    reasonPlaceholder?: string;
+  } | null>(null);
 
   const load = useCallback(async () => {
     setError("");
@@ -79,25 +93,10 @@ export default function AdminProfilesClient() {
     void Promise.resolve().then(() => load());
   }, [load]);
 
-  async function patchProfile(
+  async function executeProfileAction(
     username: string,
     actionName: "hide-profile" | "restore-profile" | "disable-links" | "enable-links"
   ) {
-    const actionLabel =
-      actionName === "hide-profile"
-        ? "隐藏主页"
-        : actionName === "restore-profile"
-        ? "恢复公开"
-        : actionName === "disable-links"
-        ? "下架全部链接"
-        : "恢复全部链接";
-    const isDanger = actionName === "hide-profile" || actionName === "disable-links";
-    const confirmMessage = isDanger
-      ? `确定要对 @${username} 执行「${actionLabel}」操作吗？`
-      : `确定要对 @${username} 执行「${actionLabel}」操作吗？`;
-    const confirmed = window.confirm(confirmMessage);
-    if (!confirmed) return;
-
     setAction({ loading: true, message: "", isError: false });
     try {
       const response = await fetch(`/api/jeepwork/profiles/${encodeURIComponent(username)}`, {
@@ -115,6 +114,63 @@ export default function AdminProfilesClient() {
     } catch {
       setAction({ loading: false, message: "操作失败", isError: true });
     }
+  }
+
+  function patchProfile(
+    username: string,
+    actionName: "hide-profile" | "restore-profile" | "disable-links" | "enable-links"
+  ) {
+    const actionLabel =
+      actionName === "hide-profile"
+        ? "隐藏主页"
+        : actionName === "restore-profile"
+        ? "恢复公开"
+        : actionName === "disable-links"
+        ? "下架全部链接"
+        : "恢复全部链接";
+    const isDanger = actionName === "hide-profile" || actionName === "disable-links";
+    const description = `确定要对 @${username} 执行「${actionLabel}」操作吗？`;
+
+    const modalConfig =
+      actionName === "hide-profile"
+        ? {
+            title: "确认隐藏主页",
+            impactList: ["该操作将立即下架该用户主页", "主页将不再对公开访问者可见"],
+            reasonPlaceholder: "请说明隐藏该主页的具体原因，例如：经核查确认存在违规内容。",
+          }
+        : actionName === "disable-links"
+        ? {
+            title: "确认下架全部链接",
+            impactList: ["该操作将立即下架该用户主页下的全部链接", "所有链接将不再可被访问"],
+            reasonPlaceholder: "请说明下架全部链接的具体原因，例如：经核查发现链接存在违规内容。",
+          }
+        : actionName === "restore-profile"
+        ? {
+            title: "确认恢复公开",
+            impactList: ["该主页将重新对公开访问者可见"],
+          }
+        : {
+            title: "确认恢复全部链接",
+            impactList: ["该用户主页下的全部链接将重新可被访问"],
+          };
+
+    const runAction = async () => {
+      setConfirmModal((prev) => (prev ? { ...prev, open: false } : null));
+      await executeProfileAction(username, actionName);
+    };
+
+    setConfirmModal({
+      open: true,
+      title: modalConfig.title,
+      description,
+      dangerLevel: isDanger ? "danger" : "warn",
+      requireReason: isDanger,
+      reasonMinLength: isDanger ? 10 : undefined,
+      reasonPlaceholder: modalConfig.reasonPlaceholder,
+      impactList: modalConfig.impactList,
+      onConfirm: runAction,
+      onConfirmWithReason: isDanger ? runAction : undefined,
+    });
   }
 
   return (
@@ -231,7 +287,7 @@ export default function AdminProfilesClient() {
                 <a
                   href={`/${encodeURIComponent(profile.username)}`}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="min-h-11 rounded-2xl border border-[#E8DCCB] bg-white px-4 text-sm font-bold text-[#2B241E]"
                 >
                   查看主页
@@ -288,6 +344,24 @@ export default function AdminProfilesClient() {
             下一页
           </button>
         </section>
+      ) : null}
+
+      {confirmModal ? (
+        <ConfirmModal
+          isOpen={confirmModal.open}
+          onClose={() => setConfirmModal((prev) => (prev ? { ...prev, open: false } : null))}
+          onConfirm={confirmModal.onConfirm}
+          onConfirmWithReason={confirmModal.onConfirmWithReason}
+          title={confirmModal.title}
+          description={confirmModal.description}
+          dangerLevel={confirmModal.dangerLevel}
+          loading={action.loading}
+          requireReason={confirmModal.requireReason}
+          reasonMinLength={confirmModal.reasonMinLength}
+          reasonPlaceholder={confirmModal.reasonPlaceholder}
+          impactList={confirmModal.impactList}
+          irreversibleNotice={confirmModal.irreversibleNotice}
+        />
       ) : null}
     </div>
   );

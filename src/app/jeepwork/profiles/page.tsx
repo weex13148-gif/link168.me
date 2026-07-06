@@ -4,13 +4,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdminProfilesClient from "@/components/admin/AdminProfilesClient";
 import AdminShell from "@/components/admin/AdminShell";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 
 type AdminUser = { email: string; role: string };
 
 export default function JeepworkProfilesPage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
+  const logout = useJeepworkLogout(router);
 
   useEffect(() => {
     let cancelled = false;
@@ -38,25 +39,12 @@ export default function JeepworkProfilesPage() {
     };
   }, [router]);
 
-  async function onLogout() {
-    const confirmed = window.confirm("确定要退出管理员后台吗？");
-    if (!confirmed) return;
-    setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // 忽略网络错误
-    }
-    router.push("/jeepwork/login");
-    router.refresh();
-  }
-
   return (
     <AdminShell
       currentPageLabel="主页管理"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "Profiles",
         title: "主页管理",
@@ -65,6 +53,7 @@ export default function JeepworkProfilesPage() {
       }}
     >
       <AdminProfilesClient />
+      {logout.Modal}
     </AdminShell>
   );
 }

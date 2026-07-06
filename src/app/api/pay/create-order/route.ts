@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 
     const availability = await getPaymentAvailability();
     if (!availability.paymentEnabled) {
-      return NextResponse.json({ success: false, error: "支付功能暂未开放" }, { status: 503 });
+      return NextResponse.json({ success: false, error: "当前环境暂不支持在线支付" }, { status: 503 });
     }
     if (!availability.alipayAvailable) {
       return NextResponse.json(

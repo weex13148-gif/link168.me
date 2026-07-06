@@ -5,6 +5,8 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import AdminShell from "@/components/admin/AdminShell";
 import { ConfirmModal, type ConfirmModalDangerLevel } from "@/components/admin/ConfirmModal";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
+import { AdminCard, AdminErrorState, AdminLoadingState, AdminStatusBadgeFromCode } from "@/components/admin/AdminKit";
 
 type AdminUser = { email: string; role: string };
 
@@ -55,10 +57,10 @@ type UserDetail = {
 
 type ModalState =
   | { type: "none" }
-  | { type: "freeze"; reason: string; expiresAt: string }
-  | { type: "ban"; reason: string }
-  | { type: "unfreeze"; restrictionId: string; reason: string }
-  | { type: "unban"; restrictionId: string; reason: string }
+  | { type: "freeze" }
+  | { type: "ban" }
+  | { type: "unfreeze"; restrictionId: string }
+  | { type: "unban"; restrictionId: string }
   | { type: "changeRole"; newRole: string };
 
 type ActionResult = { message: string; isError: boolean };
@@ -112,10 +114,10 @@ export default function JeepworkUserDetailPage({ params }: { params: Promise<{ i
   const [detail, setDetail] = useState<UserDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [detailError, setDetailError] = useState("");
-  const [loggingOut, setLoggingOut] = useState(false);
   const [actionResult, setActionResult] = useState<ActionResult | null>(null);
   const [modal, setModal] = useState<ModalState>({ type: "none" });
   const [actionLoading, setActionLoading] = useState(false);
+  const logout = useJeepworkLogout(router);
 
   // Resolve params
   useEffect(() => {
@@ -178,32 +180,17 @@ export default function JeepworkUserDetailPage({ params }: { params: Promise<{ i
     }
   }, [resolvedParams, loadDetail]);
 
-  async function onLogout() {
-    const confirmed = window.confirm("确定要退出管理员后台吗？");
-    if (!confirmed) return;
-    setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // ignore
-    }
-    router.push("/jeepwork/login");
-    router.refresh();
-  }
-
-  async function handleModalConfirm() {
+  async function handleModalConfirm(reason: string) {
     setActionLoading(true);
     setActionResult(null);
 
     try {
       if (modal.type === "freeze" || modal.type === "ban") {
         const action = modal.type;
-        const reason = modal.type === "freeze" ? modal.reason : modal.reason;
-        const expiresAt = modal.type === "freeze" ? modal.expiresAt : undefined;
         const res = await fetch(`/api/jeepwork/users/${resolvedParams?.id}/restrictions`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action, reason, expiresAt }),
+          body: JSON.stringify({ action, reason }),
         });
         const json = (await res.json()) as { success?: boolean; error?: { message?: string } };
         if (!res.ok || json.success !== true) {
@@ -216,7 +203,7 @@ export default function JeepworkUserDetailPage({ params }: { params: Promise<{ i
         const res = await fetch(`/api/jeepwork/users/${resolvedParams?.id}/restrictions`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "unfreeze", reason: modal.reason, restrictionId: modal.restrictionId }),
+          body: JSON.stringify({ action: "unfreeze", reason, restrictionId: modal.restrictionId }),
         });
         const json = (await res.json()) as { success?: boolean; error?: { message?: string } };
         if (!res.ok || json.success !== true) {
@@ -229,7 +216,7 @@ export default function JeepworkUserDetailPage({ params }: { params: Promise<{ i
         const res = await fetch(`/api/jeepwork/users/${resolvedParams?.id}/restrictions`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "unban", reason: modal.reason, restrictionId: modal.restrictionId }),
+          body: JSON.stringify({ action: "unban", reason, restrictionId: modal.restrictionId }),
         });
         const json = (await res.json()) as { success?: boolean; error?: { message?: string } };
         if (!res.ok || json.success !== true) {
@@ -274,8 +261,16 @@ export default function JeepworkUserDetailPage({ params }: { params: Promise<{ i
           dangerLevel: "warn" as ConfirmModalDangerLevel,
           title: "确认冻结用户",
           description: `确定要冻结用户 ${detail?.email} 吗？冻结期间该用户的主页将无法访问。`,
-          extraInfo: `冻结原因：${modal.reason}\n${modal.expiresAt ? `预计自动解冻：${new Date(modal.expiresAt).toLocaleString("zh-CN")}` : "永久冻结（需管理员手动解除）"}`,
-          onConfirm: handleModalConfirm,
+          impactList: [
+            "该用户的主页将立即不可访问",
+            "该用户将无法登录后台",
+            "需管理员手动解除冻结才能恢复",
+          ],
+          irreversibleNotice: "冻结将持续到管理员手动解除为止",
+          requireReason: true,
+          reasonMinLength: 10,
+          reasonPlaceholder: "请说明冻结原因，例如：经核查确认存在违规行为。",
+          onConfirmWithReason: handleModalConfirm,
           onClose: () => setModal({ type: "none" }),
           singleButton: false,
           loading: actionLoading,
@@ -286,10 +281,18 @@ export default function JeepworkUserDetailPage({ params }: { params: Promise<{ i
           dangerLevel: "critical" as ConfirmModalDangerLevel,
           title: "确认永久封禁",
           description: `确定要永久封禁用户 ${detail?.email} 吗？此操作会立即禁止该用户登录，其用户名将被永久保留并禁止再注册。`,
-          extraInfo: `封禁原因：${modal.reason}\n\n⚠ 这是永久性操作，解除封禁需要超级管理员确认。`,
+          impactList: [
+            "该用户将立即被禁止登录",
+            "用户名将被永久保留并禁止再注册",
+            "解除封禁需要超级管理员确认",
+          ],
+          irreversibleNotice: "这是永久性操作，请谨慎确认",
           inputConfirmMatch: "CONFIRM_BAN",
           inputPlaceholder: "请输入 CONFIRM_BAN",
-          onConfirm: handleModalConfirm,
+          requireReason: true,
+          reasonMinLength: 10,
+          reasonPlaceholder: "请说明封禁原因，例如：经核查确认存在严重违规行为。",
+          onConfirmWithReason: handleModalConfirm,
           onClose: () => setModal({ type: "none" }),
           singleButton: false,
           loading: actionLoading,
@@ -300,8 +303,11 @@ export default function JeepworkUserDetailPage({ params }: { params: Promise<{ i
           dangerLevel: "warn" as ConfirmModalDangerLevel,
           title: "确认解除冻结",
           description: `确定要解除对用户 ${detail?.email} 的冻结状态吗？`,
-          extraInfo: `解除原因：${modal.reason}`,
-          onConfirm: handleModalConfirm,
+          impactList: ["该用户的主页将恢复访问", "该用户将可以重新登录"],
+          requireReason: true,
+          reasonMinLength: 10,
+          reasonPlaceholder: "请说明解除冻结的原因。",
+          onConfirmWithReason: handleModalConfirm,
           onClose: () => setModal({ type: "none" }),
           singleButton: false,
           loading: actionLoading,
@@ -312,8 +318,12 @@ export default function JeepworkUserDetailPage({ params }: { params: Promise<{ i
           dangerLevel: "danger" as ConfirmModalDangerLevel,
           title: "确认解除封禁",
           description: `确定要解除对用户 ${detail?.email} 的封禁吗？`,
-          extraInfo: `解除原因：${modal.reason}`,
-          onConfirm: handleModalConfirm,
+          impactList: ["该用户将可以重新登录", "用户名历史记录保留"],
+          irreversibleNotice: "解除后该用户可立即恢复使用",
+          requireReason: true,
+          reasonMinLength: 10,
+          reasonPlaceholder: "请说明解除封禁的原因，例如：经申诉核实确认无违规。",
+          onConfirmWithReason: handleModalConfirm,
           onClose: () => setModal({ type: "none" }),
           singleButton: false,
           loading: actionLoading,
@@ -324,7 +334,15 @@ export default function JeepworkUserDetailPage({ params }: { params: Promise<{ i
           dangerLevel: "warn" as ConfirmModalDangerLevel,
           title: `确认修改角色`,
           description: `确定要将 ${detail?.email} 的角色修改为 ${roleLabel(modal.newRole)} 吗？`,
-          onConfirm: handleModalConfirm,
+          impactList: [
+            `角色将变更为：${roleLabel(modal.newRole)}`,
+            "该用户的权限范围将立即改变",
+            "此操作将写入审计日志",
+          ],
+          requireReason: true,
+          reasonMinLength: 10,
+          reasonPlaceholder: "请说明修改角色的原因。",
+          onConfirmWithReason: handleModalConfirm,
           onClose: () => setModal({ type: "none" }),
           singleButton: false,
           loading: actionLoading,
@@ -349,7 +367,7 @@ export default function JeepworkUserDetailPage({ params }: { params: Promise<{ i
       }
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "User Detail",
         title: detail ? `用户详情 — ${detail.email}` : "用户详情",
@@ -534,11 +552,7 @@ export default function JeepworkUserDetailPage({ params }: { params: Promise<{ i
                 {activeBan ? null : activeFreeze ? (
                   <button
                     type="button"
-                    onClick={() => {
-                      const reason = window.prompt("请输入解除冻结原因（必填）：");
-                      if (!reason?.trim()) return;
-                      setModal({ type: "unfreeze", restrictionId: activeFreeze.id, reason: reason.trim() });
-                    }}
+                    onClick={() => setModal({ type: "unfreeze", restrictionId: activeFreeze.id })}
                     className="min-h-10 rounded-2xl bg-[#6F8F4E] px-4 text-sm font-black text-white"
                   >
                     解除冻结
@@ -547,23 +561,14 @@ export default function JeepworkUserDetailPage({ params }: { params: Promise<{ i
                   <>
                     <button
                       type="button"
-                      onClick={() => {
-                        const reason = window.prompt("请输入冻结原因（必填）：");
-                        if (!reason?.trim()) return;
-                        const expiresAt = window.prompt("冻结结束时间（ISO格式，可选，留空表示永久冻结）：");
-                        setModal({ type: "freeze", reason: reason.trim(), expiresAt: expiresAt || "" });
-                      }}
+                      onClick={() => setModal({ type: "freeze" })}
                       className="min-h-10 rounded-2xl border border-[#E8DCCB] bg-white px-4 text-sm font-bold text-[#2B241E]"
                     >
                       冻结用户
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
-                        const reason = window.prompt("请输入封禁原因（必填）：");
-                        if (!reason?.trim()) return;
-                        setModal({ type: "ban", reason: reason.trim() });
-                      }}
+                      onClick={() => setModal({ type: "ban" })}
                       className="min-h-10 rounded-2xl bg-[#B42318] px-4 text-sm font-black text-white"
                     >
                       永久封禁
@@ -573,11 +578,7 @@ export default function JeepworkUserDetailPage({ params }: { params: Promise<{ i
                 {activeBan ? (
                   <button
                     type="button"
-                    onClick={() => {
-                      const reason = window.prompt("请输入解除封禁原因（必填）：");
-                      if (!reason?.trim()) return;
-                      setModal({ type: "unban", restrictionId: activeBan.id, reason: reason.trim() });
-                    }}
+                    onClick={() => setModal({ type: "unban", restrictionId: activeBan.id })}
                     className="min-h-10 rounded-2xl bg-[#8C612E] px-4 text-sm font-black text-white"
                   >
                     解除封禁
@@ -669,6 +670,7 @@ export default function JeepworkUserDetailPage({ params }: { params: Promise<{ i
 
       {/* Confirm Modal */}
       {modalProps && <ConfirmModal {...modalProps} />}
+      {logout.Modal}
     </AdminShell>
   );
 }

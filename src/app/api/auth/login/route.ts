@@ -63,6 +63,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "邮箱或密码错误。" }, { status: 401 });
   }
 
+  if (user.accountStatus === "deactivated") {
+    await recordLoginAttempt(email, false, request);
+    return NextResponse.json(
+      { success: false, error: "账号已注销", errorCode: "ACCOUNT_DEACTIVATED" },
+      { status: 403 },
+    );
+  }
+
   await recordLoginAttempt(email, true, request);
 
   let restrictions: ActiveRestriction[] = [];

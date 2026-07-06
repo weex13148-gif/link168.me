@@ -95,8 +95,8 @@ function VerifyEmailForm() {
           <h1 className="ui-title mt-3 text-3xl">邮箱验证成功</h1>
           <p className="mt-3 text-sm leading-7 text-[var(--ui-success)]">{message}</p>
         </div>
-        <button type="button" onClick={() => router.replace("/dashboard")} className="ui-button-primary mt-6 min-h-12 w-full text-base">
-          进入我的 Link168 后台
+        <button type="button" onClick={() => router.replace("/onboarding")} className="ui-button-primary mt-6 min-h-12 w-full text-base">
+          开始创建我的名片
         </button>
       </section>
     );
@@ -149,8 +149,8 @@ function VerifyEmailForm() {
 
 export default function VerifyEmailPage() {
   return (
-    <main className="ui-page flex min-h-dvh items-center py-8">
-      <div className="ui-container max-w-md">
+    <main className="ui-page flex min-h-dvh items-center py-6 safe-area-pt safe-area-pb sm:py-8">
+      <div className="ui-container max-w-md px-4 sm:px-0">
         <Suspense fallback={<p className="ui-surface w-full p-6 text-center">正在加载邮箱验证…</p>}>
           <VerifyEmailForm />
         </Suspense>

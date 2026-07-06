@@ -9,6 +9,7 @@ import { NextResponse } from "next/server";
 import { requireDashboardUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getOwnedProfile } from "@/lib/dashboard-data";
+import { revalidatePublicProfileByUser } from "@/lib/cache/public-profile";
 
 export const runtime = "nodejs";
 
@@ -80,9 +81,9 @@ export async function PATCH(request: Request) {
     );
   }
 
-  // 批量更新 position
+  // 批量更新 position（D13：使用事务保证原子性）
   try {
-    await Promise.all(
+    await db.$transaction(
       requestedIds.map((id, index) =>
         db.link.update({
           where: { id },
@@ -97,6 +98,8 @@ export async function PATCH(request: Request) {
       { status: 500 }
     );
   }
+
+  await revalidatePublicProfileByUser(user.id);
 
   return NextResponse.json({ success: true });
 }

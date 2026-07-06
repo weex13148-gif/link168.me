@@ -3,6 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import AdminShell from "@/components/admin/AdminShell";
+import { AdminAlertBanner } from "@/components/admin/AdminKit";
+import { ConfirmModal, type ConfirmModalDangerLevel } from "@/components/admin/ConfirmModal";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 
 type AdminUser = { email: string; role: string };
 
@@ -267,7 +270,6 @@ function ChecklistItem({
 export default function SystemHealthPage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
   const [loading, setLoading] = useState(true);
   const [report, setReport] = useState<HealthReport | null>(null);
   const [dryRun, setDryRun] = useState<CleanupDryRun | null>(null);
@@ -276,6 +278,21 @@ export default function SystemHealthPage() {
   const [postLaunchState, setPostLaunchState] = useState<PostLaunchChecklist[]>([]);
   const [executingTask, setExecutingTask] = useState<string | null>(null);
   const [execResult, setExecResult] = useState<Record<string, unknown> | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    dangerLevel: ConfirmModalDangerLevel;
+    onConfirm: () => void | Promise<void>;
+    onConfirmWithReason?: (reason: string) => void | Promise<void>;
+    impactList?: string[];
+    irreversibleNotice?: string;
+    requireReason?: boolean;
+    reasonMinLength?: number;
+    reasonPlaceholder?: string;
+    inputConfirmMatch?: string;
+    inputPlaceholder?: string;
+  } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -343,18 +360,7 @@ export default function SystemHealthPage() {
     }
   }, [showDryRun, dryRun, loadDryRun]);
 
-  async function onLogout() {
-    const confirmed = window.confirm("确定要退出管理员后台吗？");
-    if (!confirmed) return;
-    setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // ignore
-    }
-    router.push("/jeepwork/login");
-    router.refresh();
-  }
+  const logout = useJeepworkLogout(router);
 
   function handleChecklistChange(itemName: string, checked: boolean) {
     setPostLaunchState((prev) =>
@@ -377,34 +383,53 @@ export default function SystemHealthPage() {
     return `${d}天 ${h}小时 ${m}分钟`;
   }
 
-  async function executeTask(taskName: string) {
+  function executeTask(taskName: string) {
     if (executingTask) return;
-    const confirmed = window.confirm(`确定要执行任务 "${taskName}" 吗？这将真实修改数据库。`);
-    if (!confirmed) return;
-
-    setExecutingTask(taskName);
-    setExecResult(null);
-    try {
-      let url = "";
-      let method = "POST";
-      if (taskName === "cleanup_unverified_emails") {
-        url = "/api/jeepwork/system-health/exec-email-freeze";
-      } else {
-        url = `/api/jeepwork/system-health/exec-cleanup?task=${encodeURIComponent(taskName)}`;
-      }
-      const res = await fetch(url, { method });
-      const json = await res.json() as { success?: boolean; data?: Record<string, unknown>; error?: { message?: string } };
-      if (json.success && json.data) {
-        setExecResult(json.data);
-      } else {
-        setExecResult({ error: json.error?.message || "执行失败" });
-      }
-      // 刷新健康数据以更新任务状态
-      await loadHealth();
-    } catch (err) {
-      setExecResult({ error: err instanceof Error ? err.message : "网络错误" });
-    }
-    setExecutingTask(null);
+    setConfirmModal({
+      open: true,
+      title: "确认执行任务",
+      description: `确定要执行任务 "${taskName}" 吗？这将真实修改数据库。`,
+      dangerLevel: "critical",
+      impactList: [
+        `将执行任务：${taskName}`,
+        "数据库将被真实修改",
+        "操作将写入审计日志",
+      ],
+      irreversibleNotice: "此操作将真实修改数据库，不可撤销",
+      requireReason: true,
+      reasonMinLength: 10,
+      inputConfirmMatch: "CONFIRM",
+      inputPlaceholder: "请输入 CONFIRM",
+      onConfirm: async () => {
+        /* handled by onConfirmWithReason */
+      },
+      onConfirmWithReason: async () => {
+        setExecutingTask(taskName);
+        setExecResult(null);
+        try {
+          let url = "";
+          let method = "POST";
+          if (taskName === "cleanup_unverified_emails") {
+            url = "/api/jeepwork/system-health/exec-email-freeze";
+          } else {
+            url = `/api/jeepwork/system-health/exec-cleanup?task=${encodeURIComponent(taskName)}`;
+          }
+          const res = await fetch(url, { method });
+          const json = await res.json() as { success?: boolean; data?: Record<string, unknown>; error?: { message?: string } };
+          if (json.success && json.data) {
+            setExecResult(json.data);
+          } else {
+            setExecResult({ error: json.error?.message || "执行失败" });
+          }
+          // 刷新健康数据以更新任务状态
+          await loadHealth();
+        } catch (err) {
+          setExecResult({ error: err instanceof Error ? err.message : "网络错误" });
+        }
+        setExecutingTask(null);
+        setConfirmModal(null);
+      },
+    });
   }
 
   if (!user) return null;
@@ -414,7 +439,7 @@ export default function SystemHealthPage() {
       currentPageLabel="平台运维健康中心"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "System Health",
         title: "平台运维健康中心",
@@ -422,6 +447,7 @@ export default function SystemHealthPage() {
         highlight: "#6F8F4E",
       }}
     >
+      <AdminAlertBanner tone="warning" title="已知限制：限流计数存于单机内存"><p>当前限流计数存储于单机内存，多实例部署时不生效。部分健康检查为配置存在性检查，非真实服务探测。</p></AdminAlertBanner>
       {/* 标签切换 */}
       <div className="mt-4 flex flex-wrap gap-2">
         {[
@@ -868,6 +894,26 @@ export default function SystemHealthPage() {
           </SectionCard>
         </div>
       )}
+      {confirmModal && (
+        <ConfirmModal
+          isOpen={confirmModal.open}
+          onClose={() => setConfirmModal(null)}
+          onConfirm={confirmModal.onConfirm}
+          title={confirmModal.title}
+          description={confirmModal.description}
+          dangerLevel={confirmModal.dangerLevel}
+          impactList={confirmModal.impactList}
+          irreversibleNotice={confirmModal.irreversibleNotice}
+          requireReason={confirmModal.requireReason}
+          reasonMinLength={confirmModal.reasonMinLength}
+          reasonPlaceholder={confirmModal.reasonPlaceholder}
+          inputConfirmMatch={confirmModal.inputConfirmMatch}
+          inputPlaceholder={confirmModal.inputPlaceholder}
+          onConfirmWithReason={confirmModal.onConfirmWithReason}
+          loading={!!executingTask}
+        />
+      )}
+      {logout.Modal}
     </AdminShell>
   );
 }

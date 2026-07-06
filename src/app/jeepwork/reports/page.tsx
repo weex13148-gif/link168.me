@@ -4,13 +4,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdminReportsClient from "@/components/admin/AdminReportsClient";
 import AdminShell from "@/components/admin/AdminShell";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 
 type AdminUser = { email: string; role: string };
 
 export default function JeepworkReportsPage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
+  const logout = useJeepworkLogout(router);
 
   useEffect(() => {
     let cancelled = false;
@@ -38,25 +39,12 @@ export default function JeepworkReportsPage() {
     };
   }, [router]);
 
-  async function onLogout() {
-    const confirmed = window.confirm("确定要退出管理员后台吗？");
-    if (!confirmed) return;
-    setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // 忽略网络错误
-    }
-    router.push("/jeepwork/login");
-    router.refresh();
-  }
-
   return (
     <AdminShell
       currentPageLabel="举报管理"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "Reports",
         title: "举报管理",
@@ -65,6 +53,7 @@ export default function JeepworkReportsPage() {
       }}
     >
       <AdminReportsClient />
+      {logout.Modal}
     </AdminShell>
   );
 }

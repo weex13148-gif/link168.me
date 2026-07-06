@@ -10,6 +10,7 @@ import { getConfig, isAssistantEnabled } from "@/lib/app-config";
 import { logAiRiskEvent, type AiRiskEventType, type AiRiskLevel } from "@/lib/ai/risk-log";
 import { refundCredit } from "@/lib/ai/permissions";
 import crypto from "crypto";
+import { addAiDisclaimer, AI_DISCLAIMER, AI_GENERATED_MARKER } from "@/lib/ai/compliance";
 
 // ---------- 输入审核结果 ----------
 export type InputAuditResult = {
@@ -314,26 +315,23 @@ export async function aiGateway(options: AiGatewayOptions): Promise<AiGatewayRes
   }
 
   // ===== 第八步：AI 内容标识 =====
-  // 每条回复强制追加"内容由人工智能生成"标识
-  const AI_GENERATED_MARKER = "【内容由人工智能生成】";
+  // 每条回复强制追加"内容由人工智能生成，仅供参考"标识 + 免责声明
 
   const suggestionsText = rawReply.suggestions.length
     ? `建议：\n${rawReply.suggestions.map((s, idx) => `${idx + 1}. ${s}`).join("\n")}`
     : "";
 
-  const fullReplyText = [
-    AI_GENERATED_MARKER,
-    "",
+  const coreContent = [
     `【摘要】${moderated.summary}`,
     "",
     suggestionsText,
     suggestionsText ? "" : null,
     moderated.content,
-    "",
-    moderated.disclaimer,
   ]
     .filter((line) => line !== null && line !== undefined)
     .join("\n");
+
+  const fullReplyText = addAiDisclaimer(coreContent);
 
   return {
     ok: true,

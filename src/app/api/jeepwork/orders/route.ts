@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { requireSuperAdmin, getCurrentAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { writeAdminAuditLog, AUDIT_ACTION } from "@/lib/admin-audit-log";
-import { getOrdersForAdmin, updateOrderStatus, processRefund, ORDER_STATUS } from "@/lib/billing/orders";
+import { getOrdersForAdmin, updateOrderStatus, ORDER_STATUS } from "@/lib/billing/orders";
+import { requestRefund } from "@/lib/billing/refund-service";
 
 export const runtime = "nodejs";
 
@@ -180,11 +181,13 @@ async function handleRefundOrder(
 
     const refundAmount = amount ? Number(amount) : order.payableAmount;
 
-    const result = await processRefund({
+    const result = await requestRefund({
       orderId: orderId as string,
-      amount: refundAmount,
+      actorUserId: admin?.id ?? "system",
+      actorRole: admin?.role ?? "super_admin",
       reason: reason as string ?? "管理员退款",
-      refundedBy: admin?.id ?? "system",
+      amountCents: refundAmount,
+      operator: admin?.email,
     });
 
     if (!result.success) {

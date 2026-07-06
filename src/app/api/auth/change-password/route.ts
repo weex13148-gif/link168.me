@@ -30,8 +30,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "请输入当前密码。" }, { status: 400 });
   }
 
-  if (!newPassword || newPassword.length < 6) {
-    return NextResponse.json({ success: false, error: "新密码至少需要 6 位。" }, { status: 400 });
+  if (!newPassword || newPassword.length < 8) {
+    return NextResponse.json({ success: false, error: "新密码至少需要 8 位。" }, { status: 400 });
   }
 
   if (newPassword !== confirmPassword) {

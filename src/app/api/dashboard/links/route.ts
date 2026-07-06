@@ -3,13 +3,62 @@ import { requireDashboardUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getOwnedProfile, newId, normalizeNullableString, toLinkDto } from "@/lib/dashboard-data";
 import { hasSensitiveContent, sanitizePublicText } from "@/lib/content-safety";
+import { revalidatePublicProfileByUser } from "@/lib/cache/public-profile";
 import { sanitizePublicUrl, sanitizePhoneNumber, sanitizeMapUrl, sanitizeQrPayload } from "@/lib/public-url-security";
+import { getUserEntitlements } from "@/lib/billing/entitlements";
+import { isModuleType, validateModulePayload } from "@/features/profile-modules/validators";
+import { getModuleDefinition } from "@/features/profile-modules/registry";
 
 export const runtime = "nodejs";
 
 const ICON_TYPES = ["default", "emoji", "custom"] as const;
-const COMPONENT_TYPES = ["link", "text", "group-title", "qr", "wechat", "phone", "shop", "booking", "map"] as const;
-const TEXT_ONLY_TYPES = new Set(["text", "group-title"]);
+const COMPONENT_TYPES = [
+  "link",
+  "text",
+  "group-title",
+  "qr",
+  "wechat",
+  "phone",
+  "shop",
+  "booking",
+  "product-card",
+  "service-card",
+  "offer",
+  "map",
+  "copy-text",
+  "cover-image",
+  "popup-image",
+  "carousel",
+  "bilibili-video",
+  "youtube-video",
+  "video-link",
+  "netease-music",
+  "music-link",
+  "divider",
+  "ai-chat",
+] as const;
+
+const NEW_MODULE_TYPES = new Set([
+  "copy-text",
+  "cover-image",
+  "popup-image",
+  "carousel",
+  "bilibili-video",
+  "youtube-video",
+  "video-link",
+  "netease-music",
+  "music-link",
+  "divider",
+  "ai-chat",
+  "product-card",
+  "service-card",
+  "offer",
+]);
+const TITLE_OPTIONAL_TYPES = new Set([
+  "text",
+  "group-title",
+  ...NEW_MODULE_TYPES,
+]);
 const MAX_TITLE_LENGTH = 60;
 const MAX_DESCRIPTION_LENGTH = 200;
 
@@ -67,7 +116,19 @@ export async function POST(request: Request) {
   }
 
   const componentType = normalizeComponentType(body.componentType);
-  const isTextOnly = TEXT_ONLY_TYPES.has(componentType);
+
+  const moduleDef = getModuleDefinition(componentType);
+  if (moduleDef && !moduleDef.free) {
+    const entitlements = await getUserEntitlements(user.id);
+    if (!entitlements.hasActiveMembership && !entitlements.isGracePeriod) {
+      return NextResponse.json(
+        { success: false, error: "该模块为付费功能，请升级会员后使用。" },
+        { status: 403 }
+      );
+    }
+  }
+
+  const isTextOnly = TITLE_OPTIONAL_TYPES.has(componentType);
   const rawTitle = typeof body.title === "string" ? body.title.trim() : "";
   const title = sanitizePublicText(rawTitle) ?? "";
 
@@ -116,6 +177,38 @@ export async function POST(request: Request) {
       payloadJson = buildPayload(body.payload, {});
       break;
     }
+    case "divider": {
+      url = "https://link168.me";
+      payloadJson = buildPayload(body.payload, {});
+      break;
+    }
+    case "copy-text": {
+      url = "https://link168.me";
+      payloadJson = buildPayload(body.payload, {});
+      break;
+    }
+    case "ai-chat": {
+      url = "https://link168.me";
+      payloadJson = buildPayload(body.payload, {});
+      break;
+    }
+    case "cover-image":
+    case "popup-image":
+    case "carousel":
+    case "bilibili-video":
+    case "youtube-video":
+    case "video-link":
+    case "netease-music":
+    case "music-link":
+    case "product-card":
+    case "service-card":
+    case "offer": {
+      const rawUrl = typeof body.url === "string" ? body.url.trim() : "";
+      const cleaned = sanitizePublicUrl(rawUrl);
+      url = cleaned.url || "https://link168.me";
+      payloadJson = buildPayload(body.payload, { url: cleaned.url || undefined });
+      break;
+    }
     default: {
       const rawUrl = typeof body.url === "string" ? body.url.trim() : "";
       const cleaned = sanitizePublicUrl(rawUrl);
@@ -124,6 +217,43 @@ export async function POST(request: Request) {
       }
       url = cleaned.url;
       payloadJson = buildPayload(body.payload, { url: cleaned.url });
+    }
+  }
+
+  if (NEW_MODULE_TYPES.has(componentType) && isModuleType(componentType) && payloadJson) {
+    try {
+      const parsed = JSON.parse(payloadJson);
+      const result = validateModulePayload(componentType, parsed);
+      if (!result.valid) {
+        return NextResponse.json(
+          { success: false, error: result.errors.join("; ") },
+          { status: 400 }
+        );
+      }
+      if (result.sanitizedPayload) {
+        payloadJson = JSON.stringify(result.sanitizedPayload);
+      }
+    } catch {
+      // 如果 JSON 解析失败，保留原始 payloadJson
+    }
+  }
+
+  // D15: Offer 有效期服务端校验 — validUntil 如提供必须晚于当前时间
+  if (componentType === "offer" && payloadJson) {
+    try {
+      const parsed = JSON.parse(payloadJson) as { validUntil?: unknown };
+      const validUntil = typeof parsed?.validUntil === "string" ? parsed.validUntil.trim() : "";
+      if (validUntil) {
+        const until = new Date(validUntil);
+        if (Number.isNaN(until.getTime()) || until.getTime() <= Date.now()) {
+          return NextResponse.json(
+            { success: false, error: "优惠活动有效期必须晚于当前时间。" },
+            { status: 400 }
+          );
+        }
+      }
+    } catch {
+      // JSON 解析失败已由前面的 validateModulePayload 处理
     }
   }
 
@@ -139,6 +269,8 @@ export async function POST(request: Request) {
   if (description && hasSensitiveContent(description).detected) return NextResponse.json({ success: false, error: "描述包含受限关键词，请修改后再试。" }, { status: 400 });
 
   const position = await db.link.count({ where: { profileId: profile.id } });
+  // D7 写入侧：自定义图标上传时持久化 pending_manual_review，等待人工审核
+  const iconModerationStatus = iconType === "custom" && iconUrl ? "pending_manual_review" : "legacy_approved";
   const link = await db.link.create({
     data: {
       id: newId(),
@@ -151,10 +283,13 @@ export async function POST(request: Request) {
       iconType,
       iconValue,
       iconUrl,
+      iconModerationStatus,
       position,
       isActive: true,
     },
   });
+
+  await revalidatePublicProfileByUser(user.id);
 
   return NextResponse.json({ success: true, link: toLinkDto(link) });
 }

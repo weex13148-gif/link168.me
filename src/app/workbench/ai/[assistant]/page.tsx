@@ -6,6 +6,7 @@ import {
   BarChart3,
   Palette,
   Megaphone,
+  TrendingUp,
   Sparkles,
   ArrowLeft,
   Crown,
@@ -23,64 +24,74 @@ import { listConversations } from "@/lib/ai/conversations";
 export const runtime = "nodejs";
 
 const ASSISTANT_ICONS: Record<string, typeof Calculator> = {
-  tax: Calculator,
-  legal: Scale,
-  market: BarChart3,
-  design: Palette,
-  social: Megaphone,
+  财税助理: Calculator,
+  法务助理: Scale,
+  市场调研助理: BarChart3,
+  设计助理: Palette,
+  社媒运营助理: Megaphone,
+  销售顾问助理: TrendingUp,
 };
 
 const ASSISTANT_COLORS: Record<string, string> = {
-  tax: "bg-[#DDE8CD] text-[#3F5F31]",
-  legal: "bg-[#EAF3FF] text-[#2563EB]",
-  market: "bg-[#F6E7C8] text-[#8C612E]",
-  design: "bg-[#FFE6E2] text-[#B42318]",
-  social: "bg-[#E8E6FF] text-[#5B6FFF]",
+  财税助理: "bg-[#DDE8CD] text-[#3F5F31]",
+  法务助理: "bg-[#EAF3FF] text-[#2563EB]",
+  市场调研助理: "bg-[#F6E7C8] text-[#8C612E]",
+  设计助理: "bg-[#FFE6E2] text-[#B42318]",
+  社媒运营助理: "bg-[#E8E6FF] text-[#5B6FFF]",
+  销售顾问助理: "bg-[#D1FADF] text-[#0A8E4A]",
 };
 
 const ASSISTANT_BG_COLORS: Record<string, string> = {
-  tax: "bg-[#6F8F4E]",
-  legal: "bg-[#2563EB]",
-  market: "bg-[#8C612E]",
-  design: "bg-[#B42318]",
-  social: "bg-[#5B6FFF]",
+  财税助理: "bg-[#6F8F4E]",
+  法务助理: "bg-[#2563EB]",
+  市场调研助理: "bg-[#8C612E]",
+  设计助理: "bg-[#B42318]",
+  社媒运营助理: "bg-[#5B6FFF]",
+  销售顾问助理: "bg-[#0A8E4A]",
 };
 
 const ASSISTANT_USE_CASES: Record<string, string[]> = {
-  tax: [
+  财税助理: [
     "季度末不知道该准备哪些纳税申报材料",
     "进货没有发票，成本怎么合规归类",
     "想了解小规模纳税人和一般纳税人区别",
     "个体户营业额超过免征额要怎么交税",
     "公司利润薄，想合规地优化税负",
   ],
-  legal: [
+  法务助理: [
     "签服务合同前想快速过一遍风险条款",
     "员工入职/离职要签哪些协议才合规",
     "保密协议和竞业限制有什么区别",
     "用户注册协议和隐私政策怎么写才合规",
     "合作方违约了，怎么保留证据",
   ],
-  market: [
+  市场调研助理: [
     "准备开一家咖啡店，不知道目标用户是谁",
     "新产品上市不知道怎么定价",
     "想了解竞争对手的产品和定价策略",
     "线下门店怎么推广获客最有效",
     "做什么促销活动效果最好",
   ],
-  design: [
+  设计助理: [
     "个人品牌用什么主色调更有辨识度",
     "小红书封面图怎么设计更吸引点击",
     "海报排版有哪些基本技巧",
     "想设计一个 Logo，有什么要注意的",
     "社媒发布图片的比例和尺寸规范",
   ],
-  social: [
+  社媒运营助理: [
     "小红书笔记怎么写才有流量",
     "抖音新手前几条视频发什么内容",
     "公众号怎么涨粉",
     "朋友圈发什么内容更容易成交",
     "短视频脚本怎么写才有钩子",
+  ],
+  销售顾问助理: [
+    "客户说太贵了，怎么回应才能推进成交",
+    "新品上市怎么设计首发话术和跟进节奏",
+    "客户犹豫不决，用什么话术临门一脚",
+    "老客户怎么开口请他帮忙转介绍",
+    "客户需求不明确，怎么提问挖出真实痛点",
   ],
 };
 
@@ -113,8 +124,8 @@ export default async function WorkbenchAiAssistantPage({ params }: PageProps) {
   const conversations = await listConversations(user.id, normalized);
 
   const Icon = ASSISTANT_ICONS[normalized] || Sparkles;
-  const colorClass = ASSISTANT_COLORS[normalized] || ASSISTANT_COLORS.tax;
-  const bgColorClass = ASSISTANT_BG_COLORS[normalized] || ASSISTANT_BG_COLORS.tax;
+  const colorClass = ASSISTANT_COLORS[normalized] || ASSISTANT_COLORS["财税助理"];
+  const bgColorClass = ASSISTANT_BG_COLORS[normalized] || ASSISTANT_BG_COLORS["财税助理"];
   const useCases = ASSISTANT_USE_CASES[normalized] || [];
 
   let accessLevel: "none" | "preview" | "full" = "preview";
@@ -247,7 +258,7 @@ export default async function WorkbenchAiAssistantPage({ params }: PageProps) {
                 <div>
                   <p className="text-xs font-black text-[#8C612E]">升级会员解锁 AI</p>
                   <p className="mt-1 text-[10px] text-[#7A6D5E]">
-                    免费用户仅可预览 AI 助手介绍，升级会员基础版、Plus 或企业版即可正式使用五大 AI 助手。
+                    免费用户仅可预览 AI 助手介绍，升级会员基础版、Plus 或企业版即可正式使用六大 AI 助手。
                   </p>
                   <Link
                     href="/workbench/membership"

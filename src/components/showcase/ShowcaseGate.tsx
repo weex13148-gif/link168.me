@@ -1,12 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function ShowcaseGate() {
+export default function ShowcaseGate({ children }: { children: React.ReactNode }) {
+  const [authed, setAuthed] = useState<boolean | null>(null);
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    void fetch("/api/showcase/session", { cache: "no-store" })
+      .then(async (res) => {
+        const json = await res.json() as { success?: boolean };
+        setAuthed(!!json.success);
+      })
+      .catch(() => setAuthed(false));
+  }, []);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -23,12 +33,24 @@ export default function ShowcaseGate() {
         setMessage(result.error?.message || "访问密码不正确，可以立即重试。");
         return;
       }
-      window.location.reload();
+      setAuthed(true);
     } catch {
       setMessage("网络连接失败，请稍后重试。");
     } finally {
       setLoading(false);
     }
+  }
+
+  if (authed === null) {
+    return (
+      <div className="ui-page grid min-h-dvh place-items-center">
+        <p className="text-sm font-bold text-[var(--ui-muted)]">正在验证访问权限...</p>
+      </div>
+    );
+  }
+
+  if (authed) {
+    return <>{children}</>;
   }
 
   return (
@@ -37,14 +59,14 @@ export default function ShowcaseGate() {
         <div className="grid w-full overflow-hidden rounded-[var(--ui-radius-xl)] border border-[var(--ui-line)] bg-[var(--ui-surface)] shadow-[var(--ui-shadow-md)] lg:grid-cols-[minmax(0,1fr)_380px]">
           <section className="p-7 sm:p-10 lg:p-12">
             <span className="grid size-12 place-items-center rounded-[var(--ui-radius-sm)] bg-[var(--ui-brand)] text-lg font-black text-white">L</span>
-            <p className="ui-eyebrow mt-8">评委专用入口</p>
-            <h1 className="ui-title mt-3 text-4xl leading-tight sm:text-5xl">Link168 比赛展示中心</h1>
-            <p className="ui-muted mt-5 max-w-2xl text-base leading-8">展示真实产品、已完成功能、AI 内测能力、商业模式和下一阶段规划。所有功能明确区分“已完成、内测中、下一阶段”。</p>
+            <p className="ui-eyebrow mt-8">外部尽调入口</p>
+            <h1 className="ui-title mt-3 text-4xl leading-tight sm:text-5xl">Link168 外部尽调整理</h1>
+            <p className="ui-muted mt-5 max-w-2xl text-base leading-8">展示真实产品、已完成功能、AI 内测能力、商业模式和下一阶段规划。支持评委、投资人、政府三种视角。</p>
 
             <div className="mt-8 grid gap-3 sm:grid-cols-3">
               <div className="rounded-[var(--ui-radius-sm)] bg-[var(--ui-success-soft)] p-4"><strong className="text-sm text-[var(--ui-success)]">核心主页闭环</strong><p className="ui-muted mt-1 text-sm">已完成</p></div>
               <div className="rounded-[var(--ui-radius-sm)] bg-[var(--ui-accent-soft)] p-4"><strong className="text-sm text-[#7D5B24]">AI 助理</strong><p className="ui-muted mt-1 text-sm">内测中</p></div>
-              <div className="rounded-[var(--ui-radius-sm)] bg-[var(--ui-surface-muted)] p-4"><strong className="text-sm">正式支付</strong><p className="ui-muted mt-1 text-sm">暂未开放</p></div>
+              <div className="rounded-[var(--ui-radius-sm)] bg-[var(--ui-surface-muted)] p-4"><strong className="text-sm">正式支付</strong><p className="ui-muted mt-1 text-sm">未来规划</p></div>
             </div>
 
             <Link href="/" className="mt-8 inline-flex text-sm font-black text-[var(--ui-brand-hover)] hover:underline">返回 Link168 首页</Link>

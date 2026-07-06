@@ -1,4 +1,4 @@
-export const SUPPORTED_LANGUAGES = ["zh", "en", "ja"] as const;
+export const SUPPORTED_LANGUAGES = ["zh", "en"] as const;
 export const DEFAULT_LANGUAGE = "zh";
 
 export type Language = (typeof SUPPORTED_LANGUAGES)[number];
@@ -58,11 +58,60 @@ type TranslationKey =
   | "linkText"
   | "footerText"
   | "vipRequired"
-  | "previewLive";
+  | "previewLive"
+  | "analytics"
+  | "dataCenter"
+  | "profileViews"
+  | "uniqueVisitors"
+  | "clickRate"
+  | "dailyTrend"
+  | "weeklyTrend"
+  | "noData"
+  | "loadingData"
+  | "company"
+  | "jobTitle"
+  | "phone"
+  | "email"
+  | "wechat"
+  | "address"
+  | "website"
+  | "saveToContacts"
+  | "copyWechat"
+  | "phoneCall"
+  | "emailUs"
+  | "addModule"
+  | "basicModules"
+  | "contactModules"
+  | "contentModules"
+  | "commerceModules"
+  | "externalLink"
+  | "textContent"
+  | "groupTitle"
+  | "wechatOfficial"
+  | "phoneNumber"
+  | "productService"
+  | "onlineBooking"
+  | "mapLocation"
+  | "memberOnly"
+  | "aiAssistant"
+  | "customerService"
+  | "salesAgent"
+  | "aiReception"
+  | "leaveMessage"
+  | "contactPerson"
+  | "sendMessage"
+  | "confirm"
+  | "deleteConfirm"
+  | "areYouSure"
+  | "deleteWarning"
+  | "success"
+  | "error"
+  | "pleaseFill"
+  | "required";
 
 type TranslationRecord = Record<TranslationKey, string>;
 
-export const translations: Record<Language, TranslationRecord> = {
+export const translations: Record<string, TranslationRecord> = {
   zh: {
     theme: "主题",
     links: "链接",
@@ -119,6 +168,55 @@ export const translations: Record<Language, TranslationRecord> = {
     footerText: "底部文字色",
     vipRequired: "会员专享",
     previewLive: "实时预览",
+    analytics: "数据分析",
+    dataCenter: "数据中心",
+    profileViews: "主页访问",
+    uniqueVisitors: "独立访客",
+    clickRate: "点击率",
+    dailyTrend: "每日趋势",
+    weeklyTrend: "周趋势",
+    noData: "暂无数据",
+    loadingData: "加载数据中",
+    company: "公司",
+    jobTitle: "职位",
+    phone: "电话",
+    email: "邮箱",
+    wechat: "微信",
+    address: "地址",
+    website: "网站",
+    saveToContacts: "保存到通讯录",
+    copyWechat: "复制微信号",
+    phoneCall: "拨打电话",
+    emailUs: "发送邮件",
+    addModule: "添加模块",
+    basicModules: "基础模块",
+    contactModules: "联系模块",
+    contentModules: "内容模块",
+    commerceModules: "商业模块",
+    externalLink: "外部链接",
+    textContent: "文字内容",
+    groupTitle: "分组标题",
+    wechatOfficial: "微信公众号",
+    phoneNumber: "电话号码",
+    productService: "产品服务",
+    onlineBooking: "在线预约",
+    mapLocation: "地图位置",
+    memberOnly: "会员专享",
+    aiAssistant: "AI 助手",
+    customerService: "客服助手",
+    salesAgent: "销售助手",
+    aiReception: "AI 接待",
+    leaveMessage: "留言",
+    contactPerson: "联系人",
+    sendMessage: "发送消息",
+    confirm: "确认",
+    deleteConfirm: "确认删除",
+    areYouSure: "确定要执行此操作吗？",
+    deleteWarning: "此操作无法撤销",
+    success: "成功",
+    error: "错误",
+    pleaseFill: "请填写",
+    required: "必填",
   },
   en: {
     theme: "Theme",
@@ -176,6 +274,55 @@ export const translations: Record<Language, TranslationRecord> = {
     footerText: "Footer Text",
     vipRequired: "VIP Only",
     previewLive: "Live Preview",
+    analytics: "Analytics",
+    dataCenter: "Data Center",
+    profileViews: "Profile Views",
+    uniqueVisitors: "Unique Visitors",
+    clickRate: "Click Rate",
+    dailyTrend: "Daily Trend",
+    weeklyTrend: "Weekly Trend",
+    noData: "No Data",
+    loadingData: "Loading Data",
+    company: "Company",
+    jobTitle: "Job Title",
+    phone: "Phone",
+    email: "Email",
+    wechat: "WeChat",
+    address: "Address",
+    website: "Website",
+    saveToContacts: "Save to Contacts",
+    copyWechat: "Copy WeChat",
+    phoneCall: "Call",
+    emailUs: "Email Us",
+    addModule: "Add Module",
+    basicModules: "Basic Modules",
+    contactModules: "Contact Modules",
+    contentModules: "Content Modules",
+    commerceModules: "Commerce Modules",
+    externalLink: "External Link",
+    textContent: "Text Content",
+    groupTitle: "Group Title",
+    wechatOfficial: "WeChat Official",
+    phoneNumber: "Phone Number",
+    productService: "Product Service",
+    onlineBooking: "Online Booking",
+    mapLocation: "Map Location",
+    memberOnly: "Members Only",
+    aiAssistant: "AI Assistant",
+    customerService: "Customer Service",
+    salesAgent: "Sales Agent",
+    aiReception: "AI Reception",
+    leaveMessage: "Leave Message",
+    contactPerson: "Contact Person",
+    sendMessage: "Send Message",
+    confirm: "Confirm",
+    deleteConfirm: "Confirm Delete",
+    areYouSure: "Are you sure?",
+    deleteWarning: "This action cannot be undone",
+    success: "Success",
+    error: "Error",
+    pleaseFill: "Please fill",
+    required: "Required",
   },
   ja: {
     theme: "テーマ",
@@ -233,6 +380,55 @@ export const translations: Record<Language, TranslationRecord> = {
     footerText: "フッター文字色",
     vipRequired: "VIP限定",
     previewLive: "ライブプレビュー",
+    analytics: "分析",
+    dataCenter: "データセンター",
+    profileViews: "プロフィール閲覧",
+    uniqueVisitors: "ユニークビジター",
+    clickRate: "クリック率",
+    dailyTrend: "日次トレンド",
+    weeklyTrend: "週次トレンド",
+    noData: "データなし",
+    loadingData: "データ読み込み中",
+    company: "会社",
+    jobTitle: "職位",
+    phone: "電話",
+    email: "メール",
+    wechat: "微信",
+    address: "住所",
+    website: "ウェブサイト",
+    saveToContacts: "連絡先に保存",
+    copyWechat: "微信IDをコピー",
+    phoneCall: "電話をかける",
+    emailUs: "メールを送信",
+    addModule: "モジュール追加",
+    basicModules: "基本モジュール",
+    contactModules: "連絡先モジュール",
+    contentModules: "コンテンツモジュール",
+    commerceModules: "商業モジュール",
+    externalLink: "外部リンク",
+    textContent: "テキストコンテンツ",
+    groupTitle: "グループタイトル",
+    wechatOfficial: "微信公式アカウント",
+    phoneNumber: "電話番号",
+    productService: "製品サービス",
+    onlineBooking: "オンライン予約",
+    mapLocation: "地図位置",
+    memberOnly: "メンバー限定",
+    aiAssistant: "AIアシスタント",
+    customerService: "カスタマーサービス",
+    salesAgent: "セールスエージェント",
+    aiReception: "AI受付",
+    leaveMessage: "メッセージを残す",
+    contactPerson: "連絡担当者",
+    sendMessage: "メッセージを送信",
+    confirm: "確認",
+    deleteConfirm: "削除確認",
+    areYouSure: "本当によろしいですか？",
+    deleteWarning: "この操作は元に戻せません",
+    success: "成功",
+    error: "エラー",
+    pleaseFill: "入力してください",
+    required: "必須",
   },
 };
 
@@ -242,3 +438,5 @@ export function getTranslation(lang: string | null | undefined): TranslationReco
   }
   return translations[DEFAULT_LANGUAGE];
 }
+
+export type { TranslationKey, TranslationRecord };

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import AdminShell from "@/components/admin/AdminShell";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 import { AI_ASSISTANTS, type AiAssistantKey } from "@/lib/app-config-values";
 import { useRouter } from "next/navigation";
 
@@ -27,6 +28,7 @@ const ASSISTANT_LABELS: Record<AiAssistantKey, string> = {
   market: "市场调研助理",
   design: "设计助理",
   social: "社媒运营助理",
+  sales: "销售顾问",
 };
 
 function formatDate(value: string) {
@@ -391,7 +393,6 @@ function DebugClient() {
 export default function CompetitionAIDebugPage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -418,23 +419,13 @@ export default function CompetitionAIDebugPage() {
     };
   }, [router]);
 
-  async function onLogout() {
-    if (!window.confirm("确定要退出管理员后台吗？")) return;
-    setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // ignore
-    }
-    router.push("/jeepwork/login");
-    router.refresh();
-  }
+  const logout = useJeepworkLogout(router);
 
   return (
     <AdminShell
       currentPageLabel="比赛 AI 调试"
       currentUserEmail={user?.email}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "Competition AI Debug",
         title: "比赛 AI 调试台",
@@ -443,6 +434,7 @@ export default function CompetitionAIDebugPage() {
       }}
     >
       <DebugClient />
+      {logout.Modal}
     </AdminShell>
   );
 }

@@ -3,7 +3,71 @@
 import { useCallback, useState, type FormEvent } from "react";
 import type { DashboardLink, DashboardProfile, DashboardUser, SaveState } from "@/components/dashboard-v1/types";
 import { isTemporaryUsername } from "@/components/dashboard-v1/types";
-import { fetchDashboard, fetchPlan, saveAppearanceRequest, saveProfileRequest, uploadAvatarRequest } from "@/components/dashboard-v1/dashboard-api";
+import { fetchDashboard, fetchPlan, saveAppearanceRequest, saveProfileRequest, uploadAvatarRequest, saveCustomThemeRequest, saveProfileSettingsRequest, deactivateAccountRequest, logoutRequest } from "@/components/dashboard-v1/dashboard-api";
+import type { CustomTheme } from "@/components/theme/types";
+
+async function compressAvatarImage(file: File): Promise<File> {
+  return new Promise((resolve, reject) => {
+    if (typeof window === "undefined" || !window.FileReader || !window.Image || !window.HTMLCanvasElement) {
+      reject(new Error("Canvas not available"));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          reject(new Error("Canvas context not available"));
+          return;
+        }
+
+        const targetSize = 512;
+        let width = img.width;
+        let height = img.height;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        if (width > height) {
+          const ratio = targetSize / height;
+          width = Math.round(width * ratio);
+          height = targetSize;
+          offsetX = Math.round((targetSize - width) / 2);
+        } else {
+          const ratio = targetSize / width;
+          height = Math.round(height * ratio);
+          width = targetSize;
+          offsetY = Math.round((targetSize - height) / 2);
+        }
+
+        canvas.width = targetSize;
+        canvas.height = targetSize;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, targetSize, targetSize);
+        ctx.drawImage(img, offsetX, offsetY, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error("Canvas toBlob failed"));
+              return;
+            }
+            const compressedFile = new File([blob], "avatar.jpg", { type: "image/jpeg" });
+            resolve(compressedFile);
+          },
+          "image/jpeg",
+          0.85,
+        );
+      };
+      img.onerror = () => reject(new Error("Image load failed"));
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => reject(new Error("File read failed"));
+    reader.readAsDataURL(file);
+  });
+}
 
 const emptyUser: DashboardUser = { email: "", emailVerified: false };
 
@@ -69,6 +133,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
   const [saveState, setSaveState] = useState<SaveState>("saved");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [appearanceSaving, setAppearanceSaving] = useState(false);
+  const [deactivating, setDeactivating] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -127,10 +192,18 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) { showToast("头像图片不能超过 2MB。", "error"); return; }
     if (!file.type.startsWith("image/")) { showToast("请选择图片文件。", "error"); return; }
+
     setUploadingAvatar(true);
     setSaveState("saving");
     try {
-      const result = await uploadAvatarRequest(file);
+      let uploadFile = file;
+      try {
+        uploadFile = await compressAvatarImage(file);
+      } catch {
+        uploadFile = file;
+      }
+
+      const result = await uploadAvatarRequest(uploadFile);
       if (!result.ok) { setSaveState("error"); showToast(result.error, "error"); return; }
       const nextProfile = withAvatarCacheBust(result.data);
       setProfile(nextProfile);
@@ -166,6 +239,44 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
     }
   }, [onUpgrade, showToast]);
 
+  const saveCustomTheme = useCallback(async (customTheme: CustomTheme) => {
+    setAppearanceSaving(true);
+    setSaveState("saving");
+    try {
+      const result = await saveCustomThemeRequest(customTheme);
+      if (!result.ok) { setSaveState("error"); if (result.upgradeRequired) onUpgrade(); showToast(result.error, "error"); return false; }
+      setProfile(withAvatarCacheBust(result.data));
+      setSaveState("saved");
+      showToast("自定义主题已保存。");
+      return true;
+    } catch {
+      setSaveState("error");
+      showToast("自定义主题保存失败，请稍后重试。", "error");
+      return false;
+    } finally {
+      setAppearanceSaving(false);
+    }
+  }, [onUpgrade, showToast]);
+
+  const saveProfileSettings = useCallback(async (settings: { isPublic?: boolean; language?: string; contactVisibility?: string }) => {
+    setAppearanceSaving(true);
+    setSaveState("saving");
+    try {
+      const result = await saveProfileSettingsRequest(settings);
+      if (!result.ok) { setSaveState("error"); showToast(result.error, "error"); return false; }
+      setProfile(withAvatarCacheBust(result.data));
+      setSaveState("saved");
+      showToast("设置已保存。");
+      return true;
+    } catch {
+      setSaveState("error");
+      showToast("设置保存失败，请稍后重试。", "error");
+      return false;
+    } finally {
+      setAppearanceSaving(false);
+    }
+  }, [showToast]);
+
   const refreshEntitlements = useCallback(async () => {
     try {
       const plan = await fetchPlan();
@@ -178,11 +289,33 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
     }
   }, []);
 
+  const deactivateAccount = useCallback(async (password: string) => {
+    setDeactivating(true);
+    try {
+      const result = await deactivateAccountRequest(password);
+      if (!result.ok) {
+        showToast(result.error || "注销失败，请检查密码。", "error");
+        return false;
+      }
+      showToast("账号已注销，正在退出…");
+      await logoutRequest();
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
+      return true;
+    } catch {
+      showToast("注销失败，请稍后重试。", "error");
+      return false;
+    } finally {
+      setDeactivating(false);
+    }
+  }, [showToast]);
+
   return {
     loading, loadError, user, profile, planCode, planEntitlements,
-    username, displayName, bio, saveState, uploadingAvatar, appearanceSaving,
+    username, displayName, bio, saveState, uploadingAvatar, appearanceSaving, deactivating,
     setUsername, setDisplayName, setBio, setSaveState,
-    load, markDirty, saveProfile, uploadAvatar, saveAppearance,
-    refreshEntitlements,
+    load, markDirty, saveProfile, uploadAvatar, saveAppearance, saveCustomTheme, saveProfileSettings,
+    refreshEntitlements, deactivateAccount,
   };
 }

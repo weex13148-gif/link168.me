@@ -16,14 +16,14 @@ export async function GET(request: NextRequest) {
   if (response || !user) return response;
 
   const { searchParams } = new URL(request.url);
-  const range = (searchParams.get("range") || "7d") as "7d" | "30d" | "90d";
+  const range = (searchParams.get("range") || "7d") as "today" | "7d" | "30d" | "90d";
   const includeFunnel = searchParams.get("funnel") === "true";
   const includeGeo = searchParams.get("geo") === "true";
   const includeShortLinks = searchParams.get("shortLinks") === "true";
   const shortLinkId = searchParams.get("shortLinkId"); // 单个短链接详情
 
   // 验证 range
-  if (!["7d", "30d", "90d"].includes(range)) {
+  if (!["today", "7d", "30d", "90d"].includes(range)) {
     return NextResponse.json(
       { success: false, error: "无效的时间范围。" },
       { status: 400 }

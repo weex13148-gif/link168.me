@@ -42,9 +42,9 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <main className="ui-page flex min-h-dvh items-center py-8">
-      <div className="ui-container max-w-md">
-        <section className="ui-surface w-full p-7">
+    <main className="ui-page flex min-h-dvh items-center py-6 safe-area-pt safe-area-pb sm:py-8">
+      <div className="ui-container max-w-md px-4 sm:px-0">
+        <section className="ui-surface w-full p-6 sm:p-7">
           <BrandLogo size="header" className="!w-[124px]" />
           <p className="ui-eyebrow mt-7">账户安全</p>
           <h1 className="ui-title mt-3 text-3xl">找回密码</h1>

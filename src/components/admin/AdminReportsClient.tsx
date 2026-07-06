@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { ConfirmModal, type ConfirmModalDangerLevel } from "@/components/admin/ConfirmModal";
 
 type ReportRow = {
   id: string;
@@ -58,6 +59,18 @@ export default function AdminReportsClient() {
   const [reports, setReports] = useState<ReportRow[]>([]);
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [action, setAction] = useState<ActionState>({ loading: false, message: "", isError: false });
+  const [confirmModal, setConfirmModal] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    dangerLevel: ConfirmModalDangerLevel;
+    onConfirm: () => void | Promise<void>;
+    onConfirmWithReason?: (reason: string) => void | Promise<void>;
+    impactList?: string[];
+    irreversibleNotice?: string;
+    requireReason?: boolean;
+    reasonPlaceholder?: string;
+  } | null>(null);
 
   async function loadReports() {
     setError("");
@@ -103,18 +116,6 @@ export default function AdminReportsClient() {
     actionName: "process-report" | "reopen-report" | "mark-processing" | "reject-report" | "update-note",
     note?: string
   ) {
-    const actionLabelMap: Record<string, string> = {
-      "process-report": "标记已处理",
-      "reopen-report": "恢复待处理",
-      "mark-processing": "标记处理中",
-      "reject-report": "标记已驳回",
-      "update-note": "保存处理备注",
-    };
-    const actionLabel = actionLabelMap[actionName] || actionName;
-    if (actionName !== "update-note") {
-      const confirmed = window.confirm(`确定要对该举报执行「${actionLabel}」操作吗？`);
-      if (!confirmed) return;
-    }
     setAction({ loading: true, message: "", isError: false });
     try {
       const response = await fetch(`/api/jeepwork/reports/${reportId}`, {
@@ -135,9 +136,6 @@ export default function AdminReportsClient() {
   }
 
   async function patchProfile(username: string, actionName: "hide-profile" | "restore-profile") {
-    const actionLabel = actionName === "hide-profile" ? "隐藏主页" : "恢复主页";
-    const confirmed = window.confirm(`确定要对 @${username} 执行「${actionLabel}」操作吗？`);
-    if (!confirmed) return;
     setAction({ loading: true, message: "", isError: false });
     try {
       const response = await fetch(`/api/jeepwork/profiles/${encodeURIComponent(username)}`, {
@@ -287,7 +285,7 @@ export default function AdminReportsClient() {
                     <a
                       href={report.imageUrl}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                       className="mt-2 inline-flex items-center gap-1 text-xs font-black text-[#6F8F4E]"
                     >
                       查看举报截图 →
@@ -323,7 +321,19 @@ export default function AdminReportsClient() {
                       {report.status === "待处理" ? (
                         <button
                           type="button"
-                          onClick={() => void patchReport(report.id, "mark-processing", notes[report.id])}
+                          onClick={() =>
+                            setConfirmModal({
+                              open: true,
+                              title: "标记处理中",
+                              description: "确定要将该举报标记为「处理中」吗？",
+                              dangerLevel: "warn",
+                              onConfirm: async () => {
+                                await patchReport(report.id, "mark-processing", notes[report.id]);
+                                setConfirmModal(null);
+                              },
+                              impactList: ["举报状态将变更为处理中", "举报人可看到处理进度"],
+                            })
+                          }
                           disabled={action.loading}
                           className="min-h-11 rounded-2xl border border-[#E8DCCB] bg-white px-4 text-sm font-bold text-[#2B241E] disabled:opacity-60"
                         >
@@ -332,25 +342,64 @@ export default function AdminReportsClient() {
                       ) : null}
                       <button
                         type="button"
-                        onClick={() => void patchReport(report.id, "process-report", notes[report.id])}
+                        onClick={() =>
+                          setConfirmModal({
+                            open: true,
+                            title: "标记已处理",
+                            description: "确定要将该举报标记为「已处理」吗？此操作需要填写处理原因。",
+                            dangerLevel: "danger",
+                            requireReason: true,
+                            reasonPlaceholder: "请说明本次处理的具体原因，例如：经核查确认存在违规行为，已对账号执行相应处置。",
+                            onConfirm: () => {},
+                            onConfirmWithReason: async (reason) => {
+                              await patchReport(report.id, "process-report", reason);
+                              setConfirmModal(null);
+                            },
+                            impactList: ["举报状态将变更为已处置", "用户将收到处理结果通知"],
+                          })
+                        }
                         disabled={action.loading}
                         className="min-h-11 rounded-2xl bg-[#6F8F4E] px-4 text-sm font-black text-white disabled:opacity-60"
-                      >
-                        标记已处理
+                        >
+                          标记已处理
                       </button>
                       <button
                         type="button"
-                        onClick={() => void patchReport(report.id, "reject-report", notes[report.id])}
+                        onClick={() =>
+                          setConfirmModal({
+                            open: true,
+                            title: "标记已驳回",
+                            description: "确定要将该举报标记为「已驳回」吗？",
+                            dangerLevel: "danger",
+                            onConfirm: async () => {
+                              await patchReport(report.id, "reject-report", notes[report.id]);
+                              setConfirmModal(null);
+                            },
+                            impactList: ["举报状态将变更为已驳回", "举报人将收到驳回通知"],
+                          })
+                        }
                         disabled={action.loading}
                         className="min-h-11 rounded-2xl border border-[#E8DCCB] bg-white px-4 text-sm font-bold text-[#2B241E] disabled:opacity-60"
-                      >
-                        标记已驳回
+                        >
+                          标记已驳回
                       </button>
                     </>
                   ) : (
                     <button
                       type="button"
-                      onClick={() => void patchReport(report.id, "reopen-report", notes[report.id])}
+                      onClick={() =>
+                        setConfirmModal({
+                          open: true,
+                          title: "恢复待处理",
+                          description: "确定要将该举报恢复为「待处理」状态吗？",
+                          dangerLevel: "warn",
+                          onConfirm: async () => {
+                            await patchReport(report.id, "reopen-report", notes[report.id]);
+                            setConfirmModal(null);
+                          },
+                          impactList: ["举报状态将恢复为待处理", "需要重新进行处理"],
+                        })
+                      }
                       disabled={action.loading}
                       className="min-h-11 rounded-2xl border border-[#E8DCCB] bg-white px-4 text-sm font-bold text-[#2B241E] disabled:opacity-60"
                     >
@@ -361,20 +410,44 @@ export default function AdminReportsClient() {
                     !isProfileHidden ? (
                       <button
                         type="button"
-                        onClick={() => void patchProfile(username, "hide-profile")}
+                        onClick={() =>
+                          setConfirmModal({
+                            open: true,
+                            title: "隐藏主页",
+                            description: `确定要对 @${username} 执行「隐藏主页」操作吗？`,
+                            dangerLevel: "danger",
+                            onConfirm: async () => {
+                              await patchProfile(username, "hide-profile");
+                              setConfirmModal(null);
+                            },
+                            impactList: ["该用户主页将对公众隐藏", "用户资料和内容将不可访问"],
+                          })
+                        }
                         disabled={action.loading}
                         className="min-h-11 rounded-2xl bg-[#B42318] px-4 text-sm font-black text-white disabled:opacity-60"
-                      >
-                        隐藏主页
+                        >
+                          隐藏主页
                       </button>
                     ) : (
                       <button
                         type="button"
-                        onClick={() => void patchProfile(username, "restore-profile")}
+                        onClick={() =>
+                          setConfirmModal({
+                            open: true,
+                            title: "恢复主页",
+                            description: `确定要对 @${username} 执行「恢复主页」操作吗？`,
+                            dangerLevel: "warn",
+                            onConfirm: async () => {
+                              await patchProfile(username, "restore-profile");
+                              setConfirmModal(null);
+                            },
+                            impactList: ["该用户主页将恢复公开访问", "用户资料和内容将重新可见"],
+                          })
+                        }
                         disabled={action.loading}
                         className="min-h-11 rounded-2xl border border-[#E8DCCB] bg-white px-4 text-sm font-bold text-[#2B241E] disabled:opacity-60"
-                      >
-                        恢复主页
+                        >
+                          恢复主页
                       </button>
                     )
                   ) : null}
@@ -387,6 +460,23 @@ export default function AdminReportsClient() {
           );
         })}
       </section>
+
+      {confirmModal ? (
+        <ConfirmModal
+          isOpen={confirmModal.open}
+          onClose={() => setConfirmModal(null)}
+          onConfirm={confirmModal.onConfirm}
+          onConfirmWithReason={confirmModal.onConfirmWithReason}
+          title={confirmModal.title}
+          description={confirmModal.description}
+          dangerLevel={confirmModal.dangerLevel}
+          loading={action.loading}
+          impactList={confirmModal.impactList}
+          irreversibleNotice={confirmModal.irreversibleNotice}
+          requireReason={confirmModal.requireReason}
+          reasonPlaceholder={confirmModal.reasonPlaceholder}
+        />
+      ) : null}
     </div>
   );
 }

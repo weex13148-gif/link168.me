@@ -57,7 +57,7 @@ export function HomePanel({
             {publicUrl ? (
               <>
                 <button type="button" onClick={onCopy} className="ui-button-secondary"><Copy className="size-4" />复制地址</button>
-                <Link href={publicUrl} target="_blank" className="ui-button-secondary"><ExternalLink className="size-4" />打开主页</Link>
+                <Link href={publicUrl} target="_blank" rel="noopener noreferrer" className="ui-button-secondary"><ExternalLink className="size-4" />打开主页</Link>
                 <button type="button" onClick={onShare} className="ui-button-primary"><Share2 className="size-4" />分享</button>
               </>
             ) : (

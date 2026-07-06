@@ -53,8 +53,8 @@ export async function POST(request: Request) {
   if (!EMAIL_PATTERN.test(email)) {
     return NextResponse.json({ success: false, error: "请输入有效的邮箱地址。" }, { status: 400 });
   }
-  if (password.length < 6) {
-    return NextResponse.json({ success: false, error: "密码至少需要 6 位。" }, { status: 400 });
+  if (password.length < 8) {
+    return NextResponse.json({ success: false, error: "密码至少需要 8 位。" }, { status: 400 });
   }
   if (password !== confirmPassword) {
     return NextResponse.json({ success: false, error: "两次输入的密码不一致。" }, { status: 400 });

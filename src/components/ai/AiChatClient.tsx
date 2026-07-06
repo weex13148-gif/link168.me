@@ -14,6 +14,8 @@ import {
   ChevronUp,
   Clock,
   CreditCard,
+  Copy,
+  Check,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -81,6 +83,7 @@ export default function AiChatClient({
   const [conversations, setConversations] = useState<Conversation[]>(initialConversations);
   const [showConversations, setShowConversations] = useState(false);
   const [isMobileConversationsOpen, setIsMobileConversationsOpen] = useState(false);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -88,6 +91,16 @@ export default function AiChatClient({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  async function handleCopyMessage(messageId: string, content: string) {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedMessageId(messageId);
+      setTimeout(() => setCopiedMessageId(null), 2000);
+    } catch {
+      // 复制失败时静默
+    }
+  }
 
   const suggestedQuestions = getSuggestedQuestions(assistant);
 
@@ -350,27 +363,39 @@ export default function AiChatClient({
         {/* 移动端会话列表 */}
         {isMobileConversationsOpen && (
           <div className="border-b border-[#E8DCCB] bg-[#F7F1E7] p-3 lg:hidden">
-            <div className="grid gap-2">
+            <div className="grid max-h-[40vh] gap-2 overflow-y-auto">
               {conversations.length === 0 ? (
                 <p className="text-xs text-[#7A6D5E]">暂无历史会话</p>
               ) : (
-                conversations.slice(0, 5).map((conv) => (
-                  <button
+                conversations.slice(0, 10).map((conv) => (
+                  <div
                     key={conv.id}
-                    type="button"
-                    onClick={() => {
-                      void loadConversation(conv.id);
-                      setIsMobileConversationsOpen(false);
-                    }}
                     className={`flex items-center justify-between rounded-xl px-3 py-2 text-xs ${
                       conv.id === conversationId ? "bg-[#DDE8CD] text-[#3F5F31]" : "bg-white text-[#2B241E]"
                     }`}
                   >
-                    <span className="truncate">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void loadConversation(conv.id);
+                        setIsMobileConversationsOpen(false);
+                      }}
+                      className="flex-1 truncate text-left"
+                    >
                       {conv.messages[0]?.content?.slice(0, 30) || "空会话"}
-                    </span>
-                    <span className="ml-2 shrink-0 text-[#7A6D5E]">{formatDate(conv.updatedAt)}</span>
-                  </button>
+                    </button>
+                    <div className="ml-2 flex shrink-0 items-center gap-2">
+                      <span className="text-[10px] text-[#7A6D5E]">{formatDate(conv.updatedAt)}</span>
+                      <button
+                        type="button"
+                        onClick={() => void deleteConversation(conv.id)}
+                        className="grid size-6 place-items-center rounded-full text-[#B42318] hover:bg-[#FFE6E2]"
+                        aria-label="删除会话"
+                      >
+                        <Trash2 className="size-3" />
+                      </button>
+                    </div>
+                  </div>
                 ))
               )}
             </div>
@@ -409,7 +434,7 @@ export default function AiChatClient({
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm sm:max-w-[75%] ${
+                    className={`group relative max-w-[85%] rounded-2xl px-4 py-3 text-sm sm:max-w-[75%] ${
                       msg.role === "user"
                         ? "bg-[#2B241E] text-white"
                         : msg.isError
@@ -417,9 +442,29 @@ export default function AiChatClient({
                         : "bg-[#F7F1E7] text-[#2B241E]"
                     }`}
                   >
-                    <div className="whitespace-pre-wrap leading-relaxed">{msg.content}</div>
+                    <div className="whitespace-pre-wrap break-words leading-relaxed select-text">{msg.content}</div>
                     {msg.creditCost && msg.creditCost > 0 ? (
                       <p className="mt-2 text-[10px] text-[#7A6D5E]">消耗 {msg.creditCost} 额度</p>
+                    ) : null}
+                    {!msg.isError && msg.role === "assistant" && msg.content ? (
+                      <button
+                        type="button"
+                        onClick={() => void handleCopyMessage(msg.id, msg.content)}
+                        className="mt-2 inline-flex items-center gap-1 rounded-full bg-white/70 px-2 py-1 text-[10px] font-black text-[#7A6D5E] opacity-0 transition group-hover:opacity-100 focus:opacity-100"
+                        aria-label="复制内容"
+                      >
+                        {copiedMessageId === msg.id ? (
+                          <>
+                            <Check className="size-3 text-[#3F5F31]" />
+                            <span className="text-[#3F5F31]">已复制</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="size-3" />
+                            复制
+                          </>
+                        )}
+                      </button>
                     ) : null}
                   </div>
                 </div>
@@ -438,7 +483,7 @@ export default function AiChatClient({
         </div>
 
         {/* 输入区域 */}
-        <div className="border-t border-[#E8DCCB] p-3 sm:p-4">
+        <div className="border-t border-[#E8DCCB] p-3 sm:p-4" style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}>
           {error && (
             <div className="mb-2 rounded-xl bg-[#FFE6E2] px-3 py-2 text-xs text-[#B42318]">
               {error}
@@ -460,6 +505,7 @@ export default function AiChatClient({
               onKeyDown={handleKeyDown}
               placeholder="输入你的问题..."
               rows={1}
+              maxLength={4000}
               className="max-h-32 flex-1 resize-none bg-transparent px-2 py-2 text-sm text-[#2B241E] placeholder-[#7A6D5E] focus:outline-none"
               disabled={Boolean(isLoading || (quotaDisplay && !quotaDisplay.canCall))}
             />
@@ -472,9 +518,14 @@ export default function AiChatClient({
               {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
             </button>
           </div>
-          <p className="mt-2 text-center text-[10px] text-[#7A6D5E]">
-            AI 生成内容仅供参考，不构成专业意见。按 Enter 发送，Shift+Enter 换行。
-          </p>
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-[10px] text-[#7A6D5E]">
+              AI 生成内容仅供参考，不构成专业意见。
+            </p>
+            <p className="text-[10px] text-[#7A6D5E]">
+              Enter 发送 · Shift+Enter 换行
+            </p>
+          </div>
         </div>
       </div>
 
@@ -565,43 +616,54 @@ export default function AiChatClient({
 }
 
 function getSuggestedQuestions(assistant: string): string[] {
-  switch (assistant) {
-    case "tax":
-      return [
-        "个体户季度开票30万，需要交哪些税？",
-        "公司成本票不足怎么办？有哪些合规的成本项？",
-        "小规模纳税人怎么开票最划算？",
-        "年度汇算清缴需要准备哪些资料？",
-      ];
-    case "legal":
-      return [
-        "签服务合同要注意哪些核心条款？",
-        "保密协议应该包含哪些内容？",
-        "用户隐私政策怎么写才合规？",
-        "对方违约了怎么办？怎么保留证据？",
-      ];
-    case "market":
-      return [
-        "开一家咖啡店怎么做市场调研？",
-        "我的目标用户画像是什么？",
-        "新产品怎么定价比较合理？",
-        "线下门店怎么获客最有效？",
-      ];
-    case "design":
-      return [
-        "个人品牌怎么选主色调？",
-        "小红书封面图怎么设计更吸引人？",
-        "海报排版有哪些基本技巧？",
-        "Logo 设计要注意哪些版权问题？",
-      ];
-    case "social":
-      return [
-        "小红书爆款标题怎么写？给我10个例子",
-        "新手做抖音前3条视频拍什么？",
-        "公众号涨粉有哪些实用方法？",
-        "朋友圈文案怎么写更有转化？",
-      ];
-    default:
-      return ["你能帮我做什么？", "介绍一下你的能力"];
+  // assistant 可能是中文 title（如"财税助理"）或英文 key（如"tax"），兼容两种
+  if (assistant === "tax" || assistant.includes("财税")) {
+    return [
+      "个体户季度开票30万，需要交哪些税？",
+      "公司成本票不足怎么办？有哪些合规的成本项？",
+      "小规模纳税人怎么开票最划算？",
+      "年度汇算清缴需要准备哪些资料？",
+    ];
   }
+  if (assistant === "legal" || assistant.includes("法务")) {
+    return [
+      "签服务合同要注意哪些核心条款？",
+      "保密协议应该包含哪些内容？",
+      "用户隐私政策怎么写才合规？",
+      "对方违约了怎么办？怎么保留证据？",
+    ];
+  }
+  if (assistant === "market" || assistant.includes("市场")) {
+    return [
+      "开一家咖啡店怎么做市场调研？",
+      "我的目标用户画像是什么？",
+      "新产品怎么定价比较合理？",
+      "线下门店怎么获客最有效？",
+    ];
+  }
+  if (assistant === "design" || assistant.includes("设计")) {
+    return [
+      "个人品牌怎么选主色调？",
+      "小红书封面图怎么设计更吸引人？",
+      "海报排版有哪些基本技巧？",
+      "Logo 设计要注意哪些版权问题？",
+    ];
+  }
+  if (assistant === "social" || assistant.includes("社媒")) {
+    return [
+      "小红书爆款标题怎么写？给我10个例子",
+      "新手做抖音前3条视频拍什么？",
+      "公众号涨粉有哪些实用方法？",
+      "朋友圈文案怎么写更有转化？",
+    ];
+  }
+  if (assistant === "sales" || assistant.includes("销售")) {
+    return [
+      "客户说太贵了，怎么回应才能推进成交？",
+      "新品上市怎么设计首发话术和跟进节奏？",
+      "客户犹豫不决，用什么话术临门一脚？",
+      "老客户怎么开口请他帮忙转介绍？",
+    ];
+  }
+  return ["你能帮我做什么？", "介绍一下你的能力"];
 }

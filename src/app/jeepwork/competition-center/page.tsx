@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdminShell from "@/components/admin/AdminShell";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 import CompetitionCenterClient from "@/components/showcase/CompetitionCenterClient";
 import {
   COMPETITION_FINAL_CHECKS,
@@ -38,7 +39,6 @@ type InitialLog = {
 export default function CompetitionCenterPage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
   const [config, setConfig] = useState<InitialConfig | null>(null);
   const [logs, setLogs] = useState<InitialLog[]>([]);
 
@@ -75,17 +75,7 @@ export default function CompetitionCenterPage() {
     };
   }, [router]);
 
-  async function onLogout() {
-    if (!window.confirm("确定要退出管理员后台吗？")) return;
-    setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // ignore
-    }
-    router.push("/jeepwork/login");
-    router.refresh();
-  }
+  const logout = useJeepworkLogout(router);
 
   const requiredFiles = COMPETITION_MATERIALS.filter((item) => item.required);
 
@@ -94,7 +84,7 @@ export default function CompetitionCenterPage() {
       currentPageLabel="比赛中心"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "决赛资料与展示管理",
         title: "Link168 比赛中心",
@@ -167,6 +157,7 @@ export default function CompetitionCenterPage() {
           </section>
         )}
       </div>
+      {logout.Modal}
     </AdminShell>
   );
 }

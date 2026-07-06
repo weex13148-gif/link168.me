@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdminSettingsApiClient from "@/components/admin/AdminSettingsApiClient";
 import AdminShell from "@/components/admin/AdminShell";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 
 type AdminUser = { email: string; role: string };
 
 export default function JeepworkSettingsApiPage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -41,25 +41,14 @@ export default function JeepworkSettingsApiPage() {
     return () => { cancelled = true; };
   }, [router]);
 
-  async function onLogout() {
-    const confirmed = window.confirm("确定要退出管理员后台吗？");
-    if (!confirmed) return;
-    setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // 忽略网络错误
-    }
-    router.push("/jeepwork/login");
-    router.refresh();
-  }
+  const logout = useJeepworkLogout(router);
 
   return (
     <AdminShell
       currentPageLabel="邮箱与系统配置"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "系统配置",
         title: "邮箱验证与系统配置",
@@ -72,6 +61,7 @@ export default function JeepworkSettingsApiPage() {
         <Link href="/jeepwork/settings/payment" className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-[#1677FF] px-5 text-sm font-black text-white">进入支付宝配置</Link>
       </div>
       <AdminSettingsApiClient />
+      {logout.Modal}
     </AdminShell>
   );
 }

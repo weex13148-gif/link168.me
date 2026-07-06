@@ -65,8 +65,8 @@ async function handlePay(order: BillingOrder, request: Request) {
     const availability = await getPaymentAvailability();
     const reason =
       paymentChannel === "wechat"
-        ? availability.wechatReason || "微信支付暂未开放"
-        : availability.alipayReason || "支付宝暂未开放";
+        ? availability.wechatReason || "微信支付暂不可用"
+        : availability.alipayReason || "支付宝暂不可用";
 
     return NextResponse.json({ success: false, error: reason }, { status: 503 });
   }

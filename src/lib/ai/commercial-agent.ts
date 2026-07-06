@@ -19,6 +19,12 @@ import {
 import { callBailianApplication, isBailianApplicationConfigured } from "@/lib/ai/providers/bailian-application";
 import { resolveEnterpriseBailianConfig } from "@/lib/ai/enterprise-bailian";
 import { sanitizePublicUrl } from "@/lib/public-url-security";
+import { addAiDisclaimer } from "@/lib/ai/compliance";
+import { buildPrivacyNoticeFromConfig, type AiChatPrivacyNotice } from "@/lib/ai/privacy";
+import { assertAiEntitlement, buildAiUsageMetadata } from "@/lib/ai/entitlement-guard";
+import { createAiTraceContext, logAiTraceInfo, type AiTraceContext } from "@/lib/observability/ai-trace";
+import { recordAiMetrics, recordSafetyRejection } from "@/lib/observability/ai-metrics";
+import { mapProviderErrorToAiCode, type AiErrorCode } from "@/lib/ai/provider-error";
 
 export type CommercialAgentKind = "sales" | "customer-service" | "conversion";
 
@@ -69,6 +75,7 @@ type ProductContext = {
 export type CommercialAgentResponse = {
   success: boolean;
   status: number;
+  traceId?: string;
   data?: {
     agent: CommercialAgentKind;
     reply: string;
@@ -77,6 +84,10 @@ export type CommercialAgentResponse = {
     action: AgentAction;
     leadCaptured: boolean;
     creditBalance: number;
+    privacyNotice: AiChatPrivacyNotice;
+    collectLeadEnabled: boolean;
+    transferToHumanEnabled: boolean;
+    allowReportEnabled: boolean;
   };
   error?: string;
   code?: string;
@@ -278,16 +289,24 @@ export async function runCommercialAgent(
   kind: CommercialAgentKind,
   rawInput: CommercialAgentInput,
 ): Promise<CommercialAgentResponse> {
+  // ===== AI 调用链路追踪 =====
+  const traceCtx = createAiTraceContext({
+    requestSource: `commercial-agent:${kind}`,
+    visitorSessionId: typeof rawInput.visitorSessionId === "string" ? rawInput.visitorSessionId : undefined,
+  });
+  logAiTraceInfo(traceCtx, "ai_request_received", { kind });
+
   const username = normalizeUsername(rawInput.username);
   const rawMessage = text(rawInput.message, kind === "conversion" ? 1500 : 4000);
   const visitorSessionId = normalizeVisitorSessionId(rawInput.visitorSessionId);
-  if (!username) return { success: false, status: 400, error: "缺少有效的主页用户名。", code: "INVALID_USERNAME" };
+  if (!username) return { success: false, status: 400, error: "缺少有效的主页用户名。", code: "INVALID_USERNAME", traceId: traceCtx.traceId };
 
   const initialAction = kind === "conversion" ? resolveConversionAction(rawInput.event, []) : { type: "reply" as const };
   if (kind === "conversion" && initialAction.type === "none") {
     return {
       success: true,
       status: 200,
+      traceId: traceCtx.traceId,
       data: {
         agent: kind,
         reply: "",
@@ -296,11 +315,15 @@ export async function runCommercialAgent(
         action: initialAction,
         leadCaptured: false,
         creditBalance: 0,
+        privacyNotice: buildPrivacyNoticeFromConfig({}),
+        collectLeadEnabled: false,
+        transferToHumanEnabled: false,
+        allowReportEnabled: false,
       },
     };
   }
   if (!rawMessage && kind !== "conversion") {
-    return { success: false, status: 400, error: "请输入问题。", code: "EMPTY_MESSAGE" };
+    return { success: false, status: 400, error: "请输入问题。", code: "EMPTY_MESSAGE", traceId: traceCtx.traceId };
   }
 
   const profile = await db.profile.findUnique({
@@ -328,19 +351,19 @@ export async function runCommercialAgent(
   });
 
   if (!profile || !profile.isPublic) {
-    return { success: false, status: 404, error: "该公开主页不存在或尚未开放。", code: "PROFILE_UNAVAILABLE" };
+    return { success: false, status: 404, error: "该公开主页不存在或未公开。", code: "PROFILE_UNAVAILABLE", traceId: traceCtx.traceId };
   }
   if (!profile.user.emailVerified) {
-    return { success: false, status: 403, error: "该主页尚未完成邮箱验证。", code: "OWNER_UNVERIFIED" };
+    return { success: false, status: 403, error: "该主页尚未完成邮箱验证。", code: "OWNER_UNVERIFIED", traceId: traceCtx.traceId };
   }
 
   try {
     const restrictions = await getActiveRestrictions(profile.user.id);
     if (!canShowPublicProfile(restrictions).ok) {
-      return { success: false, status: 403, error: "该主页当前不可使用 AI 接待。", code: "PROFILE_RESTRICTED" };
+      return { success: false, status: 403, error: "该主页当前不可使用 AI 接待。", code: "PROFILE_RESTRICTED", traceId: traceCtx.traceId };
     }
   } catch {
-    return { success: false, status: 503, error: "主页状态暂时无法确认，请稍后再试。", code: "RESTRICTION_UNAVAILABLE" };
+    return { success: false, status: 503, error: "主页状态暂时无法确认，请稍后再试。", code: "RESTRICTION_UNAVAILABLE", traceId: traceCtx.traceId };
   }
 
   const [entitlements, platformConfig] = await Promise.all([
@@ -349,23 +372,62 @@ export async function runCommercialAgent(
   ]);
   const serviceConfig = profile.user.aiServiceConfig;
   if (!entitlements.features.aiEnabled) {
-    return { success: false, status: 403, error: "该主页未开通访客 AI 服务。", code: "MEMBERSHIP_REQUIRED" };
+    return { success: false, status: 403, error: "该主页暂未开通 AI 接待", code: "AI_DISABLED", traceId: traceCtx.traceId };
   }
   if (!platformConfig.aiEnabled || !platformConfig.aiPublicEnabled || !serviceConfig?.enabled) {
-    return { success: false, status: 403, error: "该主页的 AI 接待暂未开启。", code: "AI_DISABLED" };
+    return { success: false, status: 403, error: "该主页的 AI 接待暂未开启。", code: "AI_DISABLED", traceId: traceCtx.traceId };
+  }
+
+  // ===== 统一 AI 权益守卫（visitor_reception）=====
+  // 访客 AI 消耗主页所有者的额度，必须通过统一守卫确保主页所有者套餐有效。
+  // 守卫检查：免费用户/过期会员/未知套餐/AI 冻结/额度耗尽均拒绝。
+  const guard = await assertAiEntitlement(profile.user.id, "visitor_reception");
+  if (!guard.ok) {
+    recordAiMetrics({
+      traceCtx,
+      userId: profile.user.id,
+      usageType: "visitor_reception",
+      success: false,
+      errorCode: guard.code,
+      httpStatus: guard.status,
+      assistant: kind,
+    });
+    return {
+      success: false,
+      status: guard.status,
+      error: guard.message,
+      code: guard.code,
+      traceId: traceCtx.traceId,
+    };
   }
 
   const resolved = resolveEnterpriseBailianConfig(platformConfig);
   if (!isBailianApplicationConfigured(resolved)) {
-    return { success: false, status: 503, error: "AI 服务尚未完成配置。", code: "AI_NOT_CONFIGURED" };
+    return { success: false, status: 503, error: "AI 服务尚未完成配置。", code: "AI_NOT_CONFIGURED", traceId: traceCtx.traceId };
   }
 
   const message = sanitizeUserMessage(rawMessage || "请根据当前访客行为生成一句合规、克制的下一步引导文案。");
   if (detectPromptInjection(message).detected) {
-    return { success: false, status: 400, error: "问题包含不安全指令，请修改后重试。", code: "PROMPT_INJECTION" };
+    recordSafetyRejection({
+      traceCtx,
+      userId: profile.user.id,
+      usageType: "visitor_reception",
+      stage: "input",
+      reason: "prompt_injection",
+      requestSource: `commercial-agent:${kind}`,
+    });
+    return { success: false, status: 400, error: "问题包含不安全指令，请修改后重试。", code: "PROMPT_INJECTION", traceId: traceCtx.traceId };
   }
   if (hasSensitiveContent(message).detected) {
-    return { success: false, status: 400, error: "问题包含平台限制内容，请修改后重试。", code: "SENSITIVE_CONTENT" };
+    recordSafetyRejection({
+      traceCtx,
+      userId: profile.user.id,
+      usageType: "visitor_reception",
+      stage: "input",
+      reason: "sensitive_content",
+      requestSource: `commercial-agent:${kind}`,
+    });
+    return { success: false, status: 400, error: "问题包含平台限制内容，请修改后重试。", code: "SENSITIVE_CONTENT", traceId: traceCtx.traceId };
   }
 
   const requestedConversationId = text(rawInput.conversationId, 64);
@@ -411,10 +473,26 @@ export async function runCommercialAgent(
     referenceType: "commercial_agent",
     referenceId: conversation.id,
     reason: `${kind} 访客对话消费`,
-    metadata: { kind, username: profile.username, visitorSessionId },
+    metadata: buildAiUsageMetadata({
+      usageType: "visitor_reception",
+      assistant: kind,
+      provider: "bailian-app",
+      conversationId: conversation.id,
+      visitorSessionId,
+      extra: { kind, username: profile.username },
+    }),
   });
   if (!consumed.success) {
-    return { success: false, status: 402, error: consumed.error || "主页 AI 额度不足。", code: "AI_CREDITS_EXHAUSTED" };
+    recordAiMetrics({
+      traceCtx,
+      userId: profile.user.id,
+      usageType: "visitor_reception",
+      success: false,
+      errorCode: "AI_QUOTA_EXHAUSTED",
+      httpStatus: 402,
+      assistant: kind,
+    });
+    return { success: false, status: 402, error: consumed.error || "主页 AI 额度不足。", code: "AI_CREDITS_EXHAUSTED", traceId: traceCtx.traceId };
   }
 
   await db.aiMessage.create({
@@ -456,13 +534,25 @@ export async function runCommercialAgent(
       referenceType: "commercial_agent",
       referenceId: conversation.id,
       reason: "商业 Agent 调用失败自动退回",
-      metadata: { kind, username: profile.username },
+      metadata: { kind, username: profile.username, traceId: traceCtx.traceId },
     });
-    return { success: false, status: result.status >= 400 ? result.status : 502, error: "AI 接待暂时不可用，请稍后再试。", code: "AI_PROVIDER_FAILED" };
+    const aiErrorCode: AiErrorCode = mapProviderErrorToAiCode(result.status === 504 ? "TIMEOUT" : "SERVER_ERROR");
+    recordAiMetrics({
+      traceCtx,
+      userId: profile.user.id,
+      usageType: "visitor_reception",
+      provider: "bailian-app",
+      success: false,
+      errorCode: aiErrorCode,
+      httpStatus: result.status >= 400 ? result.status : 502,
+      assistant: kind,
+    });
+    return { success: false, status: result.status >= 400 ? result.status : 502, error: "AI 接待暂时不可用，请稍后再试。", code: "AI_PROVIDER_FAILED", traceId: traceCtx.traceId };
   }
 
   const moderated = moderateAiOutput("", result.reply);
-  const reply = sanitizePublicText(moderated.content) || "抱歉，暂时无法回答这个问题，请联系人工咨询。";
+  const rawReply = sanitizePublicText(moderated.content) || "抱歉，暂时无法回答这个问题，请联系人工咨询。";
+  const reply = addAiDisclaimer(rawReply);
   await db.aiMessage.create({
     data: {
       conversationId: conversation.id,
@@ -473,6 +563,7 @@ export async function runCommercialAgent(
         productIds: products.map((item) => item.id),
         knowledgeDocIds: profile.user.knowledgeDocs.map((item) => item.id),
         requestId: result.requestId || null,
+        traceId: traceCtx.traceId,
         action,
       },
       creditCost: AI_CHAT_CREDIT_COST,
@@ -502,9 +593,30 @@ export async function runCommercialAgent(
     }
   }
 
+  const privacyNotice = buildPrivacyNoticeFromConfig({
+    collectLead: serviceConfig.collectLead,
+    allowReport: serviceConfig.allowReport,
+    allowTransferToHuman: serviceConfig.allowTransferToHuman,
+    privacyNoticeText: serviceConfig.privacyNoticeText,
+  });
+
+  // ===== 记录成功指标 =====
+  recordAiMetrics({
+    traceCtx,
+    userId: profile.user.id,
+    usageType: "visitor_reception",
+    provider: "bailian-app",
+    model: result.usage?.modelId ?? null,
+    inputTokens: result.usage?.inputTokens ?? undefined,
+    outputTokens: result.usage?.outputTokens ?? undefined,
+    success: true,
+    assistant: kind,
+  });
+
   return {
     success: true,
     status: 200,
+    traceId: traceCtx.traceId,
     data: {
       agent: kind,
       reply,
@@ -513,6 +625,10 @@ export async function runCommercialAgent(
       action: finalAction,
       leadCaptured,
       creditBalance: consumed.balance,
+      privacyNotice,
+      collectLeadEnabled: serviceConfig.collectLead ?? false,
+      transferToHumanEnabled: serviceConfig.allowTransferToHuman ?? false,
+      allowReportEnabled: serviceConfig.allowReport ?? false,
     },
   };
 }

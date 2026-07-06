@@ -5,6 +5,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import AdminShell from "@/components/admin/AdminShell";
 import { ConfirmModal } from "@/components/admin/ConfirmModal";
+import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 
 type AdminUser = { email: string; role: string };
 
@@ -41,7 +42,7 @@ const ROLE_ORDER = ["super_admin", "admin", "user"];
 export default function JeepworkRolesPage() {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [loggingOut, setLoggingOut] = useState(false);
+  const logout = useJeepworkLogout(router);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [groups, setGroups] = useState<RoleGroup[]>([]);
@@ -112,19 +113,6 @@ export default function JeepworkRolesPage() {
     if (user) void loadGroups();
   }, [user, loadGroups]);
 
-  async function onLogout() {
-    const confirmed = window.confirm("确定要退出管理员后台吗？");
-    if (!confirmed) return;
-    setLoggingOut(true);
-    try {
-      await fetch("/api/jeepwork/auth/logout", { method: "POST" });
-    } catch {
-      // ignore
-    }
-    router.push("/jeepwork/login");
-    router.refresh();
-  }
-
   async function handleRoleChange() {
     if (modal.type === "none") return;
     setAction({ loading: true, message: "", isError: false });
@@ -152,7 +140,7 @@ export default function JeepworkRolesPage() {
       currentPageLabel="角色管理"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
-      onLogout={loggingOut ? undefined : onLogout}
+      onLogout={logout.open}
       pageHeader={{
         eyebrow: "Roles",
         title: "角色管理",
@@ -284,6 +272,7 @@ export default function JeepworkRolesPage() {
           loading={action.loading}
         />
       )}
+      {logout.Modal}
     </AdminShell>
   );
 }

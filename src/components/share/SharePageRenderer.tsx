@@ -1,68 +1,67 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Globe, ArrowRight, QrCode, MessageCircle, Phone, MapPin, ShoppingBag, CalendarClock, Share2 } from "lucide-react";
 import {
-  getThemeClasses,
-  type ShareThemeClassSet,
-} from "@/components/theme/presetThemes";
+  ArrowRight,
+  ArrowUpRight,
+  CalendarClock,
+  Copy,
+  Download,
+  Globe,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+  QrCode,
+  Share2,
+  ShoppingBag,
+  UserCircle,
+} from "lucide-react";
+import { getThemeClasses, type ShareThemeClassSet } from "@/components/theme/presetThemes";
+import type { CustomTheme } from "@/components/theme/types";
+import { normalizeCustomTheme } from "@/components/theme/normalize";
+import { sanitizeMapUrl, sanitizePhoneNumber, sanitizePublicUrl } from "@/lib/public-url-security";
+import { CoverImageModule } from "@/components/share/modules/CoverImageModule";
+import { PopupImageModule } from "@/components/share/modules/PopupImageModule";
+import { CarouselModule } from "@/components/share/modules/CarouselModule";
+import { BilibiliVideoModule } from "@/components/share/modules/BilibiliVideoModule";
+import { YoutubeVideoModule } from "@/components/share/modules/YoutubeVideoModule";
+import { VideoLinkModule } from "@/components/share/modules/VideoLinkModule";
+import { NeteaseMusicModule } from "@/components/share/modules/NeteaseMusicModule";
+import { MusicLinkModule } from "@/components/share/modules/MusicLinkModule";
+import { DividerModule } from "@/components/share/modules/DividerModule";
+import { CopyTextModule } from "@/components/share/modules/CopyTextModule";
+import { AiChatModule } from "@/components/share/modules/AiChatModule";
+import { ModuleFallback } from "@/components/share/modules/ModuleFallback";
+import BookingModule from "@/components/share/modules/BookingModule";
+import ProductCardModule from "@/components/share/modules/ProductCardModule";
+import ServiceCardModule from "@/components/share/modules/ServiceCardModule";
+import OfferModule from "@/components/share/modules/OfferModule";
 import {
-  sanitizePublicUrl,
-  sanitizePhoneNumber,
-  sanitizeMapUrl,
-} from "@/lib/public-url-security";
-
-// V2-002: 输出侧 URL 协议白名单。
-// 即使数据库里已有污染数据，Renderer 仍然再次校验。
-// 禁止 javascript:  / data: / vbscript: / file:。
-function sanitizeHref(
-  componentType: string,
-  itemUrl: string | null | undefined,
-  payload: Record<string, unknown> | null,
-): { href: string | null; displayFallback: string | null } {
-  switch (componentType) {
-    case "phone": {
-      const phoneRaw = payload?.phone || itemUrl || "";
-      const cleaned = sanitizePhoneNumber(typeof phoneRaw === "string" ? phoneRaw.replace(/^tel:/i, "") : "");
-      if (cleaned.safe && cleaned.phone) return { href: `tel:${cleaned.phone}`, displayFallback: null };
-      return { href: null, displayFallback: "电话号码格式不正确" };
-    }
-    case "map": {
-      const raw = (typeof payload?.map === "string" ? payload.map : itemUrl) || "";
-      const cleaned = sanitizeMapUrl(raw);
-      if (cleaned.safe && cleaned.url) return { href: cleaned.url, displayFallback: null };
-      return { href: null, displayFallback: "地图链接被系统判定为不安全" };
-    }
-    case "qr": {
-      const raw = itemUrl || "";
-      const cleaned = sanitizePublicUrl(raw);
-      if (cleaned.safe && cleaned.url) return { href: cleaned.url, displayFallback: null };
-      return { href: null, displayFallback: "二维码链接被系统判定为不安全" };
-    }
-    case "wechat":
-    case "text":
-    case "group-title": {
-      return { href: null, displayFallback: null };
-    }
-    case "link":
-    case "shop":
-    case "booking":
-    default: {
-      const raw = itemUrl || "";
-      const cleaned = sanitizePublicUrl(raw);
-      if (cleaned.safe && cleaned.url) return { href: cleaned.url, displayFallback: null };
-      return { href: null, displayFallback: "链接被系统判定为不安全" };
-    }
-  }
-}
+  isModuleType,
+  validateModulePayload,
+  type AiChatPayload,
+  type BilibiliVideoPayload,
+  type BookingPayload,
+  type CarouselPayload,
+  type CopyTextPayload,
+  type CoverImagePayload,
+  type DividerPayload,
+  type MusicLinkPayload,
+  type NeteaseMusicPayload,
+  type OfferPayload,
+  type PopupImagePayload,
+  type ProductCardPayload,
+  type ServiceCardPayload,
+  type VideoLinkPayload,
+  type YoutubeVideoPayload,
+} from "@/features/profile-modules";
 
 export type SharePageTemplate = "business" | "creator" | "conversion";
-
 export type ShareLinkStyle = "solid" | "outline" | "soft";
 
-// V2-005: 支持多类型组件
 export type SharePageLink = {
   id: string;
   title: string;
@@ -70,64 +69,9 @@ export type SharePageLink = {
   url?: string | null;
   icon?: string | null;
   type?: string | null;
-  // 组件类型（link / text / group-title / qr / wechat / phone / shop / booking / map）
   componentType?: string | null;
-  // 组件扩展数据 JSON 字符串
   payload?: string | null;
 };
-
-function safeParseJson<T = unknown>(value: string | null | undefined): T | null {
-  if (!value) return null;
-  try {
-    return JSON.parse(value) as T;
-  } catch {
-    return null;
-  }
-}
-
-// 带头像加载错误处理的组件
-function SafeAvatar({
-  src,
-  alt,
-  fallbackInitial,
-  className,
-  avatarClassName,
-}: {
-  src: string | null | undefined;
-  alt: string;
-  fallbackInitial: string;
-  className: string;
-  avatarClassName: string;
-}) {
-  const [imgError, setImgError] = useState(false);
-
-  if (!src || imgError) {
-    return (
-      <div className={`grid shrink-0 place-items-center ${className} ${avatarClassName}`}>
-        {fallbackInitial.slice(0, 1).toUpperCase()}
-      </div>
-    );
-  }
-
-  return (
-    /* eslint-disable-next-line @next/next/no-img-element */
-    <img
-      src={src}
-      alt={alt}
-      className={className}
-      onError={() => setImgError(true)}
-    />
-  );
-}
-
-function normalizeComponentType(link: SharePageLink): string {
-  if (link.componentType) return link.componentType;
-  const rawType = (link.type || "").toLowerCase();
-  if (["link", "text", "group-title", "qr", "wechat", "phone", "shop", "booking", "map"].includes(rawType)) {
-    return rawType;
-  }
-  return "link";
-}
 
 export interface SharePageRendererProps {
   template?: SharePageTemplate;
@@ -137,6 +81,7 @@ export interface SharePageRendererProps {
   avatarUrl?: string | null;
   links: SharePageLink[];
   themeName?: string | null;
+  customTheme?: string | null;
   surfaceClassName?: string;
   cardClassName?: string;
   linkClassName?: string;
@@ -147,56 +92,120 @@ export interface SharePageRendererProps {
   bioFallback?: string;
   onQrCodeClick?: () => void;
   onShareClick?: () => void;
+  company?: string | null;
+  jobTitle?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  wechat?: string | null;
+  city?: string | null;
+  address?: string | null;
+  website?: string | null;
+  contactVisibility?: string;
 }
 
-function renderLinkIcon(
-  iconValue: string | null | undefined,
-  defaultClass: string,
-): ReactNode {
+function safeParseJson<T = unknown>(value: string | null | undefined): T | null {
+  if (!value) return null;
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return null;
+  }
+}
+
+function normalizeComponentType(link: SharePageLink): string {
+  if (link.componentType) return link.componentType;
+  const rawType = (link.type || "").toLowerCase();
+  if (rawType) return rawType;
+  return "link";
+}
+
+function parseCustomTheme(themeName: string | null | undefined, customThemeJson: string | null | undefined): CustomTheme | null {
+  if (!customThemeJson && !themeName) return null;
+  try {
+    return normalizeCustomTheme(themeName || null, customThemeJson || null);
+  } catch {
+    return null;
+  }
+}
+
+function buildSurfaceStyle(custom: CustomTheme | null): CSSProperties {
+  if (!custom) return {};
+  if (custom.backgroundType === "solid") return { backgroundColor: custom.backgroundValue, color: custom.textColor };
+  if (custom.backgroundType === "gradient") return { background: custom.backgroundValue, color: custom.textColor };
+  if (custom.backgroundType === "image") {
+    return {
+      backgroundImage: `url(${custom.backgroundValue})`,
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "cover",
+      color: custom.textColor,
+    };
+  }
+  return { color: custom.textColor };
+}
+
+function buildLinkClassSet(base: ShareThemeClassSet, linkStyle: ShareLinkStyle, override?: string): string {
+  if (override) return override;
+  if (linkStyle === "outline") return "bg-transparent border border-current/30 text-current hover:bg-current/5";
+  if (linkStyle === "soft") return "bg-white/70 border border-white/40 text-current shadow-sm hover:bg-white";
+  return base.linkClassName;
+}
+
+function sanitizeHref(componentType: string, itemUrl: string | null | undefined, payload: Record<string, unknown> | null) {
+  if (componentType === "phone") {
+    const raw = typeof payload?.phone === "string" ? payload.phone : itemUrl || "";
+    const cleaned = sanitizePhoneNumber(raw.replace(/^tel:/i, ""));
+    return cleaned.safe && cleaned.phone
+      ? { href: `tel:${cleaned.phone}`, displayFallback: null as string | null }
+      : { href: null, displayFallback: "电话号码格式不正确" };
+  }
+  if (componentType === "map") {
+    const raw = typeof payload?.map === "string" ? payload.map : itemUrl || "";
+    const cleaned = sanitizeMapUrl(raw);
+    return cleaned.safe && cleaned.url
+      ? { href: cleaned.url, displayFallback: null as string | null }
+      : { href: null, displayFallback: "地图链接被系统判定为不安全" };
+  }
+  if (["wechat", "text", "group-title"].includes(componentType)) {
+    return { href: null, displayFallback: null as string | null };
+  }
+  const cleaned = sanitizePublicUrl(itemUrl || "");
+  return cleaned.safe && cleaned.url
+    ? { href: cleaned.url, displayFallback: null as string | null }
+    : { href: null, displayFallback: "链接被系统判定为不安全" };
+}
+
+function SafeAvatar({ src, alt, fallbackInitial, className, avatarClassName }: {
+  src?: string | null;
+  alt: string;
+  fallbackInitial: string;
+  className: string;
+  avatarClassName: string;
+}) {
+  const [imgError, setImgError] = useState(false);
+  if (!src || imgError) {
+    return <div className={`grid shrink-0 place-items-center ${className} ${avatarClassName}`}>{fallbackInitial.slice(0, 1).toUpperCase()}</div>;
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={alt} className={className} onError={() => setImgError(true)} loading="lazy" />
+  );
+}
+
+function renderLinkIcon(iconValue: string | null | undefined, defaultClass: string): ReactNode {
   const value = (iconValue || "").trim();
   if (value.startsWith("http://") || value.startsWith("https://")) {
     return (
-      <span
-        className={`grid size-10 shrink-0 place-items-center overflow-hidden rounded-xl border border-black/5 ${defaultClass}`}
-      >
+      <span className={`grid size-9 shrink-0 place-items-center overflow-hidden rounded-xl border border-black/5 ${defaultClass}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={value} alt="" className="size-full object-cover" />
       </span>
     );
   }
-  if (value && /^[\p{L}\p{N}\p{Emoji}]$/u.test(value)) {
-    return (
-      <span
-        className={`grid size-10 shrink-0 place-items-center rounded-xl text-2xl ${defaultClass}`}
-      >
-        {value}
-      </span>
-    );
+  if (value) {
+    return <span className={`grid size-9 shrink-0 place-items-center rounded-xl text-xl ${defaultClass}`}>{value}</span>;
   }
-  return (
-    <span
-      className={`grid size-10 shrink-0 place-items-center rounded-xl ${defaultClass}`}
-    >
-      <Globe aria-hidden className="size-5" />
-    </span>
-  );
-}
-
-function buildLinkClassSet(
-  base: ShareThemeClassSet,
-  linkStyle: ShareLinkStyle,
-  overrideLinkClassName?: string,
-): string {
-  if (overrideLinkClassName) return overrideLinkClassName;
-  switch (linkStyle) {
-    case "outline":
-      return "bg-transparent border border-current/30 text-current hover:bg-current/5";
-    case "soft":
-      return "bg-white/70 border border-white/40 text-current shadow-sm hover:bg-white";
-    case "solid":
-    default:
-      return base.linkClassName;
-  }
+  return <span className={`grid size-9 shrink-0 place-items-center rounded-xl ${defaultClass}`}><Globe aria-hidden className="size-5" /></span>;
 }
 
 function BrandFoot({ classes }: { classes: ShareThemeClassSet }) {
@@ -204,39 +213,24 @@ function BrandFoot({ classes }: { classes: ShareThemeClassSet }) {
     <a
       href={process.env.NEXT_PUBLIC_APP_URL || "https://link168.me"}
       aria-label="由 Link168 提供"
-      className={`link168-card-hover mt-5 inline-flex min-h-[40px] items-center gap-2 self-center rounded-full border border-black/10 bg-white/70 px-4 py-1.5 text-sm font-bold shadow-sm transition hover:opacity-80 active:scale-[0.98] ${classes.footerClassName}`}
+      className={`mt-5 inline-flex min-h-10 items-center gap-2 self-center rounded-full border border-black/10 bg-white/70 px-4 py-1.5 text-sm font-bold shadow-sm transition hover:opacity-80 ${classes.footerClassName}`}
     >
       由 Link168 提供
     </a>
   );
 }
 
-function HeaderActions({
-  onQrCodeClick,
-  onShareClick,
-}: {
-  onQrCodeClick?: () => void;
-  onShareClick?: () => void;
-}) {
+function HeaderActions({ onQrCodeClick, onShareClick }: { onQrCodeClick?: () => void; onShareClick?: () => void }) {
   if (!onQrCodeClick && !onShareClick) return null;
-
   return (
     <div className="flex items-center gap-2">
       {onQrCodeClick ? (
-        <button
-          onClick={onQrCodeClick}
-          className="grid size-10 place-items-center rounded-xl bg-white/70 border border-black/10 shadow-sm hover:bg-white transition-colors active:scale-[0.95]"
-          aria-label="二维码"
-        >
+        <button type="button" onClick={onQrCodeClick} className="grid size-10 place-items-center rounded-xl border border-black/10 bg-white/70 shadow-sm transition hover:bg-white" aria-label="二维码">
           <QrCode aria-hidden className="size-5 text-[#2B241E]" />
         </button>
       ) : null}
       {onShareClick ? (
-        <button
-          onClick={onShareClick}
-          className="grid size-10 place-items-center rounded-xl bg-white/70 border border-black/10 shadow-sm hover:bg-white transition-colors active:scale-[0.95]"
-          aria-label="分享"
-        >
+        <button type="button" onClick={onShareClick} className="grid size-10 place-items-center rounded-xl border border-black/10 bg-white/70 shadow-sm transition hover:bg-white" aria-label="分享">
           <Share2 aria-hidden className="size-5 text-[#2B241E]" />
         </button>
       ) : null}
@@ -244,636 +238,189 @@ function HeaderActions({
   );
 }
 
-function renderBusinessLayout(
-  props: SharePageRendererProps,
-  classes: ShareThemeClassSet,
-) {
-  const {
-    username,
-    displayName,
-    bio,
-    avatarUrl,
-    links,
-    linkStyle = "solid",
-    linkClassName,
-    bioFallback = "这个主页还没有简介。",
-    showBrandFoot = true,
-    reportUrl,
-    onQrCodeClick,
-    onShareClick,
-  } = props;
-
-  const name = displayName || "Link168 名片";
-  const initial = name.slice(0, 1).toUpperCase();
-  const bioText = bio || bioFallback;
-
-  const hasActions = !!onQrCodeClick || !!onShareClick;
-
+function ContactInfoSection({ phone, email, wechat, address, website, username, classes }: {
+  phone?: string | null;
+  email?: string | null;
+  wechat?: string | null;
+  address?: string | null;
+  website?: string | null;
+  username: string;
+  classes: ShareThemeClassSet;
+}) {
+  if (!phone && !email && !wechat && !address && !website) return null;
+  const itemClass = "flex min-h-[44px] items-center gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3 py-2.5 shadow-sm";
+  const iconClass = "grid size-9 shrink-0 place-items-center rounded-xl";
   return (
-    <div className="flex flex-col items-center">
-      <section
-        className={`relative w-full overflow-hidden rounded-2xl p-5 shadow-sm ${classes.cardClassName}`}
-      >
-        {hasActions ? (
-          <div className="absolute right-4 top-4 z-10">
-            <HeaderActions
-              onQrCodeClick={onQrCodeClick}
-              onShareClick={onShareClick}
-            />
-          </div>
-        ) : null}
-        <div className="pointer-events-none absolute -right-6 -top-8 size-24 rounded-full bg-[#F2E7D8]/70 blur-2xl" />
-        <div className="flex flex-col items-center text-center">
-          <SafeAvatar
-            src={avatarUrl}
-            alt={`${name} 的头像`}
-            fallbackInitial={initial}
-            className="size-20 shrink-0 rounded-full ring-2 ring-white/60"
-            avatarClassName={`text-2xl font-black ring-2 ring-white/60 ${classes.avatarClassName}`}
-          />
-          <h2 className={`mt-3 truncate text-xl font-black ${classes.nameClassName}`}>
-            {name}
-          </h2>
-          <p className={`mt-0.5 text-xs font-bold ${classes.subClassName}`}>
-            @{username || "yourname"}
-          </p>
-          <p className={`mt-2 text-sm leading-6 line-clamp-3 ${classes.subClassName}`}>
-            {bioText}
-          </p>
-        </div>
-      </section>
-
-      <div className="mt-4 w-full space-y-2.5 text-sm">
-        {renderComponentList(links, classes, "business", linkStyle, linkClassName)}
-      </div>
-
-      {showBrandFoot ? <BrandFoot classes={classes} /> : null}
-      {reportUrl ? (
-        <Link
-          href={reportUrl}
-          className={`mt-2 block text-center text-[11px] font-bold opacity-50 hover:opacity-80 transition-opacity ${classes.footerClassName}`}
-        >
-          举报此主页
-        </Link>
+    <div className="w-full space-y-2">
+      {phone ? <a href={`tel:${phone}`} className={itemClass}><span className={`${iconClass} bg-[#F3E7D1]`}><Phone className="size-4 text-[#8A6A2E]" /></span><span className={`truncate text-sm font-black ${classes.nameClassName}`}>{phone}</span></a> : null}
+      {email ? <a href={`mailto:${email}`} className={itemClass}><span className={`${iconClass} bg-[#DDE8CD]`}><Mail className="size-4 text-[#3F5F31]" /></span><span className={`truncate text-sm font-black ${classes.nameClassName}`}>{email}</span></a> : null}
+      {wechat ? (
+        <button type="button" onClick={() => navigator.clipboard?.writeText(wechat).catch(() => undefined)} className={`${itemClass} w-full text-left`}>
+          <span className={`${iconClass} bg-[#DDE8CD]`}><MessageCircle className="size-4 text-[#3F5F31]" /></span>
+          <span className="min-w-0 flex-1"><span className={`block truncate text-sm font-black ${classes.nameClassName}`}>微信：{wechat}</span><span className={`block text-xs ${classes.subClassName}`}>点击复制微信号</span></span>
+          <Copy className="size-4 shrink-0 opacity-40" />
+        </button>
       ) : null}
+      {address ? <div className={itemClass}><span className={`${iconClass} bg-[#F3E7D1]`}><MapPin className="size-4 text-[#8A6A2E]" /></span><span className={`truncate text-sm font-black ${classes.nameClassName}`}>{address}</span></div> : null}
+      {website ? <a href={website.startsWith("http") ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className={itemClass}><span className={`${iconClass} bg-[#F3E7D1]`}><Globe className="size-4 text-[#8A6A2E]" /></span><span className={`truncate text-sm font-black ${classes.nameClassName}`}>官网</span><ArrowUpRight className="ml-auto size-4 shrink-0 opacity-70" /></a> : null}
+      <a href={`/api/public/${username}/vcard`} download className="flex min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-[#DDE8CD] bg-[#EEF4E7] px-3 py-2.5 text-sm font-black text-[#3F5F31] shadow-sm transition hover:bg-[#DDE8CD]">
+        <Download className="size-4" />
+        保存到通讯录
+      </a>
     </div>
   );
 }
 
-function renderCreatorLayout(
-  props: SharePageRendererProps,
-  classes: ShareThemeClassSet,
-) {
-  const {
-    username,
-    displayName,
-    bio,
-    avatarUrl,
-    links,
-    linkStyle = "soft",
-    linkClassName,
-    bioFallback = "一个人，一个链接，连接全网。",
-    showBrandFoot = true,
-    reportUrl,
-    onQrCodeClick,
-    onShareClick,
-  } = props;
-
-  const name = displayName || "Link168 名片";
+function renderHeader(props: SharePageRendererProps, classes: ShareThemeClassSet, compact = false) {
+  const name = props.displayName || "Link168 名片";
   const initial = name.slice(0, 1).toUpperCase();
-  const bioText = bio || bioFallback;
-
-  const hasActions = !!onQrCodeClick || !!onShareClick;
-
+  const companyLine = props.company || props.jobTitle ? [props.jobTitle, props.company].filter(Boolean).join(" · ") : null;
+  const bioText = props.bio || props.bioFallback || "这个主页还没有简介。";
+  const avatarSize = compact ? "size-14 rounded-2xl" : "size-16 rounded-full sm:size-20";
   return (
-    <div className="flex flex-col items-center">
-      {hasActions ? (
-        <div className="w-full flex justify-end mb-2">
-          <HeaderActions
-            onQrCodeClick={onQrCodeClick}
-            onShareClick={onShareClick}
-          />
+    <section className={`relative w-full overflow-hidden rounded-2xl p-4 shadow-sm ${classes.cardClassName}`}>
+      <div className="absolute right-3 top-3 z-10"><HeaderActions onQrCodeClick={props.onQrCodeClick} onShareClick={props.onShareClick} /></div>
+      <div className={compact ? "flex items-start gap-3 pr-20" : "flex flex-col items-center text-center"}>
+        <SafeAvatar src={props.avatarUrl} alt={`${name} 的头像`} fallbackInitial={initial} className={`${avatarSize} shrink-0 ring-2 ring-white/60`} avatarClassName={`text-xl font-black ${classes.avatarClassName}`} />
+        <div className="min-w-0">
+          <h2 className={`mt-3 truncate text-lg font-black ${classes.nameClassName}`}>{name}</h2>
+          {companyLine ? <p className={`mt-0.5 flex items-center justify-center gap-1 text-xs font-bold ${classes.subClassName}`}><UserCircle className="size-3.5" />{companyLine}</p> : null}
+          <p className={`mt-0.5 text-xs font-bold ${classes.subClassName}`}>@{props.username || "yourname"}</p>
+          <p className={`mt-2 line-clamp-3 text-xs leading-5 ${classes.subClassName} sm:text-sm sm:leading-6`}>{bioText}</p>
         </div>
-      ) : null}
-      <div className="flex flex-col items-center text-center pt-2">
-        <SafeAvatar
-          src={avatarUrl}
-          alt={`${name} 的头像`}
-          fallbackInitial={initial}
-          className="size-24 shrink-0 rounded-full ring-4 ring-white/70 shadow-lg"
-          avatarClassName={`text-3xl font-black ring-4 ring-white/70 shadow-lg ${classes.avatarClassName}`}
-        />
-        <h2 className={`mt-4 truncate text-2xl font-black ${classes.nameClassName}`}>
-          {name}
-        </h2>
-        <p className={`mt-1 text-xs font-bold ${classes.subClassName}`}>
-          @{username || "yourname"}
-        </p>
-        <p className={`mt-3 max-w-md text-sm leading-6 line-clamp-3 ${classes.subClassName}`}>
-          {bioText}
-        </p>
       </div>
-
-      <div className="mt-5 w-full space-y-3 text-sm">
-        {renderComponentList(links, classes, "creator", linkStyle, linkClassName)}
-      </div>
-
-      {showBrandFoot ? <BrandFoot classes={classes} /> : null}
-      {reportUrl ? (
-        <Link
-          href={reportUrl}
-          className={`mt-2 block text-center text-[11px] font-bold opacity-50 hover:opacity-80 transition-opacity ${classes.footerClassName}`}
-        >
-          举报此主页
-        </Link>
-      ) : null}
-    </div>
+    </section>
   );
 }
 
-function renderConversionLayout(
-  props: SharePageRendererProps,
-  classes: ShareThemeClassSet,
-) {
-  const {
-    username,
-    displayName,
-    bio,
-    avatarUrl,
-    links,
-    linkStyle = "outline",
-    linkClassName,
-    bioFallback = "点击下方链接，直达目标页面。",
-    showBrandFoot = true,
-    reportUrl,
-    onQrCodeClick,
-    onShareClick,
-  } = props;
+function renderNewModule(item: SharePageLink, componentType: string, payload: Record<string, unknown> | null, username: string): ReactNode {
+  if (!payload) return <div key={item.id}><ModuleFallback message="模块数据为空" /></div>;
+  if (!isModuleType(componentType)) return <div key={item.id}><ModuleFallback message="未知模块类型" /></div>;
+  const validation = validateModulePayload(componentType, payload);
+  if (!validation.valid) return <div key={item.id}><ModuleFallback message={validation.errors?.[0] || "模块数据格式不正确"} /></div>;
 
-  const name = displayName || "Link168 名片";
-  const initial = name.slice(0, 1).toUpperCase();
-  const bioText = bio || bioFallback;
+  switch (componentType) {
+    case "cover-image": return <div key={item.id}><CoverImageModule payload={payload as CoverImagePayload} /></div>;
+    case "popup-image": return <div key={item.id}><PopupImageModule payload={payload as PopupImagePayload} /></div>;
+    case "carousel": return <div key={item.id}><CarouselModule payload={payload as CarouselPayload} /></div>;
+    case "bilibili-video": return <div key={item.id}><BilibiliVideoModule payload={payload as BilibiliVideoPayload} /></div>;
+    case "youtube-video": return <div key={item.id}><YoutubeVideoModule payload={payload as YoutubeVideoPayload} /></div>;
+    case "video-link": return <div key={item.id}><VideoLinkModule payload={payload as VideoLinkPayload} /></div>;
+    case "netease-music": return <div key={item.id}><NeteaseMusicModule payload={payload as NeteaseMusicPayload} /></div>;
+    case "music-link": return <div key={item.id}><MusicLinkModule payload={payload as MusicLinkPayload} /></div>;
+    case "divider": return <div key={item.id}><DividerModule payload={payload as DividerPayload} /></div>;
+    case "copy-text": return <div key={item.id}><CopyTextModule payload={payload as CopyTextPayload} /></div>;
+    case "ai-chat": {
+      const aiPayload = payload as AiChatPayload;
+      return <div key={item.id}><AiChatModule assistantName={aiPayload.assistantName || "AI 接待"} welcomeText={aiPayload.greeting || "你好，有什么可以帮你？"} username={username} mode="customer-service" /></div>;
+    }
+    case "product-card": return <div key={item.id}><ProductCardModule payload={payload as ProductCardPayload} username={username} /></div>;
+    case "service-card": return <div key={item.id}><ServiceCardModule payload={payload as ServiceCardPayload} username={username} /></div>;
+    case "offer": return <div key={item.id}><OfferModule payload={payload as OfferPayload} username={username} /></div>;
+    case "booking": return <div key={item.id}><BookingModule payload={payload as BookingPayload} username={username} /></div>;
+    default: return <div key={item.id}><ModuleFallback message="未知模块类型" /></div>;
+  }
+}
 
-  const hasActions = !!onQrCodeClick || !!onShareClick;
+function renderLegacyItem(item: SharePageLink, componentType: string, payload: Record<string, unknown> | null, classes: ShareThemeClassSet, variant: SharePageTemplate, linkClassName: string) {
+  const safe = sanitizeHref(componentType, item.url, payload);
+  const title = item.title || "链接";
+  const description = item.description;
+  const common = `flex min-h-[56px] items-center justify-between gap-3 rounded-2xl px-3 py-3 shadow-sm ${linkClassName}`;
+  const body = (
+    <span className="flex min-w-0 flex-1 items-center gap-3">
+      {componentType === "phone" ? <span className="grid size-9 place-items-center rounded-xl bg-[#F3E7D1]"><Phone className="size-4 text-[#8A6A2E]" /></span> : null}
+      {componentType === "map" ? <span className="grid size-9 place-items-center rounded-xl bg-[#F3E7D1]"><MapPin className="size-4 text-[#8A6A2E]" /></span> : null}
+      {componentType === "shop" || componentType === "booking" ? <span className="grid size-9 place-items-center rounded-xl bg-[#DDE8CD]">{componentType === "booking" ? <CalendarClock className="size-4 text-[#3F5F31]" /> : <ShoppingBag className="size-4 text-[#8A6A2E]" />}</span> : null}
+      {!["phone", "map", "shop", "booking"].includes(componentType) ? renderLinkIcon(item.icon, classes.avatarClassName) : null}
+      <span className="min-w-0 text-left">
+        <span className="block truncate font-black">{title}</span>
+        {description || !safe.href ? <span className={`mt-0.5 block line-clamp-2 text-xs leading-5 ${safe.href ? classes.subClassName : "text-red-600"}`}>{safe.href ? description : safe.displayFallback}</span> : null}
+      </span>
+    </span>
+  );
+
+  if (!safe.href || componentType === "text" || componentType === "group-title" || componentType === "wechat") {
+    if (componentType === "group-title") {
+      return <div key={item.id} className="flex items-center gap-3 px-1 py-2"><span className="h-px flex-1 bg-[#E8DCCB]" /><span className={`text-xs font-black uppercase ${classes.subClassName}`}>{title}</span><span className="h-px flex-1 bg-[#E8DCCB]" /></div>;
+    }
+    if (componentType === "text") {
+      return <div key={item.id} className={`rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 py-3 ${classes.subClassName}`}><div className="font-black text-[#2B241E]">{title}</div>{description ? <div className="mt-1 text-sm leading-6">{description}</div> : null}</div>;
+    }
+    if (componentType === "wechat") {
+      const wechatId = typeof payload?.wechat === "string" ? payload.wechat : item.url || description || "";
+      return <div key={item.id} className={common}>{body}<span className="rounded-full bg-[#3F5F31]/10 px-2 py-1 text-xs font-black text-[#3F5F31]">{wechatId || "微信"}</span></div>;
+    }
+    return <div key={item.id} className={common}>{body}</div>;
+  }
 
   return (
-    <div className="flex w-full flex-col">
-      <section className={`relative rounded-2xl p-4 shadow-sm ${classes.cardClassName}`}>
-        {hasActions ? (
-          <div className="absolute right-3 top-3 z-10">
-            <HeaderActions
-              onQrCodeClick={onQrCodeClick}
-              onShareClick={onShareClick}
-            />
-          </div>
-        ) : null}
-        <div className="flex w-full items-start gap-4">
-          <SafeAvatar
-            src={avatarUrl}
-            alt={`${name} 的头像`}
-            fallbackInitial={initial}
-            className="size-16 shrink-0 rounded-2xl"
-            avatarClassName={`text-2xl font-black ${classes.avatarClassName}`}
-          />
-          <div className="min-w-0 flex-1 pt-0.5">
-            <h2 className={`truncate text-xl font-black ${classes.nameClassName}`}>
-              {name}
-            </h2>
-            <p className={`mt-0.5 text-xs font-bold ${classes.subClassName}`}>
-              @{username || "yourname"}
-            </p>
-            <p className={`mt-2 text-sm leading-5 line-clamp-3 ${classes.subClassName}`}>
-              {bioText}
-            </p>
-          </div>
-        </div>
-      </section>
+    <a key={item.id} href={safe.href} target={safe.href.startsWith("tel:") ? undefined : "_blank"} rel={safe.href.startsWith("tel:") ? undefined : "noopener noreferrer"} className={common}>
+      {body}
+      {variant === "conversion" ? <ArrowRight className="size-4 shrink-0 opacity-80" /> : <ArrowUpRight className="size-4 shrink-0 opacity-70" />}
+    </a>
+  );
+}
 
-      <div className="mt-4 w-full space-y-3 text-sm">
-        {renderComponentList(links, classes, "conversion", linkStyle, linkClassName)}
+function renderComponentList(props: SharePageRendererProps, classes: ShareThemeClassSet, custom: CustomTheme | null) {
+  if (props.links.length === 0) {
+    return (
+      <div className={`rounded-2xl border border-dashed border-[#E8DCCB] bg-[#FFFDF8]/70 px-5 py-10 text-center ${classes.subClassName}`}>
+        <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#DDE8CD]"><Globe className="size-7 text-[#6F8F4E]" /></div>
+        <p className="mt-4 text-base font-black text-[#2B241E]">{props.emptyText || "暂无公开内容"}</p>
+        <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">你仍然可以通过页面上的联系方式与主页所有者沟通。</p>
       </div>
+    );
+  }
 
-      {showBrandFoot ? <BrandFoot classes={classes} /> : null}
-      {reportUrl ? (
-        <Link
-          href={reportUrl}
-          className={`mt-2 block text-center text-[11px] font-bold opacity-50 hover:opacity-80 transition-opacity ${classes.footerClassName}`}
-        >
-          举报此主页
-        </Link>
-      ) : null}
+  const linkClassName = buildLinkClassSet(classes, props.linkStyle || "solid", props.linkClassName);
+  const moduleTypes = new Set(["cover-image", "popup-image", "carousel", "bilibili-video", "youtube-video", "video-link", "netease-music", "music-link", "divider", "copy-text", "ai-chat", "product-card", "service-card", "offer", "booking"]);
+  return (
+    <div className="space-y-2" style={custom?.moduleGap ? { gap: `${custom.moduleGap}px` } : undefined}>
+      {props.links.map((item) => {
+        const componentType = normalizeComponentType(item);
+        const payload = safeParseJson<Record<string, unknown>>(item.payload);
+        if (moduleTypes.has(componentType)) return renderNewModule(item, componentType, payload, props.username);
+        return renderLegacyItem(item, componentType, payload, classes, props.template || "business", linkClassName);
+      })}
     </div>
   );
 }
 
 export function SharePageRenderer(props: SharePageRendererProps) {
-  const {
-    template = "business",
-    themeName,
-    surfaceClassName,
-    cardClassName,
-  } = props;
-
-  const baseClasses = getThemeClasses(themeName);
+  const baseClasses = getThemeClasses(props.themeName);
+  const custom = parseCustomTheme(props.themeName, props.customTheme);
   const classes: ShareThemeClassSet = {
     ...baseClasses,
-    surfaceClassName: surfaceClassName || baseClasses.surfaceClassName,
-    cardClassName: cardClassName || baseClasses.cardClassName,
+    surfaceClassName: props.surfaceClassName || baseClasses.surfaceClassName,
+    cardClassName: props.cardClassName || baseClasses.cardClassName,
   };
+  const showContact = props.contactVisibility !== "private" && props.contactVisibility !== "contacts_only";
+  const compact = props.template === "conversion";
 
-  switch (template) {
-    case "creator":
-      return renderCreatorLayout(props, classes);
-    case "conversion":
-      return renderConversionLayout(props, classes);
-    case "business":
-    default:
-      return renderBusinessLayout(props, classes);
-  }
-}
-
-function renderComponentItem(
-  item: SharePageLink,
-  classes: ShareThemeClassSet,
-  variant: "business" | "creator" | "conversion",
-  linkStyle: ShareLinkStyle,
-  overrideLinkClassName?: string,
-): ReactNode {
-  const componentType = normalizeComponentType(item);
-  const finalLinkClass = buildLinkClassSet(classes, linkStyle, overrideLinkClassName);
-  const payload = safeParseJson<Record<string, unknown>>(item.payload);
-
-  // V2-002: 协议白名单。污染 URL 不输出可点击 href，仅显示降级文本。
-  const safe = sanitizeHref(componentType, item.url, payload);
-  const href = safe.href;
-
-  switch (componentType) {
-    case "text": {
-      return (
-        <div
-          key={item.id}
-          className={`link168-card-hover min-h-14 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 py-3 shadow-sm ${classes.subClassName}`}
-        >
-          {item.title ? <div className="font-black text-[#2B241E]">{item.title}</div> : null}
-          {item.description ? (
-            <div className="mt-1 text-sm leading-6">{item.description}</div>
-          ) : null}
-        </div>
-      );
-    }
-    case "group-title": {
-      return (
-        <div key={item.id} className="flex items-center gap-3 px-1 py-2">
-          <span className="h-px flex-1 bg-[#E8DCCB]" />
-          <span className={`text-xs font-black uppercase tracking-widest ${classes.subClassName}`}>
-            {item.title || "分组"}
-          </span>
-          <span className="h-px flex-1 bg-[#E8DCCB]" />
-        </div>
-      );
-    }
-    case "qr": {
-      // 不安全链接：降级为不可点击 div
-      if (!href) {
-        return (
-          <div
-            key={item.id}
-            className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3.5 py-3 shadow-sm ${finalLinkClass}`}
-          >
-            <span className="flex min-w-0 flex-1 items-center gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#F3E7D1]">
-                <QrCode aria-hidden className="size-5 text-[#8A6A2E]" />
-              </span>
-              <span className="min-w-0 text-left">
-                <span className="block truncate font-black">{item.title || "扫码查看"}</span>
-                <span className="mt-0.5 block line-clamp-2 text-xs leading-5 text-red-600">{safe.displayFallback || "二维码链接被系统判定为不安全"}</span>
-              </span>
-            </span>
+  return (
+    <div className={`min-h-full w-full ${classes.surfaceClassName}`} style={buildSurfaceStyle(custom)}>
+      <div className="mx-auto flex w-full max-w-xl flex-col items-center px-3 py-4 sm:px-4">
+        {renderHeader(props, classes, compact)}
+        {showContact ? (
+          <div className="mt-4 w-full">
+            <ContactInfoSection phone={props.phone} email={props.email} wechat={props.wechat} address={props.address} website={props.website} username={props.username} classes={classes} />
           </div>
-        );
-      }
-      return (
-        <a
-          key={item.id}
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3.5 py-3 shadow-sm active:scale-[0.99] ${finalLinkClass}`}
-        >
-          <span className="flex min-w-0 flex-1 items-center gap-3">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#F3E7D1]">
-              <QrCode aria-hidden className="size-5 text-[#8A6A2E]" />
-            </span>
-            <span className="min-w-0 text-left">
-              <span className="block truncate font-black">{item.title || "扫码查看"}</span>
-              {item.description ? <span className="mt-0.5 block line-clamp-2 text-xs leading-5 text-[#7A6D5E]">{item.description}</span> : null}
-            </span>
-          </span>
-          <ArrowUpRight aria-hidden className="size-5 shrink-0 opacity-70" />
-        </a>
-      );
-    }
-    case "wechat": {
-      const wechatId = payload?.wechat_id || payload?.wechat || item.url || "";
-      return (
-        <div
-          key={item.id}
-          className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3.5 py-3 shadow-sm ${finalLinkClass}`}
-        >
-          <span className="flex min-w-0 flex-1 items-center gap-3">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#DDE8CD]">
-              <MessageCircle aria-hidden className="size-5 text-[#3F5F31]" />
-            </span>
-            <span className="min-w-0 text-left">
-              <span className="block truncate font-black">{item.title || "微信联系"}</span>
-              <span className={`mt-0.5 block truncate text-xs leading-5 ${classes.subClassName}`}>
-                {wechatId ? `微信号：${wechatId}` : (item.description || "长按复制微信号")}
-              </span>
-            </span>
-          </span>
-          <span className="shrink-0 rounded-full bg-[#3F5F31]/10 px-2 py-1 text-[11px] font-black text-[#3F5F31]">
-            微信
-          </span>
-        </div>
-      );
-    }
-    case "phone": {
-      if (!href) {
-        return (
-          <div
-            key={item.id}
-            className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3.5 py-3 shadow-sm ${finalLinkClass}`}
-          >
-            <span className="flex min-w-0 flex-1 items-center gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#F3E7D1]">
-                <Phone aria-hidden className="size-5 text-[#8A6A2E]" />
-              </span>
-              <span className="min-w-0 text-left">
-                <span className="block truncate font-black">{item.title || "电话联系"}</span>
-                <span className="mt-0.5 block truncate text-xs leading-5 text-red-600">{safe.displayFallback || "电话号码格式不正确"}</span>
-              </span>
-            </span>
-          </div>
-        );
-      }
-      return (
-        <a
-          key={item.id}
-          href={href}
-          className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3.5 py-3 shadow-sm active:scale-[0.99] ${finalLinkClass}`}
-        >
-          <span className="flex min-w-0 flex-1 items-center gap-3">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#F3E7D1]">
-              <Phone aria-hidden className="size-5 text-[#8A6A2E]" />
-            </span>
-            <span className="min-w-0 text-left">
-              <span className="block truncate font-black">{item.title || "电话联系"}</span>
-              <span className={`mt-0.5 block truncate text-xs leading-5 ${classes.subClassName}`}>
-                {typeof payload?.phone === "string" ? payload.phone : item.url || item.description || "点击拨打"}
-              </span>
-            </span>
-          </span>
-          <ArrowUpRight aria-hidden className="size-5 shrink-0 opacity-70" />
-        </a>
-      );
-    }
-    case "shop": {
-      const price = payload?.price as string | undefined;
-      if (!href) {
-        return (
-          <div
-            key={item.id}
-            className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3.5 py-3 shadow-sm ${finalLinkClass}`}
-          >
-            <span className="flex min-w-0 flex-1 items-center gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#F3E7D1]">
-                <ShoppingBag aria-hidden className="size-5 text-[#8A6A2E]" />
-              </span>
-              <span className="min-w-0 text-left">
-                <span className="block truncate font-black">{item.title || "商品 / 服务"}</span>
-                <span className="mt-0.5 block line-clamp-2 text-xs leading-5 text-red-600">{safe.displayFallback || "链接被系统判定为不安全"}</span>
-              </span>
-            </span>
-          </div>
-        );
-      }
-      return (
-        <a
-          key={item.id}
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3.5 py-3 shadow-sm active:scale-[0.99] ${finalLinkClass}`}
-        >
-          <span className="flex min-w-0 flex-1 items-center gap-3">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#F3E7D1]">
-              <ShoppingBag aria-hidden className="size-5 text-[#8A6A2E]" />
-            </span>
-            <span className="min-w-0 text-left">
-              <span className="block truncate font-black">{item.title || "商品 / 服务"}</span>
-              <span className={`mt-0.5 block line-clamp-2 text-xs leading-5 ${classes.subClassName}`}>
-                {item.description || "点击查看详情"}
-              </span>
-            </span>
-          </span>
-          {price ? (
-            <span className="shrink-0 text-sm font-black text-[#B03A2E]">{price}</span>
-          ) : (
-            <ArrowUpRight aria-hidden className="size-5 shrink-0 opacity-70" />
-          )}
-        </a>
-      );
-    }
-    case "booking": {
-      const timeSlot = payload?.time as string | undefined;
-      if (!href) {
-        return (
-          <div
-            key={item.id}
-            className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3.5 py-3 shadow-sm ${finalLinkClass}`}
-          >
-            <span className="flex min-w-0 flex-1 items-center gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#DDE8CD]">
-                <CalendarClock aria-hidden className="size-5 text-[#3F5F31]" />
-              </span>
-              <span className="min-w-0 text-left">
-                <span className="block truncate font-black">{item.title || "预约咨询"}</span>
-                <span className="mt-0.5 block line-clamp-2 text-xs leading-5 text-red-600">{safe.displayFallback || "链接被系统判定为不安全"}</span>
-              </span>
-            </span>
-          </div>
-        );
-      }
-      return (
-        <a
-          key={item.id}
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3.5 py-3 shadow-sm active:scale-[0.99] ${finalLinkClass}`}
-        >
-          <span className="flex min-w-0 flex-1 items-center gap-3">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#DDE8CD]">
-              <CalendarClock aria-hidden className="size-5 text-[#3F5F31]" />
-            </span>
-            <span className="min-w-0 text-left">
-              <span className="block truncate font-black">{item.title || "预约咨询"}</span>
-              <span className={`mt-0.5 block line-clamp-2 text-xs leading-5 ${classes.subClassName}`}>
-                {timeSlot ? `时间段：${timeSlot}` : (item.description || "点击预约 / 留下联系方式")}
-              </span>
-            </span>
-          </span>
-          <ArrowUpRight aria-hidden className="size-5 shrink-0 opacity-70" />
-        </a>
-      );
-    }
-    case "map": {
-      const address = payload?.address as string | undefined;
-      if (!href) {
-        return (
-          <div
-            key={item.id}
-            className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3.5 py-3 shadow-sm ${finalLinkClass}`}
-          >
-            <span className="flex min-w-0 flex-1 items-center gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#F3E7D1]">
-                <MapPin aria-hidden className="size-5 text-[#8A6A2E]" />
-              </span>
-              <span className="min-w-0 text-left">
-                <span className="block truncate font-black">{item.title || "地图位置"}</span>
-                <span className="mt-0.5 block line-clamp-2 text-xs leading-5 text-red-600">{safe.displayFallback || "地图链接被系统判定为不安全"}</span>
-              </span>
-            </span>
-          </div>
-        );
-      }
-      return (
-        <a
-          key={item.id}
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3.5 py-3 shadow-sm active:scale-[0.99] ${finalLinkClass}`}
-        >
-          <span className="flex min-w-0 flex-1 items-center gap-3">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#F3E7D1]">
-              <MapPin aria-hidden className="size-5 text-[#8A6A2E]" />
-            </span>
-            <span className="min-w-0 text-left">
-              <span className="block truncate font-black">{item.title || "地图位置"}</span>
-              <span className={`mt-0.5 block line-clamp-2 text-xs leading-5 ${classes.subClassName}`}>
-                {address || item.description || "点击查看地图"}
-              </span>
-            </span>
-          </span>
-          <ArrowUpRight aria-hidden className="size-5 shrink-0 opacity-70" />
-        </a>
-      );
-    }
-    case "link":
-    default: {
-      if (!safe.href) {
-        return (
-          <div
-            key={item.id}
-            className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3.5 py-3 shadow-sm ${finalLinkClass}`}
-          >
-            <span className="flex min-w-0 flex-1 items-center gap-3">
-              <span className={`grid size-9 shrink-0 place-items-center rounded-xl ${classes.avatarClassName}`}>
-                {renderLinkIcon(item.icon, classes.nameClassName)}
-              </span>
-              <span className="min-w-0 text-left">
-                <span className={`block truncate font-black ${classes.nameClassName}`}>{item.title}</span>
-                <span className="mt-0.5 block line-clamp-2 text-xs leading-5 text-red-600">
-                  {safe.displayFallback || "链接被系统判定为不安全"}
-                </span>
-              </span>
-            </span>
-          </div>
-        );
-      }
-      // 保持原有普通链接渲染逻辑
-      if (variant === "conversion") {
-        return (
-          <a
-            key={item.id}
-            href={href ?? undefined}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-black/10 bg-white/50 px-4 py-3 shadow-sm transition active:scale-[0.99] ${finalLinkClass}`}
-          >
-            <span className="flex min-w-0 flex-1 items-center gap-3">
-              {renderLinkIcon(item.icon, classes.nameClassName)}
-              <span className="min-w-0 text-left">
-                <span className={`block truncate font-black ${classes.nameClassName}`}>{item.title}</span>
-                {item.description ? (
-                  <span className={`mt-0.5 block line-clamp-2 text-xs leading-5 ${classes.subClassName}`}>
-                    {item.description}
-                  </span>
-                ) : null}
-              </span>
-            </span>
-            <ArrowRight aria-hidden className="size-5 shrink-0 opacity-80" />
+        ) : null}
+        <div className="mt-4 w-full text-sm">{renderComponentList(props, classes, custom)}</div>
+        {!showContact ? (
+          <a href={`/api/public/${props.username}/vcard`} download className="mt-4 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-2xl border border-[#DDE8CD] bg-[#EEF4E7] px-3 py-2.5 text-sm font-black text-[#3F5F31] shadow-sm transition hover:bg-[#DDE8CD]">
+            <Download className="size-4" />
+            保存到通讯录
           </a>
-        );
-      }
-      // business / creator 共用样式
-      const outerBorder = variant === "creator" ? "" : 'border border-[#E8DCCB]';
-      return (
-        <a
-          key={item.id}
-          href={href ?? undefined}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`link168-card-hover flex min-h-14 items-center justify-between gap-3 rounded-2xl bg-[#FFFDF8] px-3.5 py-3 shadow-sm active:scale-[0.99] ${outerBorder} ${finalLinkClass}`}
-        >
-          <span className="flex min-w-0 flex-1 items-center gap-3">
-            {renderLinkIcon(item.icon, classes.avatarClassName)}
-            <span className="min-w-0 text-left">
-              <span className="block truncate font-black">{item.title}</span>
-              {item.description ? (
-                <span className={`mt-0.5 block line-clamp-2 text-xs leading-5 ${classes.subClassName}`}>
-                  {item.description}
-                </span>
-              ) : null}
-            </span>
-          </span>
-          <ArrowUpRight aria-hidden className="size-5 shrink-0 opacity-70" />
-        </a>
-      );
-    }
-  }
-}
-
-function renderComponentList(
-  links: SharePageLink[],
-  classes: ShareThemeClassSet,
-  variant: "business" | "creator" | "conversion",
-  linkStyle: ShareLinkStyle,
-  linkClassName?: string,
-): ReactNode {
-  if (links.length === 0) {
-    return (
-      <div className={`rounded-2xl border border-dashed border-[#E8DCCB] bg-[#FFFDF8]/70 px-5 py-10 text-center ${classes.subClassName}`}>
-        <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#DDE8CD]">
-          <Globe aria-hidden className="size-7 text-[#6F8F4E]" />
-        </div>
-        <p className="mt-4 text-base font-black text-[#2B241E]">主页正在搭建中</p>
-        <p className="mt-2 text-sm text-[#7A6D5E] leading-6">
-          主人很快就会在这里添加精彩内容
-          <br />
-          敬请期待
-        </p>
+        ) : null}
+        {props.showBrandFoot ? <BrandFoot classes={classes} /> : null}
+        {props.reportUrl ? <Link href={props.reportUrl} className={`mt-2 block text-center text-xs font-bold opacity-60 hover:opacity-90 ${classes.footerClassName}`}>举报此主页</Link> : null}
       </div>
-    );
-  }
-  return links.map((item) => renderComponentItem(item, classes, variant, linkStyle, linkClassName));
+    </div>
+  );
 }
 
-export function getSurfaceClassForTheme(
-  themeName: string | null | undefined,
-  override?: string,
-): string {
-  if (override) return override;
-  return getThemeClasses(themeName).surfaceClassName;
+export function getSurfaceClassForTheme(themeName: string | null | undefined, override?: string): string {
+  return override || getThemeClasses(themeName).surfaceClassName;
 }

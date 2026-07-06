@@ -84,13 +84,51 @@ export async function uploadAvatarRequest(file: File): Promise<ApiResult<Dashboa
   return { ok: true, data: data.profile };
 }
 
-function buildPayload(draft: LinkDraft) {
-  if (draft.componentType === "text" || draft.componentType === "group-title") return JSON.stringify({ text: draft.description || draft.title });
-  if (draft.componentType === "wechat") return JSON.stringify({ wechat: draft.url });
-  if (draft.componentType === "qr") return JSON.stringify({ qr: draft.url });
-  if (draft.componentType === "phone") return JSON.stringify({ phone: draft.url.replace(/^tel:/i, "") });
-  if (draft.componentType === "map") return JSON.stringify({ map: draft.url });
-  return undefined;
+function buildPayload(draft: LinkDraft): string | undefined {
+  const ct = draft.componentType || "link";
+
+  if (draft.payloadJson) {
+    return draft.payloadJson;
+  }
+
+  switch (ct) {
+    case "text":
+      return JSON.stringify({ content: draft.description || draft.title });
+    case "group-title":
+      return JSON.stringify({ title: draft.title, description: draft.description });
+    case "wechat":
+      return JSON.stringify({ wechat: draft.url });
+    case "qr":
+      return JSON.stringify({ qr: draft.url });
+    case "phone":
+      return JSON.stringify({ phone: draft.url.replace(/^tel:/i, "") });
+    case "map":
+      return JSON.stringify({ map: draft.url, address: "" });
+    case "divider":
+      return JSON.stringify({ style: "line" });
+    case "copy-text":
+    case "cover-image":
+    case "popup-image":
+    case "carousel":
+    case "bilibili-video":
+    case "youtube-video":
+    case "video-link":
+    case "netease-music":
+    case "music-link":
+    case "ai-chat":
+    case "product-card":
+      return JSON.stringify({ name: draft.title, description: draft.description });
+    case "service-card":
+      return JSON.stringify({ name: draft.title, description: draft.description });
+    case "offer":
+      return JSON.stringify({ title: draft.title, description: draft.description });
+    case "shop":
+    case "booking":
+      return draft.payloadJson || JSON.stringify({});
+    case "link":
+    default:
+      return undefined;
+  }
 }
 
 export async function createLinkRequest(draft: LinkDraft): Promise<ApiResult<DashboardLink>> {
@@ -103,6 +141,7 @@ export async function createLinkRequest(draft: LinkDraft): Promise<ApiResult<Das
       description: draft.description,
       iconType: draft.iconType,
       iconValue: draft.iconValue,
+      iconUrl: draft.iconUrl,
       componentType: draft.componentType,
       payload: buildPayload(draft),
     }),
@@ -123,7 +162,7 @@ export async function updateLinkRequest(link: DashboardLink, draft: LinkDraft, i
       isActive,
       iconType: draft.iconType,
       iconValue: draft.iconValue,
-      iconUrl: link.icon_url,
+      iconUrl: draft.iconUrl,
       componentType: draft.componentType || link.type || "link",
       payload: buildPayload(draft),
     }),
@@ -151,6 +190,20 @@ export async function saveAppearanceRequest(theme: string, template: string): Pr
   const response = await fetch("/api/dashboard/appearance", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ theme, template }) });
   const data = await readJson<{ success?: boolean; profile?: DashboardProfile; error?: string; message?: string; upgradeRequired?: boolean }>(response);
   if (!response.ok || !data.success || !data.profile) return { ok: false, error: data.error || "主题保存失败。", status: response.status, upgradeRequired: data.upgradeRequired };
+  return { ok: true, data: data.profile, message: data.message };
+}
+
+export async function saveCustomThemeRequest(customTheme: unknown): Promise<ApiResult<DashboardProfile>> {
+  const response = await fetch("/api/dashboard/appearance", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ customTheme }) });
+  const data = await readJson<{ success?: boolean; profile?: DashboardProfile; error?: string; message?: string; upgradeRequired?: boolean }>(response);
+  if (!response.ok || !data.success || !data.profile) return { ok: false, error: data.error || "自定义主题保存失败。", status: response.status, upgradeRequired: data.upgradeRequired };
+  return { ok: true, data: data.profile, message: data.message };
+}
+
+export async function saveProfileSettingsRequest(settings: { isPublic?: boolean; language?: string; contactVisibility?: string }): Promise<ApiResult<DashboardProfile>> {
+  const response = await fetch("/api/dashboard/profile", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(settings) });
+  const data = await readJson<{ success?: boolean; profile?: DashboardProfile; error?: string; message?: string }>(response);
+  if (!response.ok || !data.success || !data.profile) return { ok: false, error: data.error || "设置保存失败。", status: response.status };
   return { ok: true, data: data.profile, message: data.message };
 }
 
@@ -191,4 +244,15 @@ export async function revokeOtherSessionsRequest(): Promise<ApiResult<null>> {
 
 export async function logoutRequest() {
   await fetch("/api/auth/logout", { method: "POST" }).catch(() => undefined);
+}
+
+export async function deactivateAccountRequest(password: string): Promise<ApiResult<null>> {
+  const response = await fetch("/api/auth/deactivate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
+  const data = await readJson<{ success?: boolean; error?: string; message?: string }>(response);
+  if (!response.ok || !data.success) return { ok: false, error: data.error || "注销失败。", status: response.status };
+  return { ok: true, data: null, message: data.message };
 }

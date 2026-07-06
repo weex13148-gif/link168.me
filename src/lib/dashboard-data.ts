@@ -12,6 +12,16 @@ export function toProfileDto(profile: {
   language: string;
   customTheme: string | null;
   isPublic: boolean;
+  company: string | null;
+  jobTitle: string | null;
+  phone: string | null;
+  email: string | null;
+  wechat: string | null;
+  city: string | null;
+  address: string | null;
+  website: string | null;
+  socialLinks: unknown;
+  contactVisibility: string;
   createdAt: Date;
   updatedAt: Date;
 }) {
@@ -26,6 +36,16 @@ export function toProfileDto(profile: {
     language: profile.language,
     custom_theme: profile.customTheme,
     is_public: profile.isPublic,
+    company: profile.company,
+    job_title: profile.jobTitle,
+    phone: profile.phone,
+    email: profile.email,
+    wechat: profile.wechat,
+    city: profile.city,
+    address: profile.address,
+    website: profile.website,
+    social_links: profile.socialLinks,
+    contact_visibility: profile.contactVisibility,
     created_at: profile.createdAt.toISOString(),
     updated_at: profile.updatedAt.toISOString(),
   };

@@ -26,7 +26,7 @@ const COPY: Partial<Record<ShowcaseV2SectionKey, { title: string; body: string }
   },
   productDemo: {
     title: "评委可以直接打开真实产品页面",
-    body: "这里不使用截图代替功能。每个入口都指向仓库中的真实页面，并明确标记是否需要登录、仍在内测或暂未开放。",
+    body: "这里不使用截图代替功能。每个入口都指向仓库中的真实页面，并明确标记是否需要登录、仍在内测或属于未来规划。",
   },
   aiAssistants: {
     title: "五个比赛演示 Agent，加一个规划中的销售顾问",
@@ -176,7 +176,7 @@ export default function ShowcaseExperience() {
         <section className="border-b border-[var(--ui-line)] bg-[var(--ui-surface)] py-14 sm:py-20">
           <div className="ui-container grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-center">
             <div><p className="ui-eyebrow">{opening?.eyebrow || "Link168 比赛展示"}</p><h1 className="ui-title mt-4 max-w-4xl text-4xl leading-[1.12] sm:text-5xl lg:text-[58px]">{COPY.opening?.title}</h1><p className="ui-muted mt-6 max-w-2xl text-base leading-8 sm:text-lg">{COPY.opening?.body}</p><div className="mt-8 flex flex-col gap-3 sm:flex-row"><a href={`#${anchor("productDemo")}`} className="ui-button-primary min-h-12 px-6 text-base">查看真实产品 <ArrowRight className="size-4" /></a><a href="#competition-materials" className="ui-button-secondary min-h-12 px-6 text-base">查看比赛资料</a></div></div>
-            <aside className="ui-surface divide-y divide-[var(--ui-line)] overflow-hidden"><div className="px-5 py-4 text-xs font-black text-[var(--ui-muted)]">当前展示状态</div>{[["核心主页闭环","已完成","success"],["邮箱验证与找回密码","已完成","success"],["比赛资料下载","已接通","success"],["AI 助理","内测中","warning"],["正式支付","暂未开放","muted"]].map(([name,status,tone]) => <div key={name} className="flex items-center justify-between gap-4 px-5 py-4"><span className="text-sm font-bold">{name}</span><span className={`rounded-full px-3 py-1 text-xs font-black ${tone === "success" ? "bg-[var(--ui-success-soft)] text-[var(--ui-success)]" : tone === "warning" ? "bg-[var(--ui-accent-soft)] text-[#7D5B24]" : "bg-[var(--ui-surface-muted)] text-[var(--ui-muted)]"}`}>{status}</span></div>)}</aside>
+            <aside className="ui-surface divide-y divide-[var(--ui-line)] overflow-hidden"><div className="px-5 py-4 text-xs font-black text-[var(--ui-muted)]">当前展示状态</div>{[["核心主页闭环","已完成","success"],["邮箱验证与找回密码","已完成","success"],["比赛资料下载","已接通","success"],["AI 助理","内测中","warning"],["正式支付","未来规划","muted"]].map(([name,status,tone]) => <div key={name} className="flex items-center justify-between gap-4 px-5 py-4"><span className="text-sm font-bold">{name}</span><span className={`rounded-full px-3 py-1 text-xs font-black ${tone === "success" ? "bg-[var(--ui-success-soft)] text-[var(--ui-success)]" : tone === "warning" ? "bg-[var(--ui-accent-soft)] text-[#7D5B24]" : "bg-[var(--ui-surface-muted)] text-[var(--ui-muted)]"}`}>{status}</span></div>)}</aside>
           </div>
         </section>
 

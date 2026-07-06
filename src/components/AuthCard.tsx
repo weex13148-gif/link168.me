@@ -105,13 +105,13 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
 
             <label className="grid gap-2">
               <span className="text-sm font-black text-[var(--ui-ink)]">密码</span>
-              <input required minLength={6} type="password" autoComplete={isRegister ? "new-password" : "current-password"} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="至少 6 位" className="ui-input" />
+              <input required minLength={isRegister ? 8 : 6} type="password" autoComplete={isRegister ? "new-password" : "current-password"} value={password} onChange={(event) => setPassword(event.target.value)} placeholder={isRegister ? "至少 8 位" : "至少 6 位"} className="ui-input" />
             </label>
 
             {isRegister ? (
               <label className="grid gap-2">
                 <span className="text-sm font-black text-[var(--ui-ink)]">确认密码</span>
-                <input required minLength={6} type="password" autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="再次输入密码" className="ui-input" />
+                <input required minLength={8} type="password" autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="再次输入密码" className="ui-input" />
               </label>
             ) : null}
 

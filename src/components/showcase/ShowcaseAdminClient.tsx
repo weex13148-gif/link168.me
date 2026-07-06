@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { EVIDENCE_INVENTORY } from "@/lib/showcase-config";
 
 // ============== 类型定义 ==============
 
@@ -602,6 +604,140 @@ type ApiPayload = {
   error?: { message?: string };
 };
 
+// ============== 尽调概览标签页 ==============
+
+function OverviewTab() {
+  const [files, setFiles] = useState<CompetitionFile[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  async function loadFiles() {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/jeepwork/competition-files", { cache: "no-store" });
+      const result = (await response.json()) as FileApiPayload;
+      if (result.success && result.data) setFiles(result.data.files);
+    } catch {
+      // ignore
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadFiles();
+  }, []);
+
+  const evidenceStatus = useMemo(() => {
+    const map = new Map<string, CompetitionFile>();
+    files.forEach((f) => {
+      EVIDENCE_INVENTORY.forEach((ev) => {
+        const key = ev.name.replace(/截图|视频|记录|反馈/g, "").trim();
+        if (f.originalName.includes(key) || f.originalName.includes(ev.id)) {
+          map.set(ev.id, f);
+        }
+      });
+    });
+    return map;
+  }, [files]);
+
+  const providedEvidence = EVIDENCE_INVENTORY.filter((ev) => evidenceStatus.has(ev.id)).length;
+
+  const CHECKLIST = [
+    { name: "PPT", check: files.some((f) => f.purpose === "competition_ppt") },
+    { name: "项目书 PDF", check: files.some((f) => f.purpose === "project_pdf") },
+    { name: "演示视频", check: files.some((f) => f.purpose === "demo_video") },
+    { name: "产品截图", check: files.some((f) => f.purpose === "product_screenshot") },
+    { name: "评委资料", check: files.some((f) => f.purpose === "judge_doc") },
+    { name: "答辩 Q&A", check: files.some((f) => f.originalName.toLowerCase().includes("qa") || f.originalName.toLowerCase().includes("问答")) },
+    { name: "技术说明", check: files.some((f) => f.originalName.toLowerCase().includes("技术") || f.originalName.toLowerCase().includes("tech")) },
+    { name: "合规说明", check: files.some((f) => f.originalName.toLowerCase().includes("合规") || f.originalName.toLowerCase().includes("privacy") || f.originalName.toLowerCase().includes("terms")) },
+    { name: "离线备用材料", check: files.some((f) => f.purpose === "backup") },
+  ];
+
+  const checklistDone = CHECKLIST.filter((c) => c.check).length;
+
+  return (
+    <div className="grid gap-6">
+      {/* 三种模式入口 */}
+      <section className="rounded-[28px] border border-[#E8DCCB] bg-white p-6 shadow-sm">
+        <h3 className="text-lg font-black text-[#2B241E]">三种受众模式</h3>
+        <p className="mt-1 text-xs leading-5 text-[#7A6D5E]">点击卡片可直接访问对应模式页面，验证密码后可查看。</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <Link href="/showcase/judge" target="_blank" className="rounded-2xl border border-[#315F8C] bg-[#F8F5EF] p-4 text-sm font-black text-[#315F8C] hover:bg-[#315F8C] hover:text-white transition-colors">
+            评委模式 /showcase/judge
+          </Link>
+          <Link href="/showcase/investor" target="_blank" className="rounded-2xl border border-[#6F8F4E] bg-[#F8F5EF] p-4 text-sm font-black text-[#6F8F4E] hover:bg-[#6F8F4E] hover:text-white transition-colors">
+            投资人模式 /showcase/investor
+          </Link>
+          <Link href="/showcase/government" target="_blank" className="rounded-2xl border border-[#8C612E] bg-[#F8F5EF] p-4 text-sm font-black text-[#8C612E] hover:bg-[#8C612E] hover:text-white transition-colors">
+            政府模式 /showcase/government
+          </Link>
+        </div>
+      </section>
+
+      {/* 资料完整度 */}
+      <section className="rounded-[28px] border border-[#E8DCCB] bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-black text-[#2B241E]">资料完整度检查</h3>
+            <p className="mt-1 text-xs leading-5 text-[#7A6D5E]">基于文件库和证据清单自动检查，缺少材料时请在「比赛文件」标签页上传。</p>
+          </div>
+          <span className="rounded-full bg-[#F2EDE3] px-3 py-1 text-xs font-black text-[#7A6D5E]">
+            已具备 {checklistDone}/{CHECKLIST.length}
+          </span>
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          {CHECKLIST.map((item) => (
+            <div key={item.name} className={`flex items-center gap-3 rounded-2xl border px-4 py-3 ${item.check ? "border-[#6F8F4E] bg-[#F8F5EF]" : "border-[#E8DCCB] bg-white"}`}>
+              <span className={`grid size-6 place-items-center rounded-full text-xs font-black ${item.check ? "bg-[#6F8F4E] text-white" : "bg-[#E8DCCB] text-[#7A6D5E]"}`}>
+                {item.check ? "✓" : "—"}
+              </span>
+              <span className={`text-sm font-bold ${item.check ? "text-[#2B241E]" : "text-[#7A6D5E]"}`}>{item.name}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 证据清单状态 */}
+      <section className="rounded-[28px] border border-[#E8DCCB] bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-black text-[#2B241E]">证据材料清单</h3>
+            <p className="mt-1 text-xs leading-5 text-[#7A6D5E]">下方清单来自统一配置内核，文件名匹配即视为已提供。</p>
+          </div>
+          <span className="rounded-full bg-[#F2EDE3] px-3 py-1 text-xs font-black text-[#7A6D5E]">
+            已提供 {providedEvidence}/{EVIDENCE_INVENTORY.length}
+          </span>
+        </div>
+        {loading ? (
+          <p className="py-6 text-center text-sm font-bold text-[#7A6D5E]">正在检查文件库...</p>
+        ) : (
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {EVIDENCE_INVENTORY.map((ev) => {
+              const uploaded = evidenceStatus.get(ev.id);
+              return (
+                <div key={ev.id} className={`rounded-2xl border px-4 py-3 ${uploaded ? "border-[#6F8F4E] bg-[#F8F5EF]" : "border-[#E8DCCB] bg-white"}`}>
+                  <div className="flex items-center gap-2">
+                    <span className={`grid size-5 place-items-center rounded-full text-[10px] font-black ${uploaded ? "bg-[#6F8F4E] text-white" : "bg-[#E8DCCB] text-[#7A6D5E]"}`}>
+                      {uploaded ? "✓" : "—"}
+                    </span>
+                    <span className={`text-xs font-bold ${uploaded ? "text-[#2B241E]" : "text-[#7A6D5E]"}`}>{ev.name}</span>
+                  </div>
+                  {uploaded ? (
+                    <p className="mt-1 truncate text-[10px] text-[#6F8F4E]" title={uploaded.originalName}>{uploaded.originalName}</p>
+                  ) : (
+                    <p className="mt-1 text-[10px] text-[#B42318]">未提供</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
 export default function ShowcaseAdminClient() {
   const [config, setConfig] = useState<ShowcaseConfigPayload | null>(null);
   const [logs, setLogs] = useState<ShowcaseLog[]>([]);
@@ -609,7 +745,7 @@ export default function ShowcaseAdminClient() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<"config" | "files">("config");
+  const [activeTab, setActiveTab] = useState<"overview" | "config" | "files">("overview");
 
   const sectionKeys = useMemo(() => (config ? (Object.keys(config.sections) as SectionKey[]) : []), [config]);
 
@@ -685,6 +821,17 @@ export default function ShowcaseAdminClient() {
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
+          onClick={() => setActiveTab("overview")}
+          className={`min-h-11 rounded-2xl px-6 text-sm font-black transition-colors ${
+            activeTab === "overview"
+              ? "bg-[#315F8C] text-white"
+              : "border border-[#E8DCCB] bg-white text-[#2B241E]"
+          }`}
+        >
+          尽调概览
+        </button>
+        <button
+          type="button"
           onClick={() => setActiveTab("config")}
           className={`min-h-11 rounded-2xl px-6 text-sm font-black transition-colors ${
             activeTab === "config"
@@ -707,7 +854,9 @@ export default function ShowcaseAdminClient() {
         </button>
       </div>
 
-      {activeTab === "files" ? (
+      {activeTab === "overview" ? (
+        <OverviewTab />
+      ) : activeTab === "files" ? (
         <CompetitionFileTab />
       ) : (
         <>
