@@ -86,8 +86,8 @@ async function findAvatarFile(username: string): Promise<string | null> {
         }
       }
     }
-  } catch (err) {
-    console.error("[avatar] 遍历上传目录失败:", err && typeof err === "object" && "message" in err ? (err as Error).message : String(err));
+  } catch {
+    // ignore
   }
 
   if (newestFile) {
@@ -175,8 +175,7 @@ export async function GET(
         "X-Content-Type-Options": "nosniff",
       },
     });
-  } catch (err) {
-    console.error("[avatar] 读取头像文件失败:", avatarFilePath, err && typeof err === "object" && "message" in err ? (err as Error).message : String(err));
+  } catch {
     return NextResponse.json({ error: "头像读取失败。" }, { status: 500 });
   }
 }

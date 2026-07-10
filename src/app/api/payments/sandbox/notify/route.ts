@@ -58,6 +58,7 @@ export async function POST(request: Request) {
           });
         }
 
+        console.log("[sandbox/notify] 支付成功处理完成:", validation.orderNo);
         return new NextResponse(sandboxProvider.getNotifyResponse(true), {
           status: 200,
           headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },

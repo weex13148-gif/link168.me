@@ -3,7 +3,20 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { X, Menu } from "lucide-react";
+
+/**
+ * AdminShell — /jeepwork 平台控制平面统一外壳
+ *
+ * 一级导航按 JEEPWORK_ADMIN_SPEC 第 3.1 节收敛为 8 个分组：
+ *   总览 / 用户与企业 / 内容与治理 / AI 治理 / 支付与商业化 /
+ *   外部展示 / 安全与审计 / 系统与运维
+ *
+ * 桌面端：左侧固定侧边栏（248px）+ 顶部面包屑与标题 + 主内容区。
+ * 移动端：导航收入顶部按钮触发的全屏抽屉，主内容区全宽，表格降级为卡片。
+ *
+ * 路由不删除、不新增，仅调整分组与展示层级。
+ */
 
 type NavTone = "brand" | "danger" | "accent" | "info";
 
@@ -27,63 +40,72 @@ const ALL_NAV_GROUPS: NavGroup[] = [
     id: "overview",
     label: "总览",
     tone: "brand",
-    items: [{ href: "/jeepwork", label: "后台首页", icon: "H" }],
+    items: [{ href: "/jeepwork", label: "后台首页", icon: "◎" }],
   },
   {
-    id: "users",
-    label: "用户与名片",
+    id: "users-enterprise",
+    label: "用户与企业",
     tone: "info",
     items: [
-      { href: "/jeepwork/users", label: "用户管理", icon: "U", tone: "info" },
-      { href: "/jeepwork/profiles", label: "名片管理", icon: "P" },
-      { href: "/jeepwork/roles", label: "角色权限", icon: "R", tone: "accent", superAdminOnly: true },
+      { href: "/jeepwork/users", label: "用户管理", icon: "◇", tone: "info" },
+      { href: "/jeepwork/profiles", label: "主页管理", icon: "◇" },
+      { href: "/jeepwork/roles", label: "角色权限", icon: "⬢", tone: "accent", superAdminOnly: true },
     ],
   },
   {
-    id: "content",
+    id: "content-governance",
     label: "内容与治理",
     tone: "danger",
     items: [
       { href: "/jeepwork/reports", label: "举报管理", icon: "!", tone: "danger" },
-      { href: "/jeepwork/governance", label: "平台治理", icon: "G", tone: "info", superAdminOnly: true },
+      { href: "/jeepwork/governance", label: "平台治理", icon: "⬡", tone: "info", superAdminOnly: true },
     ],
   },
   {
-    id: "commerce",
-    label: "会员与订单",
-    tone: "info",
-    items: [
-      { href: "/jeepwork/settings/payment", label: "支付配置", icon: "C", tone: "info", superAdminOnly: true },
-      { href: "/jeepwork/ai-credits", label: "AI 额度", icon: "Q", tone: "accent", superAdminOnly: true },
-    ],
-  },
-  {
-    id: "ai",
+    id: "ai-governance",
     label: "AI 治理",
     tone: "accent",
     items: [
-      { href: "/jeepwork/ai-usage", label: "AI 用量", icon: "A", tone: "accent" },
-      { href: "/jeepwork/ai-cost", label: "AI 成本", icon: "$", tone: "accent", superAdminOnly: true },
-      { href: "/jeepwork/ai-safety", label: "AI 安全测试", icon: "S", tone: "accent", superAdminOnly: true },
-      { href: "/jeepwork/settings/ai", label: "AI 配置", icon: "K", tone: "accent", superAdminOnly: true },
+      { href: "/jeepwork/ai-usage", label: "AI 用量", icon: "△", tone: "accent" },
+      { href: "/jeepwork/ai-cost", label: "AI 成本", icon: "￥", tone: "accent", superAdminOnly: true },
+      { href: "/jeepwork/ai-safety", label: "AI 安全测试", icon: "盾", tone: "accent", superAdminOnly: true },
+      { href: "/jeepwork/settings/ai", label: "AI 配置", icon: "⚙", tone: "accent", superAdminOnly: true },
+      { href: "/jeepwork/competition-ai-debug", label: "AI 调试台", icon: "⌥", tone: "accent", superAdminOnly: true },
     ],
   },
   {
-    id: "security",
+    id: "payment-commerce",
+    label: "支付与商业化",
+    tone: "info",
+    items: [
+      { href: "/jeepwork/settings/payment", label: "支付宝与收费", icon: "支", tone: "info", superAdminOnly: true },
+    ],
+  },
+  {
+    id: "external-showcase",
+    label: "外部展示",
+    tone: "brand",
+    items: [
+      { href: "/jeepwork/showcase", label: "Showcase 设置", icon: "◆", tone: "brand", superAdminOnly: true },
+      { href: "/jeepwork/competition-center", label: "比赛中心", icon: "赛", tone: "brand", superAdminOnly: true },
+    ],
+  },
+  {
+    id: "security-audit",
     label: "安全与审计",
     tone: "danger",
     items: [
-      { href: "/jeepwork/audit", label: "审计日志", icon: "L", tone: "danger", superAdminOnly: true },
-      { href: "/jeepwork/logs", label: "访问日志", icon: "I", tone: "info", superAdminOnly: true },
+      { href: "/jeepwork/audit", label: "审计日志", icon: "▣", tone: "danger", superAdminOnly: true },
+      { href: "/jeepwork/logs", label: "访问日志", icon: "☰", tone: "info", superAdminOnly: true },
     ],
   },
   {
-    id: "ops",
-    label: "系统运维",
+    id: "system-ops",
+    label: "系统与运维",
     tone: "brand",
     items: [
-      { href: "/jeepwork/system-health", label: "系统健康", icon: "O", superAdminOnly: true },
-      { href: "/jeepwork/settings/api", label: "邮件与系统配置", icon: "M", tone: "info", superAdminOnly: true },
+      { href: "/jeepwork/system-health", label: "运维健康", icon: "◈", superAdminOnly: true },
+      { href: "/jeepwork/settings/api", label: "邮箱与系统配置", icon: "⚙", tone: "info", superAdminOnly: true },
     ],
   },
 ];
@@ -116,10 +138,12 @@ export default function AdminShell({
   const isSuperAdmin = currentUserRole === "super_admin";
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
+  // 路由切换时自动关闭移动端导航
   useEffect(() => {
     setMobileNavOpen(false);
   }, [pathname]);
 
+  // 移动端导航打开时禁用 body 滚动
   useEffect(() => {
     if (!mobileNavOpen) return;
     document.body.style.overflow = "hidden";
@@ -133,6 +157,7 @@ export default function AdminShell({
     return pathname === href || pathname?.startsWith(`${href}/`);
   }
 
+  // 按角色过滤分组与项目
   const visibleGroups = ALL_NAV_GROUPS
     .map((group) => ({
       ...group,
@@ -151,13 +176,16 @@ export default function AdminShell({
         </span>
         <span className="min-w-0">
           <span className="block text-sm font-black tracking-wide text-[var(--ui-ink)]">
-            Link168 Jeepwork
+            Link168 管理后台
           </span>
-          <span className="block text-xs text-[var(--ui-muted)]">平台治理后台</span>
+          <span className="block text-xs text-[var(--ui-muted)]">平台控制平面</span>
         </span>
       </Link>
 
-      <nav aria-label="后台导航" className="min-h-0 flex-1 overflow-y-auto px-2 py-3">
+      <nav
+        aria-label="后台一级导航"
+        className="min-h-0 flex-1 overflow-y-auto px-2 py-3"
+      >
         {visibleGroups.map((group) => (
           <div key={group.id} className="mb-4 last:mb-0">
             <p
@@ -207,7 +235,11 @@ export default function AdminShell({
           {isSuperAdmin ? "超级管理员" : currentUserRole === "admin" ? "管理员" : "已登录"}
         </p>
         {onLogout ? (
-          <button type="button" onClick={onLogout} className="ui-button-secondary min-h-10 w-full text-xs">
+          <button
+            type="button"
+            onClick={onLogout}
+            className="ui-button-secondary min-h-10 w-full text-xs"
+          >
             退出登录
           </button>
         ) : null}
@@ -217,7 +249,8 @@ export default function AdminShell({
 
   return (
     <main className="ui-page min-h-dvh overflow-x-hidden">
-      <div className="sticky top-0 z-30 border-b border-[var(--ui-line)] bg-[var(--ui-surface)]/95 backdrop-blur lg:hidden">
+      {/* 移动端顶栏 */}
+      <div className="lg:hidden sticky top-0 z-30 border-b border-[var(--ui-line)] bg-[var(--ui-surface)]/95 backdrop-blur">
         <div className="flex items-center justify-between gap-3 px-4 py-3">
           <Link href="/jeepwork" className="flex items-center gap-2">
             <span className="grid size-8 place-items-center rounded-[var(--ui-radius-sm)] bg-[var(--ui-brand)] text-xs font-black text-white">
@@ -236,8 +269,9 @@ export default function AdminShell({
         </div>
       </div>
 
+      {/* 移动端导航抽屉 */}
       {mobileNavOpen ? (
-        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true">
+        <div className="lg:hidden fixed inset-0 z-50" role="dialog" aria-modal="true">
           <div
             className="absolute inset-0 bg-black/30 backdrop-blur-[2px]"
             onClick={() => setMobileNavOpen(false)}
@@ -258,21 +292,29 @@ export default function AdminShell({
       ) : null}
 
       <div className="ui-admin-container grid gap-5 py-4 lg:grid-cols-[248px_minmax(0,1fr)]">
-        <div className="hidden lg:sticky lg:top-4 lg:block lg:h-[calc(100dvh-2rem)]">{sidebar}</div>
+        {/* 桌面端侧边栏 */}
+        <div className="hidden lg:block lg:sticky lg:top-4 lg:h-[calc(100dvh-2rem)]">
+          {sidebar}
+        </div>
 
         <div className="min-w-0 py-1">
+          {/* 面包屑 */}
           <div className="flex flex-wrap items-center gap-2 text-sm font-bold text-[var(--ui-muted)]">
             <Link href="/jeepwork" className="text-[var(--ui-brand)] hover:underline">
               管理后台
             </Link>
             <span aria-hidden className="text-[var(--ui-faint)]">
-              /
+              ›
             </span>
             <span className="text-[var(--ui-ink)]">{currentPageLabel}</span>
           </div>
 
+          {/* 页面标题 */}
           <header className="mt-5 border-b border-[var(--ui-line)] pb-5">
-            <p className="ui-eyebrow" style={{ color: pageHeader.highlight || "var(--ui-brand)" }}>
+            <p
+              className="ui-eyebrow"
+              style={{ color: pageHeader.highlight || "var(--ui-brand)" }}
+            >
               {pageHeader.eyebrow}
             </p>
             <h1 className="ui-title mt-2 text-2xl sm:text-3xl">{pageHeader.title}</h1>

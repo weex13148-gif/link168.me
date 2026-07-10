@@ -173,6 +173,8 @@ async function redisRateLimit(key: string, max: number, windowMs: number): Promi
 // ---- 统一入口 ----
 export async function rateLimit(request: Request, key: string, max: number, windowMs: number): Promise<RateLimitResult> {
   if (shouldBypassRateLimit()) {
+    // eslint-disable-next-line no-console
+    console.debug("[rate-limit] bypassed (dev mode + AUTH_RATE_LIMIT_BYPASS=true)");
     return { passed: true, remaining: Infinity, limit: Infinity, resetMs: 0 };
   }
   const ip = getClientIp(request);
@@ -184,6 +186,8 @@ export async function rateLimit(request: Request, key: string, max: number, wind
 
 export function rateLimitByKey(fullKey: string, max: number, windowMs: number): Promise<RateLimitResult> {
   if (shouldBypassRateLimit()) {
+    // eslint-disable-next-line no-console
+    console.debug("[rate-limit] bypassed (dev mode + AUTH_RATE_LIMIT_BYPASS=true)");
     return Promise.resolve({ passed: true, remaining: Infinity, limit: Infinity, resetMs: 0 });
   }
   return redisRateLimit(fullKey, max, windowMs).then((res) => res || memoryRateLimit(fullKey, max, windowMs));

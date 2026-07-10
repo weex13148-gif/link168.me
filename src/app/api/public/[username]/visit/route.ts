@@ -9,6 +9,30 @@ type RouteContext = {
   params: Promise<{ username: string }>;
 };
 
+// 简单内存限流：同一 IP 同一主页 5 秒内最多记录 1 次访问
+const visitThrottle = new Map<string, number>();
+const THROTTLE_MS = 5_000;
+
+function throttleKey(username: string, ipHash: string): string {
+  return `${username}:${ipHash}`;
+}
+
+function isThrottled(username: string, ipHash: string): boolean {
+  const key = throttleKey(username, ipHash);
+  const last = visitThrottle.get(key);
+  const now = Date.now();
+  if (last && now - last < THROTTLE_MS) return true;
+  visitThrottle.set(key, now);
+  // 定期清理旧条目，防止内存无限增长
+  if (visitThrottle.size > 10_000) {
+    const cutoff = now - THROTTLE_MS * 2;
+    for (const [k, v] of visitThrottle) {
+      if (v < cutoff) visitThrottle.delete(k);
+    }
+  }
+  return false;
+}
+
 export async function POST(request: NextRequest, context: RouteContext) {
   const { username } = await context.params;
 
@@ -29,6 +53,12 @@ export async function POST(request: NextRequest, context: RouteContext) {
     const ipRaw = getClientIp(request);
     const deviceInfo = parseDeviceInfo(userAgent);
     const ipHash = hashIp(ipRaw).slice(0, 16);
+
+    // 限流检查：同一 IP 短时间内重复访问不记录
+    if (isThrottled(username.toLowerCase(), ipHash)) {
+      return NextResponse.json({ success: true });
+    }
+
     const botDetected = isPotentialBot(request);
 
     await db.profileVisit.create({
@@ -47,8 +77,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
         isBot: botDetected,
       },
     });
-  } catch (err) {
-    console.error("[profile-visit] 记录访问失败:", username, err && typeof err === "object" && "message" in err ? (err as Error).message : String(err));
+  } catch {
+    // 静默失败，不影响响应
   }
 
   return NextResponse.json({ success: true });

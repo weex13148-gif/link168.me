@@ -735,6 +735,8 @@ function getClientIp(request: Request) {
 
 export async function isLoginRateLimited(email: string, request: Request) {
   if (shouldBypassRateLimit()) {
+    // eslint-disable-next-line no-console
+    console.debug("[rate-limit] login rate limit bypassed (dev mode + AUTH_RATE_LIMIT_BYPASS=true)");
     return false;
   }
   const ipAddress = getClientIp(request);

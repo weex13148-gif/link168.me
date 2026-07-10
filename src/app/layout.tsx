@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { VitalsReporter } from "@/components/performance/VitalsReporter";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://link168.me";
 
@@ -41,7 +42,10 @@ export default function RootLayout({
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
-      <body>{children}</body>
+      <body>
+        <VitalsReporter />
+        {children}
+      </body>
     </html>
   );
 }

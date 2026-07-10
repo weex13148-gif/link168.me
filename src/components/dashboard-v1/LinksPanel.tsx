@@ -68,6 +68,7 @@ function draftFromLink(link: DashboardLink): LinkDraft {
     iconType: link.icon_type || "default",
     iconValue: link.icon_value || "",
     iconUrl: link.icon_url || "",
+    iconModerationStatus: link.icon_moderation_status || "",
     componentType: (link.type || "link") as LinkDraft["componentType"],
     payloadJson: link.payload_json || "",
   };
@@ -172,7 +173,7 @@ function IconEditor({ draft, onChange, url, isNew }: { draft: LinkDraft; onChang
       });
       const data = await res.json();
       if (data.success && data.iconUrl) {
-        onChange({ iconType: "custom", iconUrl: data.iconUrl, iconValue: "" });
+        onChange({ iconType: "custom", iconUrl: data.iconUrl, iconValue: "", iconModerationStatus: data.moderationStatus });
         setMode("custom");
       } else {
         setUploadError(data.error || "上传失败");

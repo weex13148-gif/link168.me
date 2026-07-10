@@ -69,6 +69,7 @@ type UpdateLinkRequest = {
   iconType?: unknown;
   iconValue?: unknown;
   iconUrl?: unknown;
+  iconModerationStatus?: unknown;
   componentType?: unknown;
   payload?: unknown;
 };
@@ -236,9 +237,9 @@ export async function PATCH(request: Request, context: RouteContext) {
       iconType,
       iconValue,
       iconUrl,
-      // D7 写入侧：自定义图标 URL 变更时重置为 pending_manual_review，等待人工审核
+      // D7 写入侧：优先使用前端传递的实际 moderation 结果，否则回退到默认值
       ...(iconType === "custom" && iconUrl && iconUrl !== existing.iconUrl
-        ? { iconModerationStatus: "pending_manual_review" as const }
+        ? { iconModerationStatus: (typeof body.iconModerationStatus === "string" ? body.iconModerationStatus.trim() : "") || "pending_manual_review" as const }
         : {}),
     },
   });

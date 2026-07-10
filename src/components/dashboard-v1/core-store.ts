@@ -135,7 +135,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
   const [appearanceSaving, setAppearanceSaving] = useState(false);
   const [deactivating, setDeactivating] = useState(false);
 
-  const load = useCallback(async () => {
+  const loadCore = useCallback(async () => {
     setLoading(true);
     setLoadError("");
     try {
@@ -154,17 +154,24 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
       setBio(nextProfile?.bio || "");
       onLinksLoaded(result.links || []);
       setSaveState("saved");
-      const plan = await fetchPlan();
-      if (plan.ok) {
-        setPlanCode(plan.data.planCode);
-        setPlanEntitlements(plan.data);
-      }
     } catch {
       setLoadError("网络连接失败，无法加载用户后台。");
     } finally {
       setLoading(false);
     }
   }, [onLinksLoaded, onUnauthorized]);
+
+  const loadPlan = useCallback(async () => {
+    try {
+      const plan = await fetchPlan();
+      if (plan.ok) {
+        setPlanCode(plan.data.planCode);
+        setPlanEntitlements(plan.data);
+      }
+    } catch {
+      // 静默失败，plan 加载失败不阻断核心 UI
+    }
+  }, []);
 
   function markDirty() { setSaveState((current) => current === "saving" ? current : "dirty"); }
 
@@ -315,7 +322,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
     loading, loadError, user, profile, planCode, planEntitlements,
     username, displayName, bio, saveState, uploadingAvatar, appearanceSaving, deactivating,
     setUsername, setDisplayName, setBio, setSaveState,
-    load, markDirty, saveProfile, uploadAvatar, saveAppearance, saveCustomTheme, saveProfileSettings,
+    loadCore, loadPlan, markDirty, saveProfile, uploadAvatar, saveAppearance, saveCustomTheme, saveProfileSettings,
     refreshEntitlements, deactivateAccount,
   };
 }

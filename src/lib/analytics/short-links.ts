@@ -91,9 +91,7 @@ export async function recordShortLinkClick(params: {
   db.shortLink.update({
     where: { id: shortLinkId },
     data: { totalClicks: { increment: 1 } },
-  }).catch((err: unknown) => {
-    console.warn("[short-links] 点击计数更新失败:", shortLinkId, err && typeof err === "object" && "message" in err ? (err as Error).message : String(err));
-  });
+  }).catch(() => {}); // 静默失败，不影响跳转
 
   return clickRecord as Omit<ShortLinkClickRecord, "profileId"> & { profileId: string };
 }

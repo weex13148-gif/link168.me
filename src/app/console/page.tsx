@@ -36,7 +36,7 @@ export default async function ConsoleHomePage() {
 
   const profileId = profile?.id;
 
-  const [products, leads, activeLeads, knowledgeDocs, aiConfig, membership, shortLinks] =
+  const [products, leads, activeLeads, knowledgeDocs, aiConfig, membership, shortLinks, latestLeads] =
     await Promise.all([
       db.product.findMany({
         where: { userId: user.id },
@@ -53,6 +53,13 @@ export default async function ConsoleHomePage() {
       db.aiServiceConfig.findUnique({ where: { userId: user.id } }),
       db.membershipSubscription.findUnique({ where: { userId: user.id } }),
       db.shortLink.count({ where: { userId: user.id } }),
+      profileId
+        ? db.lead.findMany({
+            where: { profileId },
+            orderBy: { createdAt: "desc" },
+            take: 3,
+          })
+        : Promise.resolve([]),
     ]);
 
   const productCount = products.length;
@@ -63,14 +70,6 @@ export default async function ConsoleHomePage() {
         membership?.planCode ?? "free"
       ] ?? "免费版"
     : "免费版";
-
-  const latestLeads = profileId
-    ? await db.lead.findMany({
-        where: { profileId },
-        orderBy: { createdAt: "desc" },
-        take: 3,
-      })
-    : [];
 
   function formatTime(date: Date): string {
     const now = new Date();

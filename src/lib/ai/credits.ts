@@ -38,6 +38,9 @@ export async function getAiCreditBalance(userId: string): Promise<AiCreditBalanc
   return { accountId: account.id, balance: account.balance, version: account.version };
 }
 
+/**
+ * @deprecated 请使用 permissions.ts 中的 consumeCredit。此函数保留用于向后兼容。
+ */
 export async function consumeAiCredits(params: {
   userId: string;
   amount?: number;
@@ -52,70 +55,81 @@ export async function consumeAiCredits(params: {
     return { success: false, balance: 0, error: "AI Credits 扣减数量不正确。" };
   }
 
-  try {
-    return await db.$transaction(async (tx) => {
-      const existing = await tx.aiCreditLedger.findUnique({
-        where: { idempotencyKey: params.idempotencyKey },
-        select: { id: true, balanceAfter: true, entryType: true },
-      });
-      if (existing) {
-        if (existing.entryType !== "consume") {
-          return { success: false, balance: existing.balanceAfter, error: "AI Credits 幂等键冲突。" };
+  const MAX_RETRIES = 3;
+  let lastError: unknown;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      return await db.$transaction(async (tx) => {
+        const existing = await tx.aiCreditLedger.findUnique({
+          where: { idempotencyKey: params.idempotencyKey },
+          select: { id: true, balanceAfter: true, entryType: true },
+        });
+        if (existing) {
+          if (existing.entryType !== "consume") {
+            return { success: false, balance: existing.balanceAfter, error: "AI Credits 幂等键冲突。" };
+          }
+          return {
+            success: true,
+            balance: existing.balanceAfter,
+            ledgerId: existing.id,
+            alreadyApplied: true,
+          };
         }
-        return {
-          success: true,
-          balance: existing.balanceAfter,
-          ledgerId: existing.id,
-          alreadyApplied: true,
-        };
+
+        const account = await tx.aiCreditAccount.upsert({
+          where: { userId: params.userId },
+          create: { userId: params.userId, balance: 0 },
+          update: {},
+          select: { id: true, balance: true, version: true },
+        });
+
+        const claimed = await tx.aiCreditAccount.updateMany({
+          where: { id: account.id, balance: { gte: amount }, version: account.version },
+          data: { balance: { decrement: amount }, version: { increment: 1 } },
+        });
+
+        if (claimed.count !== 1) {
+          return {
+            success: false,
+            balance: account.balance,
+            error: `AI Credits 不足，当前余额 ${account.balance}。`,
+          };
+        }
+
+        const updated = await tx.aiCreditAccount.findUniqueOrThrow({
+          where: { id: account.id },
+          select: { balance: true },
+        });
+
+        const ledger = await tx.aiCreditLedger.create({
+          data: {
+            accountId: account.id,
+            entryType: "consume",
+            amount: -amount,
+            balanceAfter: updated.balance,
+            idempotencyKey: params.idempotencyKey,
+            referenceType: params.referenceType ?? "ai_chat",
+            referenceId: params.referenceId,
+            reason: params.reason ?? "AI 对话消费",
+            metadata: safeMetadata(params.metadata),
+          },
+          select: { id: true },
+        });
+
+        return { success: true, balance: updated.balance, ledgerId: ledger.id };
+      });
+    } catch (error) {
+      lastError = error;
+      if (attempt < MAX_RETRIES - 1) {
+        const delay = Math.min(100 * Math.pow(2, attempt), 1000);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
       }
-
-      const account = await tx.aiCreditAccount.upsert({
-        where: { userId: params.userId },
-        create: { userId: params.userId, balance: 0 },
-        update: {},
-        select: { id: true, balance: true },
-      });
-
-      const claimed = await tx.aiCreditAccount.updateMany({
-        where: { id: account.id, balance: { gte: amount } },
-        data: { balance: { decrement: amount }, version: { increment: 1 } },
-      });
-
-      if (claimed.count !== 1) {
-        return {
-          success: false,
-          balance: account.balance,
-          error: `AI Credits 不足，当前余额 ${account.balance}。`,
-        };
-      }
-
-      const updated = await tx.aiCreditAccount.findUniqueOrThrow({
-        where: { id: account.id },
-        select: { balance: true },
-      });
-
-      const ledger = await tx.aiCreditLedger.create({
-        data: {
-          accountId: account.id,
-          entryType: "consume",
-          amount: -amount,
-          balanceAfter: updated.balance,
-          idempotencyKey: params.idempotencyKey,
-          referenceType: params.referenceType ?? "ai_chat",
-          referenceId: params.referenceId,
-          reason: params.reason ?? "AI 对话消费",
-          metadata: safeMetadata(params.metadata),
-        },
-        select: { id: true },
-      });
-
-      return { success: true, balance: updated.balance, ledgerId: ledger.id };
-    });
-  } catch (error) {
-    console.error("[ai-credits] 扣减失败:", error);
-    return { success: false, balance: 0, error: "AI Credits 扣减失败，请稍后重试。" };
+    }
   }
+
+  console.error("[ai-credits] 扣减失败 (已重试):", lastError);
+  return { success: false, balance: 0, error: "AI Credits 扣减失败，请稍后重试。" };
 }
 
 export async function refundAiCredits(params: {
@@ -132,58 +146,69 @@ export async function refundAiCredits(params: {
     return { success: false, balance: 0, error: "AI Credits 退回数量不正确。" };
   }
 
-  try {
-    return await db.$transaction(async (tx) => {
-      const existing = await tx.aiCreditLedger.findUnique({
-        where: { idempotencyKey: params.idempotencyKey },
-        select: { id: true, balanceAfter: true, entryType: true },
-      });
-      if (existing) {
-        if (existing.entryType !== "refund") {
-          return { success: false, balance: existing.balanceAfter, error: "AI Credits 幂等键冲突。" };
+  const MAX_RETRIES = 3;
+  let lastError: unknown;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      return await db.$transaction(async (tx) => {
+        const existing = await tx.aiCreditLedger.findUnique({
+          where: { idempotencyKey: params.idempotencyKey },
+          select: { id: true, balanceAfter: true, entryType: true },
+        });
+        if (existing) {
+          if (existing.entryType !== "refund") {
+            return { success: false, balance: existing.balanceAfter, error: "AI Credits 幂等键冲突。" };
+          }
+          return {
+            success: true,
+            balance: existing.balanceAfter,
+            ledgerId: existing.id,
+            alreadyApplied: true,
+          };
         }
-        return {
-          success: true,
-          balance: existing.balanceAfter,
-          ledgerId: existing.id,
-          alreadyApplied: true,
-        };
+
+        const account = await tx.aiCreditAccount.upsert({
+          where: { userId: params.userId },
+          create: { userId: params.userId, balance: 0 },
+          update: {},
+          select: { id: true, version: true },
+        });
+
+        const updated = await tx.aiCreditAccount.update({
+          where: { id: account.id, version: account.version },
+          data: { balance: { increment: amount }, version: { increment: 1 } },
+          select: { balance: true },
+        });
+
+        const ledger = await tx.aiCreditLedger.create({
+          data: {
+            accountId: account.id,
+            entryType: "refund",
+            amount,
+            balanceAfter: updated.balance,
+            idempotencyKey: params.idempotencyKey,
+            referenceType: params.referenceType ?? "ai_chat",
+            referenceId: params.referenceId,
+            reason: params.reason,
+            metadata: safeMetadata(params.metadata),
+          },
+          select: { id: true },
+        });
+
+        return { success: true, balance: updated.balance, ledgerId: ledger.id };
+      });
+    } catch (error) {
+      lastError = error;
+      if (attempt < MAX_RETRIES - 1) {
+        const delay = Math.min(100 * Math.pow(2, attempt), 1000);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
       }
-
-      const account = await tx.aiCreditAccount.upsert({
-        where: { userId: params.userId },
-        create: { userId: params.userId, balance: 0 },
-        update: {},
-        select: { id: true },
-      });
-
-      const updated = await tx.aiCreditAccount.update({
-        where: { id: account.id },
-        data: { balance: { increment: amount }, version: { increment: 1 } },
-        select: { balance: true },
-      });
-
-      const ledger = await tx.aiCreditLedger.create({
-        data: {
-          accountId: account.id,
-          entryType: "refund",
-          amount,
-          balanceAfter: updated.balance,
-          idempotencyKey: params.idempotencyKey,
-          referenceType: params.referenceType ?? "ai_chat",
-          referenceId: params.referenceId,
-          reason: params.reason,
-          metadata: safeMetadata(params.metadata),
-        },
-        select: { id: true },
-      });
-
-      return { success: true, balance: updated.balance, ledgerId: ledger.id };
-    });
-  } catch (error) {
-    console.error("[ai-credits] 退回失败:", error);
-    return { success: false, balance: 0, error: "AI Credits 退回失败，请联系管理员。" };
+    }
   }
+
+  console.error("[ai-credits] 退回失败 (已重试):", lastError);
+  return { success: false, balance: 0, error: "AI Credits 退回失败，请联系管理员。" };
 }
 
 export async function listAiCreditLedger(userId: string, limit = 50) {

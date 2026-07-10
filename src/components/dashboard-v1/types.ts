@@ -45,6 +45,7 @@ export type DashboardLink = {
   icon_type: string;
   icon_value: string | null;
   icon_url: string | null;
+  icon_moderation_status: string | null;
   position: number;
   is_active: boolean;
   total_clicks: number;
@@ -141,6 +142,7 @@ export type LinkDraft = {
   iconType: string;
   iconValue: string;
   iconUrl: string;
+  iconModerationStatus?: string;
   componentType?: LinkComponentType;
   payloadJson: string;
 };

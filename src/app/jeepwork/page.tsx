@@ -32,17 +32,17 @@ type Summary = {
 };
 
 const shortcuts = [
-  { href: "/jeepwork/users", title: "用户与会员", description: "搜索用户，处理会员、限制、封禁和账号状态" },
-  { href: "/jeepwork/profiles", title: "名片管理", description: "查看、隐藏或恢复公开经营名片" },
-  { href: "/jeepwork/reports", title: "举报管理", description: "处理违规内容、举报和内容安全事件" },
-  { href: "/jeepwork/settings/payment", title: "支付配置", description: "检查支付宝配置、订单和商业化参数" },
-  { href: "/jeepwork/ai-usage", title: "AI 用量", description: "查看 AI 调用、额度和异常消耗" },
-  { href: "/jeepwork/system-health", title: "系统健康", description: "检查数据库、邮件、支付、存储和定时任务状态" },
+  { href: "/jeepwork/users", title: "用户与会员", description: "搜索客户，手动添加、续期、调整或注销会员" },
+  { href: "/jeepwork/settings/api", title: "邮箱与系统配置", description: "验证码、忘记密码、AI、支付与存储" },
+  { href: "/jeepwork/logs", title: "访问与安全日志", description: "登录、会话、管理员操作和原始 IP" },
+  { href: "/jeepwork/reports", title: "举报管理", description: "处理用户举报和违规主页" },
+  { href: "/jeepwork/profiles", title: "主页管理", description: "搜索、隐藏和恢复公开主页" },
+  { href: "/jeepwork/showcase", title: "比赛展示中心", description: "管理演示页面和访问控制" },
 ];
 
 const serviceLabels: Record<string, string> = {
   database: "数据库",
-  mail: "邮件服务",
+  mail: "邮箱服务",
   ai: "AI 服务",
   storage: "上传与存储",
   payment: "支付服务",
@@ -62,7 +62,7 @@ export default function JeepworkHomePage() {
     setError(null);
     try {
       const meResponse = await fetch("/api/jeepwork/auth/me", { cache: "no-store" });
-      const meResult = (await meResponse.json()) as { success?: boolean; user?: AdminUser };
+      const meResult = await meResponse.json() as { success?: boolean; user?: AdminUser };
       if (!meResponse.ok || !meResult.success || !meResult.user) {
         router.replace("/jeepwork/login");
         return;
@@ -75,7 +75,7 @@ export default function JeepworkHomePage() {
       }
 
       const response = await fetch("/api/jeepwork/summary", { cache: "no-store" });
-      const result = (await response.json()) as { success?: boolean; data?: Summary; error?: { message?: string } };
+      const result = await response.json() as { success?: boolean; data?: Summary; error?: { message?: string } };
       if (!response.ok || !result.success || !result.data) {
         setError(result.error?.message || "管理总览加载失败。");
         return;
@@ -88,9 +88,7 @@ export default function JeepworkHomePage() {
     }
   }, [router]);
 
-  useEffect(() => {
-    void load();
-  }, [load]);
+  useEffect(() => { void load(); }, [load]);
 
   async function onLogout() {
     setLoggingOut(true);
@@ -103,21 +101,27 @@ export default function JeepworkHomePage() {
 
   return (
     <AdminShell
-      currentPageLabel="后台首页"
+      currentPageLabel="管理后台首页"
       currentUserEmail={user?.email}
       currentUserRole={user?.role}
       onLogout={loggingOut ? undefined : () => setLogoutOpen(true)}
       pageHeader={{
-        eyebrow: "平台治理",
-        title: "Link168 Jeepwork",
-        subtitle: "集中处理用户、名片、举报、订单、AI 用量和系统健康，不再承载展示中心或比赛演示路线。",
+        eyebrow: "运营工作台",
+        title: "Link168 管理后台",
+        subtitle: "查看用户、邮箱、会员、举报和系统配置状态，并处理需要关注的事项。",
         highlight: "var(--ui-brand)",
       }}
     >
       <div className="grid gap-6">
+        {/* 已知限制：后台已知后端缺口，统一展示在总览顶部 */}
         {isSuperAdmin ? (
-          <AdminAlertBanner tone="warning" title="V2 方向提示">
-            本分支只保留经营名片 SaaS 的平台治理能力。展示中心、比赛中心和企业 AI 独立产品线已从活动入口移除。
+          <AdminAlertBanner tone="warning" title="已知限制：以下能力为后续 P0 项，当前仅为 UI 展示">
+            <ul className="space-y-1">
+              <li>· AI 成本页仅展示 Credit 计数，未对接真实供应商账单</li>
+              <li>· 退款流程仅更新本地订单状态，未调用支付宝接口</li>
+              <li>· 会员到期降级无定时任务，需人工触发</li>
+              <li>· 限流计数存于单机内存，多实例部署时不生效</li>
+            </ul>
           </AdminAlertBanner>
         ) : null}
 
@@ -126,7 +130,7 @@ export default function JeepworkHomePage() {
         {!isSuperAdmin && !loading ? (
           <AdminCard
             title="管理员工作台"
-            description="当前账号可以处理普通用户、名片和举报。系统配置、角色、安全日志和原始 IP 仅超级管理员可见。"
+            description="当前账号可以处理普通客户会员、主页与举报。系统配置、用户角色、安全日志和原始 IP 仅超级管理员可见。"
           >
             <p className="text-sm leading-6 text-[var(--ui-muted)]">
               如需进入高级管理区域，请联系超级管理员开通权限。
@@ -140,7 +144,11 @@ export default function JeepworkHomePage() {
               title="运营数据"
               description="来自当前数据库和业务日志"
               actions={
-                <button type="button" onClick={() => void load()} className="ui-button-secondary min-h-10 px-4 text-xs">
+                <button
+                  type="button"
+                  onClick={() => void load()}
+                  className="ui-button-secondary min-h-10 px-4 text-xs"
+                >
                   刷新数据
                 </button>
               }
@@ -161,9 +169,9 @@ export default function JeepworkHomePage() {
                     <p className="ui-muted mt-2 text-xs">未验证 {summary.counts.unverifiedUsers}</p>
                   </div>
                   <div className="border-b border-[var(--ui-line)] p-5 sm:border-r sm:border-b-0 xl:border-r">
-                    <dt className="text-xs font-black text-[var(--ui-muted)]">付费用户</dt>
+                    <dt className="text-xs font-black text-[var(--ui-muted)]">有效付费用户</dt>
                     <dd className="mt-2 text-3xl font-black text-[var(--ui-ink)]">{summary.counts.paidUsers}</dd>
-                    <p className="ui-muted mt-2 text-xs">会员版和企业版</p>
+                    <p className="ui-muted mt-2 text-xs">会员版与企业版</p>
                   </div>
                   <div className="p-5">
                     <dt className="text-xs font-black text-[var(--ui-muted)]">今日 AI 调用</dt>
@@ -174,7 +182,7 @@ export default function JeepworkHomePage() {
               ) : !error ? (
                 <AdminEmptyState
                   title="暂无运营数据"
-                  description="点击刷新数据按钮重新加载。"
+                  description="点击右上角刷新数据按钮重新加载。"
                   actionLabel="立即刷新"
                   onAction={() => void load()}
                 />
@@ -183,12 +191,12 @@ export default function JeepworkHomePage() {
 
             {summary ? (
               <div className="grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
-                <AdminCard title="需要关注" description="优先处理会影响用户使用和商业闭环的问题" bodyClassName="p-0">
+                <AdminCard title="需要关注" description="优先处理会影响用户使用的问题" bodyClassName="p-0">
                   <div className="divide-y divide-[var(--ui-line)]">
                     <Link href="/jeepwork/reports" className="flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-[var(--ui-surface-muted)]">
                       <span>
                         <strong className="block text-sm">待处理举报</strong>
-                        <span className="ui-muted mt-1 block text-xs">检查违规名片和用户举报</span>
+                        <span className="ui-muted mt-1 block text-xs">检查违规主页和用户举报</span>
                       </span>
                       <span className="text-xl font-black text-[var(--ui-danger)]">{summary.counts.pendingReports}</span>
                     </Link>
@@ -228,6 +236,40 @@ export default function JeepworkHomePage() {
                 </AdminCard>
               </div>
             ) : null}
+
+            {/* 更多指标区块：暂无数据的数据项 */}
+            <AdminCard
+              title="更多指标"
+              description="以下指标暂无数据"
+              accent="warning"
+            >
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="rounded-[var(--ui-radius-sm)] border border-dashed border-[var(--ui-line)] bg-[var(--ui-surface-muted)]/40 px-4 py-3">
+                  <p className="text-xs font-black text-[var(--ui-muted)]">活跃用户（近 7 日）</p>
+                  <p className="mt-1 text-xs text-[var(--ui-faint)]">暂无数据</p>
+                </div>
+                <div className="rounded-[var(--ui-radius-sm)] border border-dashed border-[var(--ui-line)] bg-[var(--ui-surface-muted)]/40 px-4 py-3">
+                  <p className="text-xs font-black text-[var(--ui-muted)]">企业数量</p>
+                  <p className="mt-1 text-xs text-[var(--ui-faint)]">暂无数据</p>
+                </div>
+                <div className="rounded-[var(--ui-radius-sm)] border border-dashed border-[var(--ui-line)] bg-[var(--ui-surface-muted)]/40 px-4 py-3">
+                  <p className="text-xs font-black text-[var(--ui-muted)]">订单概况</p>
+                  <p className="mt-1 text-xs text-[var(--ui-faint)]">暂无数据</p>
+                </div>
+                <div className="rounded-[var(--ui-radius-sm)] border border-dashed border-[var(--ui-line)] bg-[var(--ui-surface-muted)]/40 px-4 py-3">
+                  <p className="text-xs font-black text-[var(--ui-muted)]">AI 调用概况（聚合）</p>
+                  <p className="mt-1 text-xs text-[var(--ui-faint)]">暂无数据</p>
+                </div>
+                <div className="rounded-[var(--ui-radius-sm)] border border-dashed border-[var(--ui-line)] bg-[var(--ui-surface-muted)]/40 px-4 py-3">
+                  <p className="text-xs font-black text-[var(--ui-muted)]">/showcase 当前状态</p>
+                  <p className="mt-1 text-xs text-[var(--ui-faint)]">暂无数据</p>
+                </div>
+                <div className="rounded-[var(--ui-radius-sm)] border border-dashed border-[var(--ui-line)] bg-[var(--ui-surface-muted)]/40 px-4 py-3">
+                  <p className="text-xs font-black text-[var(--ui-muted)]">系统服务状态（聚合）</p>
+                  <p className="mt-1 text-xs text-[var(--ui-faint)]">暂无数据</p>
+                </div>
+              </div>
+            </AdminCard>
           </>
         ) : null}
 
@@ -243,7 +285,7 @@ export default function JeepworkHomePage() {
                 >
                   <h3 className="font-black text-[var(--ui-ink)]">{item.title}</h3>
                   <p className="ui-muted mt-2 text-sm leading-6">{item.description}</p>
-                  <p className="mt-3 text-sm font-black text-[var(--ui-brand)]">进入管理</p>
+                  <p className="mt-3 text-sm font-black text-[var(--ui-brand)]">进入管理 →</p>
                 </Link>
               ))}
           </div>

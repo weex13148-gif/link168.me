@@ -69,6 +69,7 @@ type CreateLinkRequest = {
   iconType?: unknown;
   iconValue?: unknown;
   iconUrl?: unknown;
+  iconModerationStatus?: unknown;
   componentType?: unknown;
   payload?: unknown;
 };
@@ -269,8 +270,9 @@ export async function POST(request: Request) {
   if (description && hasSensitiveContent(description).detected) return NextResponse.json({ success: false, error: "描述包含受限关键词，请修改后再试。" }, { status: 400 });
 
   const position = await db.link.count({ where: { profileId: profile.id } });
-  // D7 写入侧：自定义图标上传时持久化 pending_manual_review，等待人工审核
-  const iconModerationStatus = iconType === "custom" && iconUrl ? "pending_manual_review" : "legacy_approved";
+  // D7 写入侧：优先使用前端传递的实际 moderation 结果，否则回退到默认值
+  const rawIconModerationStatus = typeof body.iconModerationStatus === "string" ? body.iconModerationStatus.trim() : "";
+  const iconModerationStatus = rawIconModerationStatus || (iconType === "custom" && iconUrl ? "pending_manual_review" : "legacy_approved");
   const link = await db.link.create({
     data: {
       id: newId(),

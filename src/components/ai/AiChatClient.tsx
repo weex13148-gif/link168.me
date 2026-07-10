@@ -88,6 +88,16 @@ export default function AiChatClient({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const MAX_MESSAGES = 100;
+  const VISIBLE_COUNT = 25;
+  const VISIBLE_BUFFER = 10;
+
+  // 只渲染可视区域附近的消息，减少 DOM 节点
+  const visibleMessages = useMemo(() => {
+    if (messages.length <= VISIBLE_COUNT + VISIBLE_BUFFER) return messages;
+    return messages.slice(-VISIBLE_COUNT - VISIBLE_BUFFER);
+  }, [messages]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -121,7 +131,7 @@ export default function AiChatClient({
           timestamp: m.createdAt,
           creditCost: m.creditCost,
         }));
-        setMessages(loadedMessages);
+        setMessages(loadedMessages.length > MAX_MESSAGES ? loadedMessages.slice(-MAX_MESSAGES) : loadedMessages);
       } else {
         setError("加载会话失败");
       }
@@ -188,7 +198,10 @@ export default function AiChatClient({
       content: text,
       timestamp: new Date().toISOString(),
     };
-    setMessages((prev) => [...prev, userMsg]);
+    setMessages((prev) => {
+      const next = [...prev, userMsg];
+      return next.length > MAX_MESSAGES ? next.slice(-MAX_MESSAGES) : next;
+    });
 
     const history = messages
       .filter((m) => m.role === "user" || m.role === "assistant")
@@ -217,7 +230,10 @@ export default function AiChatClient({
           isError: true,
           timestamp: new Date().toISOString(),
         };
-        setMessages((prev) => [...prev, errorMsg]);
+        setMessages((prev) => {
+        const next = [...prev, errorMsg];
+        return next.length > MAX_MESSAGES ? next.slice(-MAX_MESSAGES) : next;
+      });
         setError(data.error || "请求失败");
         setIsLoading(false);
         return;
@@ -236,7 +252,10 @@ export default function AiChatClient({
         timestamp: new Date().toISOString(),
         creditCost: data.creditCost,
       };
-      setMessages((prev) => [...prev, assistantMsg]);
+      setMessages((prev) => {
+        const next = [...prev, assistantMsg];
+        return next.length > MAX_MESSAGES ? next.slice(-MAX_MESSAGES) : next;
+      });
 
       // 更新配额显示
       if (data.quota) {
@@ -250,7 +269,10 @@ export default function AiChatClient({
         isError: true,
         timestamp: new Date().toISOString(),
       };
-      setMessages((prev) => [...prev, errorMsg]);
+      setMessages((prev) => {
+        const next = [...prev, errorMsg];
+        return next.length > MAX_MESSAGES ? next.slice(-MAX_MESSAGES) : next;
+      });
       setError("网络错误");
     } finally {
       setIsLoading(false);
@@ -428,7 +450,7 @@ export default function AiChatClient({
             </div>
           ) : (
             <div className="grid gap-4">
-              {messages.map((msg) => (
+              {visibleMessages.map((msg) => (
                 <div
                   key={msg.id}
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}

@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties, ReactNode } from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -23,22 +23,24 @@ import { getThemeClasses, type ShareThemeClassSet } from "@/components/theme/pre
 import type { CustomTheme } from "@/components/theme/types";
 import { normalizeCustomTheme } from "@/components/theme/normalize";
 import { sanitizeMapUrl, sanitizePhoneNumber, sanitizePublicUrl } from "@/lib/public-url-security";
-import { CoverImageModule } from "@/components/share/modules/CoverImageModule";
-import { PopupImageModule } from "@/components/share/modules/PopupImageModule";
-import { CarouselModule } from "@/components/share/modules/CarouselModule";
-import { BilibiliVideoModule } from "@/components/share/modules/BilibiliVideoModule";
-import { YoutubeVideoModule } from "@/components/share/modules/YoutubeVideoModule";
-import { VideoLinkModule } from "@/components/share/modules/VideoLinkModule";
-import { NeteaseMusicModule } from "@/components/share/modules/NeteaseMusicModule";
-import { MusicLinkModule } from "@/components/share/modules/MusicLinkModule";
-import { DividerModule } from "@/components/share/modules/DividerModule";
-import { CopyTextModule } from "@/components/share/modules/CopyTextModule";
-import { AiChatModule } from "@/components/share/modules/AiChatModule";
+import dynamic from "next/dynamic";
 import { ModuleFallback } from "@/components/share/modules/ModuleFallback";
-import BookingModule from "@/components/share/modules/BookingModule";
-import ProductCardModule from "@/components/share/modules/ProductCardModule";
-import ServiceCardModule from "@/components/share/modules/ServiceCardModule";
-import OfferModule from "@/components/share/modules/OfferModule";
+
+const CoverImageModule = dynamic(() => import("@/components/share/modules/CoverImageModule").then((m) => ({ default: m.CoverImageModule })));
+const PopupImageModule = dynamic(() => import("@/components/share/modules/PopupImageModule").then((m) => ({ default: m.PopupImageModule })));
+const CarouselModule = dynamic(() => import("@/components/share/modules/CarouselModule").then((m) => ({ default: m.CarouselModule })));
+const BilibiliVideoModule = dynamic(() => import("@/components/share/modules/BilibiliVideoModule").then((m) => ({ default: m.BilibiliVideoModule })));
+const YoutubeVideoModule = dynamic(() => import("@/components/share/modules/YoutubeVideoModule").then((m) => ({ default: m.YoutubeVideoModule })));
+const VideoLinkModule = dynamic(() => import("@/components/share/modules/VideoLinkModule").then((m) => ({ default: m.VideoLinkModule })));
+const NeteaseMusicModule = dynamic(() => import("@/components/share/modules/NeteaseMusicModule").then((m) => ({ default: m.NeteaseMusicModule })));
+const MusicLinkModule = dynamic(() => import("@/components/share/modules/MusicLinkModule").then((m) => ({ default: m.MusicLinkModule })));
+const DividerModule = dynamic(() => import("@/components/share/modules/DividerModule").then((m) => ({ default: m.DividerModule })));
+const CopyTextModule = dynamic(() => import("@/components/share/modules/CopyTextModule").then((m) => ({ default: m.CopyTextModule })));
+const AiChatModule = dynamic(() => import("@/components/share/modules/AiChatModule").then((m) => ({ default: m.AiChatModule })));
+const BookingModule = dynamic(() => import("@/components/share/modules/BookingModule").then((m) => ({ default: m.default })));
+const ProductCardModule = dynamic(() => import("@/components/share/modules/ProductCardModule").then((m) => ({ default: m.default })));
+const ServiceCardModule = dynamic(() => import("@/components/share/modules/ServiceCardModule").then((m) => ({ default: m.default })));
+const OfferModule = dynamic(() => import("@/components/share/modules/OfferModule").then((m) => ({ default: m.default })));
 import {
   isModuleType,
   validateModulePayload,
@@ -188,7 +190,7 @@ function SafeAvatar({ src, alt, fallbackInitial, className, avatarClassName }: {
   }
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} className={className} onError={() => setImgError(true)} loading="lazy" />
+    <img src={src} alt={alt} className={className} onError={() => setImgError(true)} loading="lazy" decoding="async" />
   );
 }
 
@@ -362,8 +364,29 @@ function renderLegacyItem(item: SharePageLink, componentType: string, payload: R
   );
 }
 
-function renderComponentList(props: SharePageRendererProps, classes: ShareThemeClassSet, custom: CustomTheme | null) {
-  if (props.links.length === 0) {
+type ParsedLink = {
+  item: SharePageLink;
+  componentType: string;
+  payload: Record<string, unknown> | null;
+  isModule: boolean;
+};
+
+function parseLinks(links: SharePageLink[]): ParsedLink[] {
+  const moduleTypes = new Set(["cover-image", "popup-image", "carousel", "bilibili-video", "youtube-video", "video-link", "netease-music", "music-link", "divider", "copy-text", "ai-chat", "product-card", "service-card", "offer", "booking"]);
+  return links.map((item) => {
+    const componentType = normalizeComponentType(item);
+    const payload = safeParseJson<Record<string, unknown>>(item.payload);
+    return { item, componentType, payload, isModule: moduleTypes.has(componentType) };
+  });
+}
+
+function renderComponentList(
+  props: SharePageRendererProps,
+  classes: ShareThemeClassSet,
+  custom: CustomTheme | null,
+  parsedLinks: ParsedLink[],
+) {
+  if (parsedLinks.length === 0) {
     return (
       <div className={`rounded-2xl border border-dashed border-[var(--ui-line)] bg-[var(--ui-surface)]/70 px-5 py-10 text-center ${classes.subClassName}`}>
         <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-[var(--ui-success-soft)]"><Globe className="size-7 text-[var(--ui-success)]" /></div>
@@ -374,13 +397,10 @@ function renderComponentList(props: SharePageRendererProps, classes: ShareThemeC
   }
 
   const linkClassName = buildLinkClassSet(classes, props.linkStyle || "solid", props.linkClassName);
-  const moduleTypes = new Set(["cover-image", "popup-image", "carousel", "bilibili-video", "youtube-video", "video-link", "netease-music", "music-link", "divider", "copy-text", "ai-chat", "product-card", "service-card", "offer", "booking"]);
   return (
     <div className="space-y-2" style={custom?.moduleGap ? { gap: `${custom.moduleGap}px` } : undefined}>
-      {props.links.map((item) => {
-        const componentType = normalizeComponentType(item);
-        const payload = safeParseJson<Record<string, unknown>>(item.payload);
-        if (moduleTypes.has(componentType)) return renderNewModule(item, componentType, payload, props.username);
+      {parsedLinks.map(({ item, componentType, payload, isModule }) => {
+        if (isModule) return renderNewModule(item, componentType, payload, props.username);
         return renderLegacyItem(item, componentType, payload, classes, props.template || "business", linkClassName);
       })}
     </div>
@@ -397,6 +417,7 @@ export function SharePageRenderer(props: SharePageRendererProps) {
   };
   const showContact = props.contactVisibility !== "private" && props.contactVisibility !== "contacts_only";
   const compact = props.template === "conversion";
+  const parsedLinks = useMemo(() => parseLinks(props.links), [props.links]);
 
   return (
     <div className={`min-h-full w-full ${classes.surfaceClassName}`} style={buildSurfaceStyle(custom)}>
@@ -407,7 +428,7 @@ export function SharePageRenderer(props: SharePageRendererProps) {
             <ContactInfoSection phone={props.phone} email={props.email} wechat={props.wechat} address={props.address} website={props.website} username={props.username} classes={classes} />
           </div>
         ) : null}
-        <div className="mt-4 w-full text-sm">{renderComponentList(props, classes, custom)}</div>
+        <div className="mt-4 w-full text-sm">{renderComponentList(props, classes, custom, parsedLinks)}</div>
         {!showContact ? (
           <a href={`/api/public/${props.username}/vcard`} download className="mt-4 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-2xl border border-[var(--ui-success)] bg-[var(--ui-success-soft)] px-3 py-2.5 text-sm font-black text-[var(--ui-brand)] shadow-sm transition hover:bg-[var(--ui-success-soft)]">
             <Download className="size-4" />

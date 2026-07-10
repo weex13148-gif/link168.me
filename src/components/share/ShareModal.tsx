@@ -75,7 +75,7 @@ export function ShareModal({ isOpen, onClose, pageUrl, displayName, username, on
       });
       onClose();
     } catch {
-      // 用户取消或浏览器不支持分享，静默处理
+      console.log("分享取消或失败");
     }
   };
 

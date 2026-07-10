@@ -35,6 +35,7 @@ export function ProfilePanel({ profile, username, displayName, bio, saveState, u
                       src={profile.avatar_url}
                       alt="当前头像"
                       className="size-full object-cover"
+                      loading="lazy"
                       decoding="async"
                       onError={(event) => {
                         event.currentTarget.style.display = "none";
