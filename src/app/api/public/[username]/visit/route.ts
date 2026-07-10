@@ -47,8 +47,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
         isBot: botDetected,
       },
     });
-  } catch {
-    // 静默失败，不影响响应
+  } catch (err) {
+    console.error("[profile-visit] 记录访问失败:", username, err && typeof err === "object" && "message" in err ? (err as Error).message : String(err));
   }
 
   return NextResponse.json({ success: true });
