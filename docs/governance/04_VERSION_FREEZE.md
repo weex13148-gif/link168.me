@@ -18,7 +18,7 @@
 | 产品宪法 | `PRODUCT_CONSTITUTION.md` v1.6 |
 | 当前PRD | `PRD.md` v2.0-rc8 |
 | 工程规则 | `PROJECT_RULES.md` v1.0-rc3 |
-| 文档索引 | `DOCUMENT_INDEX.md` v1.0-rc7，待本轮更新 |
+| 文档索引 | `DOCUMENT_INDEX.md` v1.0-rc8 |
 | 持续整改报告 | `docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md` v1.5 |
 | 正式仓库 | `weex13148-gif/link168.me` |
 | 正式分支 | `codex/link168-v2-direction` |
