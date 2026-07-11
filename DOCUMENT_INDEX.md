@@ -1,8 +1,8 @@
 # Link168 正式文档索引
 
 **文件名：** `DOCUMENT_INDEX.md`  
-**版本：** v1.0-rc7  
-**更新日期：** 2026-07-11  
+**版本：** v1.0-rc8  
+**更新日期：** 2026-07-12  
 **状态：** 持续生效
 
 ---
@@ -14,7 +14,7 @@
 | 1 | `PRODUCT_CONSTITUTION.md` | v1.6 | 定位、统一身份、五档结构、AI、企业域名、企业协作、数据与Agent治理 |
 | 2 | `PRD.md` | v2.0-rc8 | 页面、路由、微信注册、身份绑定、企业成员生命周期、首页、AI、价格、权限和验收 |
 | 3 | `PROJECT_RULES.md` | v1.0-rc3 | Git、Agent、密钥、数据库、测试、部署和删除边界 |
-| 4 | `DOCUMENT_INDEX.md` | v1.0-rc7 | 文档版本、状态、优先级和更新记录 |
+| 4 | `DOCUMENT_INDEX.md` | v1.0-rc8 | 文档版本、状态、优先级和更新记录 |
 
 持续整改状态：
 
@@ -26,6 +26,31 @@ docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md
 
 ```text
 docs/audits/REPOSITORY_INSPECTION_REPORT_20260710.md
+```
+
+### 1.1 工程治理附件
+
+以下文件是正式文档的从属执行附件，不得覆盖产品宪法、PRD或工程规则：
+
+| 顺序 | 文件 | 版本 | 负责内容 |
+|---:|---|---|---|
+| 2 | `docs/governance/02_CODE_MAP.md` | v1.0 | 仓库、路由、领域、数据和第三方能力地图 |
+| 3 | `docs/governance/03_MODULE_BOUNDARY.md` | v1.0 | 十四个核心领域责任、依赖和禁止范围 |
+| 4 | `docs/governance/04_VERSION_FREEZE.md` | v1.0 | 当前冻结决策、P0/P1范围和未批准事项 |
+| 5 | `docs/governance/05_AGENT_GOVERNANCE.md` | v1.0 | 八个固定工作Agent、文件锁、并发和交接规则 |
+| 6 | `docs/governance/06_NAMING_STANDARD.md` | v1.0 | 品牌、页面、路由、套餐、身份、AI和代码命名 |
+| 7 | `docs/governance/07_ARCHITECTURE_DECISIONS.md` | v1.0 | 模块化单体、统一身份、五分类、AI账本等ADR |
+| 8 | `docs/governance/08_DEVELOPMENT_RULES.md` | v1.0 | 日常开发、检查、测试、Git和部署执行清单 |
+
+治理附件冲突裁决：
+
+```text
+PRODUCT_CONSTITUTION.md
+→ PRD.md
+→ PROJECT_RULES.md
+→ DOCUMENT_INDEX.md
+→ docs/governance/*
+→ Agent任务单与代码实现
 ```
 
 ---
@@ -216,3 +241,19 @@ AI额度总览
 4. 每次正式变化同步本索引。
 5. 代码差距和开发状态统一更新持续整改报告。
 6. 不创建并行宪法、并行PRD或重复整改报告。
+7. 目录、边界、冻结范围、Agent分工、命名、ADR和执行流程变化同步对应治理附件。
+
+---
+
+## 13. 本轮治理补充记录
+
+2026-07-12建立第一批完整治理文件：
+
+- 产品宪法：沿用根目录当前唯一有效版本 v1.6，不复制第二份。
+- 代码地图：已建立。
+- 模块边界：已建立。
+- 当前版本冻结清单：已建立。
+- 八个工作Agent管理制度：已建立。
+- 命名标准、架构决策和日常开发规则：已建立。
+
+本轮仅补充文档治理，不修改业务代码、Prisma、支付、AI接口、服务器或生产配置。
