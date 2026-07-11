@@ -1,0 +1,22 @@
+# Link168 GitHub code owners
+#
+# Agent01-Agent08 是仓库内的职责角色，不是 GitHub 账号。
+# 当前由仓库所有者负责正式审批；只有在未来建立真实 GitHub 团队后，
+# 才能把下列条目替换为对应团队账号。
+
+/PRODUCT_CONSTITUTION.md @weex13148-gif
+/PRD.md @weex13148-gif
+/PROJECT_RULES.md @weex13148-gif
+/DOCUMENT_INDEX.md @weex13148-gif
+/README.md @weex13148-gif
+
+/docs/governance/ @weex13148-gif
+/docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md @weex13148-gif
+
+/.github/ @weex13148-gif
+/package.json @weex13148-gif
+/package-lock.json @weex13148-gif
+/prisma/ @weex13148-gif
+/src/app/api/ @weex13148-gif
+/src/lib/ @weex13148-gif
+/scripts/governance/ @weex13148-gif
