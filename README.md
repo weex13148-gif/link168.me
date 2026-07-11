@@ -13,8 +13,8 @@ Link168 是面向个人创业者、小商家、自媒体和轻量企业的 **AI 
 1. [`DOCUMENT_INDEX.md`](./DOCUMENT_INDEX.md) — 当前正式文档及冲突处理索引
 2. [`PRODUCT_CONSTITUTION.md`](./PRODUCT_CONSTITUTION.md) — 产品最高原则、边界和长期规则
 3. [`PRD.md`](./PRD.md) — Link168 V2 详细功能、权限、流程和验收标准
-4. [`PROJECT_RULES.md`](./PROJECT_RULES.md) — 工程、安全、测试、Git、数据库和部署规则
-5. [`docs/V2_CONSTITUTION_PRD_CODE_AUDIT_20260711.md`](./docs/V2_CONSTITUTION_PRD_CODE_AUDIT_20260711.md) — 当前代码与正式规则的差距以及 P0、P1、P2 整改顺序
+4. [`docs/V2_CONSTITUTION_PRD_CODE_AUDIT_20260711.md`](./docs/V2_CONSTITUTION_PRD_CODE_AUDIT_20260711.md) — 当前代码与正式规则的差距以及 P0、P1、P2 整改顺序
+5. [`PROJECT_RULES.md`](./PROJECT_RULES.md) — 工程、安全、测试、Git、数据库和部署规则
 
 旧版 V0.1 文档、审计报告和历史方案仅供追溯。与上述正式文档冲突时，以正式文档为准。
 
