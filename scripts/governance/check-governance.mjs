@@ -85,8 +85,10 @@ for (const file of governanceFiles) {
   if (indexContent && !indexContent.includes(file)) {
     errors.push(`DOCUMENT_INDEX.md 未登记 ${file}`);
   }
-  if (readmeContent && !readmeContent.includes(file)) {
-    errors.push(`README.md 未列出 ${file}`);
+
+  const readmeEntry = path.basename(file);
+  if (readmeContent && !readmeContent.includes(readmeEntry)) {
+    errors.push(`README.md 未列出 ${readmeEntry}`);
   }
 }
 
