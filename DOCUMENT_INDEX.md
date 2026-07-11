@@ -1,7 +1,7 @@
 # Link168 正式文档索引
 
 **文件名：** `DOCUMENT_INDEX.md`  
-**版本：** v1.0-rc9  
+**版本：** v1.0-rc10  
 **更新日期：** 2026-07-12  
 **状态：** 持续生效
 
@@ -14,7 +14,7 @@
 | 1 | `PRODUCT_CONSTITUTION.md` | v1.6 | 定位、统一身份、五档结构、AI、企业、数据和Agent治理 |
 | 2 | `PRD.md` | v2.0-rc8 | 页面、路由、身份、企业成员生命周期、价格、权限和验收 |
 | 3 | `PROJECT_RULES.md` | v1.0-rc3 | Git、Agent、密钥、数据库、测试、部署和删除边界 |
-| 4 | `DOCUMENT_INDEX.md` | v1.0-rc9 | 文档版本、状态、优先级和治理入口 |
+| 4 | `DOCUMENT_INDEX.md` | v1.0-rc10 | 文档版本、状态、优先级和治理入口 |
 
 持续整改状态：
 
@@ -42,7 +42,7 @@ docs/audits/REPOSITORY_INSPECTION_REPORT_20260710.md
 | 5 | `docs/governance/05_AGENT_GOVERNANCE.md` | v1.1 | 八个开发Agent、审批矩阵、CODEOWNERS和文件锁 |
 | 6 | `docs/governance/06_NAMING_STANDARD.md` | v1.1 | 术语、品牌、路由、套餐、身份、AI、版本和代码命名 |
 | 7 | `docs/governance/07_ARCHITECTURE_DECISIONS.md` | v1.1 | 模块化单体、身份、AI账本、安全、兼容、迁移和治理ADR |
-| 8 | `docs/governance/08_DEVELOPMENT_RULES.md` | v1.1 | 日常开发、PR、CI、测试、Git、发布和紧急修复流程 |
+| 8 | `docs/governance/08_DEVELOPMENT_RULES.md` | v1.2 | 日常开发、四原则、PR、CI、测试、Git、发布和紧急修复流程 |
 | 9 | `docs/governance/09_SECURITY_DATA_OPERATIONS.md` | v1.0 | 安全、数据保留、事件响应、API、迁移、依赖、监控和发布 |
 
 治理附件冲突裁决：
@@ -63,7 +63,7 @@ PRODUCT_CONSTITUTION.md
 | 文件 | 用途 |
 |---|---|
 | `.github/CODEOWNERS` | 将正式文档、Prisma、API、核心服务和治理配置交由真实GitHub账号审批 |
-| `.github/pull_request_template.md` | 强制说明Agent、模块、跨模块、数据库、API、安全、验证和回滚 |
+| `.github/pull_request_template.md` | 强制说明Agent、假设、成功标准、最小修改、数据库、API、安全、验证和回滚 |
 | `.github/workflows/governance.yml` | 在正式分支和PR中运行治理一致性检查 |
 | `scripts/governance/check-governance.mjs` | 检查必需文件、上位版本引用、索引登记、编号和并行根文档 |
 | `package.json`中的`governance:check` | 本地和CI统一执行入口 |
@@ -170,9 +170,9 @@ PRODUCT_CONSTITUTION.md
 
 ---
 
-## 10. 本轮治理整改记录
+## 10. 治理整改记录
 
-2026-07-12根据治理审查完成：
+### 2026-07-12：治理体系补齐
 
 - 明确轻量`crm`领域与完整CRM的区别。
 - 明确Console、Jeepwork和Workspace并非同义词。
@@ -182,3 +182,13 @@ PRODUCT_CONSTITUTION.md
 - 增加安全、数据保留、事件响应、API兼容、数据库迁移、依赖、监控和发布治理。
 - 增加CODEOWNERS、PR模板、治理脚本和GitHub Actions。
 - 未修改`PRODUCT_CONSTITUTION.md`，因为审查报告假设的CRM/ERP冲突在当前宪法中并不存在。
+
+### 2026-07-12：Agent四原则适配
+
+参考外部AI编码行为规范后，只吸收与Link168直接相关的执行原则：
+
+- 明示假设，但不重复询问已经明确的信息。
+- 最小充分实现，但不削弱身份、支付、AI、数据库和企业隔离的安全边界。
+- 外科式修改，不顺手重构、格式化或删除无关代码。
+- 目标驱动验证，按风险决定复现、测试和针对性检查。
+- 未新增`CLAUDE.md`、新治理文件或外部插件依赖。
