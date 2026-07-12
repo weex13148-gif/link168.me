@@ -1,8 +1,8 @@
 # Link168 V2 后续整改开发报告
 
-**版本：** v1.9  
+**版本：** v2.0  
 **更新日期：** 2026-07-12  
-**状态：** 持续更新；A邮箱身份主线已完成，B Console第一批已完成开发与CI验收  
+**状态：** 持续更新；A邮箱身份与B Console主线已完成开发和自动化验收  
 **依据：** `PRODUCT_CONSTITUTION.md` v1.6、`PRD.md` v2.0-rc8、`PROJECT_RULES.md` v1.0-rc3
 
 ---
@@ -20,13 +20,11 @@
 → 代码与部署结果
 ```
 
-代码存在、静态检查、临时数据库验收、真实第三方服务验证和生产验证必须分开表述。
+代码存在、静态检查、临时数据库验收、自动化浏览器验收、真实第三方服务验证和生产验证必须分开表述。
 
 ---
 
 ## 2. 当前V2正式范围
-
-V2核心闭环：
 
 ```text
 邮箱注册和登录
@@ -40,7 +38,7 @@ V2核心闭环：
 → 企业空间与站内成员管理
 ```
 
-当前正式边界：
+当前边界：
 
 - V2只开放邮箱注册和登录。
 - 普通微信注册、登录和绑定退出V2。
@@ -52,42 +50,165 @@ V2核心闭环：
 
 ---
 
-## 3. 五分类用户后台
+## 3. A主线：邮箱身份闭环
 
-用户后台一级分类固定为：
+**状态：开发和自动化验收完成。**
 
-1. 首页
-2. 名片
-3. 客户
-4. AI
-5. 我的
+已完成：
 
-其他功能全部使用组件、卡片、快捷入口或二级页面，不增加第六个一级入口。
+- 注册满30天未验证后仍可登录受限后台。
+- 公开主页和敏感操作按邮箱验证状态进行服务端限制。
+- 验证码按User ID隔离，并兼容历史凭证。
+- 邮箱验证和密码重置令牌原子单次消费。
+- 邮箱验证只解除`EMAIL_UNVERIFIED`，不解除其他冻结或封禁。
+- 重置密码后旧Session和旧密码失效。
+- Session创建失败不记录虚假登录成功。
+- 注册完成但Session失败的账号可以恢复登录。
+- 临时PostgreSQL 16、migration、Lint、TypeScript、生产构建和真实API集成测试通过。
 
----
-
-## 4. A主线：邮箱身份闭环
-
-A主线已经完成：
-
-- 30天邮箱边界和公开主页限制。
-- 验证码按User ID隔离和旧凭证兼容。
-- 邮箱验证与密码重置原子单次消费。
-- 重置密码后旧Session、旧密码失效。
-- Session故障不记录假成功，注册账号可以恢复登录。
-- PostgreSQL 16临时数据库、migration、Lint、TypeScript、生产构建和真实API集成测试通过。
-
-尚未执行但不阻塞后续开发：阿里云邮件真实投递、生产数据库迁移、生产服务器部署和生产域名浏览器冒烟。
+尚未执行：阿里云邮件真实投递、生产数据库迁移、生产服务器部署和生产域名冒烟。
 
 ---
 
-## 5. B主线：Console五分类兼容收口
+## 4. B主线：Console五分类兼容收口
 
-### 5.1 已批准方案
+### 4.1 正式一级入口
 
-2026-07-12老板选择方案1：兼容适配收口。
+用户后台固定为：
 
-正式一级入口：
+```text
+首页  /console
+名片  /console/card
+客户  /console/customers
+AI    /console/ai
+我的  /console/account
+```
+
+其他能力只能进入组件、快捷入口或二级页面，不增加第六个一级入口。
+
+### 4.2 已完成实现
+
+#### 五分类与共享导航
+
+- 新增统一路由策略，集中定义五项顺序、正式路径和旧路径归类。
+- ConsoleShell、WorkbenchShell和DashboardFrame统一为同一套五项桌面导航与手机底栏。
+- 手机底栏固定为：首页、名片、客户、AI、我的。
+- 普通用户共享导航彻底移除Jeepwork。
+- 名片编辑器内部七个装修标签移到页面内工具条，不再占用一级底栏。
+
+#### 正式主路径和二级路径
+
+已建立并通过构建：
+
+```text
+/console
+/console/card
+/console/card/products
+/console/card/short-links
+/console/card/analytics
+/console/customers
+/console/ai
+/console/ai/[assistant]
+/console/ai/service
+/console/ai/reception
+/console/ai/knowledge
+/console/account
+/console/account/membership
+/console/account/enterprise
+/console/account/notifications
+```
+
+适配页复用现有成熟业务实现，没有复制服务、权限或数据库逻辑。
+
+#### 旧路径兼容
+
+以下旧地址继续有效，并使用临时307跳转进入正式Console路径：
+
+```text
+/dashboard
+/workbench
+/workbench/card
+/workbench/products
+/workbench/short-links
+/workbench/analytics
+/workbench/leads
+/workbench/ai
+/workbench/ai/:assistant
+/workbench/ai-service
+/workbench/knowledge
+/workbench/account
+/workbench/membership
+/workbench/enterprise
+/workbench/notifications
+```
+
+旧业务文件和历史数据结构没有删除。
+
+#### Console首页与状态页面
+
+- 首页所有用户入口统一使用`/console/*`，不再直接跳向`/dashboard`或`/workbench/*`。
+- 首页只展示五个正式分类。
+- 产品总数改为真实`count`，最近产品列表仍只展示3条。
+- 新增统一加载态和可恢复错误态。
+- 页面外层增加`min-w-0`、换行和横向溢出保护。
+
+### 4.3 测试与CI
+
+#### 导航策略测试
+
+```text
+src/components/layout/console-route-policy.test.ts
+```
+
+锁定：
+
+- 五项顺序和正式路径。
+- 正式嵌套路由选中状态。
+- 旧路径所属分类。
+- Jeepwork不属于任何用户Console分类。
+
+#### 登录态路由烟测
+
+```text
+scripts/console-integration-test.mjs
+```
+
+验证：
+
+- 五个一级页面在登录态返回200。
+- 正式二级路径在登录态返回200。
+- Console首页只包含正式Console入口。
+- 旧Dashboard和Workbench路径跳向正确正式地址。
+- 普通用户页面不暴露Jeepwork。
+
+#### 真实移动端浏览器验收
+
+```text
+scripts/console-mobile-browser-test.cjs
+```
+
+测试环境：
+
+```text
+GitHub Actions Ubuntu Runner
+Node.js 22
+PostgreSQL 16临时数据库
+Next.js生产构建
+Playwright 1.55.0临时安装
+Chromium无头浏览器
+MAIL_ENABLED=false
+无生产密钥
+```
+
+测试宽度：
+
+```text
+360px
+390px
+430px
+```
+
+测试页面：
 
 ```text
 /console
@@ -97,46 +218,18 @@ A主线已经完成：
 /console/account
 ```
 
-实施原则：
+每个页面均验证：
 
-- 正式入口使用`/console/*`。
-- 第一阶段不搬迁成熟业务代码，适配页直接复用现有Dashboard和Workbench页面。
-- `/dashboard`与`/workbench/*`继续兼容，不删除、不强制失效。
-- 旧路径通过统一路由策略归入对应一级分类，保持正确选中状态。
-- 桌面侧栏和手机底栏只能出现首页、名片、客户、AI、我的五项。
-- 普通用户导航不得出现`/jeepwork`。
-- 名片编辑器内部标签属于名片二级工具，不得继续占用手机一级底栏。
-- 不修改Prisma Schema、migration、支付、AI权限、企业数据或生产配置。
+- HTTP 200且登录态有效。
+- 文档宽度不超过视口，不存在文档级横向溢出。
+- 手机底栏恰好为首页、名片、客户、AI、我的。
+- 不存在指向Jeepwork的普通用户链接。
+- 保存全页截图作为短期CI证据。
 
-### 5.2 旧路径归类
+### 4.4 最终验收证据
 
-| 一级分类 | 正式路径 | 兼容路径 |
-|---|---|---|
-| 首页 | `/console` | `/workbench` |
-| 名片 | `/console/card` | `/dashboard`、产品、短链、分析、旧名片管理 |
-| 客户 | `/console/customers` | `/workbench/leads` |
-| AI | `/console/ai` | AI助手、AI服务、知识库 |
-| 我的 | `/console/account` | 账户、会员、企业、通知 |
-
-`/jeepwork`及其子路由不属于任何用户Console分类。
-
-### 5.3 第一批已完成实现
-
-- 新增纯路由策略模块，集中定义五项顺序、正式路径和兼容路径。
-- 新增导航策略测试，锁定五项顺序、嵌套路由选中和Jeepwork排除。
-- 共享导航配置只导出五个用户一级入口。
-- ConsoleShell、WorkbenchShell和DashboardFrame统一桌面侧栏和手机底栏。
-- 新增`/console/card`、`/console/customers`、`/console/ai`、`/console/account`适配页。
-- 新增AI助手、访客AI接待和知识库的Console适配入口。
-- 适配页直接复用成熟业务页面，没有复制业务服务或数据库逻辑。
-- 名片编辑器内部七个标签移入页面内横向工具条。
-- 普通用户共享导航中移除Jeepwork。
-- 所有外层容器增加`min-w-0`或`overflow-x-hidden`，降低360–430px横向溢出风险。
-
-### 5.4 第一批自动化验收
-
-验证草稿PR：`#29 ci: verify B console five-section navigation`  
-成功运行：`29187365414`  
+最终草稿验证PR：`#33 ci: rerun final B mobile console validation`  
+最终成功运行：`29188134805`  
 结论：`success`
 
 以下步骤全部成功：
@@ -152,34 +245,36 @@ PostgreSQL 16临时容器初始化
 → npm run lint
 → npm run typecheck
 → npm run build
-→ 启动Next.js生产构建
-→ 邮箱认证真实API回归测试
+→ 临时安装Playwright和Chromium
+→ 邮箱认证真实API回归
+→ Console登录态路由烟测
+→ 360/390/430px真实Chromium移动端验收
+→ 上传移动端截图与浏览器日志
 ```
 
-构建已确认新路径可以被Next.js编译：
+证据产物：
 
 ```text
-/console/card
-/console/customers
-/console/ai
-/console/ai/[assistant]
-/console/ai/reception
-/console/ai/knowledge
-/console/account
+名称：console-mobile-evidence
+Artifact ID：8258673568
+大小：4,201,341 bytes
+保留至：2026-07-19
 ```
 
-### 5.5 第一批未执行边界
+前一次PR #32的浏览器步骤在打开页面前因临时Playwright模块解析失败而失败；应用迁移、测试、Lint、TypeScript和构建当时均已通过。CI工具加载方式修复后，PR #33完整通过，因此PR #33是B主线权威验收结果。
 
-- 未修改Prisma Schema和migration。
-- 未删除`/dashboard`或`/workbench/*`。
-- 未修改支付、AI权限、会员、企业数据和Workspace隔离。
+### 4.5 明确未执行
+
+- 未修改Prisma Schema或新增migration。
+- 未删除旧Dashboard、Workbench或未来业务结构。
+- 未修改支付、AI额度、会员核心、Workspace隔离或企业成员模型。
 - 未接入微信、企业微信、飞书或钉钉。
-- 未连接生产数据库、真实密钥和生产服务器。
-- 尚未执行360px、390px、430px真实浏览器截图和交互验收。
+- 未连接生产数据库、真实密钥或生产服务器。
+- 未部署到生产域名。
 
 ---
 
-## 6. 自动化命令
+## 5. 当前自动化命令
 
 ```bash
 npm run governance:check
@@ -190,17 +285,14 @@ npm run typecheck
 npm run build
 ```
 
-完整`npm run check`已经包含认证和Console导航策略测试。
+GitHub Actions还会执行认证API、Console路由和真实移动端Chromium验收。
 
 ---
 
-## 7. B第二批顺序
+## 6. 下一主线
 
-1. 修复Console首页仍暴露的旧模块直达入口，统一进入五个正式分类。
-2. 对360px、390px、430px逐页检查横向溢出。
-3. 统一加载、空状态和错误状态。
-4. 检查旧路径页面是否存在重复壳层、重复底栏或错误选中。
-5. B主线最终验收后冻结五分类导航文件。
-6. 再进入C企业邮箱邀请和Workspace隔离。
+A和B完成后，下一项正式任务为：
 
-未经老板新的明确批准，不提前开发微信、企业微信、飞书或钉钉。
+> **C：企业邮箱邀请、成员权限和Workspace隔离。**
+
+C主线开始前必须先检查现有Workspace、WorkspaceMember、邀请接口和资源查询是否完整按`workspaceId`隔离；不得提前接入企业微信、飞书或钉钉。
