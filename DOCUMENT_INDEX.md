@@ -63,6 +63,7 @@ docs/audits/REPOSITORY_INSPECTION_REPORT_20260710.md
 
 ```text
 docs/PRD_AI名片_AI客服_微信联系组件.md
+docs/PRD_MEDIA_UPLOAD_RULES.md
 docs/history/PRD_WECHAT_CONTACT_COMPONENT.md
 ```
 
