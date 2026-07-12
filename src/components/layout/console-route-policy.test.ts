@@ -1,3 +1,4 @@
+// Temporary CI trigger for real mobile browser validation; do not merge this comment.
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
