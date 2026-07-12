@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test:auth": "node --experimental-strip-types --test src/lib/auth-credential-policy.test.ts",
     "governance:check": "node scripts/governance/check-governance.mjs",
-    "check": "npm run governance:check && npm run lint && npm run typecheck && npm run build",
+    "check": "npm run governance:check && npm run test:auth && npm run lint && npm run typecheck && npm run build",
     "db:backup": "node scripts/db/backup-db.js",
     "db:restore": "node scripts/db/restore-db.js",
     "db:migrate": "node scripts/db/migrate-db.js",
