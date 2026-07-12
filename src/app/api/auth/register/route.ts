@@ -109,7 +109,7 @@ export async function POST(request: Request) {
         ? [
             db.usernameRegistry.create({
               data: {
-                id: crypto.randomUUID(),
+                id: randomUUID(),
                 normalizedUsername: finalUsername,
                 displayUsername: finalUsername,
                 userId,
