@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
-import { consumePasswordResetToken, validatePasswordResetToken } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { resetPasswordWithToken } from "@/lib/auth-hardening";
 import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -39,21 +38,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "两次输入的新密码不一致。" }, { status: 400 });
   }
 
-  const user = await validatePasswordResetToken(token);
-  if (!user) {
-    return NextResponse.json({ success: false, error: "重置链接无效、已使用或已过期，请重新申请。" }, { status: 400 });
-  }
-
   const passwordHash = await bcrypt.hash(password, 12);
-  await db.$transaction([
-    db.user.update({ where: { id: user.id }, data: { passwordHash } }),
-    db.session.deleteMany({ where: { userId: user.id } }),
-  ]);
-  await consumePasswordResetToken(token);
+
+  try {
+    const userId = await resetPasswordWithToken(token, passwordHash);
+    if (!userId) {
+      return NextResponse.json({ success: false, error: "重置链接无效、已使用或已过期，请重新申请。" }, { status: 400 });
+    }
+  } catch {
+    return NextResponse.json({ success: false, error: "密码重置服务暂时不可用，请稍后重试。" }, { status: 503 });
+  }
 
   return NextResponse.json({
     success: true,
-    message: "密码修改成功，请使用新密码重新登录。",
+    message: "密码修改成功，所有旧设备已退出，请使用新密码重新登录。",
     redirectTo: "/login?passwordReset=success",
   });
 }
