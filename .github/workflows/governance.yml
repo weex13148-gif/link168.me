@@ -19,6 +19,7 @@ on:
       - 'scripts/workspace-invitation-integration-test.mjs'
       - 'scripts/workspace-resource-integration-test.mjs'
       - 'scripts/workspace-customer-integration-test.mjs'
+      - 'scripts/workspace-card-integration-test.mjs'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
@@ -73,6 +74,7 @@ on:
       - 'scripts/workspace-invitation-integration-test.mjs'
       - 'scripts/workspace-resource-integration-test.mjs'
       - 'scripts/workspace-customer-integration-test.mjs'
+      - 'scripts/workspace-card-integration-test.mjs'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
@@ -117,7 +119,7 @@ jobs:
   governance-auth-console-workspace:
     name: Validate governance, auth, console and workspace isolation
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     services:
       postgres:
         image: postgres:16
@@ -175,6 +177,9 @@ jobs:
       - name: Run workspace customer policy tests
         run: npm run test:workspace-customer
 
+      - name: Run workspace card policy tests
+        run: npm run test:workspace-card
+
       - name: Run lint
         run: npm run lint
 
@@ -204,6 +209,9 @@ jobs:
           node scripts/workspace-resource-integration-test.mjs 2>&1 | tee artifacts/integration/workspace-resource.log
           if [ -f scripts/workspace-customer-integration-test.mjs ]; then
             node scripts/workspace-customer-integration-test.mjs 2>&1 | tee artifacts/integration/workspace-customer.log
+          fi
+          if [ -f scripts/workspace-card-integration-test.mjs ]; then
+            node scripts/workspace-card-integration-test.mjs 2>&1 | tee artifacts/integration/workspace-card.log
           fi
           node scripts/console-integration-test.mjs 2>&1 | tee artifacts/integration/console.log
           node scripts/console-mobile-browser-test.cjs 2>&1 | tee artifacts/console-mobile/browser-test.log
