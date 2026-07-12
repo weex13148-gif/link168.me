@@ -1,3 +1,4 @@
+// Temporary final B documentation verification trigger; do not merge this comment.
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
