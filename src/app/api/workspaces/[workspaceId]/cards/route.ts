@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { NextResponse } from "next/server";
+import type { Prisma } from "@/generated/prisma/client";
 import { requireDashboardUser } from "@/lib/auth";
 import { sanitizePublicText } from "@/lib/content-safety";
 import { db } from "@/lib/db";
@@ -26,6 +27,11 @@ function cleanText(value: unknown, maxLength: number): string | null {
 function cleanUrl(value: unknown): string | null {
   const raw = cleanText(value, 2048);
   return raw ? sanitizePublicUrl(raw).url ?? null : null;
+}
+
+function cleanJsonObject(value: unknown): Prisma.InputJsonValue | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  return JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
 }
 
 function cardDto(card: {
@@ -143,6 +149,7 @@ export async function POST(request: Request, context: RouteContext) {
       return NextResponse.json({ success: false, error: "请输入名片名称。" }, { status: 400 });
     }
 
+    const socialLinks = cleanJsonObject(body.socialLinks);
     const cardId = crypto.randomUUID();
     const card = await db.$transaction(async (tx) => {
       const created = await tx.workspaceCard.create({
@@ -164,7 +171,7 @@ export async function POST(request: Request, context: RouteContext) {
           city: cleanText(body.city, 100),
           address: cleanText(body.address, 300),
           website: cleanUrl(body.website),
-          socialLinks: body.socialLinks && typeof body.socialLinks === "object" ? body.socialLinks : undefined,
+          socialLinks,
           contactVisibility: isWorkspaceCardContactVisibility(body.contactVisibility)
             ? body.contactVisibility
             : "public",
