@@ -1,7 +1,7 @@
 # Link168 正式文档索引
 
 **文件名：** `DOCUMENT_INDEX.md`  
-**版本：** v1.0-rc11  
+**版本：** v1.0-rc12  
 **更新日期：** 2026-07-12  
 **状态：** 持续生效
 
@@ -14,12 +14,12 @@
 | 1 | `PRODUCT_CONSTITUTION.md` | v1.6 | 定位、统一身份、五档结构、AI、企业、数据和Agent治理 |
 | 2 | `PRD.md` | v2.0-rc8（2026-07-12 V2范围修订） | 页面、路由、邮箱身份、企业成员、价格、权限和验收 |
 | 3 | `PROJECT_RULES.md` | v1.0-rc3 | Git、Agent、密钥、数据库、测试、部署和删除边界 |
-| 4 | `DOCUMENT_INDEX.md` | v1.0-rc11 | 文档版本、状态、优先级和治理入口 |
+| 4 | `DOCUMENT_INDEX.md` | v1.0-rc12 | 文档版本、状态、优先级和治理入口 |
 
 持续整改状态：
 
 ```text
-docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md
+docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md（v1.7）
 ```
 
 历史仓库检查证据：
@@ -36,7 +36,7 @@ docs/audits/REPOSITORY_INSPECTION_REPORT_20260710.md
 
 | 顺序 | 文件 | 版本 | 负责内容 |
 |---:|---|---|---|
-| 2 | `docs/governance/02_CODE_MAP.md` | v1.1 | 仓库、路由、测试、领域、数据和治理入口地图 |
+| 2 | `docs/governance/02_CODE_MAP.md` | v1.2 | 仓库、路由、测试、领域、数据和治理入口地图 |
 | 3 | `docs/governance/03_MODULE_BOUNDARY.md` | v1.1 | 十四个核心领域、平台支撑能力和跨模块审批 |
 | 4 | `docs/governance/04_VERSION_FREEZE.md` | v1.2 | V2邮箱身份、企业手工成员、P0/P1/P2和解冻边界 |
 | 5 | `docs/governance/05_AGENT_GOVERNANCE.md` | v1.1 | 八个开发Agent、审批矩阵、CODEOWNERS和文件锁 |
@@ -65,9 +65,10 @@ docs/audits/REPOSITORY_INSPECTION_REPORT_20260710.md
 |---|---|
 | `.github/CODEOWNERS` | 将正式文档、Prisma、API、核心服务和治理配置交由真实GitHub账号审批 |
 | `.github/pull_request_template.md` | 强制说明Agent、假设、成功标准、最小修改、数据库、API、安全、验证和回滚 |
-| `.github/workflows/governance.yml` | 在正式分支和PR中运行治理一致性检查 |
+| `.github/workflows/governance.yml` | 在正式分支和PR中运行治理、邮箱认证、迁移、构建和临时数据库集成验收 |
 | `scripts/governance/check-governance.mjs` | 检查必需文件、上位版本引用、索引登记、编号和并行根文档 |
-| `package.json`中的`governance:check` | 本地和CI统一执行入口 |
+| `scripts/auth-integration-test.mjs` | 启动生产构建并对邮箱认证、并发令牌、限制和Session执行真实API验收 |
+| `package.json`中的`governance:check`和`test:auth` | 本地和CI统一执行入口 |
 
 说明：Agent01–Agent08是职责角色，不是GitHub账号。当前CODEOWNERS使用仓库所有者`@weex13148-gif`；未来建立真实团队后再替换。
 
@@ -106,7 +107,9 @@ docs/audits/REPOSITORY_INSPECTION_REPORT_20260710.md
 ### V2账号与登录
 
 - V2只使用邮箱注册和登录。
-- 支持邮箱验证、30天冻结、忘记密码、重置密码、修改密码和Session管理。
+- 支持邮箱验证、30天限制、忘记密码、重置密码、修改密码和Session管理。
+- 30天未验证后允许登录受限后台，但公开主页和敏感写入受限。
+- 邮箱身份主线已通过临时PostgreSQL、真实Next.js API、并发、Lint、TypeScript和生产构建验收。
 - 普通微信注册、登录和绑定退出V2范围。
 - 已有普通微信或其他外部身份结构如存在，保留、隐藏或关闭，不擅自删除。
 
@@ -214,3 +217,13 @@ TRAE不得对以上事项进行V2技术选型、数据库扩张、页面开发�
 - V2企业成员改为邮箱邀请和站内管理。
 - 账号合并、最后身份解绑、多平台成员去重和企业管理员查看成员AI对话正文暂不处理。
 - 已有未来代码和数据结构保留，不因V2暂缓而删除。
+
+### 2026-07-12：A邮箱身份主线验收
+
+- 30天邮箱边界、公开主页限制和后台受限登录完成。
+- 验证码按User ID隔离并保留旧凭证兼容。
+- 邮箱验证和密码重置令牌完成并发单次消费。
+- 密码重置后旧Session和旧密码失效。
+- Session创建故障不会记录假成功，注册账号可恢复登录。
+- GitHub Actions使用临时PostgreSQL 16完成migration、Lint、TypeScript、生产构建和真实API集成验收。
+- 未连接生产数据库、真实邮件密钥或生产服务器。
