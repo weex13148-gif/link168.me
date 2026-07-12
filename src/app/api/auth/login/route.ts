@@ -6,12 +6,12 @@ import {
   isLoginRateLimited,
   recordLoginAttempt,
   getActiveRestrictions,
-  syncEmailVerificationRestriction,
   canUserLogin,
   ActiveRestriction,
   RESTRICTION_TYPE_BANNED,
   RESTRICTION_TYPE_SECURITY_RISK,
 } from "@/lib/auth";
+import { syncEmailVerificationRestrictionAtBoundary } from "@/lib/auth-hardening";
 import { db } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -71,25 +71,14 @@ export async function POST(request: Request) {
     );
   }
 
-  await recordLoginAttempt(email, true, request);
-
   let restrictions: ActiveRestriction[] = [];
-  let restrictionQueryFailed = false;
 
   try {
     if (!user.emailVerified) {
-      try {
-        await syncEmailVerificationRestriction(user.id);
-      } catch {
-        // 同步失败不阻止继续查询限制
-      }
+      await syncEmailVerificationRestrictionAtBoundary(user.id);
     }
     restrictions = await getActiveRestrictions(user.id);
   } catch {
-    restrictionQueryFailed = true;
-  }
-
-  if (restrictionQueryFailed) {
     return NextResponse.json(
       { success: false, error: "限制服务暂时不可用，请稍后重试", errorCode: "RESTRICTION_SERVICE_UNAVAILABLE" },
       { status: 503 },
@@ -118,12 +107,28 @@ export async function POST(request: Request) {
     );
   }
 
-  const { token, expiresAt } = await createSession(user.id, request);
+  let session: Awaited<ReturnType<typeof createSession>>;
+  try {
+    session = await createSession(user.id, request);
+  } catch {
+    return NextResponse.json(
+      { success: false, error: "登录服务暂时不可用，请稍后重试。", errorCode: "SESSION_CREATE_FAILED" },
+      { status: 503 },
+    );
+  }
+
+  await recordLoginAttempt(email, true, request).catch(() => undefined);
+
   const response = NextResponse.json({
     success: true,
     user: { id: user.id, email: user.email, emailVerified: user.emailVerified },
-    restrictions: { items: restrictions, blockedType: null, loginBlocked: false, reason: null },
+    restrictions: {
+      items: restrictions,
+      blockedType: null,
+      loginBlocked: false,
+      reason: restrictions.find((item) => item.type === "EMAIL_UNVERIFIED")?.reason || null,
+    },
   });
-  setSessionCookie(response, token, expiresAt);
+  setSessionCookie(response, session.token, session.expiresAt);
   return response;
 }
