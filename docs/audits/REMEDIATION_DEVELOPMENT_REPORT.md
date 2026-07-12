@@ -1,8 +1,8 @@
 # Link168 V2 后续整改开发报告
 
-**版本：** v1.7  
+**版本：** v1.8  
 **更新日期：** 2026-07-12  
-**状态：** 持续更新；A邮箱身份主线已完成开发与CI验收  
+**状态：** 持续更新；A邮箱身份主线已完成，B Console兼容收口开发中  
 **依据：** `PRODUCT_CONSTITUTION.md` v1.6、`PRD.md` v2.0-rc8、`PROJECT_RULES.md` v1.0-rc3
 
 ---
@@ -80,204 +80,138 @@ V2核心闭环：
 - Session创建失败不得记录为登录成功。
 - 邮件或第三方服务失败不得伪造成功。
 
-### 4.2 本轮未改变的范围
+### 4.2 完成状态
 
-```text
-prisma/schema.prisma
-prisma/migrations
-普通微信和企业协作平台
-Console信息架构
-企业成员邀请
-支付和AI业务
-生产服务器
-真实环境变量和密钥
-```
+A主线已经完成以下验收：
 
----
+- 30天邮箱边界和公开主页限制。
+- 验证码按User ID隔离和旧凭证兼容。
+- 邮箱验证与密码重置原子单次消费。
+- 重置密码后旧Session、旧密码失效。
+- Session故障不记录假成功，注册账号可以恢复登录。
+- PostgreSQL 16临时数据库、migration、Lint、TypeScript、生产构建和真实API集成测试通过。
 
-## 5. A主线已完成实现
-
-### AUTH-01 30天邮箱验证边界
-
-**状态：开发和临时数据库验收完成**
-
-- 新增统一的30天宽限期计算。
-- 29天未验证账号保持正常状态。
-- 达到30天时创建`EMAIL_UNVERIFIED`限制，不延迟到第31天。
-- 超过30天的未验证账号继续保持限制。
-- 邮箱限制不阻止后台登录，但公开主页暂停展示。
-
-### AUTH-02 验证码按用户隔离
-
-**状态：开发和测试完成**
-
-- 新验证码哈希使用`User ID + 6位验证码`。
-- 不同用户使用相同6位验证码时，数据库哈希仍然不同。
-- 部署前已经发出的旧验证码保留兼容回退。
-- 6位验证码必须与当前登录用户匹配。
-- 邮件服务未配置或发送失败时，本次验证码作废，接口不返回发送成功。
-
-### AUTH-03 邮箱验证原子消费
-
-**状态：临时PostgreSQL并发验收完成**
-
-- 验证凭证在数据库事务中领取。
-- 同一凭证并发提交时只有一次成功，另一次返回已使用或已过期。
-- 用户邮箱状态更新、邮箱限制解除和其他验证码作废在同一事务中完成。
-- 集成测试确认邮箱验证后`ADMIN_FREEZE`仍保持有效。
-
-### AUTH-04 密码重置原子消费
-
-**状态：临时PostgreSQL并发验收完成**
-
-- 重置令牌在数据库事务中一次性领取。
-- 同一重置链接并发提交时只有一次成功。
-- 修改密码、撤销全部旧Session和作废其他重置令牌在同一事务中完成。
-- 集成测试确认旧Session返回401、旧密码无法登录、新密码可以登录。
-
-### AUTH-05 登录成功审计
-
-**状态：故障注入验收完成**
-
-- 只有Session真正创建成功后才写入登录成功记录。
-- 集成测试临时隐藏`sessions`表，确认登录返回`SESSION_CREATE_FAILED`和503。
-- Session创建失败时，`login_attempts`中没有伪造成功记录。
-- 正常登录已建立后，即使审计日志写入失败，也不会反向破坏用户会话。
-
-### AUTH-06 注册后Session失败恢复
-
-**状态：故障注入验收完成**
-
-- 用户和个人空间创建成功、Session创建失败时返回503和明确登录恢复路径。
-- 接口不设置伪造登录状态。
-- Session服务恢复后，测试账号可以使用已注册邮箱和密码正常登录。
+尚未执行但不阻塞后续开发：阿里云邮件真实投递、生产数据库迁移、生产服务器部署和生产域名浏览器冒烟。
 
 ---
 
-## 6. 自动化验收证据
+## 5. B主线：Console五分类兼容收口
 
-### 6.1 策略测试
+### 5.1 已批准方案
 
-测试文件：
+2026-07-12老板选择方案1：兼容适配收口。
+
+正式一级入口：
 
 ```text
-src/lib/auth-credential-policy.test.ts
+/console
+/console/card
+/console/customers
+/console/ai
+/console/account
 ```
 
-通过内容：
+实施原则：
 
-1. 满30天准确进入邮箱未验证限制。
-2. 不同用户的相同验证码生成不同哈希。
-3. 新验证码查询保留旧哈希兼容回退。
-4. 历史链接Token继续使用原始凭证哈希。
+- 正式入口使用`/console/*`。
+- 第一阶段不搬迁成熟业务代码，适配页直接复用现有Dashboard和Workbench页面。
+- `/dashboard`与`/workbench/*`继续兼容，不删除、不强制失效。
+- 旧路径通过统一路由策略归入对应一级分类，保持正确选中状态。
+- 桌面侧栏和手机底栏只能出现首页、名片、客户、AI、我的五项。
+- 普通用户导航不得出现`/jeepwork`。
+- 名片编辑器内部标签属于名片二级工具，不得继续占用手机一级底栏。
+- 不修改Prisma Schema、migration、支付、AI权限、企业数据或生产配置。
 
-正式命令：
+### 5.2 旧路径归类
+
+| 一级分类 | 正式路径 | 兼容路径 |
+|---|---|---|
+| 首页 | `/console` | `/workbench` |
+| 名片 | `/console/card` | `/dashboard`、产品、短链、分析、旧名片管理 |
+| 客户 | `/console/customers` | `/workbench/leads` |
+| AI | `/console/ai` | AI助手、AI服务、知识库 |
+| 我的 | `/console/account` | 账户、会员、企业、通知 |
+
+`/jeepwork`及其子路由不属于任何用户Console分类。
+
+### 5.3 第一批文件锁
+
+```text
+src/components/layout/console-route-policy.ts
+src/components/layout/console-route-policy.test.ts
+src/components/layout/console-navigation.ts
+src/components/layout/ConsoleShell.tsx
+src/components/workbench/WorkbenchShell.tsx
+src/components/dashboard-v1/DashboardFrame.tsx
+src/app/console/card/page.tsx
+src/app/console/customers/page.tsx
+src/app/console/ai/page.tsx
+src/app/console/ai/[assistant]/page.tsx
+src/app/console/ai/reception/page.tsx
+src/app/console/ai/knowledge/page.tsx
+src/app/console/account/page.tsx
+package.json
+.github/workflows/governance.yml
+docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md
+```
+
+### 5.4 实施计划
+
+1. 用纯路由策略模块定义五项顺序和旧路径归类。
+2. 先写测试锁定五项顺序、嵌套路由选中和Jeepwork排除。
+3. 共享导航只导出五个用户一级入口。
+4. ConsoleShell和WorkbenchShell统一桌面侧栏、手机底栏和激活逻辑。
+5. 为四个主要分类及AI二级页建立不复制业务逻辑的适配页。
+6. 名片编辑器内部七个标签移动到页面内横向工具条；手机底栏改为五个一级入口。
+7. 运行导航策略测试、认证回归、Lint、TypeScript和生产构建。
+8. 第二批再处理首页快捷入口、360–430px逐页视觉检查、空状态和错误状态细节。
+
+### 5.5 第一批当前状态
+
+已写入代码：
+
+- 五分类路由策略和测试。
+- 共享五项导航配置。
+- Console、Workbench和Dashboard三套Shell导航收口。
+- 正式`/console/*`兼容适配页。
+- 普通用户导航移除Jeepwork。
+- 名片内部标签与手机一级底栏分离。
+- CI新增`test:console-nav`。
+
+待验证：
+
+- Prisma Client和现有migration。
+- 导航策略测试。
+- 认证回归测试。
+- Lint与TypeScript。
+- 生产构建和Next.js路由编译。
+- 360px、390px、430px真实浏览器布局。
+
+---
+
+## 6. 自动化命令
 
 ```bash
+npm run governance:check
 npm run test:auth
+npm run test:console-nav
+npm run lint
+npm run typecheck
+npm run build
 ```
 
-### 6.2 数据库和真实API集成测试
-
-测试文件：
-
-```text
-scripts/auth-integration-test.mjs
-```
-
-测试环境：
-
-```text
-GitHub Actions Ubuntu Runner
-Node.js 22
-PostgreSQL 16临时服务容器
-临时数据库 link168_ci
-MAIL_ENABLED=false
-COOKIE_SECURE=false
-无生产密钥
-```
-
-覆盖内容：
-
-- 29天、满30天、超过30天邮箱状态。
-- 满30天用户可登录后台、公开主页暂停展示。
-- 邮件未配置时不得返回发送成功。
-- 验证码并发单次消费。
-- 邮箱验证只解除`EMAIL_UNVERIFIED`。
-- 重置令牌并发单次消费。
-- 重置密码后旧Session和旧密码失效。
-- Session创建故障时不记录假成功。
-- 注册Session失败后的账号恢复登录。
-
-### 6.3 完整CI结果
-
-验证草稿PR：`#28 ci: verify A email authentication hardening`  
-最终成功运行：`29185982063`  
-结论：`success`
-
-以下步骤全部成功：
-
-```text
-初始化PostgreSQL 16容器
-→ npm ci
-→ npx prisma generate
-→ npx prisma migrate deploy
-→ npm run governance:check
-→ npm run test:auth
-→ npm run lint
-→ npm run typecheck
-→ npm run build
-→ 启动Next.js生产构建
-→ 运行真实API和数据库集成测试
-```
-
-正式CI文件：
-
-```text
-.github/workflows/governance.yml
-```
-
-该工作流使用固定的临时数据库连接串，不读取生产数据库和真实密钥。
+完整`npm run check`已经包含认证和Console导航策略测试。
 
 ---
 
-## 7. A主线完成边界
+## 7. 后续顺序
 
-### 已完成
+B第一批构建通过后：
 
-- 认证代码开发。
-- 策略测试。
-- Prisma Client生成。
-- 现有migration部署到临时数据库。
-- Lint和TypeScript检查。
-- 生产构建。
-- Next.js真实启动。
-- 临时PostgreSQL真实API和并发验收。
+1. 修复Console首页仍暴露的旧模块直达入口。
+2. 对360px、390px、430px逐页检查横向溢出。
+3. 统一加载、空状态和错误状态。
+4. 冻结五分类导航文件。
+5. 再进入C企业邮箱邀请和Workspace隔离。
 
-### 尚未执行，但不阻塞进入B主线
-
-- 阿里云邮件推送真实投递测试。
-- 生产数据库迁移。
-- 生产服务器部署。
-- 生产域名和真实浏览器冒烟。
-
-这些动作必须在最终部署阶段使用正式密钥和部署授权单独执行，不得把临时CI成功描述为生产已经上线。
-
----
-
-## 8. 下一主线
-
-A邮箱身份闭环完成开发与CI验收后，下一项正式任务为：
-
-> **B：`/console`五分类导航与移动端收口。**
-
-执行顺序：
-
-1. 盘点`/console`、`/dashboard`和`/workbench`现有路由与依赖。
-2. 确认首页、名片、客户、AI、我的五个一级入口。
-3. 建立旧路由兼容跳转或适配层，不直接删除旧能力。
-4. 修复360–430px移动端横向溢出。
-5. 移除普通用户可见的Jeepwork入口。
-6. 补空状态、错误状态、加载状态和移动端验收。
-
-未经老板新的明确批准，不提前开发普通微信或企业协作平台能力。
+未经老板新的明确批准，不提前开发微信、企业微信、飞书或钉钉。
