@@ -15,6 +15,7 @@ on:
       - 'scripts/governance/**'
       - 'scripts/auth-integration-test.mjs'
       - 'scripts/console-integration-test.mjs'
+      - 'scripts/console-mobile-browser-test.cjs'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
@@ -50,6 +51,7 @@ on:
       - 'scripts/governance/**'
       - 'scripts/auth-integration-test.mjs'
       - 'scripts/console-integration-test.mjs'
+      - 'scripts/console-mobile-browser-test.cjs'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
@@ -79,7 +81,7 @@ jobs:
   governance-auth-and-console:
     name: Validate governance, auth and console navigation
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     services:
       postgres:
         image: postgres:16
@@ -137,7 +139,10 @@ jobs:
       - name: Run production build
         run: npm run build
 
-      - name: Run authenticated API and Console integration tests
+      - name: Install Playwright Chromium
+        run: npx --yes playwright@1.55.0 install --with-deps chromium
+
+      - name: Run authenticated API, Console and mobile browser tests
         shell: bash
         run: |
           set -euo pipefail
@@ -152,3 +157,16 @@ jobs:
             cat /tmp/link168-next.log
             exit 1
           fi
+          if ! npx --yes --package=playwright@1.55.0 node scripts/console-mobile-browser-test.cjs; then
+            cat /tmp/link168-next.log
+            exit 1
+          fi
+
+      - name: Upload Console mobile screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: console-mobile-screenshots
+          path: artifacts/console-mobile/*.png
+          if-no-files-found: ignore
+          retention-days: 7
