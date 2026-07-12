@@ -1,4 +1,4 @@
-name: Governance and Auth Check
+name: Governance, Auth and Console Check
 
 on:
   pull_request:
@@ -27,6 +27,13 @@ on:
       - 'src/lib/auth-hardening.ts'
       - 'src/lib/email-verification.ts'
       - 'src/app/api/auth/**'
+      - 'src/app/console/**'
+      - 'src/components/layout/ConsoleShell.tsx'
+      - 'src/components/layout/console-navigation.ts'
+      - 'src/components/layout/console-route-policy.ts'
+      - 'src/components/layout/console-route-policy.test.ts'
+      - 'src/components/workbench/WorkbenchShell.tsx'
+      - 'src/components/dashboard-v1/DashboardFrame.tsx'
   push:
     branches:
       - codex/link168-v2-direction
@@ -53,13 +60,20 @@ on:
       - 'src/lib/auth-hardening.ts'
       - 'src/lib/email-verification.ts'
       - 'src/app/api/auth/**'
+      - 'src/app/console/**'
+      - 'src/components/layout/ConsoleShell.tsx'
+      - 'src/components/layout/console-navigation.ts'
+      - 'src/components/layout/console-route-policy.ts'
+      - 'src/components/layout/console-route-policy.test.ts'
+      - 'src/components/workbench/WorkbenchShell.tsx'
+      - 'src/components/dashboard-v1/DashboardFrame.tsx'
 
 permissions:
   contents: read
 
 jobs:
-  governance-and-auth:
-    name: Validate governance and email authentication
+  governance-auth-and-console:
+    name: Validate governance, auth and console navigation
     runs-on: ubuntu-latest
     timeout-minutes: 20
     services:
@@ -106,6 +120,9 @@ jobs:
 
       - name: Run focused auth policy tests
         run: npm run test:auth
+
+      - name: Run console navigation policy tests
+        run: npm run test:console-nav
 
       - name: Run lint
         run: npm run lint
