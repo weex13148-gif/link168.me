@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
 import { createSession, setSessionCookie } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { sendVerificationCodeWithPolicy } from "@/lib/mail";
+import { sendScopedVerificationCodeWithPolicy } from "@/lib/email-verification";
 import { rateLimit } from "@/lib/rate-limit";
 import { checkUsernameAvailability } from "../username/route";
 
@@ -124,13 +124,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "注册失败，请稍后重试。" }, { status: 500 });
   }
 
-  const sendResult = await sendVerificationCodeWithPolicy(email, userId, requestIp(request)).catch(() => ({
+  const sendResult = await sendScopedVerificationCodeWithPolicy(email, userId, requestIp(request)).catch(() => ({
     ok: false as const,
     reason: "send-error",
     message: "验证邮件暂时无法发送，请稍后在验证页面重新发送。",
   }));
 
-  const { token, expiresAt } = await createSession(userId, request);
+  let session: Awaited<ReturnType<typeof createSession>>;
+  try {
+    session = await createSession(userId, request);
+  } catch {
+    return NextResponse.json({
+      success: false,
+      error: "账号已创建，但登录会话暂时无法建立。请返回登录页重新登录。",
+      errorCode: "SESSION_CREATE_FAILED",
+      redirectTo: "/login",
+    }, { status: 503 });
+  }
+
   const redirectTo = `/verify-email?email=${encodeURIComponent(email)}`;
   const response = NextResponse.json({
     success: true,
@@ -145,6 +156,6 @@ export async function POST(request: Request) {
         : `注册成功！${sendResult.message}`,
     },
   });
-  setSessionCookie(response, token, expiresAt);
+  setSessionCookie(response, session.token, session.expiresAt);
   return response;
 }
