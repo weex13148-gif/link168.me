@@ -3,6 +3,11 @@ import { requireDashboardUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { rateLimit } from "@/lib/rate-limit";
 import { assertWorkspaceMember, isValidRole } from "@/lib/workspace";
+import {
+  WorkspaceCustomerError,
+  assertWorkspaceCustomerAssignee,
+  getAssignedWorkspaceWorkSummary,
+} from "@/lib/workspace/customers";
 import { canGrantWorkspaceRole, canManageWorkspaceRole } from "@/lib/workspace/invitation-policy";
 import { WorkspaceInvitationError, createWorkspaceInvitation } from "@/lib/workspace/invitations";
 
@@ -25,6 +30,19 @@ function invitationErrorResponse(error: unknown) {
   );
 }
 
+function customerErrorResponse(error: unknown) {
+  if (error instanceof WorkspaceCustomerError) {
+    return NextResponse.json(
+      { success: false, error: error.message, code: error.code },
+      { status: error.status },
+    );
+  }
+  return NextResponse.json(
+    { success: false, error: "企业工作重新分配失败。", code: "WORKSPACE_REASSIGN_FAILED" },
+    { status: 503 },
+  );
+}
+
 export async function GET(request: NextRequest, context: RouteContext) {
   const { user, response } = await requireDashboardUser(request);
   if (response || !user) return response;
@@ -37,9 +55,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
   const members = await db.workspaceMember.findMany({
     where: { workspaceId, status: { not: "removed" } },
-    include: {
-      user: { select: { id: true, email: true, role: true } },
-    },
+    include: { user: { select: { id: true, email: true, role: true } } },
     orderBy: { createdAt: "asc" },
   });
 
@@ -59,9 +75,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
   });
 }
 
-/**
- * 兼容旧客户端：POST members 不再直接激活成员，统一创建邮箱邀请。
- */
+/** 兼容旧客户端：POST members 不再直接激活成员，统一创建邮箱邀请。 */
 export async function POST(request: NextRequest, context: RouteContext) {
   const { user, response } = await requireDashboardUser(request);
   if (response || !user) return response;
@@ -102,13 +116,14 @@ export async function POST(request: NextRequest, context: RouteContext) {
 export async function PATCH(request: NextRequest, context: RouteContext) {
   const { user, response } = await requireDashboardUser(request);
   if (response || !user) return response;
-
   const { workspaceId } = await context.params;
 
   let body: {
     memberId?: unknown;
     role?: unknown;
     action?: unknown;
+    reassignToUserId?: unknown;
+    reason?: unknown;
   };
   try {
     body = (await request.json()) as typeof body;
@@ -128,7 +143,6 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
   const action = typeof body.action === "string" ? body.action : "update_role";
 
-  // 仅为部署前已经存在的 invited WorkspaceMember 保留兼容入口。
   if (action === "accept") {
     if (targetMember.userId !== user.id) {
       return NextResponse.json({ success: false, error: "只能接受自己的邀请。" }, { status: 403 });
@@ -156,6 +170,18 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         { status: 400 },
       );
     }
+    const work = await getAssignedWorkspaceWorkSummary(workspaceId, targetMember.userId);
+    if (work.total > 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "仍有未完成客户或任务，请联系企业管理员重新分配后再退出。",
+          code: "WORKSPACE_REASSIGN_REQUIRED",
+          assignedWork: work,
+        },
+        { status: 409 },
+      );
+    }
     const updated = await db.workspaceMember.update({
       where: { id: memberId },
       data: { status: "removed", removedAt: new Date() },
@@ -167,7 +193,6 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   if (!check.allowed || !check.member) {
     return NextResponse.json({ success: false, error: check.message, code: check.code }, { status: 403 });
   }
-
   if (!canManageWorkspaceRole(check.member.role, targetMember.role)) {
     return NextResponse.json(
       { success: false, error: "无权管理该角色的成员。", code: "INSUFFICIENT_HIERARCHY" },
@@ -175,20 +200,118 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     );
   }
 
-  if (action === "remove") {
-    const updated = await db.workspaceMember.update({
-      where: { id: memberId },
-      data: { status: "removed", removedAt: new Date() },
-    });
-    return NextResponse.json({ success: true, member: { id: updated.id, status: updated.status } });
-  }
+  if (action === "remove" || action === "disable") {
+    const work = await getAssignedWorkspaceWorkSummary(workspaceId, targetMember.userId);
+    const reassignToUserId = typeof body.reassignToUserId === "string" && body.reassignToUserId.trim()
+      ? body.reassignToUserId.trim()
+      : null;
 
-  if (action === "disable") {
-    const updated = await db.workspaceMember.update({
-      where: { id: memberId },
-      data: { status: "disabled", disabledAt: new Date() },
-    });
-    return NextResponse.json({ success: true, member: { id: updated.id, status: updated.status } });
+    if (work.total > 0 && !reassignToUserId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "该成员仍负责未完成客户或任务，请先指定接替成员。",
+          code: "WORKSPACE_REASSIGN_REQUIRED",
+          assignedWork: work,
+        },
+        { status: 409 },
+      );
+    }
+
+    try {
+      if (reassignToUserId) {
+        if (reassignToUserId === targetMember.userId) {
+          return NextResponse.json({ success: false, error: "接替成员不能是被移除成员。" }, { status: 400 });
+        }
+        await assertWorkspaceCustomerAssignee(workspaceId, reassignToUserId);
+      }
+
+      const reason = typeof body.reason === "string" && body.reason.trim()
+        ? body.reason.trim().slice(0, 500)
+        : action === "remove"
+          ? "成员移除"
+          : "成员禁用";
+
+      const result = await db.$transaction(async (tx) => {
+        const assignedCustomers = reassignToUserId
+          ? await tx.workspaceCustomer.findMany({
+              where: {
+                workspaceId,
+                assignedToUserId: targetMember.userId,
+                status: { notIn: ["converted", "closed"] },
+              },
+              select: { id: true },
+            })
+          : [];
+
+        if (reassignToUserId && assignedCustomers.length > 0) {
+          await tx.workspaceCustomer.updateMany({
+            where: { id: { in: assignedCustomers.map((item) => item.id) } },
+            data: { assignedToUserId: reassignToUserId },
+          });
+          await tx.workspaceCustomerAssignmentHistory.createMany({
+            data: assignedCustomers.map((item) => ({
+              workspaceId,
+              customerId: item.id,
+              fromUserId: targetMember.userId,
+              toUserId: reassignToUserId,
+              actorUserId: user.id,
+              reason,
+            })),
+          });
+        }
+
+        const taskUpdate = reassignToUserId
+          ? await tx.workspaceCustomerTask.updateMany({
+              where: {
+                workspaceId,
+                assignedToUserId: targetMember.userId,
+                status: { notIn: ["completed", "cancelled"] },
+              },
+              data: { assignedToUserId: reassignToUserId },
+            })
+          : { count: 0 };
+
+        const updated = await tx.workspaceMember.update({
+          where: { id: memberId },
+          data: action === "remove"
+            ? { status: "removed", removedAt: new Date() }
+            : { status: "disabled", disabledAt: new Date() },
+        });
+
+        await tx.workspaceAuditLog.create({
+          data: {
+            workspaceId,
+            actorUserId: user.id,
+            action: action === "remove" ? "workspace.member.removed" : "workspace.member.disabled",
+            targetType: "workspace_member",
+            targetId: memberId,
+            metadata: {
+              targetUserId: targetMember.userId,
+              reassignToUserId,
+              reassignedCustomers: assignedCustomers.length,
+              reassignedTasks: taskUpdate.count,
+              reason,
+            },
+          },
+        });
+
+        return {
+          member: updated,
+          reassignedCustomers: assignedCustomers.length,
+          reassignedTasks: taskUpdate.count,
+        };
+      });
+
+      return NextResponse.json({
+        success: true,
+        member: { id: result.member.id, status: result.member.status },
+        reassignedCustomers: result.reassignedCustomers,
+        reassignedTasks: result.reassignedTasks,
+      });
+    } catch (error) {
+      return customerErrorResponse(error);
+    }
   }
 
   if (action === "enable") {
