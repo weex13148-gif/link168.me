@@ -1,12 +1,9 @@
-/**
- * 统一企业资料库页面
- * 支持 7 种资料类型：company / product / faq / brand_voice / customer_profile / sop / document
- */
 import { redirect } from "next/navigation";
 import WorkbenchShell from "@/components/workbench/WorkbenchShell";
 import KnowledgeClient from "@/components/knowledge/KnowledgeClient";
 import { getCurrentUserFromCookies } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { getWorkspaceOwnedResourceIds } from "@/lib/workspace/resources";
 
 export const runtime = "nodejs";
 
@@ -24,36 +21,38 @@ export default async function KnowledgePage() {
   const user = await getCurrentUserFromCookies();
   if (!user) redirect("/login");
 
+  const enterpriseDocIds = await getWorkspaceOwnedResourceIds("knowledge_doc");
   const [docs, aiConfig] = await Promise.all([
     db.knowledgeDoc.findMany({
-      where: { userId: user.id },
+      where: {
+        userId: user.id,
+        ...(enterpriseDocIds.length > 0 ? { id: { notIn: enterpriseDocIds } } : {}),
+      },
       orderBy: { updatedAt: "desc" },
     }),
     db.aiServiceConfig.findUnique({ where: { userId: user.id } }),
   ]);
 
-  const aiEnabled = aiConfig?.enabled ?? false;
-
-  const formattedDocs = docs.map((d) => ({
-    id: d.id,
-    title: d.title,
-    category: d.category,
-    categoryLabel: d.category ? CATEGORY_LABELS[d.category] || d.category : "未分类",
-    content: d.content,
-    sourceType: d.sourceType,
-    isActive: d.isActive,
-    allowAiCitation: d.allowAiCitation,
-    createdAt: d.createdAt.toISOString(),
-    updatedAt: d.updatedAt.toISOString(),
+  const formattedDocs = docs.map((doc) => ({
+    id: doc.id,
+    title: doc.title,
+    category: doc.category,
+    categoryLabel: doc.category ? CATEGORY_LABELS[doc.category] || doc.category : "未分类",
+    content: doc.content,
+    sourceType: doc.sourceType,
+    isActive: doc.isActive,
+    allowAiCitation: doc.allowAiCitation,
+    createdAt: doc.createdAt.toISOString(),
+    updatedAt: doc.updatedAt.toISOString(),
   }));
 
   return (
     <WorkbenchShell
       eyebrow="Knowledge Base"
-      title="统一企业资料库"
-      subtitle="集中管理公司资料、产品资料、FAQ、品牌语气、客户画像、SOP 和文档，让 AI 助手更懂你的业务。"
+      title="个人资料库"
+      subtitle="这里仅管理个人知识文档；企业知识库请从对应企业工作空间进入。"
     >
-      <KnowledgeClient initialDocs={formattedDocs} aiEnabled={aiEnabled} />
+      <KnowledgeClient initialDocs={formattedDocs} aiEnabled={aiConfig?.enabled ?? false} />
     </WorkbenchShell>
   );
 }
