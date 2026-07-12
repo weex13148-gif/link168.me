@@ -14,6 +14,7 @@ on:
       - 'docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md'
       - 'scripts/governance/**'
       - 'scripts/auth-integration-test.mjs'
+      - 'scripts/console-integration-test.mjs'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
@@ -47,6 +48,7 @@ on:
       - 'docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md'
       - 'scripts/governance/**'
       - 'scripts/auth-integration-test.mjs'
+      - 'scripts/console-integration-test.mjs'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
@@ -133,7 +135,7 @@ jobs:
       - name: Run production build
         run: npm run build
 
-      - name: Run email auth integration tests
+      - name: Run authenticated API and Console integration tests
         shell: bash
         run: |
           set -euo pipefail
@@ -141,6 +143,10 @@ jobs:
           APP_PID=$!
           trap 'kill "$APP_PID" 2>/dev/null || true' EXIT
           if ! node scripts/auth-integration-test.mjs; then
+            cat /tmp/link168-next.log
+            exit 1
+          fi
+          if ! node scripts/console-integration-test.mjs; then
             cat /tmp/link168-next.log
             exit 1
           fi
