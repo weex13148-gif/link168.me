@@ -18,6 +18,7 @@ on:
       - 'scripts/console-mobile-browser-test.cjs'
       - 'scripts/workspace-invitation-integration-test.mjs'
       - 'scripts/workspace-resource-integration-test.mjs'
+      - 'scripts/workspace-customer-integration-test.mjs'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
@@ -40,6 +41,7 @@ on:
       - 'src/app/api/dashboard/products/**'
       - 'src/app/api/dashboard/knowledge/**'
       - 'src/app/api/workbench/knowledge/**'
+      - 'src/app/api/workbench/leads/**'
       - 'src/app/api/*/products/**'
       - 'src/app/workspace-invitations/**'
       - 'src/app/console/**'
@@ -70,6 +72,7 @@ on:
       - 'scripts/console-mobile-browser-test.cjs'
       - 'scripts/workspace-invitation-integration-test.mjs'
       - 'scripts/workspace-resource-integration-test.mjs'
+      - 'scripts/workspace-customer-integration-test.mjs'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
@@ -92,6 +95,7 @@ on:
       - 'src/app/api/dashboard/products/**'
       - 'src/app/api/dashboard/knowledge/**'
       - 'src/app/api/workbench/knowledge/**'
+      - 'src/app/api/workbench/leads/**'
       - 'src/app/api/*/products/**'
       - 'src/app/workspace-invitations/**'
       - 'src/app/console/**'
@@ -168,6 +172,9 @@ jobs:
       - name: Run workspace resource policy tests
         run: npm run test:workspace-resource
 
+      - name: Run workspace customer policy tests
+        run: npm run test:workspace-customer
+
       - name: Run lint
         run: npm run lint
 
@@ -195,6 +202,9 @@ jobs:
           node scripts/auth-integration-test.mjs 2>&1 | tee artifacts/integration/auth.log
           node scripts/workspace-invitation-integration-test.mjs 2>&1 | tee artifacts/integration/workspace-invitation.log
           node scripts/workspace-resource-integration-test.mjs 2>&1 | tee artifacts/integration/workspace-resource.log
+          if [ -f scripts/workspace-customer-integration-test.mjs ]; then
+            node scripts/workspace-customer-integration-test.mjs 2>&1 | tee artifacts/integration/workspace-customer.log
+          fi
           node scripts/console-integration-test.mjs 2>&1 | tee artifacts/integration/console.log
           node scripts/console-mobile-browser-test.cjs 2>&1 | tee artifacts/console-mobile/browser-test.log
 
