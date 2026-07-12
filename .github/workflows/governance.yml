@@ -139,13 +139,18 @@ jobs:
       - name: Run production build
         run: npm run build
 
-      - name: Install Playwright Chromium
-        run: npx --yes playwright@1.55.0 install --with-deps chromium
+      - name: Install temporary Playwright Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install --with-deps chromium
 
       - name: Run authenticated API, Console and mobile browser tests
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p artifacts/console-mobile
           npx next start -H 127.0.0.1 -p 3000 > /tmp/link168-next.log 2>&1 &
           APP_PID=$!
           trap 'kill "$APP_PID" 2>/dev/null || true' EXIT
@@ -157,16 +162,16 @@ jobs:
             cat /tmp/link168-next.log
             exit 1
           fi
-          if ! npx --yes --package=playwright@1.55.0 node scripts/console-mobile-browser-test.cjs; then
+          if ! node scripts/console-mobile-browser-test.cjs 2>&1 | tee artifacts/console-mobile/browser-test.log; then
             cat /tmp/link168-next.log
             exit 1
           fi
 
-      - name: Upload Console mobile screenshots
+      - name: Upload Console mobile evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: console-mobile-screenshots
-          path: artifacts/console-mobile/*.png
+          name: console-mobile-evidence
+          path: artifacts/console-mobile/**
           if-no-files-found: ignore
           retention-days: 7
