@@ -1,8 +1,8 @@
 # Link168 V2 后续整改开发报告
 
-**版本：** v1.8  
+**版本：** v1.9  
 **更新日期：** 2026-07-12  
-**状态：** 持续更新；A邮箱身份主线已完成，B Console兼容收口开发中  
+**状态：** 持续更新；A邮箱身份主线已完成，B Console第一批已完成开发与CI验收  
 **依据：** `PRODUCT_CONSTITUTION.md` v1.6、`PRD.md` v2.0-rc8、`PROJECT_RULES.md` v1.0-rc3
 
 ---
@@ -68,21 +68,7 @@ V2核心闭环：
 
 ## 4. A主线：邮箱身份闭环
 
-### 4.1 正式规则
-
-- 邮箱注册用户需要完成邮箱验证。
-- 注册未满30天时，未验证邮箱不触发30天限制。
-- 注册达到30天仍未验证时，用户仍可登录后台完成验证。
-- 受限用户的公开主页暂停展示，发布和其他敏感写入由服务端拒绝。
-- 邮箱验证成功后，只解除`EMAIL_UNVERIFIED`限制。
-- 管理员冻结、封禁和安全风险限制不得被邮箱验证解除。
-- 密码重置成功后，所有旧Session立即失效。
-- Session创建失败不得记录为登录成功。
-- 邮件或第三方服务失败不得伪造成功。
-
-### 4.2 完成状态
-
-A主线已经完成以下验收：
+A主线已经完成：
 
 - 30天邮箱边界和公开主页限制。
 - 验证码按User ID隔离和旧凭证兼容。
@@ -134,58 +120,62 @@ A主线已经完成以下验收：
 
 `/jeepwork`及其子路由不属于任何用户Console分类。
 
-### 5.3 第一批文件锁
+### 5.3 第一批已完成实现
+
+- 新增纯路由策略模块，集中定义五项顺序、正式路径和兼容路径。
+- 新增导航策略测试，锁定五项顺序、嵌套路由选中和Jeepwork排除。
+- 共享导航配置只导出五个用户一级入口。
+- ConsoleShell、WorkbenchShell和DashboardFrame统一桌面侧栏和手机底栏。
+- 新增`/console/card`、`/console/customers`、`/console/ai`、`/console/account`适配页。
+- 新增AI助手、访客AI接待和知识库的Console适配入口。
+- 适配页直接复用成熟业务页面，没有复制业务服务或数据库逻辑。
+- 名片编辑器内部七个标签移入页面内横向工具条。
+- 普通用户共享导航中移除Jeepwork。
+- 所有外层容器增加`min-w-0`或`overflow-x-hidden`，降低360–430px横向溢出风险。
+
+### 5.4 第一批自动化验收
+
+验证草稿PR：`#29 ci: verify B console five-section navigation`  
+成功运行：`29187365414`  
+结论：`success`
+
+以下步骤全部成功：
 
 ```text
-src/components/layout/console-route-policy.ts
-src/components/layout/console-route-policy.test.ts
-src/components/layout/console-navigation.ts
-src/components/layout/ConsoleShell.tsx
-src/components/workbench/WorkbenchShell.tsx
-src/components/dashboard-v1/DashboardFrame.tsx
-src/app/console/card/page.tsx
-src/app/console/customers/page.tsx
-src/app/console/ai/page.tsx
-src/app/console/ai/[assistant]/page.tsx
-src/app/console/ai/reception/page.tsx
-src/app/console/ai/knowledge/page.tsx
-src/app/console/account/page.tsx
-package.json
-.github/workflows/governance.yml
-docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md
+PostgreSQL 16临时容器初始化
+→ npm ci
+→ npx prisma generate
+→ npx prisma migrate deploy
+→ npm run governance:check
+→ npm run test:auth
+→ npm run test:console-nav
+→ npm run lint
+→ npm run typecheck
+→ npm run build
+→ 启动Next.js生产构建
+→ 邮箱认证真实API回归测试
 ```
 
-### 5.4 实施计划
+构建已确认新路径可以被Next.js编译：
 
-1. 用纯路由策略模块定义五项顺序和旧路径归类。
-2. 先写测试锁定五项顺序、嵌套路由选中和Jeepwork排除。
-3. 共享导航只导出五个用户一级入口。
-4. ConsoleShell和WorkbenchShell统一桌面侧栏、手机底栏和激活逻辑。
-5. 为四个主要分类及AI二级页建立不复制业务逻辑的适配页。
-6. 名片编辑器内部七个标签移动到页面内横向工具条；手机底栏改为五个一级入口。
-7. 运行导航策略测试、认证回归、Lint、TypeScript和生产构建。
-8. 第二批再处理首页快捷入口、360–430px逐页视觉检查、空状态和错误状态细节。
+```text
+/console/card
+/console/customers
+/console/ai
+/console/ai/[assistant]
+/console/ai/reception
+/console/ai/knowledge
+/console/account
+```
 
-### 5.5 第一批当前状态
+### 5.5 第一批未执行边界
 
-已写入代码：
-
-- 五分类路由策略和测试。
-- 共享五项导航配置。
-- Console、Workbench和Dashboard三套Shell导航收口。
-- 正式`/console/*`兼容适配页。
-- 普通用户导航移除Jeepwork。
-- 名片内部标签与手机一级底栏分离。
-- CI新增`test:console-nav`。
-
-待验证：
-
-- Prisma Client和现有migration。
-- 导航策略测试。
-- 认证回归测试。
-- Lint与TypeScript。
-- 生产构建和Next.js路由编译。
-- 360px、390px、430px真实浏览器布局。
+- 未修改Prisma Schema和migration。
+- 未删除`/dashboard`或`/workbench/*`。
+- 未修改支付、AI权限、会员、企业数据和Workspace隔离。
+- 未接入微信、企业微信、飞书或钉钉。
+- 未连接生产数据库、真实密钥和生产服务器。
+- 尚未执行360px、390px、430px真实浏览器截图和交互验收。
 
 ---
 
@@ -204,14 +194,13 @@ npm run build
 
 ---
 
-## 7. 后续顺序
+## 7. B第二批顺序
 
-B第一批构建通过后：
-
-1. 修复Console首页仍暴露的旧模块直达入口。
+1. 修复Console首页仍暴露的旧模块直达入口，统一进入五个正式分类。
 2. 对360px、390px、430px逐页检查横向溢出。
 3. 统一加载、空状态和错误状态。
-4. 冻结五分类导航文件。
-5. 再进入C企业邮箱邀请和Workspace隔离。
+4. 检查旧路径页面是否存在重复壳层、重复底栏或错误选中。
+5. B主线最终验收后冻结五分类导航文件。
+6. 再进入C企业邮箱邀请和Workspace隔离。
 
 未经老板新的明确批准，不提前开发微信、企业微信、飞书或钉钉。
