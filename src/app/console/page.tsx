@@ -1,18 +1,18 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
-  UserPlus,
-  BarChart3,
-  Package,
   ArrowRight,
-  Crown,
-  ShieldCheck,
-  Building2,
-  FileText,
+  BarChart3,
   Bot,
-  Link2,
+  Building2,
+  Crown,
+  Home,
+  Package,
   Palette,
+  ShieldCheck,
   TrendingUp,
+  UserPlus,
+  UserRound,
 } from "lucide-react";
 import ConsoleShell from "@/components/layout/ConsoleShell";
 import { db } from "@/lib/db";
@@ -36,16 +36,15 @@ export default async function ConsoleHomePage() {
 
   const profileId = profile?.id;
 
-  const [products, leads, activeLeads, knowledgeDocs, aiConfig, membership, shortLinks] =
+  const [recentProducts, productCount, leads, activeLeads, knowledgeDocs, aiConfig, membership, shortLinks] =
     await Promise.all([
       db.product.findMany({
         where: { userId: user.id },
         orderBy: { createdAt: "desc" },
         take: 3,
       }),
-      profileId
-        ? db.lead.count({ where: { profileId } })
-        : Promise.resolve(0),
+      db.product.count({ where: { userId: user.id } }),
+      profileId ? db.lead.count({ where: { profileId } }) : Promise.resolve(0),
       profileId
         ? db.lead.count({ where: { profileId, status: "new" } })
         : Promise.resolve(0),
@@ -55,13 +54,17 @@ export default async function ConsoleHomePage() {
       db.shortLink.count({ where: { userId: user.id } }),
     ]);
 
-  const productCount = products.length;
   const isMember = membership?.status === "active";
   const aiEnabled = aiConfig?.enabled ?? false;
   const planLabel = isMember
-    ? ({ free: "免费版", starter: "初创版", pro: "专业版", enterprise: "企业版" } as Record<string, string>)[
-        membership?.planCode ?? "free"
-      ] ?? "免费版"
+    ? ({
+        free: "免费版",
+        starter: "初创版",
+        plus: "Plus",
+        pro: "Pro",
+        enterprise: "企业版",
+        enterprise_pro: "企业Pro",
+      } as Record<string, string>)[membership?.planCode ?? "free"] ?? "免费版"
     : "免费版";
 
   const latestLeads = profileId
@@ -86,46 +89,112 @@ export default async function ConsoleHomePage() {
   }
 
   const quickStats = [
-    { label: "产品服务", value: productCount, icon: Package, tone: "bg-[var(--ui-success-soft)] text-[var(--ui-brand)]", href: "/workbench/products" },
-    { label: "客户线索", value: leads, icon: UserPlus, tone: "bg-[var(--ui-info-soft)] text-[var(--ui-info)]", href: "/workbench/leads" },
-    { label: "短链接", value: shortLinks, icon: Link2, tone: "bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]", href: "/workbench/short-links" },
-    { label: "AI 客服", value: aiEnabled ? "已开启" : "未开启", icon: Bot, tone: aiEnabled ? "bg-[var(--ui-success)] text-white" : "bg-[var(--ui-danger-soft)] text-[var(--ui-danger)]", href: "/workbench/ai-service" },
+    {
+      label: "产品服务",
+      value: productCount,
+      icon: Package,
+      tone: "bg-[var(--ui-success-soft)] text-[var(--ui-brand)]",
+      href: "/console/card",
+    },
+    {
+      label: "客户线索",
+      value: leads,
+      icon: UserPlus,
+      tone: "bg-[var(--ui-info-soft)] text-[var(--ui-info)]",
+      href: "/console/customers",
+    },
+    {
+      label: "短链接",
+      value: shortLinks,
+      icon: BarChart3,
+      tone: "bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]",
+      href: "/console/card",
+    },
+    {
+      label: "AI 接待",
+      value: aiEnabled ? "已开启" : "未开启",
+      icon: Bot,
+      tone: aiEnabled
+        ? "bg-[var(--ui-success)] text-white"
+        : "bg-[var(--ui-danger-soft)] text-[var(--ui-danger)]",
+      href: "/console/ai",
+    },
   ];
 
   const nextSteps = [
     {
       label: "装修我的名片",
-      href: "/dashboard",
+      href: "/console/card",
       icon: Palette,
       tone: "bg-[var(--ui-success-soft)] text-[var(--ui-brand)]",
       desc: profile?.displayName
         ? "继续优化你的名片展示、主题和链接。"
-        : "先完善你的个人或企业信息，生成专属名片。",
-      done: !!profile?.displayName,
+        : "先完善个人或企业信息，生成专属经营名片。",
+      done: Boolean(profile?.displayName),
     },
     {
       label: "添加产品与服务",
-      href: "/workbench/products",
+      href: "/console/card",
       icon: Building2,
       tone: "bg-[var(--ui-info-soft)] text-[var(--ui-info)]",
-      desc: productCount > 0 ? "继续添加更多产品或管理现有产品。" : "让访客和 AI 客服了解你可以提供什么服务。",
+      desc: productCount > 0
+        ? "继续添加更多产品或管理现有产品。"
+        : "让访客和AI接待了解你可以提供什么服务。",
       done: productCount > 0,
     },
     {
-      label: "开启 AI 客服",
-      href: "/workbench/ai-service",
+      label: "配置AI经营能力",
+      href: "/console/ai",
       icon: Bot,
       tone: "bg-[var(--ui-warning-soft)] text-[var(--ui-warning)]",
-      desc: aiEnabled ? "AI 客服已在工作，你可以调整配置。" : "基于你的资料自动回答客户咨询。",
+      desc: aiEnabled ? "AI接待已启用，可以继续完善知识库。" : "配置访客接待、六大AI和统一资料库。",
       done: aiEnabled,
     },
     {
-      label: "升级会员 & 额度",
-      href: "/workbench/membership",
+      label: "查看会员与额度",
+      href: "/console/account",
       icon: Crown,
       tone: "bg-[var(--ui-danger-soft)] text-[var(--ui-danger)]",
-      desc: isMember ? "你已是会员，享受更多高级功能。" : "解锁更多 AI 调用、自定义域名与数据统计。",
+      desc: isMember ? "查看当前套餐、额度和账号设置。" : "了解Plus、Pro和企业套餐权益。",
       done: isMember,
+    },
+  ];
+
+  const sectionCards = [
+    {
+      label: "首页",
+      href: "/console",
+      icon: Home,
+      tone: "bg-[var(--ui-surface-muted)] text-[var(--ui-brand)]",
+      desc: "经营概览与待办",
+    },
+    {
+      label: "名片",
+      href: "/console/card",
+      icon: Palette,
+      tone: "bg-[var(--ui-success-soft)] text-[var(--ui-brand)]",
+      desc: "资料、产品、链接与数据",
+    },
+    {
+      label: "客户",
+      href: "/console/customers",
+      icon: UserPlus,
+      tone: "bg-[var(--ui-danger-soft)] text-[var(--ui-danger)]",
+      desc: "线索、状态与跟进",
+    },
+    {
+      label: "AI",
+      href: "/console/ai",
+      icon: Bot,
+      tone: "bg-[var(--ui-warning-soft)] text-[var(--ui-warning)]",
+      desc: "六大AI、接待与知识库",
+    },
+    {
+      label: "我的",
+      href: "/console/account",
+      icon: UserRound,
+      tone: "bg-[var(--ui-surface-muted)] text-[var(--ui-ink)]",
+      desc: "会员、企业与账号安全",
     },
   ];
 
@@ -133,19 +202,18 @@ export default async function ConsoleHomePage() {
     <ConsoleShell
       eyebrow="Console"
       title="经营概览"
-      subtitle="一站式管理你的名片、产品、客户线索、短链接、AI 客服与数据分析。"
+      subtitle="通过首页、名片、客户、AI和我的五个入口管理Link168经营闭环。"
     >
-      {/* 欢迎卡 + 会员状态 */}
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="rounded-[28px] border border-[var(--ui-line)] bg-gradient-to-br from-[var(--ui-success)] to-[var(--ui-brand)] p-5 text-white shadow-sm sm:col-span-2 sm:p-6">
-          <div className="flex items-start justify-between gap-4">
+      <section className="grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="min-w-0 rounded-[24px] border border-[var(--ui-line)] bg-gradient-to-br from-[var(--ui-success)] to-[var(--ui-brand)] p-4 text-white shadow-sm sm:col-span-2 sm:rounded-[28px] sm:p-6">
+          <div className="flex min-w-0 items-start justify-between gap-3 sm:gap-4">
             <div className="min-w-0">
               <p className="text-xs font-bold uppercase tracking-[0.15em] text-white/70">欢迎回来</p>
-              <h2 className="mt-1 truncate text-2xl font-black sm:text-3xl">
+              <h2 className="mt-1 break-words text-2xl font-black sm:text-3xl">
                 {profile?.displayName || user.email}
               </h2>
-              <p className="mt-2 text-sm text-white/80">
-                今天是经营的好日子，一起来看看你的数据吧。
+              <p className="mt-2 break-words text-sm leading-6 text-white/80">
+                今天是经营的好日子，一起来看看你的数据和待办。
               </p>
             </div>
             <span className="shrink-0 rounded-full bg-[var(--ui-surface)]/15 px-3 py-1 text-xs font-black backdrop-blur">
@@ -154,18 +222,18 @@ export default async function ConsoleHomePage() {
           </div>
           <div className="mt-5 flex flex-wrap gap-2">
             <Link
-              href="/dashboard"
+              href="/console/card"
               className="inline-flex min-h-10 items-center gap-2 rounded-full bg-[var(--ui-surface)] px-4 text-sm font-black text-[var(--ui-brand)] transition hover:bg-[var(--ui-surface)]/90"
             >
               <Palette className="size-4" />
               装修名片
             </Link>
             <Link
-              href="/workbench/leads"
+              href="/console/customers"
               className="inline-flex min-h-10 items-center gap-2 rounded-full bg-[var(--ui-surface)]/15 px-4 text-sm font-black text-white backdrop-blur transition hover:bg-[var(--ui-surface)]/25"
             >
               <UserPlus className="size-4" />
-              查看线索
+              查看客户
               {activeLeads > 0 ? (
                 <span className="rounded-full bg-[var(--ui-surface)] px-1.5 py-0.5 text-[10px] font-black text-[var(--ui-danger)]">
                   {activeLeads} 条待处理
@@ -175,7 +243,7 @@ export default async function ConsoleHomePage() {
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-5 shadow-sm">
+        <div className="min-w-0 rounded-[24px] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-4 shadow-sm sm:rounded-[28px] sm:p-5">
           <div className="flex items-center gap-2">
             <span className="grid size-8 place-items-center rounded-xl bg-[var(--ui-surface-muted)] text-[var(--ui-ink)]">
               <ShieldCheck className="size-4" />
@@ -183,17 +251,17 @@ export default async function ConsoleHomePage() {
             <p className="text-sm font-black text-[var(--ui-brand)]">账户状态</p>
           </div>
           <div className="mt-3 grid gap-2 text-sm">
-            <div className="flex items-center justify-between rounded-2xl bg-[var(--ui-surface-muted)] px-3 py-2">
-              <span className="text-xs font-semibold text-[var(--ui-muted)]">邮箱</span>
-              <span className="truncate font-bold text-[var(--ui-ink)]">{user.email}</span>
+            <div className="flex min-w-0 items-center justify-between gap-2 rounded-2xl bg-[var(--ui-surface-muted)] px-3 py-2">
+              <span className="shrink-0 text-xs font-semibold text-[var(--ui-muted)]">邮箱</span>
+              <span className="min-w-0 truncate font-bold text-[var(--ui-ink)]">{user.email}</span>
             </div>
-            <div className="flex items-center justify-between rounded-2xl bg-[var(--ui-surface-muted)] px-3 py-2">
+            <div className="flex items-center justify-between gap-2 rounded-2xl bg-[var(--ui-surface-muted)] px-3 py-2">
               <span className="text-xs font-semibold text-[var(--ui-muted)]">会员</span>
               <span className={`font-black ${isMember ? "text-[var(--ui-success)]" : "text-[var(--ui-warning)]"}`}>
                 {planLabel}
               </span>
             </div>
-            <div className="flex items-center justify-between rounded-2xl bg-[var(--ui-surface-muted)] px-3 py-2">
+            <div className="flex items-center justify-between gap-2 rounded-2xl bg-[var(--ui-surface-muted)] px-3 py-2">
               <span className="text-xs font-semibold text-[var(--ui-muted)]">邮箱验证</span>
               <span className={`font-black ${user.emailVerified ? "text-[var(--ui-success)]" : "text-[var(--ui-danger)]"}`}>
                 {user.emailVerified ? "已验证" : "未验证"}
@@ -201,68 +269,68 @@ export default async function ConsoleHomePage() {
             </div>
           </div>
           <Link
-            href="/workbench/account"
+            href="/console/account"
             className="mt-4 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full bg-[var(--ui-ink)] px-4 text-sm font-black text-white"
           >
-            账户设置 →
+            进入我的 →
           </Link>
         </div>
       </section>
 
-      {/* 快速数据卡片 */}
-      <section className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="mt-4 grid min-w-0 gap-3 sm:mt-6 sm:grid-cols-2 xl:grid-cols-4">
         {quickStats.map(({ label, value, icon: Icon, tone, href }) => (
           <Link
             key={label}
             href={href}
-            className="link168-button-press rounded-[28px] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-5 shadow-sm transition hover:bg-[var(--ui-surface-muted)]"
+            className="link168-button-press min-w-0 rounded-[24px] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-4 shadow-sm transition hover:bg-[var(--ui-surface-muted)] sm:rounded-[28px] sm:p-5"
           >
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-xs font-semibold text-[var(--ui-muted)]">{label}</p>
-              <span className={`grid size-8 place-items-center rounded-xl ${tone}`}>
+            <div className="flex min-w-0 items-center justify-between gap-3">
+              <p className="min-w-0 truncate text-xs font-semibold text-[var(--ui-muted)]">{label}</p>
+              <span className={`grid size-8 shrink-0 place-items-center rounded-xl ${tone}`}>
                 <Icon aria-hidden className="size-4" />
               </span>
             </div>
-            <p className="mt-2 text-3xl font-black tracking-tight text-[var(--ui-ink)]">
+            <p className="mt-2 break-words text-3xl font-black tracking-tight text-[var(--ui-ink)]">
               {typeof value === "number" ? value.toLocaleString() : value}
             </p>
-            <p className="mt-3 text-xs font-bold text-[var(--ui-success)]">查看详情 →</p>
+            <p className="mt-3 text-xs font-bold text-[var(--ui-success)]">进入对应分类 →</p>
           </Link>
         ))}
       </section>
 
-      {/* 下一步建议 */}
-      <section className="mt-6 rounded-[28px] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-5 shadow-sm sm:p-6">
-        <div className="flex items-center gap-2">
-          <span className="grid size-8 place-items-center rounded-xl bg-[var(--ui-success-soft)] text-[var(--ui-brand)]">
+      <section className="mt-4 min-w-0 rounded-[24px] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-4 shadow-sm sm:mt-6 sm:rounded-[28px] sm:p-6">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-[var(--ui-success-soft)] text-[var(--ui-brand)]">
             <TrendingUp className="size-4" />
           </span>
-          <div>
+          <div className="min-w-0">
             <p className="text-sm font-black text-[var(--ui-brand)]">经营指南</p>
-            <h2 className="mt-0.5 text-xl font-black text-[var(--ui-ink)]">快速开启你的 Link168 经营</h2>
+            <h2 className="mt-0.5 break-words text-xl font-black text-[var(--ui-ink)]">
+              快速开启你的Link168经营
+            </h2>
           </div>
         </div>
-        <p className="mt-1 text-xs text-[var(--ui-muted)]">根据你的当前进度，推荐以下操作。</p>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <p className="mt-1 text-xs leading-5 text-[var(--ui-muted)]">根据当前进度，推荐以下操作。</p>
+        <div className="mt-4 grid min-w-0 gap-3 sm:grid-cols-2">
           {nextSteps.map(({ label, href, icon: Icon, tone, desc, done }) => (
             <Link
               key={label}
               href={href}
-              className="link168-button-press flex items-start gap-3 rounded-[24px] border border-[var(--ui-line)] bg-[var(--ui-surface-muted)] p-4 text-left transition hover:bg-[var(--ui-surface)]"
+              className="link168-button-press flex min-w-0 items-start gap-3 rounded-[20px] border border-[var(--ui-line)] bg-[var(--ui-surface-muted)] p-4 text-left transition hover:bg-[var(--ui-surface)] sm:rounded-[24px]"
             >
               <span className={`grid size-11 shrink-0 place-items-center rounded-2xl ${tone}`}>
                 <Icon aria-hidden className="size-5" />
               </span>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-black text-[var(--ui-ink)]">{label}</p>
+              <div className="min-w-0 flex-1">
+                <div className="flex min-w-0 flex-wrap items-center gap-2">
+                  <p className="break-words text-sm font-black text-[var(--ui-ink)]">{label}</p>
                   {done ? (
-                    <span className="rounded-full bg-[var(--ui-success-soft)] px-2 py-0.5 text-[10px] font-black text-[var(--ui-brand)]">
+                    <span className="shrink-0 rounded-full bg-[var(--ui-success-soft)] px-2 py-0.5 text-[10px] font-black text-[var(--ui-brand)]">
                       已完成
                     </span>
                   ) : null}
                 </div>
-                <p className="mt-1 text-xs text-[var(--ui-muted)]">{desc}</p>
+                <p className="mt-1 break-words text-xs leading-5 text-[var(--ui-muted)]">{desc}</p>
               </div>
               <ArrowRight aria-hidden className="ml-auto size-4 shrink-0 text-[var(--ui-success)]" />
             </Link>
@@ -270,136 +338,108 @@ export default async function ConsoleHomePage() {
         </div>
       </section>
 
-      {/* 最新线索 + 产品 + 数据 */}
-      <section className="mt-6 grid gap-4 lg:grid-cols-3">
+      <section className="mt-4 grid min-w-0 gap-4 sm:mt-6 lg:grid-cols-3">
         <Link
-          href="/workbench/leads"
-          className="rounded-[28px] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-5 shadow-sm transition hover:bg-[var(--ui-surface-muted)]/50"
+          href="/console/customers"
+          className="min-w-0 rounded-[24px] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-4 shadow-sm transition hover:bg-[var(--ui-surface-muted)]/50 sm:rounded-[28px] sm:p-5"
         >
           <p className="text-sm font-black text-[var(--ui-brand)]">最新客户线索</p>
-          <p className="mt-1 text-xs text-[var(--ui-muted)]">
-            共 {leads} 条线索，{activeLeads} 条待处理。
-          </p>
+          <p className="mt-1 text-xs text-[var(--ui-muted)]">共 {leads} 条线索，{activeLeads} 条待处理。</p>
           {latestLeads.length > 0 ? (
-            <ul className="mt-3 grid gap-2 text-sm">
+            <ul className="mt-3 grid min-w-0 gap-2 text-sm">
               {latestLeads.map((lead) => (
                 <li
                   key={lead.id}
-                  className="flex items-center justify-between rounded-2xl bg-[var(--ui-surface-muted)] px-3 py-2"
+                  className="flex min-w-0 items-center justify-between gap-2 rounded-2xl bg-[var(--ui-surface-muted)] px-3 py-2"
                 >
-                  <span className="truncate font-bold text-[var(--ui-ink)]">
+                  <span className="min-w-0 truncate font-bold text-[var(--ui-ink)]">
                     {lead.name || lead.email || lead.phone || "匿名访客"}
                     {lead.sourceComponent ? ` · ${lead.sourceComponent}` : ""}
                   </span>
-                  <span className="shrink-0 text-xs text-[var(--ui-muted)]">
-                    {formatTime(lead.createdAt)}
-                  </span>
+                  <span className="shrink-0 text-xs text-[var(--ui-muted)]">{formatTime(lead.createdAt)}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-4 text-center text-sm text-[var(--ui-muted)]">
-              还没有线索，开启 AI 客服获取更多咨询。
+            <p className="mt-4 text-center text-sm leading-6 text-[var(--ui-muted)]">
+              还没有线索，可以先配置AI接待或分享名片。
             </p>
           )}
         </Link>
 
         <Link
-          href="/workbench/products"
-          className="rounded-[28px] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-5 shadow-sm transition hover:bg-[var(--ui-surface-muted)]/50"
+          href="/console/card"
+          className="min-w-0 rounded-[24px] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-4 shadow-sm transition hover:bg-[var(--ui-surface-muted)]/50 sm:rounded-[28px] sm:p-5"
         >
           <p className="text-sm font-black text-[var(--ui-brand)]">产品与服务</p>
           <p className="mt-1 text-xs text-[var(--ui-muted)]">共 {productCount} 个产品。</p>
-          {products.length > 0 ? (
-            <ul className="mt-3 grid gap-2 text-sm">
-              {products.map((p) => (
+          {recentProducts.length > 0 ? (
+            <ul className="mt-3 grid min-w-0 gap-2 text-sm">
+              {recentProducts.map((product) => (
                 <li
-                  key={p.id}
-                  className="flex items-center justify-between rounded-2xl bg-[var(--ui-surface-muted)] px-3 py-2"
+                  key={product.id}
+                  className="flex min-w-0 items-center justify-between gap-2 rounded-2xl bg-[var(--ui-surface-muted)] px-3 py-2"
                 >
-                  <span className="truncate font-bold text-[var(--ui-ink)]">{p.name}</span>
+                  <span className="min-w-0 truncate font-bold text-[var(--ui-ink)]">{product.name}</span>
                   <span className="shrink-0 text-xs text-[var(--ui-muted)]">
-                    {p.priceText || (p.isActive ? "在售" : "草稿")}
+                    {product.priceText || (product.isActive ? "在售" : "草稿")}
                   </span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-4 text-center text-sm text-[var(--ui-muted)]">
-              还没有产品，先添加你的第一个产品。
+            <p className="mt-4 text-center text-sm leading-6 text-[var(--ui-muted)]">
+              还没有产品，进入名片分类添加第一个产品。
             </p>
           )}
         </Link>
 
         <Link
-          href="/workbench/analytics"
-          className="rounded-[28px] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-5 shadow-sm transition hover:bg-[var(--ui-surface-muted)]/50"
+          href="/console/card"
+          className="min-w-0 rounded-[24px] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-4 shadow-sm transition hover:bg-[var(--ui-surface-muted)]/50 sm:rounded-[28px] sm:p-5"
         >
-          <div className="flex items-center gap-2">
-            <span className="grid size-8 place-items-center rounded-xl bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]">
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]">
               <BarChart3 className="size-4" />
             </span>
-            <div>
-              <p className="text-sm font-black text-[var(--ui-brand)]">数据分析</p>
-              <p className="text-[11px] text-[var(--ui-muted)]">查看访问趋势与渠道效果</p>
+            <div className="min-w-0">
+              <p className="text-sm font-black text-[var(--ui-brand)]">经营数据</p>
+              <p className="break-words text-[11px] text-[var(--ui-muted)]">访问、渠道、产品和资料摘要</p>
             </div>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-2">
-            <div className="rounded-2xl bg-[var(--ui-surface-muted)] p-3 text-center">
-              <p className="text-xl font-black text-[var(--ui-ink)]">{leads}</p>
-              <p className="text-[10px] font-bold text-[var(--ui-muted)]">总线索</p>
-            </div>
-            <div className="rounded-2xl bg-[var(--ui-surface-muted)] p-3 text-center">
-              <p className="text-xl font-black text-[var(--ui-ink)]">{shortLinks}</p>
-              <p className="text-[10px] font-bold text-[var(--ui-muted)]">短链接</p>
-            </div>
-            <div className="rounded-2xl bg-[var(--ui-surface-muted)] p-3 text-center">
-              <p className="text-xl font-black text-[var(--ui-ink)]">{productCount}</p>
-              <p className="text-[10px] font-bold text-[var(--ui-muted)]">产品数</p>
-            </div>
-            <div className="rounded-2xl bg-[var(--ui-surface-muted)] p-3 text-center">
-              <p className="text-xl font-black text-[var(--ui-ink)]">
-                {knowledgeDocs}
-              </p>
-              <p className="text-[10px] font-bold text-[var(--ui-muted)]">知识文档</p>
-            </div>
+            {[
+              ["总线索", leads],
+              ["短链接", shortLinks],
+              ["产品数", productCount],
+              ["知识文档", knowledgeDocs],
+            ].map(([label, value]) => (
+              <div key={String(label)} className="min-w-0 rounded-2xl bg-[var(--ui-surface-muted)] p-3 text-center">
+                <p className="break-words text-xl font-black text-[var(--ui-ink)]">{Number(value).toLocaleString()}</p>
+                <p className="truncate text-[10px] font-bold text-[var(--ui-muted)]">{label}</p>
+              </div>
+            ))}
           </div>
-          <div className="mt-4 text-center text-xs font-bold text-[var(--ui-success)]">
-            查看完整数据 →
-          </div>
+          <div className="mt-4 text-center text-xs font-bold text-[var(--ui-success)]">进入名片数据工具 →</div>
         </Link>
       </section>
 
-      {/* 快捷入口网格 */}
-      <section className="mt-6 rounded-[28px] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-5 shadow-sm sm:p-6">
-        <p className="text-sm font-black text-[var(--ui-brand)]">全部功能</p>
-        <h2 className="mt-1 text-xl font-black text-[var(--ui-ink)]">快速进入</h2>
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {[
-            { label: "名片装修", href: "/dashboard", icon: Palette, tone: "bg-[var(--ui-success-soft)] text-[var(--ui-brand)]" },
-            { label: "产品服务", href: "/workbench/products", icon: Package, tone: "bg-[var(--ui-info-soft)] text-[var(--ui-info)]" },
-            { label: "客户线索", href: "/workbench/leads", icon: UserPlus, tone: "bg-[var(--ui-danger-soft)] text-[var(--ui-danger)]" },
-            { label: "短链接", href: "/workbench/short-links", icon: Link2, tone: "bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]" },
-            { label: "数据分析", href: "/workbench/analytics", icon: BarChart3, tone: "bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]" },
-            { label: "AI 助手", href: "/workbench/ai", icon: Bot, tone: "bg-[var(--ui-warning-soft)] text-[var(--ui-warning)]", badge: "Beta" },
-            { label: "企业空间", href: "/workbench/enterprise", icon: Building2, tone: "bg-[var(--ui-surface-muted)] text-[var(--ui-ink)]" },
-            { label: "知识库", href: "/workbench/enterprise", icon: FileText, tone: "bg-[var(--ui-surface-muted)] text-[var(--ui-ink)]" },
-            { label: "会员套餐", href: "/workbench/membership", icon: Crown, tone: "bg-[var(--ui-warning-soft)] text-[var(--ui-warning)]" },
-            { label: "账户设置", href: "/workbench/account", icon: ShieldCheck, tone: "bg-[var(--ui-surface-muted)] text-[var(--ui-ink)]" },
-          ].map(({ label, href, icon: Icon, tone, badge }) => (
+      <section className="mt-4 min-w-0 rounded-[24px] border border-[var(--ui-line)] bg-[var(--ui-surface)] p-4 shadow-sm sm:mt-6 sm:rounded-[28px] sm:p-6">
+        <p className="text-sm font-black text-[var(--ui-brand)]">五个正式分类</p>
+        <h2 className="mt-1 break-words text-xl font-black text-[var(--ui-ink)]">快速进入</h2>
+        <div className="mt-4 grid min-w-0 grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {sectionCards.map(({ label, href, icon: Icon, tone, desc }) => (
             <Link
               key={label}
               href={href}
-              className="link168-button-press flex flex-col items-center gap-2 rounded-2xl border border-[var(--ui-line)] bg-[var(--ui-surface-muted)] p-4 text-center transition hover:bg-[var(--ui-surface)]"
+              className="link168-button-press flex min-w-0 flex-col items-center gap-2 rounded-2xl border border-[var(--ui-line)] bg-[var(--ui-surface-muted)] p-3 text-center transition hover:bg-[var(--ui-surface)] sm:p-4"
             >
-              <span className={`grid size-11 place-items-center rounded-2xl ${tone}`}>
+              <span className={`grid size-11 shrink-0 place-items-center rounded-2xl ${tone}`}>
                 <Icon aria-hidden className="size-5" />
               </span>
               <div className="min-w-0">
-                <p className="truncate text-xs font-black text-[var(--ui-ink)]">{label}</p>
-                {badge ? (
-                  <p className="text-[9px] font-bold text-[var(--ui-warning)]">{badge}</p>
-                ) : null}
+                <p className="truncate text-sm font-black text-[var(--ui-ink)]">{label}</p>
+                <p className="mt-1 line-clamp-2 text-[10px] leading-4 text-[var(--ui-muted)]">{desc}</p>
               </div>
             </Link>
           ))}
