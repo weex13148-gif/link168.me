@@ -1,4 +1,4 @@
-name: Governance, Auth and Console Check
+name: Governance, Auth, Console and Workspace Check
 
 on:
   pull_request:
@@ -16,6 +16,7 @@ on:
       - 'scripts/auth-integration-test.mjs'
       - 'scripts/console-integration-test.mjs'
       - 'scripts/console-mobile-browser-test.cjs'
+      - 'scripts/workspace-invitation-integration-test.mjs'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
@@ -23,14 +24,19 @@ on:
       - 'package-lock.json'
       - 'tsconfig.json'
       - 'next.config.ts'
-      - 'prisma/schema.prisma'
-      - 'prisma.config.ts'
+      - 'prisma/**'
       - 'src/lib/auth-credential-policy.ts'
       - 'src/lib/auth-credential-policy.test.ts'
       - 'src/lib/auth-hardening.ts'
       - 'src/lib/email-verification.ts'
+      - 'src/lib/mail.ts'
+      - 'src/lib/workspace/**'
       - 'src/app/api/auth/**'
+      - 'src/app/api/workspaces/**'
+      - 'src/app/api/workspace-invitations/**'
+      - 'src/app/workspace-invitations/**'
       - 'src/app/console/**'
+      - 'src/components/workspace/**'
       - 'src/components/layout/ConsoleShell.tsx'
       - 'src/components/layout/console-navigation.ts'
       - 'src/components/layout/console-route-policy.ts'
@@ -52,6 +58,7 @@ on:
       - 'scripts/auth-integration-test.mjs'
       - 'scripts/console-integration-test.mjs'
       - 'scripts/console-mobile-browser-test.cjs'
+      - 'scripts/workspace-invitation-integration-test.mjs'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
@@ -59,14 +66,19 @@ on:
       - 'package-lock.json'
       - 'tsconfig.json'
       - 'next.config.ts'
-      - 'prisma/schema.prisma'
-      - 'prisma.config.ts'
+      - 'prisma/**'
       - 'src/lib/auth-credential-policy.ts'
       - 'src/lib/auth-credential-policy.test.ts'
       - 'src/lib/auth-hardening.ts'
       - 'src/lib/email-verification.ts'
+      - 'src/lib/mail.ts'
+      - 'src/lib/workspace/**'
       - 'src/app/api/auth/**'
+      - 'src/app/api/workspaces/**'
+      - 'src/app/api/workspace-invitations/**'
+      - 'src/app/workspace-invitations/**'
       - 'src/app/console/**'
+      - 'src/components/workspace/**'
       - 'src/components/layout/ConsoleShell.tsx'
       - 'src/components/layout/console-navigation.ts'
       - 'src/components/layout/console-route-policy.ts'
@@ -78,10 +90,10 @@ permissions:
   contents: read
 
 jobs:
-  governance-auth-and-console:
-    name: Validate governance, auth and console navigation
+  governance-auth-console-workspace:
+    name: Validate governance, auth, console and workspace invitations
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     services:
       postgres:
         image: postgres:16
@@ -130,6 +142,9 @@ jobs:
       - name: Run console navigation policy tests
         run: npm run test:console-nav
 
+      - name: Run workspace invitation policy tests
+        run: npm run test:workspace-invite
+
       - name: Run lint
         run: npm run lint
 
@@ -146,7 +161,7 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.55.0
           npx playwright install --with-deps chromium
 
-      - name: Run authenticated API, Console and mobile browser tests
+      - name: Run authenticated API, Workspace, Console and mobile browser tests
         shell: bash
         run: |
           set -euo pipefail
@@ -155,6 +170,10 @@ jobs:
           APP_PID=$!
           trap 'kill "$APP_PID" 2>/dev/null || true' EXIT
           if ! node scripts/auth-integration-test.mjs; then
+            cat /tmp/link168-next.log
+            exit 1
+          fi
+          if ! node scripts/workspace-invitation-integration-test.mjs; then
             cat /tmp/link168-next.log
             exit 1
           fi
