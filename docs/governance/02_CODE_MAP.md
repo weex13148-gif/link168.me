@@ -1,7 +1,7 @@
 # Link168 V2 代码地图
 
 **文件名：** `docs/governance/02_CODE_MAP.md`  
-**版本：** v1.1  
+**版本：** v1.2  
 **生效日期：** 2026-07-12  
 **性质：** 工程治理附件  
 **上位规则：** `PRODUCT_CONSTITUTION.md` v1.6、`PRD.md` v2.0-rc8、`PROJECT_RULES.md` v1.0-rc3
@@ -46,7 +46,7 @@ link168.me/
 │  ├─ CODEOWNERS                 # 真实GitHub审批所有者
 │  ├─ pull_request_template.md   # 模块、风险、验证和回滚模板
 │  └─ workflows/
-│     └─ governance.yml          # 治理一致性自动检查
+│     └─ governance.yml          # 治理、邮箱认证、构建与临时数据库验收
 ├─ src/
 │  ├─ app/                       # 页面、布局、路由和Route Handler
 │  ├─ components/                # 可复用UI与业务展示组件
@@ -61,6 +61,7 @@ link168.me/
 │  ├─ db/                        # 数据库校验、备份、恢复和迁移脚本
 │  ├─ ai-test/                   # AI专项测试脚本
 │  ├─ governance/                # 治理一致性检查脚本
+│  ├─ auth-integration-test.mjs  # 邮箱认证真实API与临时PostgreSQL验收
 │  └─ smoke-test.*               # 核心烟测
 ├─ tests/                        # 如存在，用于跨模块或端到端测试
 ├─ public/
@@ -82,10 +83,11 @@ link168.me/
 
 ## 3. 测试代码放置规则
 
-允许两种方式：
+允许三种方式：
 
 1. **就近测试：** 与业务文件同目录，使用`*.test.ts`、`*.test.tsx`、`*.spec.ts`或`*.spec.tsx`。
-2. **集中测试：** 跨模块、集成或端到端测试放在根`tests/`或现有专项测试目录。
+2. **集中测试：** 跨模块或端到端测试放在根`tests/`或现有专项测试目录。
+3. **可重复验收脚本：** 需要启动应用、连接临时数据库或执行多接口流程时，放在现有`scripts/`中并由CI调用。
 
 规则：
 
@@ -93,6 +95,7 @@ link168.me/
 - 开发Agent应为自己修改的业务能力补相关测试。
 - 测试不得包含真实生产密钥、真实客户数据和不可控外部调用。
 - 不允许为通过测试复制一套独立业务逻辑。
+- 邮箱认证集成测试只能使用临时PostgreSQL、测试账号和关闭的真实邮件发送。
 - 新增测试框架或顶层测试目录需要更新本地图和开发规则。
 
 ---
@@ -104,7 +107,7 @@ link168.me/
 | 路由 | 领域 | 主要职责 |
 |---|---|---|
 | `/` | public / growth | 官网价值、注册登录和模板入口 |
-| `/register`、`/login` | identity | 邮箱注册登录及微信授权入口 |
+| `/register`、`/login` | identity | V2邮箱注册、密码登录和账号恢复 |
 | `/[username]` | card | 公开经营名片、产品、联系方式、留资和访客AI接待 |
 | `/templates` | card-components | 模板浏览与选择 |
 | `/templates/[id]` | card-components | 模板详情与移动端预览 |
@@ -125,7 +128,7 @@ link168.me/
 | 名片 | `/console/card`及二级页面 | 资料、组件、产品、主题、模板、预览、发布、二维码、短链 |
 | 客户 | `/console/customers`、`/console/leads`等 | 线索、状态、跟进、来源、转化 |
 | AI | `/console/ai`及二级页面 | 六大AI、访客AI、知识库、额度、记录、加量包 |
-| 我的 | `/console/account`、会员和企业入口等 | 会员、订单、支付、身份绑定、通知、推广、企业空间、设置 |
+| 我的 | `/console/account`、会员和企业入口等 | 会员、订单、支付、账号安全、通知、推广、企业空间、设置 |
 
 其他功能只能作为组件、快捷入口或二级页面，不增加第六个一级导航。
 
@@ -136,7 +139,7 @@ link168.me/
 | `/console/enterprise/member` | 企业成员 | 授权资料、分配客户、企业AI额度 |
 | `/console/enterprise/admin` | 企业管理员 | 本企业成员、品牌、产品、知识库、客户、域名、额度和审计 |
 
-企业空间按`workspaceId`、角色和资源范围进行服务端隔离。
+企业空间按`workspaceId`、角色和资源范围进行服务端隔离。V2成员接入采用Link168站内邮箱邀请，不依赖企业协作平台同步。
 
 ### 4.4 平台后台
 
@@ -160,7 +163,7 @@ link168.me/
 | 领域 | 主要能力 | 典型位置 |
 |---|---|---|
 | `identity` | User、Session、邮箱登录、账号安全 | `src/app`、`src/features`、`src/lib`、`prisma` |
-| `social-identity` | 微信和企业协作身份绑定 | `src/features`、`src/lib`、`prisma` |
+| `social-identity` | 微信和企业协作身份绑定；V2暂缓，已有未来结构保留 | `src/features`、`src/lib`、`prisma` |
 | `card` | 名片、发布、公开页、联系方式 | `src/app`、`src/components`、`src/features` |
 | `card-components` | 页面组件、模板、主题、统一渲染 | `src/components`、`src/features` |
 | `catalog` | 产品与服务 | `src/app`、`src/features`、`prisma` |
@@ -171,7 +174,7 @@ link168.me/
 | `channel` | 推广、归因、佣金和结算 | `src/features`、`src/lib`、`prisma` |
 | `ai-platform` | 六大AI、知识库、额度、扣点、回补 | `src/app`、`src/features`、`src/lib/ai`、`prisma` |
 | `workspace` | 企业空间、成员、权限、企业资产 | `src/features`、`src/lib`、`prisma` |
-| `enterprise-integration` | 企业连接器、组织同步、成员生命周期 | `src/features`、`src/lib`、`prisma` |
+| `enterprise-integration` | 企业连接器、组织同步、成员生命周期；V2暂缓，结构保留 | `src/features`、`src/lib`、`prisma` |
 | `governance` | Jeepwork、举报、审计、安全、系统健康 | `src/app/jeepwork`、`src/lib`、`prisma` |
 
 通知、配置、文件存储、监控和Console首页属于平台支撑或聚合能力，具体边界见`03_MODULE_BOUNDARY.md`，不新增为宪法外的核心领域。
@@ -227,12 +230,12 @@ link168.me/
 
 | 能力 | 当前方向 | 边界 |
 |---|---|---|
-| 邮件 | 阿里云邮件推送 | 服务端调用，失败不得伪装成功 |
+| 邮件 | 阿里云邮件推送 | 服务端调用，失败不得伪装成功；CI只使用关闭邮件的临时环境 |
 | AI | 阿里云百炼 | 服务端鉴权、扣点、成本、回补 |
 | 支付 | 支付宝 | 订单、签名、回调、金额、幂等真实校验 |
-| 数据库 | 阿里云PostgreSQL | 生产只允许正式migration流程 |
+| 数据库 | 阿里云PostgreSQL | 生产只允许正式migration流程；CI使用临时PostgreSQL 16 |
 | 网站服务 | 腾讯云主服务器 | 部署由Agent08按授权执行 |
-| 企业协作 | 企业微信、飞书、钉钉 | 统一连接层和平台适配器 |
+| 企业协作 | 企业微信、飞书、钉钉 | V2不接入，已有未来结构保留，不作为当前运行依赖 |
 
 真实密钥不得进入仓库、前端、PRD、Agent报告或明文日志。
 
