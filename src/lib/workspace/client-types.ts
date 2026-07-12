@@ -2,6 +2,8 @@ export type WorkspaceRole = "owner" | "admin" | "member" | "viewer";
 
 export type WorkspaceMemberStatus = "invited" | "active" | "disabled" | "removed";
 
+export type WorkspaceInvitationStatus = "pending" | "accepted" | "revoked" | "expired" | "delivery_failed";
+
 export type WorkspaceType = "personal" | "team" | "enterprise";
 
 export interface Workspace {
@@ -33,6 +35,26 @@ export interface WorkspaceMember {
   disabledAt?: string | null;
 }
 
+export interface WorkspaceInvitation {
+  id: string;
+  workspaceId: string;
+  email: string;
+  role: Exclude<WorkspaceRole, "owner">;
+  status: WorkspaceInvitationStatus;
+  expiresAt: string;
+  invitedByUserId: string;
+  acceptedByUserId?: string | null;
+  acceptedAt?: string | null;
+  deliveredAt?: string | null;
+  deliveryErrorCode?: string | null;
+  createdAt: string;
+  workspace?: {
+    id: string;
+    name: string;
+    description: string | null;
+  };
+}
+
 export interface CreateWorkspaceRequest {
   name: string;
   slug?: string;
@@ -49,7 +71,7 @@ export interface UpdateWorkspaceRequest {
 
 export interface AddMemberRequest {
   email: string;
-  role?: WorkspaceRole;
+  role?: Exclude<WorkspaceRole, "owner">;
 }
 
 export interface UpdateMemberRequest {
@@ -72,6 +94,14 @@ export const STATUS_LABELS: Record<WorkspaceMemberStatus, string> = {
   removed: "已移除",
 };
 
+export const INVITATION_STATUS_LABELS: Record<WorkspaceInvitationStatus, string> = {
+  pending: "待接受",
+  accepted: "已接受",
+  revoked: "已撤销",
+  expired: "已过期",
+  delivery_failed: "发送失败",
+};
+
 export function roleAtLeast(role: WorkspaceRole | null, required: WorkspaceRole): boolean {
   const hierarchy: Record<WorkspaceRole, number> = {
     viewer: 10,
@@ -85,13 +115,15 @@ export function roleAtLeast(role: WorkspaceRole | null, required: WorkspaceRole)
 }
 
 export function canManageMember(currentRole: WorkspaceRole | null, targetRole: WorkspaceRole): boolean {
-  if (!currentRole) return false;
   if (targetRole === "owner") return false;
-  return roleAtLeast(currentRole, targetRole);
+  if (currentRole === "owner") return true;
+  if (currentRole === "admin") return targetRole === "member" || targetRole === "viewer";
+  return false;
 }
 
 export function canGrantRole(currentRole: WorkspaceRole | null, targetRole: WorkspaceRole): boolean {
-  if (!currentRole) return false;
   if (targetRole === "owner") return false;
-  return roleAtLeast(currentRole, targetRole);
+  if (currentRole === "owner") return targetRole === "admin" || targetRole === "member" || targetRole === "viewer";
+  if (currentRole === "admin") return targetRole === "member" || targetRole === "viewer";
+  return false;
 }
