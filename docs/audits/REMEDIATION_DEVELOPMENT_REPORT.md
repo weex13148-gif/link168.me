@@ -1,8 +1,8 @@
 # Link168 V2 后续整改开发报告
 
-**版本：** v2.1  
+**版本：** v2.2  
 **更新日期：** 2026-07-12  
-**状态：** A邮箱身份、B Console、C企业邀请及产品/知识资源隔离已完成开发和自动化验收  
+**状态：** A邮箱身份、B Console、C企业邀请与产品/知识隔离、D1企业客户池已完成开发和自动化验收  
 **依据：** `PRODUCT_CONSTITUTION.md` v1.6、`PRD.md` v2.0-rc8、`PROJECT_RULES.md` v1.0-rc3
 
 ---
@@ -32,6 +32,7 @@
 - 邀请未接受前不得获得企业数据访问权。
 - 企业成员冻结或移除后保留个人账号，但立即失去企业访问权。
 - 企业管理员不能查看成员密码、个人空间、私人会话或AI对话正文。
+- 个人历史数据不得自动迁入企业空间。
 - 未来代码和数据结构采用保留、隐藏或关闭，不擅自删除。
 
 ---
@@ -95,18 +96,11 @@ B主线未部署生产，也未连接生产数据库和真实密钥。
 
 **状态：开发和真实临时数据库集成验收完成。**
 
-### 5.1 数据模型
-
-新增多文件Prisma模型：
+### 5.1 模型与migration
 
 ```text
 prisma/workspace-invitation.prisma
 WorkspaceInvitation
-```
-
-正式migration：
-
-```text
 20260712_workspace_email_invitations
 ```
 
@@ -135,29 +129,9 @@ WorkspaceInvitation
 - admin只能邀请和管理member或viewer，不能管理其他admin。
 - 邀请操作同时校验目标`workspaceId`。
 - 被移除成员再次加入必须重新接受邀请。
-- 旧`/api/enterprise/organizations/*`成员接口统一适配正式Workspace处理器，不能绕过邀请流程直接激活成员。
+- 旧`/api/enterprise/organizations/*`成员接口统一适配正式Workspace处理器。
 
-### 5.3 页面与API
-
-新增：
-
-```text
-/api/workspaces/[workspaceId]/invitations
-/api/workspace-invitations
-/api/workspace-invitations/[token]
-/workspace-invitations/[token]
-```
-
-企业成员页面已区分：
-
-- 正式成员
-- 待处理邀请
-- 发送失败邀请
-- 撤销邀请
-
-### 5.4 第一批验收断言
-
-真实临时PostgreSQL验证：
+### 5.3 第一批验收断言
 
 - 邮件失败明确返回，且不创建活跃成员。
 - 待接受邀请没有企业访问权。
@@ -173,152 +147,216 @@ WorkspaceInvitation
 
 **状态：开发和真实临时数据库集成验收完成。**
 
-### 6.1 审计结论
-
-只完成成员表隔离并不足以形成企业数据隔离。原有`Product`和`KnowledgeDoc`主要按创建人`userId`归属，成员离职后可能通过个人接口继续读取。
-
-采用兼容式企业资源归属层：
-
-- 原有个人业务表和历史数据保持不变。
-- 企业归属由独立映射表判定。
-- 现有个人数据默认不自动转移到企业。
-- 企业资源保留创建人记录，但真正Owner是Workspace。
-
-### 6.2 新增模型与migration
+### 6.1 模型与migration
 
 ```text
 prisma/workspace-resource.prisma
 WorkspaceResource
 WorkspaceAuditLog
-```
-
-正式migration：
-
-```text
 20260712_workspace_resource_ownership
 ```
 
-当前正式支持的企业资源类型：
+当前正式支持：
 
 ```text
 product
 knowledge_doc
 ```
 
-`WorkspaceResource`记录：
+### 6.2 归属和权限规则
 
-- `workspaceId`
-- 资源类型和资源ID
-- 创建人
-- 可选分配成员
-- active / archived状态
-
-`WorkspaceAuditLog`独立记录企业资源创建、更新、分配和删除，不与平台超级管理员日志混用。
-
-### 6.3 权限规则
-
-- owner和admin可以创建、修改、分配和删除企业产品及知识文档。
-- member和viewer只能读取。
-- 未指定分配人表示企业共享资源。
+- 原有个人业务表和历史数据保持不变。
+- 企业归属由`WorkspaceResource`唯一判定。
+- 企业资源保留创建人记录，但真正Owner是Workspace。
+- owner和admin可以创建、修改、分配和删除。
+- member和viewer只能按授权读取。
+- 未指定分配人为企业共享资源。
 - 指定分配人后，普通成员只能读取分配给自己的资源。
-- 资源只能分配给当前Workspace的活跃成员。
-- 成员被禁用或移除后立即失去企业资源访问权。
+- 成员被禁用或移除后立即失去访问权。
 - 所有单资源操作同时校验`workspaceId`、资源类型和资源ID。
-- 通过其他Workspace ID访问同一资源返回不存在或拒绝。
+- 创建、更新、分配和删除写入`WorkspaceAuditLog`。
 
-### 6.4 正式API
+### 6.3 个人与企业边界
 
-```text
-/api/workspaces/[workspaceId]/products
-/api/workspaces/[workspaceId]/products/[productId]
-/api/workspaces/[workspaceId]/knowledge
-/api/workspaces/[workspaceId]/knowledge/[docId]
-```
+企业产品和知识文档已从以下个人入口排除：
 
-### 6.5 个人与企业边界
+- 个人Dashboard。
+- 旧Workbench。
+- 个人公开名片。
+- 个人产品和知识文档套餐计数。
 
-企业归属产品和知识文档已从以下个人入口排除：
-
-- 个人Dashboard产品和知识API。
-- 旧Workbench知识API和服务端页面。
-- 旧Workbench个人产品页面。
-- 个人公开名片产品API和公开页面。
-- 个人套餐产品、知识文档使用量计算。
-
-因此企业资产不会因为底层保留创建人`userId`而被当作个人资产展示、修改或占用个人套餐数量。
-
-### 6.6 第二批真实集成断言
+### 6.4 C阶段权威验收证据
 
 ```text
-PASS 企业产品和知识文档与归属映射在事务中创建
-PASS 企业资源不出现在个人API和个人公开主页
-PASS 活跃成员可读共享资源但不能管理
-PASS 成员只看共享或分配给自己的资源
-PASS 跨Workspace资源访问被拒绝
-PASS 移除成员立即失去资源访问权
-PASS 删除资源同时删除映射并写入企业审计日志
-```
-
-### 6.7 C阶段权威验收证据
-
-最终草稿验证PR：
-
-```text
-#38 ci: verify C workspace resource isolation
-```
-
-最终成功运行：
-
-```text
+PR #38
 Workflow Run 29192341961
 Conclusion: success
+integration-evidence：8259909885
+console-mobile-evidence：8259910070
 ```
 
-以下步骤全部成功：
+---
+
+## 7. D1：企业客户池、客户任务与离职重分配
+
+**状态：开发和真实临时PostgreSQL集成验收完成。**
+
+### 7.1 设计原则
+
+D1没有给个人`Lead`或`LeadFollowUp`强行增加企业归属，也没有把个人历史客户自动迁入企业。
+
+采用独立企业客户域：
+
+```text
+个人客户：Lead / LeadFollowUp
+企业客户：WorkspaceCustomer / WorkspaceCustomerFollowUp
+```
+
+这样可以保证：
+
+- 个人客户继续归个人名片所有者。
+- 企业客户从创建开始即归Workspace所有。
+- 企业成员离职不会带走企业客户、跟进和任务。
+- 个人与企业客户接口、数据和权限不串线。
+
+### 7.2 新增模型与migration
+
+```text
+prisma/workspace-crm.prisma
+WorkspaceCustomer
+WorkspaceCustomerFollowUp
+WorkspaceCustomerTask
+WorkspaceCustomerAssignmentHistory
+```
+
+正式migration：
+
+```text
+20260712_workspace_customer_pool
+```
+
+模型职责：
+
+- `WorkspaceCustomer`：企业客户PII、来源、产品快照、状态和当前负责人。
+- `WorkspaceCustomerFollowUp`：独立跟进与状态变化记录。
+- `WorkspaceCustomerTask`：客户待办、优先级、负责人和完成状态。
+- `WorkspaceCustomerAssignmentHistory`：每次客户负责人变化的完整历史。
+
+### 7.3 正式API
+
+```text
+/api/workspaces/[workspaceId]/customers
+/api/workspaces/[workspaceId]/customers/[customerId]
+/api/workspaces/[workspaceId]/customers/[customerId]/tasks
+```
+
+### 7.4 客户权限
+
+- owner和admin可查看、创建、编辑和重新分配全部企业客户。
+- member只能查看和跟进分配给自己的客户。
+- member不能读取其他成员客户。
+- viewer不能查看企业客户姓名、电话、邮箱、微信和需求等PII。
+- 客户和任务只能分配给当前Workspace的活跃owner、admin或member。
+- 所有查询同时校验`workspaceId`、成员状态、角色和当前负责人。
+- 通过其他Workspace ID访问同一客户返回不存在。
+
+### 7.5 跟进和任务
+
+- 客户状态固定为：`new / contacted / following / converted / closed`。
+- 跟进记录独立保存，不继续向历史备注字段追加文本。
+- 分配成员可以更新客户状态和写跟进记录。
+- 客户任务状态固定为：`pending / in_progress / completed / cancelled`。
+- 客户任务优先级固定为：`low / normal / high / urgent`。
+- 分配成员可以创建和更新自己的客户任务。
+- 普通成员不能把任务分给其他人。
+- owner和admin可以重新分配客户及未完成任务。
+
+### 7.6 离职、禁用和重新分配
+
+当成员仍负责未完成客户或任务时：
+
+```text
+直接移除或禁用
+→ 返回409 WORKSPACE_REASSIGN_REQUIRED
+→ 不改变成员状态
+```
+
+管理员指定接替成员后：
+
+```text
+查询未完成客户和任务
+→ 校验接替成员属于同一Workspace且为活跃非viewer成员
+→ 事务内重新分配客户
+→ 事务内重新分配未完成任务
+→ 写客户分配历史
+→ 写企业审计日志
+→ 最后更新成员为removed或disabled
+```
+
+成员主动退出时，如仍有未完成客户或任务，也必须先由管理员完成重新分配。
+
+### 7.7 D1真实集成断言
+
+```text
+PASS owner可创建并分配企业客户
+PASS 客户PII只对管理员和当前负责人可见
+PASS 只有当前负责人可更新客户状态和跟进
+PASS 当前负责人可创建和更新自己的客户任务
+PASS 客户重新分配可同步移动未完成任务并立即改变可见性
+PASS 客户不能通过其他workspaceId访问
+PASS 成员移除前必须先重新分配未完成客户和任务
+PASS 分配历史和企业审计记录被完整保留
+```
+
+### 7.8 D1权威验收证据
+
+开发草稿PR：
+
+```text
+#40 test: define D1 workspace customer access rules
+```
+
+权威成功运行：
+
+```text
+Workflow Run 29193931340
+Conclusion: success
+integration-evidence：Artifact ID 8260404032
+console-mobile-evidence：Artifact ID 8260404140
+保留至：2026-07-19
+```
+
+成功步骤包括：
 
 ```text
 PostgreSQL 16临时数据库
-→ npm ci
 → Prisma多文件Schema生成
-→ 全部正式migration部署
+→ 全部正式migration
 → governance:check
-→ 邮箱身份策略测试
-→ Console导航策略测试
-→ Workspace邀请策略测试
-→ Workspace资源策略测试
+→ 邮箱、Console、邀请、资源、客户策略测试
 → Lint
 → TypeScript
 → Next.js生产构建
 → 邮箱认证真实API回归
-→ Workspace邀请并发与隔离回归
-→ Workspace产品/知识资源真实隔离回归
+→ Workspace邀请回归
+→ Workspace产品/知识资源回归
+→ Workspace客户池、任务和重分配真实回归
 → Console登录态路由回归
 → 360/390/430px Chromium回归
 ```
 
-证据产物：
+### 7.9 D仍未完成的范围
 
-```text
-integration-evidence：Artifact ID 8259909885
-console-mobile-evidence：Artifact ID 8259910070
-保留至：2026-07-19
-```
+以下能力不得宣称已经完成：
 
-### 6.8 C阶段尚未完成的企业域
-
-以下能力仍需后续独立主线，不得宣称已经完成：
-
-- 企业主页和企业成员名片归属。
-- 企业客户池、任务和离职重新分配。
-- 企业AI共享额度、成员额度分配和企业AI账本。
-- 企业品牌、域名、报表、订单、发票和更完整的企业操作日志页面。
-- 企业管理员页和成员页的完整企业产品/知识管理UI。
-
-当前完成的是**邮箱邀请、成员权限、企业产品库和企业知识库的数据归属与服务端隔离底座**。
+- D2：企业主页和企业成员名片归属。
+- D3：企业AI共享账户、成员额度分配和企业AI账本。
+- D4：完整企业管理员页和成员页UI。
+- 企业品牌、域名、报表、订单和发票。
 
 ---
 
-## 7. 当前自动化命令
+## 8. 当前自动化命令
 
 ```bash
 npm run governance:check
@@ -326,16 +364,17 @@ npm run test:auth
 npm run test:console-nav
 npm run test:workspace-invite
 npm run test:workspace-resource
+npm run test:workspace-customer
 npm run lint
 npm run typecheck
 npm run build
 ```
 
-GitHub Actions额外执行认证、Workspace邀请、Workspace资源、Console和真实移动端浏览器集成测试。
+GitHub Actions额外执行认证、Workspace邀请、Workspace资源、Workspace客户池、Console和真实移动端浏览器集成测试。
 
 ---
 
-## 8. 明确未执行
+## 9. 明确未执行
 
 - 未连接生产数据库。
 - 未执行生产migration。
@@ -343,14 +382,14 @@ GitHub Actions额外执行认证、Workspace邀请、Workspace资源、Console�
 - 未使用真实AI、支付宝或企业协作平台。
 - 未修改生产服务器、Nginx、PM2或`.env`。
 - 未部署生产域名。
-- 未删除旧业务结构、未来模型或历史migration。
+- 未删除个人Lead、Profile、AI账本、旧业务结构或历史migration。
 
 ---
 
-## 9. 下一主线
+## 10. 下一主线
 
-C数据隔离底座完成后，下一项应从以下企业域继续：
+D1完成后，下一项为：
 
-> **D：企业客户池、企业名片归属、任务重新分配与企业AI共享额度。**
+> **D2：企业主页和企业成员名片归属。**
 
-D开始前必须分别确定客户、Profile和AI账本的兼容归属模型，禁止把个人历史数据自动迁移或清空。
+D2必须使用独立企业名片归属，不得把个人唯一Profile自动改造成企业资产，也不得改变个人公开主页现有地址和数据。
