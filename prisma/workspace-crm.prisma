@@ -1,0 +1,86 @@
+// D1 企业客户池。
+// 与个人 Lead / LeadFollowUp 完全分离，现有个人客户数据不自动迁移或改变归属。
+model WorkspaceCustomer {
+  id                        String   @id @default(uuid()) @db.Uuid
+  workspaceId               String   @map("workspace_id") @db.Uuid
+  name                      String
+  email                     String?
+  phone                     String?
+  wechat                    String?
+  message                   String?
+  sourceComponent           String?  @map("source_component")
+  sourcePage                String?  @map("source_page")
+  interestedProductId       String?  @map("interested_product_id") @db.Uuid
+  interestedProductName     String?  @map("interested_product_name")
+  interestedProductPrice    String?  @map("interested_product_price")
+  interestedProductCategory String?  @map("interested_product_category")
+  // new / contacted / following / converted / closed
+  status                    String   @default("new")
+  handlerNote               String?  @map("handler_note")
+  handledAt                 DateTime? @map("handled_at") @db.Timestamptz(6)
+  assignedToUserId          String?  @map("assigned_to_user_id") @db.Uuid
+  createdByUserId           String   @map("created_by_user_id") @db.Uuid
+  createdAt                 DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                 DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([workspaceId, status, createdAt])
+  @@index([workspaceId, assignedToUserId, status])
+  @@index([workspaceId, email])
+  @@index([workspaceId, phone])
+  @@map("workspace_customers")
+}
+
+model WorkspaceCustomerFollowUp {
+  id              String   @id @default(uuid()) @db.Uuid
+  workspaceId     String   @map("workspace_id") @db.Uuid
+  customerId      String   @map("customer_id") @db.Uuid
+  createdByUserId String   @map("created_by_user_id") @db.Uuid
+  content         String
+  previousStatus  String?  @map("previous_status")
+  newStatus       String?  @map("new_status")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([workspaceId, customerId, createdAt])
+  @@index([createdByUserId, createdAt])
+  @@map("workspace_customer_follow_ups")
+}
+
+model WorkspaceCustomerTask {
+  id                String    @id @default(uuid()) @db.Uuid
+  workspaceId       String    @map("workspace_id") @db.Uuid
+  customerId        String    @map("customer_id") @db.Uuid
+  title             String
+  description       String?
+  // pending / in_progress / completed / cancelled
+  status            String    @default("pending")
+  // low / normal / high / urgent
+  priority          String    @default("normal")
+  dueAt             DateTime? @map("due_at") @db.Timestamptz(6)
+  assignedToUserId  String    @map("assigned_to_user_id") @db.Uuid
+  createdByUserId   String    @map("created_by_user_id") @db.Uuid
+  completedByUserId String?   @map("completed_by_user_id") @db.Uuid
+  completedAt       DateTime? @map("completed_at") @db.Timestamptz(6)
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([workspaceId, assignedToUserId, status])
+  @@index([workspaceId, customerId, status])
+  @@index([dueAt, status])
+  @@map("workspace_customer_tasks")
+}
+
+model WorkspaceCustomerAssignmentHistory {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @map("workspace_id") @db.Uuid
+  customerId  String   @map("customer_id") @db.Uuid
+  fromUserId  String?  @map("from_user_id") @db.Uuid
+  toUserId    String?  @map("to_user_id") @db.Uuid
+  actorUserId String   @map("actor_user_id") @db.Uuid
+  reason      String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([workspaceId, customerId, createdAt])
+  @@index([workspaceId, fromUserId, createdAt])
+  @@index([workspaceId, toUserId, createdAt])
+  @@map("workspace_customer_assignment_history")
+}
