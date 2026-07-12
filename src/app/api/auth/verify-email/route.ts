@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAuthenticatedUser } from "@/lib/auth";
-import { sendVerificationCodeWithPolicy } from "@/lib/mail";
+import { sendScopedVerificationCodeWithPolicy } from "@/lib/email-verification";
 
 export const runtime = "nodejs";
 
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     || "";
 
   try {
-    const result = await sendVerificationCodeWithPolicy(user.email, user.id, ip);
+    const result = await sendScopedVerificationCodeWithPolicy(user.email, user.id, ip);
     if (result.ok) {
       return NextResponse.json({ success: true, message: "验证码已发送，请检查收件箱或垃圾箱。", waitSec: 60 });
     }
