@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { Prisma } from "@/generated/prisma/client";
 import { requireDashboardUser } from "@/lib/auth";
 import { sanitizePublicText } from "@/lib/content-safety";
 import { db } from "@/lib/db";
@@ -26,6 +27,11 @@ function cleanText(value: unknown, maxLength: number): string | null {
 function cleanUrl(value: unknown): string | null {
   const raw = cleanText(value, 2048);
   return raw ? sanitizePublicUrl(raw).url ?? null : null;
+}
+
+function cleanJsonObject(value: unknown): Prisma.InputJsonValue | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  return JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
 }
 
 function cardDto(card: {
@@ -151,6 +157,9 @@ export async function PATCH(request: Request, context: RouteContext) {
       return NextResponse.json({ success: false, error: "名片状态不正确。" }, { status: 400 });
     }
 
+    const socialLinks = Object.prototype.hasOwnProperty.call(body, "socialLinks")
+      ? cleanJsonObject(body.socialLinks)
+      : undefined;
     const statusChanged = nextStatus !== card.status;
     const updated = await db.$transaction(async (tx) => {
       const result = await tx.workspaceCard.update({
@@ -193,11 +202,7 @@ export async function PATCH(request: Request, context: RouteContext) {
           website: Object.prototype.hasOwnProperty.call(body, "website")
             ? cleanUrl(body.website)
             : card.website,
-          socialLinks: Object.prototype.hasOwnProperty.call(body, "socialLinks")
-            && body.socialLinks
-            && typeof body.socialLinks === "object"
-            ? body.socialLinks
-            : card.socialLinks,
+          ...(socialLinks !== undefined ? { socialLinks } : {}),
           contactVisibility: isWorkspaceCardContactVisibility(body.contactVisibility)
             ? body.contactVisibility
             : card.contactVisibility,
