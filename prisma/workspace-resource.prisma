@@ -1,0 +1,38 @@
+// 企业资源归属层。
+// 现有 Product、KnowledgeDoc 等个人业务表保持不变；是否属于企业由本表唯一判定。
+model WorkspaceResource {
+  id               String   @id @default(uuid()) @db.Uuid
+  workspaceId      String   @map("workspace_id") @db.Uuid
+  // product / knowledge_doc（后续新增类型必须先更新资源策略）
+  resourceType     String   @map("resource_type")
+  resourceId       String   @map("resource_id") @db.Uuid
+  createdByUserId  String   @map("created_by_user_id") @db.Uuid
+  assignedToUserId String?  @map("assigned_to_user_id") @db.Uuid
+  // active / archived
+  status           String   @default("active")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([resourceType, resourceId])
+  @@index([workspaceId, resourceType, status])
+  @@index([workspaceId, assignedToUserId, status])
+  @@index([createdByUserId, createdAt])
+  @@map("workspace_resources")
+}
+
+// 企业级操作审计，不与平台超级管理员 AdminAuditLog 混用。
+model WorkspaceAuditLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  workspaceId String   @map("workspace_id") @db.Uuid
+  actorUserId String   @map("actor_user_id") @db.Uuid
+  action      String
+  targetType  String?  @map("target_type")
+  targetId    String?  @map("target_id") @db.Uuid
+  metadata    Json?    @db.JsonB
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([workspaceId, createdAt])
+  @@index([workspaceId, action, createdAt])
+  @@index([targetType, targetId, createdAt])
+  @@map("workspace_audit_logs")
+}
