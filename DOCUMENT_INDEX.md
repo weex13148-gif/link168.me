@@ -1,7 +1,7 @@
 # Link168 正式文档索引
 
 **文件名：** `DOCUMENT_INDEX.md`  
-**版本：** v1.0-rc12  
+**版本：** v1.0-rc13  
 **更新日期：** 2026-07-12  
 **状态：** 持续生效
 
@@ -14,12 +14,12 @@
 | 1 | `PRODUCT_CONSTITUTION.md` | v1.6 | 定位、统一身份、五档结构、AI、企业、数据和Agent治理 |
 | 2 | `PRD.md` | v2.0-rc8（2026-07-12 V2范围修订） | 页面、路由、邮箱身份、企业成员、价格、权限和验收 |
 | 3 | `PROJECT_RULES.md` | v1.0-rc3 | Git、Agent、密钥、数据库、测试、部署和删除边界 |
-| 4 | `DOCUMENT_INDEX.md` | v1.0-rc12 | 文档版本、状态、优先级和治理入口 |
+| 4 | `DOCUMENT_INDEX.md` | v1.0-rc13 | 文档版本、状态、优先级和治理入口 |
 
 持续整改状态：
 
 ```text
-docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md（v1.7）
+docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md（v1.9）
 ```
 
 历史仓库检查证据：
@@ -65,10 +65,11 @@ docs/audits/REPOSITORY_INSPECTION_REPORT_20260710.md
 |---|---|
 | `.github/CODEOWNERS` | 将正式文档、Prisma、API、核心服务和治理配置交由真实GitHub账号审批 |
 | `.github/pull_request_template.md` | 强制说明Agent、假设、成功标准、最小修改、数据库、API、安全、验证和回滚 |
-| `.github/workflows/governance.yml` | 在正式分支和PR中运行治理、邮箱认证、迁移、构建和临时数据库集成验收 |
+| `.github/workflows/governance.yml` | 运行治理、邮箱认证、Console导航、迁移、Lint、TypeScript、构建和临时数据库验收 |
 | `scripts/governance/check-governance.mjs` | 检查必需文件、上位版本引用、索引登记、编号和并行根文档 |
 | `scripts/auth-integration-test.mjs` | 启动生产构建并对邮箱认证、并发令牌、限制和Session执行真实API验收 |
-| `package.json`中的`governance:check`和`test:auth` | 本地和CI统一执行入口 |
+| `src/components/layout/console-route-policy.test.ts` | 锁定五分类顺序、旧路径归类和Jeepwork排除规则 |
+| `package.json`中的`governance:check`、`test:auth`和`test:console-nav` | 本地和CI统一执行入口 |
 
 说明：Agent01–Agent08是职责角色，不是GitHub账号。当前CODEOWNERS使用仓库所有者`@weex13148-gif`；未来建立真实团队后再替换。
 
@@ -115,11 +116,19 @@ docs/audits/REPOSITORY_INSPECTION_REPORT_20260710.md
 
 ### 用户后台
 
-1. 首页
-2. 名片
-3. 客户
-4. AI
-5. 我的
+1. 首页：`/console`
+2. 名片：`/console/card`
+3. 客户：`/console/customers`
+4. AI：`/console/ai`
+5. 我的：`/console/account`
+
+B Console第一批已经完成：
+
+- 三套用户页面壳层统一为五项导航。
+- `/dashboard`和`/workbench/*`继续兼容并按旧路径归入五分类。
+- 普通用户共享导航不显示Jeepwork。
+- 名片编辑器内部标签不再占用手机一级底栏。
+- 导航策略、Lint、TypeScript、生产构建和认证回归已通过CI。
 
 ### 正式套餐
 
@@ -227,3 +236,13 @@ TRAE不得对以上事项进行V2技术选型、数据库扩张、页面开发�
 - Session创建故障不会记录假成功，注册账号可恢复登录。
 - GitHub Actions使用临时PostgreSQL 16完成migration、Lint、TypeScript、生产构建和真实API集成验收。
 - 未连接生产数据库、真实邮件密钥或生产服务器。
+
+### 2026-07-12：B Console第一批验收
+
+- 正式建立`/console`五分类入口和兼容适配页。
+- 三套用户页面壳层统一为五项桌面导航和五项手机底栏。
+- 名片编辑器内部标签移入页面内工具条。
+- 普通用户导航移除Jeepwork。
+- `/dashboard`与`/workbench/*`保留兼容，不删除业务能力。
+- CI运行`29187365414`完成导航策略、认证回归、迁移、Lint、TypeScript和生产构建验收。
+- 尚未执行真实移动端浏览器截图和生产部署。
