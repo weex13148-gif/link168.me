@@ -165,26 +165,23 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p artifacts/console-mobile
-          npx next start -H 127.0.0.1 -p 3000 > /tmp/link168-next.log 2>&1 &
+          mkdir -p artifacts/console-mobile artifacts/integration
+          npx next start -H 127.0.0.1 -p 3000 > artifacts/integration/next-server.log 2>&1 &
           APP_PID=$!
           trap 'kill "$APP_PID" 2>/dev/null || true' EXIT
-          if ! node scripts/auth-integration-test.mjs; then
-            cat /tmp/link168-next.log
-            exit 1
-          fi
-          if ! node scripts/workspace-invitation-integration-test.mjs; then
-            cat /tmp/link168-next.log
-            exit 1
-          fi
-          if ! node scripts/console-integration-test.mjs; then
-            cat /tmp/link168-next.log
-            exit 1
-          fi
-          if ! node scripts/console-mobile-browser-test.cjs 2>&1 | tee artifacts/console-mobile/browser-test.log; then
-            cat /tmp/link168-next.log
-            exit 1
-          fi
+          node scripts/auth-integration-test.mjs 2>&1 | tee artifacts/integration/auth.log
+          node scripts/workspace-invitation-integration-test.mjs 2>&1 | tee artifacts/integration/workspace.log
+          node scripts/console-integration-test.mjs 2>&1 | tee artifacts/integration/console.log
+          node scripts/console-mobile-browser-test.cjs 2>&1 | tee artifacts/console-mobile/browser-test.log
+
+      - name: Upload integration evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-evidence
+          path: artifacts/integration/**
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Upload Console mobile evidence
         if: always()
