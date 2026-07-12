@@ -43,6 +43,12 @@ function extractVersion(relativePath, content) {
   return match[1].trim();
 }
 
+function writeEvidence(lines) {
+  const directory = path.join(root, 'artifacts', 'integration');
+  fs.mkdirSync(directory, { recursive: true });
+  fs.writeFileSync(path.join(directory, 'governance.log'), `${lines.join('\n')}\n`, 'utf8');
+}
+
 const contents = new Map(requiredFiles.map((file) => [file, read(file)]));
 
 const constitutionVersion = extractVersion(
@@ -127,11 +133,12 @@ for (const name of shadowPrds) {
 }
 
 if (errors.length > 0) {
-  console.error('治理检查失败:');
-  for (const error of errors) console.error(`- ${error}`);
+  const output = ['治理检查失败:', ...errors.map((error) => `- ${error}`)];
+  writeEvidence(output);
+  console.error(output.join('\n'));
   process.exit(1);
 }
 
-console.log(
-  `治理检查通过：${requiredFiles.length} 个必需文件存在，版本引用、索引与编号一致。`,
-);
+const success = `治理检查通过：${requiredFiles.length} 个必需文件存在，版本引用、索引与编号一致。`;
+writeEvidence([success]);
+console.log(success);

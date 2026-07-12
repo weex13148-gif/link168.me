@@ -1,15 +1,15 @@
 # Link168 V2 后续整改开发报告
 
-**版本：** v2.2  
+**版本：** v2.3  
 **更新日期：** 2026-07-12  
-**状态：** A邮箱身份、B Console、C企业邀请与产品/知识隔离、D1企业客户池已完成开发和自动化验收  
+**状态：** A、B、C、D1、D2已完成开发和自动化验收  
 **依据：** `PRODUCT_CONSTITUTION.md` v1.6、`PRD.md` v2.0-rc8、`PROJECT_RULES.md` v1.0-rc3
 
 ---
 
-## 1. 报告用途
+## 1. 报告用途与边界
 
-本文件是Link168唯一持续整改报告，统一记录正式决策、代码差距、开发进度和验收证据。
+本文件是Link168唯一持续整改报告，记录正式决策、代码差距、开发结果和验收证据。
 
 ```text
 老板最新决定
@@ -20,46 +20,33 @@
 → 代码、自动化证据与部署结果
 ```
 
-代码存在、临时数据库验收、浏览器验收、真实第三方服务验证和生产验证必须分开表述。
+当前边界：
+
+- V2只使用邮箱注册和登录。
+- 企业成员使用Link168站内邮箱邀请。
+- 微信登录、企业微信、飞书、钉钉不属于V2。
+- 个人Profile、Link、Lead和AI账本不得自动迁入企业空间。
+- 企业管理员不得查看成员密码、私人会话、个人空间或AI对话正文。
+- 企业成员二级域名规则尚未批准，D2不创建最终公网地址。
+- 未连接生产数据库、服务器、真实邮件、AI或支付宝。
 
 ---
 
-## 2. 当前V2边界
+## 2. A：邮箱身份闭环
 
-- V2只开放邮箱注册和登录。
-- 企业成员采用Link168站内邮箱邀请。
-- 普通微信、企业微信、飞书和钉钉接入不属于V2。
-- 邀请未接受前不得获得企业数据访问权。
-- 企业成员冻结或移除后保留个人账号，但立即失去企业访问权。
-- 企业管理员不能查看成员密码、个人空间、私人会话或AI对话正文。
-- 个人历史数据不得自动迁入企业空间。
-- 未来代码和数据结构采用保留、隐藏或关闭，不擅自删除。
+**状态：完成。**
+
+完成30天邮箱验证限制、User ID隔离、验证和重置令牌单次消费、密码重置撤销旧Session、Session故障不伪造登录成功，以及注册故障恢复。
+
+已通过临时PostgreSQL、真实Next.js API、Lint、TypeScript和生产构建。未执行真实阿里云邮件和生产部署。
 
 ---
 
-## 3. A主线：邮箱身份闭环
+## 3. B：Console五分类收口
 
-**状态：开发和自动化验收完成。**
+**状态：完成。**
 
-已完成：
-
-- 30天未验证规则、受限后台和公开主页限制。
-- 邮箱验证码按User ID隔离。
-- 验证和重置令牌原子单次消费。
-- 重置密码撤销旧Session。
-- Session创建失败不记录虚假登录成功。
-- 注册Session失败后的账号可恢复登录。
-- 临时PostgreSQL、真实Next.js API、Lint、TypeScript和生产构建通过。
-
-尚未执行：阿里云邮件真实投递、生产数据库migration、生产部署和生产域名冒烟。
-
----
-
-## 4. B主线：Console五分类兼容收口
-
-**状态：开发、登录态路由和真实移动端浏览器验收完成。**
-
-正式一级入口固定为：
+正式一级入口：
 
 ```text
 首页  /console
@@ -69,180 +56,89 @@ AI    /console/ai
 我的  /console/account
 ```
 
-已完成：
+完成三套用户壳层统一、正式二级路由、旧Dashboard和Workbench兼容跳转、Jeepwork隐藏、加载与错误状态，以及360/390/430px真实Chromium移动端验收。
 
-- ConsoleShell、WorkbenchShell和DashboardFrame统一五项导航。
-- 手机底栏固定为：首页、名片、客户、AI、我的。
-- 普通用户导航不显示Jeepwork。
-- 正式二级路由覆盖产品、短链、分析、AI服务、知识库、会员、企业和通知。
-- `/dashboard`和`/workbench/*`保留兼容并临时307跳转至正式Console路径。
-- 新增统一加载态、可恢复错误态和移动端横向溢出保护。
-- Chromium验证360px、390px、430px五个主页面无文档级横向溢出。
-
-权威最终证据：
+权威证据：
 
 ```text
 PR #33
 Workflow Run 29188363168
 Conclusion: success
-Artifact: console-mobile-evidence（ID 8258742618）
+Artifact 8258742618
 ```
-
-B主线未部署生产，也未连接生产数据库和真实密钥。
 
 ---
 
-## 5. C主线第一批：企业邮箱邀请与成员权限
+## 4. C1：企业邮箱邀请与成员权限
 
-**状态：开发和真实临时数据库集成验收完成。**
+**状态：完成。**
 
-### 5.1 模型与migration
+模型和migration：
 
 ```text
-prisma/workspace-invitation.prisma
 WorkspaceInvitation
 20260712_workspace_email_invitations
 ```
 
-邀请记录与`WorkspaceMember`最终成员资格分离。邀请接受前不创建活跃成员。
-
-### 5.2 正式邀请流程
-
-```text
-企业所有者或管理员输入邮箱
-→ 创建7天有效邀请
-→ Token只保存SHA-256哈希
-→ 发送邀请邮件
-→ 受邀者注册或登录对应邮箱
-→ 校验Token、邮箱、有效期和Workspace
-→ 事务内单次接受
-→ 创建或恢复WorkspaceMember(active)
-```
-
-规则：
-
-- 支持已注册和未注册邮箱。
-- 同一Token并发接受只能成功一次。
-- 邀请错误邮箱不能接受。
-- 邮件未配置或发送失败不得返回虚假成功。
-- owner不能通过邀请授予。
-- admin只能邀请和管理member或viewer，不能管理其他admin。
-- 邀请操作同时校验目标`workspaceId`。
-- 被移除成员再次加入必须重新接受邀请。
-- 旧`/api/enterprise/organizations/*`成员接口统一适配正式Workspace处理器。
-
-### 5.3 第一批验收断言
-
-- 邮件失败明确返回，且不创建活跃成员。
-- 待接受邀请没有企业访问权。
-- 只有邀请邮箱可以接受。
-- 并发接受只有一次成功。
-- 接受后仅生成一条活跃成员记录。
-- admin不能邀请或授予其他admin。
-- 跨Workspace撤销邀请被拒绝。
+完成7天有效邀请、Token哈希、邀请邮箱校验、原子单次接受、角色层级、跨Workspace隔离和邮件失败不伪造成功。旧企业成员API已统一适配正式Workspace处理器。
 
 ---
 
-## 6. C主线第二批：企业产品与知识资源隔离
+## 5. C2：企业产品和知识资源隔离
 
-**状态：开发和真实临时数据库集成验收完成。**
+**状态：完成。**
 
-### 6.1 模型与migration
+模型和migration：
 
 ```text
-prisma/workspace-resource.prisma
 WorkspaceResource
 WorkspaceAuditLog
 20260712_workspace_resource_ownership
 ```
 
-当前正式支持：
+当前企业资源类型：
 
 ```text
 product
 knowledge_doc
 ```
 
-### 6.2 归属和权限规则
+企业资源Owner为Workspace；owner/admin可管理，普通成员按授权只读。企业资产从个人Dashboard、旧Workbench、个人公开主页和个人套餐计数中排除。
 
-- 原有个人业务表和历史数据保持不变。
-- 企业归属由`WorkspaceResource`唯一判定。
-- 企业资源保留创建人记录，但真正Owner是Workspace。
-- owner和admin可以创建、修改、分配和删除。
-- member和viewer只能按授权读取。
-- 未指定分配人为企业共享资源。
-- 指定分配人后，普通成员只能读取分配给自己的资源。
-- 成员被禁用或移除后立即失去访问权。
-- 所有单资源操作同时校验`workspaceId`、资源类型和资源ID。
-- 创建、更新、分配和删除写入`WorkspaceAuditLog`。
-
-### 6.3 个人与企业边界
-
-企业产品和知识文档已从以下个人入口排除：
-
-- 个人Dashboard。
-- 旧Workbench。
-- 个人公开名片。
-- 个人产品和知识文档套餐计数。
-
-### 6.4 C阶段权威验收证据
+权威证据：
 
 ```text
 PR #38
 Workflow Run 29192341961
 Conclusion: success
-integration-evidence：8259909885
-console-mobile-evidence：8259910070
+integration-evidence 8259909885
+console-mobile-evidence 8259910070
 ```
 
 ---
 
-## 7. D1：企业客户池、客户任务与离职重分配
+## 6. D1：企业客户池、任务与离职重分配
 
-**状态：开发和真实临时PostgreSQL集成验收完成。**
+**状态：完成。**
 
-### 7.1 设计原则
-
-D1没有给个人`Lead`或`LeadFollowUp`强行增加企业归属，也没有把个人历史客户自动迁入企业。
-
-采用独立企业客户域：
+个人客户与企业客户完全分离：
 
 ```text
 个人客户：Lead / LeadFollowUp
 企业客户：WorkspaceCustomer / WorkspaceCustomerFollowUp
 ```
 
-这样可以保证：
-
-- 个人客户继续归个人名片所有者。
-- 企业客户从创建开始即归Workspace所有。
-- 企业成员离职不会带走企业客户、跟进和任务。
-- 个人与企业客户接口、数据和权限不串线。
-
-### 7.2 新增模型与migration
+新增：
 
 ```text
-prisma/workspace-crm.prisma
 WorkspaceCustomer
 WorkspaceCustomerFollowUp
 WorkspaceCustomerTask
 WorkspaceCustomerAssignmentHistory
-```
-
-正式migration：
-
-```text
 20260712_workspace_customer_pool
 ```
 
-模型职责：
-
-- `WorkspaceCustomer`：企业客户PII、来源、产品快照、状态和当前负责人。
-- `WorkspaceCustomerFollowUp`：独立跟进与状态变化记录。
-- `WorkspaceCustomerTask`：客户待办、优先级、负责人和完成状态。
-- `WorkspaceCustomerAssignmentHistory`：每次客户负责人变化的完整历史。
-
-### 7.3 正式API
+正式API：
 
 ```text
 /api/workspaces/[workspaceId]/customers
@@ -250,109 +146,122 @@ WorkspaceCustomerAssignmentHistory
 /api/workspaces/[workspaceId]/customers/[customerId]/tasks
 ```
 
-### 7.4 客户权限
+权限和离职规则：
 
-- owner和admin可查看、创建、编辑和重新分配全部企业客户。
-- member只能查看和跟进分配给自己的客户。
-- member不能读取其他成员客户。
-- viewer不能查看企业客户姓名、电话、邮箱、微信和需求等PII。
-- 客户和任务只能分配给当前Workspace的活跃owner、admin或member。
-- 所有查询同时校验`workspaceId`、成员状态、角色和当前负责人。
-- 通过其他Workspace ID访问同一客户返回不存在。
+- owner/admin管理全部企业客户。
+- member只处理分配给自己的客户和任务。
+- viewer不能查看客户PII。
+- 客户和任务只能分配给同一Workspace活跃非viewer成员。
+- 跨Workspace访问返回404。
+- 有未完成客户或任务时，移除、禁用或主动退出返回409。
+- 指定接替成员后，客户、任务、历史、审计和成员状态在同一事务完成。
 
-### 7.5 跟进和任务
-
-- 客户状态固定为：`new / contacted / following / converted / closed`。
-- 跟进记录独立保存，不继续向历史备注字段追加文本。
-- 分配成员可以更新客户状态和写跟进记录。
-- 客户任务状态固定为：`pending / in_progress / completed / cancelled`。
-- 客户任务优先级固定为：`low / normal / high / urgent`。
-- 分配成员可以创建和更新自己的客户任务。
-- 普通成员不能把任务分给其他人。
-- owner和admin可以重新分配客户及未完成任务。
-
-### 7.6 离职、禁用和重新分配
-
-当成员仍负责未完成客户或任务时：
+权威证据：
 
 ```text
-直接移除或禁用
-→ 返回409 WORKSPACE_REASSIGN_REQUIRED
-→ 不改变成员状态
-```
-
-管理员指定接替成员后：
-
-```text
-查询未完成客户和任务
-→ 校验接替成员属于同一Workspace且为活跃非viewer成员
-→ 事务内重新分配客户
-→ 事务内重新分配未完成任务
-→ 写客户分配历史
-→ 写企业审计日志
-→ 最后更新成员为removed或disabled
-```
-
-成员主动退出时，如仍有未完成客户或任务，也必须先由管理员完成重新分配。
-
-### 7.7 D1真实集成断言
-
-```text
-PASS owner可创建并分配企业客户
-PASS 客户PII只对管理员和当前负责人可见
-PASS 只有当前负责人可更新客户状态和跟进
-PASS 当前负责人可创建和更新自己的客户任务
-PASS 客户重新分配可同步移动未完成任务并立即改变可见性
-PASS 客户不能通过其他workspaceId访问
-PASS 成员移除前必须先重新分配未完成客户和任务
-PASS 分配历史和企业审计记录被完整保留
-```
-
-### 7.8 D1权威验收证据
-
-开发草稿PR：
-
-```text
-#40 test: define D1 workspace customer access rules
-```
-
-权威成功运行：
-
-```text
-Workflow Run 29193931340
+PR #40
+Workflow Run 29194160887
 Conclusion: success
-integration-evidence：Artifact ID 8260404032
-console-mobile-evidence：Artifact ID 8260404140
-保留至：2026-07-19
 ```
 
-成功步骤包括：
+---
+
+## 7. D2：企业主页、成员名片与组件归属
+
+**状态：数据归属、服务端权限、发布状态、组件API和真实临时PostgreSQL验收完成。**
+
+### 7.1 独立归属
 
 ```text
-PostgreSQL 16临时数据库
-→ Prisma多文件Schema生成
-→ 全部正式migration
-→ governance:check
-→ 邮箱、Console、邀请、资源、客户策略测试
-→ Lint
-→ TypeScript
-→ Next.js生产构建
-→ 邮箱认证真实API回归
-→ Workspace邀请回归
-→ Workspace产品/知识资源回归
-→ Workspace客户池、任务和重分配真实回归
-→ Console登录态路由回归
-→ 360/390/430px Chromium回归
+个人经营名片：Profile / Link
+企业主页和成员名片：WorkspaceCard / WorkspaceCardComponent
 ```
 
-### 7.9 D仍未完成的范围
+D2不修改个人Profile、Link、用户名或`/[username]`地址。企业成员名片归Workspace所有，成员只是绑定和维护者；成员移除后名片继续归企业。
 
-以下能力不得宣称已经完成：
+### 7.2 模型和migration
 
-- D2：企业主页和企业成员名片归属。
-- D3：企业AI共享账户、成员额度分配和企业AI账本。
-- D4：完整企业管理员页和成员页UI。
-- 企业品牌、域名、报表、订单和发票。
+```text
+prisma/workspace-card.prisma
+WorkspaceCard
+WorkspaceCardComponent
+20260712_workspace_cards
+```
+
+约束：
+
+- 每个Workspace最多一张企业主页。
+- 每个Workspace成员最多一张企业成员名片。
+- 企业主页不得绑定成员；成员名片必须绑定成员。
+- 状态：`draft / published / archived`。
+- 联系可见性：`public / members_only / private`。
+- 模板：`business / creator / conversion`。
+- 成员名片外键使用`ON DELETE RESTRICT`，避免硬删除用户破坏企业资产归属。
+
+### 7.3 内部API
+
+```text
+/api/workspaces/[workspaceId]/cards
+/api/workspaces/[workspaceId]/cards/[cardId]
+/api/workspaces/[workspaceId]/cards/[cardId]/components
+```
+
+这些是企业后台和内部预览接口，不代表最终公网域名规则已经批准。
+
+### 7.4 权限
+
+- owner/admin管理企业主页和全部成员名片。
+- owner/admin可以发布、下线和归档。
+- member只能创建、读取和编辑自己的成员名片。
+- member不能创建企业主页、创建他人名片或自行发布。
+- member可读取企业主页。
+- viewer只能读取企业主页。
+- 名片组件继承对应名片的Workspace和角色权限。
+- 跨Workspace访问返回404。
+
+### 7.5 资产与审计
+
+- 企业组件不写入个人Link表。
+- 成员移除后立即失去访问权，但成员名片和组件继续保留。
+- 创建、更新、发布、下线、归档和组件变化写入WorkspaceAuditLog。
+
+### 7.6 并发文档治理
+
+D2期间正式分支新增微信联系组件文档。内容全部保留：
+
+```text
+docs/history/PRD_WECHAT_CONTACT_COMPONENT.md
+docs/PRD_AI名片_AI客服_微信联系组件.md
+```
+
+根目录并行PRD已移入历史目录，主PRD仍只有根目录`PRD.md`。D2通过双父提交接入并发文档，没有覆盖其他Agent变更。
+
+### 7.7 真实集成断言
+
+```text
+PASS 每个Workspace最多一张企业主页
+PASS 成员只能创建自己的成员名片，管理员可创建任意成员名片
+PASS 成员看到企业主页和自己的名片，viewer只看到企业主页
+PASS 成员可编辑自己的名片，只有管理员可发布
+PASS 企业名片组件遵循同一Workspace和名片所有权
+PASS 企业名片不能通过其他workspaceId访问
+PASS 成员移除后失去访问权但企业名片继续保留
+PASS 企业名片和组件不修改个人Profile或Link
+PASS 名片创建、发布和组件变化写入企业审计日志
+```
+
+### 7.8 权威证据
+
+```text
+PR #41
+Workflow Run 29195374596
+Conclusion: success
+integration-evidence 8260814111
+console-mobile-evidence 8260814233
+保留至 2026-07-19
+```
+
+该运行通过全部migration、治理、邮箱、Console、邀请、企业资源、客户、名片策略、Lint、TypeScript、生产构建、真实API和移动端浏览器回归。
 
 ---
 
@@ -365,31 +274,43 @@ npm run test:console-nav
 npm run test:workspace-invite
 npm run test:workspace-resource
 npm run test:workspace-customer
+npm run test:workspace-card
 npm run lint
 npm run typecheck
 npm run build
 ```
 
-GitHub Actions额外执行认证、Workspace邀请、Workspace资源、Workspace客户池、Console和真实移动端浏览器集成测试。
+治理失败时，详细错误保存到：
+
+```text
+artifacts/integration/governance.log
+```
 
 ---
 
-## 9. 明确未执行
+## 9. D仍未完成
 
-- 未连接生产数据库。
+- D3：企业AI共享账户、成员额度、批次和企业AI账本。
+- D4：企业管理员页和成员页完整UI。
+- 企业主页和成员名片最终公网域名、二级域名和自购域名渲染。
+- 企业品牌、域名验证、报表、订单和发票。
+
+---
+
+## 10. 明确未执行
+
+- 未连接或修改生产数据库。
 - 未执行生产migration。
-- 未调用真实阿里云邮件。
-- 未使用真实AI、支付宝或企业协作平台。
-- 未修改生产服务器、Nginx、PM2或`.env`。
-- 未部署生产域名。
-- 未删除个人Lead、Profile、AI账本、旧业务结构或历史migration。
+- 未调用真实邮件、AI、支付宝或企业协作平台。
+- 未修改服务器、Nginx、PM2或`.env`。
+- 未部署到生产域名。
+- 未创建未批准的企业公开域名规则。
+- 未删除个人Profile、Link、Lead、AI账本、旧业务结构或历史migration。
 
 ---
 
-## 10. 下一主线
+## 11. 下一主线
 
-D1完成后，下一项为：
+> **D3：企业AI共享账户、成员额度分配和企业AI账本。**
 
-> **D2：企业主页和企业成员名片归属。**
-
-D2必须使用独立企业名片归属，不得把个人唯一Profile自动改造成企业资产，也不得改变个人公开主页现有地址和数据。
+D3必须与个人`AiCreditAccount`、个人购买批次和个人用量账本完全分离；企业额度按来源和批次扣减，失败必须回补原来源和原批次。
