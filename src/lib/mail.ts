@@ -15,6 +15,15 @@ function normalizeIp(value?: string) {
   return ip && ip !== "unknown" ? ip : "";
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 async function getTransporter(): Promise<Transporter | null> {
   const config = await getConfig().catch(() => null);
   const useDatabaseConfig = config?.mailEnabled === true;
@@ -168,6 +177,35 @@ export async function sendPasswordReset(email: string, resetToken: string) {
     <div class="link-row">${resetUrl}</div>
     <p class="tip">此链接只能使用一次。若非本人操作，请忽略本邮件。</p>`;
   return sendEmail({ to: email, subject: "重置你的 Link168 密码", html: wrapInLayout("重置密码 · Link168", bodyHtml) });
+}
+
+export async function sendWorkspaceInvitation(options: {
+  email: string;
+  workspaceName: string;
+  inviterEmail: string;
+  roleLabel: string;
+  token: string;
+}) {
+  const appUrl = await getAppUrl();
+  const inviteUrl = `${appUrl}/workspace-invitations/${encodeURIComponent(options.token)}`;
+  const workspaceName = escapeHtml(options.workspaceName);
+  const inviterEmail = escapeHtml(options.inviterEmail);
+  const roleLabel = escapeHtml(options.roleLabel);
+  const bodyHtml = `
+    <h1>邀请你加入 ${workspaceName}</h1>
+    <p><strong>${inviterEmail}</strong> 邀请你以“${roleLabel}”身份加入 Link168 企业工作空间。</p>
+    <p>请先登录或注册邀请对应的邮箱账号，再点击下方按钮接受邀请。</p>
+    <a href="${inviteUrl}" class="btn" target="_blank" rel="noopener">查看并接受邀请</a>
+    <p><strong>邀请链接 7 天内有效，且只能使用一次。</strong></p>
+    <p class="tip">按钮无法点击时，请复制下方地址到浏览器：</p>
+    <div class="link-row">${inviteUrl}</div>
+    <p class="tip">接受邀请前，你不会获得该企业工作空间的数据访问权。</p>`;
+  return sendEmail({
+    to: options.email,
+    subject: `${options.inviterEmail} 邀请你加入 ${options.workspaceName}｜Link168`,
+    html: wrapInLayout("企业工作空间邀请 · Link168", bodyHtml),
+    text: `${options.inviterEmail} 邀请你以${options.roleLabel}身份加入 ${options.workspaceName}。邀请链接 7 天内有效：${inviteUrl}`,
+  });
 }
 
 export type VerificationSendResult =
