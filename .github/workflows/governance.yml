@@ -13,6 +13,7 @@ on:
       - 'docs/governance/**'
       - 'docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md'
       - 'scripts/governance/**'
+      - 'scripts/auth-integration-test.mjs'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
@@ -38,6 +39,7 @@ on:
       - 'docs/governance/**'
       - 'docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md'
       - 'scripts/governance/**'
+      - 'scripts/auth-integration-test.mjs'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
@@ -59,9 +61,26 @@ jobs:
   governance-and-auth:
     name: Validate governance and email authentication
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: link168_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d link168_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     env:
       DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/link168_ci
+      NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
+      COOKIE_SECURE: 'false'
+      MAIL_ENABLED: 'false'
 
     steps:
       - name: Checkout repository
@@ -79,6 +98,9 @@ jobs:
       - name: Generate Prisma client
         run: npx prisma generate
 
+      - name: Apply database migrations
+        run: npx prisma migrate deploy
+
       - name: Run governance consistency check
         run: npm run governance:check
 
@@ -90,3 +112,18 @@ jobs:
 
       - name: Run TypeScript check
         run: npm run typecheck
+
+      - name: Run production build
+        run: npm run build
+
+      - name: Run email auth integration tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx next start -H 127.0.0.1 -p 3000 > /tmp/link168-next.log 2>&1 &
+          APP_PID=$!
+          trap 'kill "$APP_PID" 2>/dev/null || true' EXIT
+          if ! node scripts/auth-integration-test.mjs; then
+            cat /tmp/link168-next.log
+            exit 1
+          fi
