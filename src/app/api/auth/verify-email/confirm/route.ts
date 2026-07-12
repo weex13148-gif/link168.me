@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
-import {
-  consumeEmailVerificationToken,
-  requireAuthenticatedUser,
-  validateEmailVerificationToken,
-} from "@/lib/auth";
+import { requireAuthenticatedUser } from "@/lib/auth";
+import { consumeEmailVerificationCredential } from "@/lib/auth-hardening";
 import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -41,24 +38,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "验证码应为 6 位数字。" }, { status: 400 });
   }
 
-  const tokenUser = await validateEmailVerificationToken(credential);
-  if (!tokenUser) {
-    return NextResponse.json({ success: false, error: "验证码不正确或已过期，请重新获取。" }, { status: 400 });
-  }
-
+  let expectedUserId: string | null = null;
   if (isSixDigitCode) {
     const authenticated = await requireAuthenticatedUser(request);
     if (authenticated.response || !authenticated.user) {
       return NextResponse.json({ success: false, error: "登录状态已失效，请重新登录后验证邮箱。" }, { status: 401 });
     }
-    if (authenticated.user.id !== tokenUser.id) {
-      return NextResponse.json({ success: false, error: "该验证码与当前账号不匹配，请重新获取。" }, { status: 400 });
-    }
+    expectedUserId = authenticated.user.id;
   }
 
-  const userId = await consumeEmailVerificationToken(credential);
-  if (!userId) {
-    return NextResponse.json({ success: false, error: "该验证码已使用或已过期，请重新获取。" }, { status: 400 });
+  try {
+    const userId = await consumeEmailVerificationCredential(credential, expectedUserId);
+    if (!userId) {
+      return NextResponse.json({ success: false, error: "验证码不正确、已使用或已过期，请重新获取。" }, { status: 400 });
+    }
+  } catch {
+    return NextResponse.json({ success: false, error: "邮箱验证服务暂时不可用，请稍后重试。" }, { status: 503 });
   }
 
   return NextResponse.json({ success: true, message: "邮箱验证成功，欢迎使用 Link168。" });
