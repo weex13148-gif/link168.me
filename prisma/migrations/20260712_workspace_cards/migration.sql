@@ -94,7 +94,7 @@ ADD CONSTRAINT "workspace_cards_workspace_id_fkey"
 FOREIGN KEY ("workspace_id") REFERENCES "workspaces"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "workspace_cards"
 ADD CONSTRAINT "workspace_cards_member_user_id_fkey"
-FOREIGN KEY ("member_user_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+FOREIGN KEY ("member_user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 ALTER TABLE "workspace_cards"
 ADD CONSTRAINT "workspace_cards_created_by_user_id_fkey"
 FOREIGN KEY ("created_by_user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
