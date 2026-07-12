@@ -27,6 +27,7 @@ import {
 } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { sanitizePublicUrl } from "@/lib/public-url-security";
+import { getWorkspaceOwnedResourceIds } from "@/lib/workspace/resources";
 
 export const dynamic = "force-dynamic";
 
@@ -251,8 +252,6 @@ export default async function PublicProfilePage({ params, searchParams }: Public
   }
 
   const links = profile.links.map((item) => {
-    // D7 读取侧：图标 moderationStatus !== "approved" 时显示占位（不显示原图）
-    // 历史兼容：null / "legacy_approved" 视为 approved
     const iconModerationApproved =
       !item.iconModerationStatus ||
       item.iconModerationStatus === "approved" ||
@@ -271,9 +270,14 @@ export default async function PublicProfilePage({ params, searchParams }: Public
     };
   });
 
+  const enterpriseProductIds = await getWorkspaceOwnedResourceIds("product");
   const rawProducts = await db.product
     .findMany({
-      where: { userId: profile.userId, isActive: true },
+      where: {
+        userId: profile.userId,
+        isActive: true,
+        ...(enterpriseProductIds.length > 0 ? { id: { notIn: enterpriseProductIds } } : {}),
+      },
       orderBy: { sortOrder: "asc" },
       select: {
         id: true,
@@ -306,7 +310,6 @@ export default async function PublicProfilePage({ params, searchParams }: Public
     : null;
   const contactIsPublic = profile.contactVisibility === "public";
 
-  // JSON-LD 结构化数据
   const personSchema = generatePersonSchema({
     name: profile.displayName || `@${profile.username}`,
     username: profile.username,
