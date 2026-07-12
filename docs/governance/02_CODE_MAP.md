@@ -1,7 +1,7 @@
 # Link168 V2 代码地图
 
 **文件名：** `docs/governance/02_CODE_MAP.md`  
-**版本：** v1.2  
+**版本：** v1.3  
 **生效日期：** 2026-07-12  
 **性质：** 工程治理附件  
 **上位规则：** `PRODUCT_CONSTITUTION.md` v1.6、`PRD.md` v2.0-rc8、`PROJECT_RULES.md` v1.0-rc3
@@ -29,55 +29,59 @@
 
 ```text
 link168.me/
-├─ PRODUCT_CONSTITUTION.md       # 唯一产品宪法
-├─ PRD.md                        # 当前功能、页面、流程、价格与验收
-├─ PROJECT_RULES.md              # Git、Agent、安全、数据库与部署规则
-├─ DOCUMENT_INDEX.md             # 正式文档版本和优先级索引
-├─ README.md                     # 分支入口和强制阅读顺序
-├─ package.json                  # 依赖与工程命令
-├─ package-lock.json             # 锁定依赖
-├─ tsconfig.json                 # TypeScript配置
-├─ next.config.ts                # Next.js配置
-├─ eslint.config.mjs             # ESLint配置
-├─ postcss.config.mjs            # 样式构建配置
-├─ prisma.config.ts              # Prisma配置
-├─ .env.example                  # 环境变量名称示例，不含真实密钥
+├─ PRODUCT_CONSTITUTION.md
+├─ PRD.md
+├─ PROJECT_RULES.md
+├─ DOCUMENT_INDEX.md
+├─ README.md
+├─ package.json
+├─ package-lock.json
+├─ tsconfig.json
+├─ next.config.ts                # 安全头与旧用户路径兼容跳转
+├─ prisma.config.ts
+├─ .env.example
 ├─ .github/
-│  ├─ CODEOWNERS                 # 真实GitHub审批所有者
-│  ├─ pull_request_template.md   # 模块、风险、验证和回滚模板
+│  ├─ CODEOWNERS
+│  ├─ pull_request_template.md
 │  └─ workflows/
-│     └─ governance.yml          # 治理、邮箱认证、构建与临时数据库验收
+│     └─ governance.yml          # 治理、认证、Console、构建与浏览器验收
 ├─ src/
-│  ├─ app/                       # 页面、布局、路由和Route Handler
-│  ├─ components/                # 可复用UI与业务展示组件
-│  ├─ features/                  # 按业务能力组织的功能编排
-│  ├─ lib/                       # 服务端领域服务、适配器和公共库
-│  ├─ types/                     # 跨模块稳定共享类型
-│  └─ proxy.ts                   # 请求代理或兼容入口
+│  ├─ app/
+│  │  ├─ console/                # 五分类正式用户入口、二级适配页和状态页
+│  │  ├─ dashboard/              # 旧名片入口，保留兼容
+│  │  ├─ workbench/              # 旧业务页面，保留兼容与复用
+│  │  └─ jeepwork/               # 平台管理后台
+│  ├─ components/
+│  │  ├─ layout/                 # Console共享导航和路由策略
+│  │  ├─ dashboard-v1/           # 名片编辑器及内部工具标签
+│  │  └─ workbench/              # 旧业务Shell兼容层
+│  ├─ features/
+│  ├─ lib/
+│  ├─ types/
+│  └─ proxy.ts
 ├─ prisma/
-│  ├─ schema.prisma              # 数据模型事实来源
-│  └─ migrations/                # 数据库迁移历史
+│  ├─ schema.prisma
+│  └─ migrations/
 ├─ scripts/
-│  ├─ db/                        # 数据库校验、备份、恢复和迁移脚本
-│  ├─ ai-test/                   # AI专项测试脚本
-│  ├─ governance/                # 治理一致性检查脚本
-│  ├─ auth-integration-test.mjs  # 邮箱认证真实API与临时PostgreSQL验收
-│  └─ smoke-test.*               # 核心烟测
-├─ tests/                        # 如存在，用于跨模块或端到端测试
+│  ├─ db/
+│  ├─ ai-test/
+│  ├─ governance/
+│  ├─ auth-integration-test.mjs       # 邮箱认证真实API验收
+│  ├─ console-integration-test.mjs    # Console正式路由和旧路径跳转验收
+│  ├─ console-mobile-browser-test.cjs # 360/390/430px Chromium验收
+│  └─ smoke-test.*
 ├─ public/
-│  └─ brand/                     # Link168品牌资源
+│  └─ brand/
 └─ docs/
-   ├─ governance/                # 工程治理附件
-   ├─ audits/                    # 检查证据与唯一持续整改报告
-   ├─ reference-images/          # 产品参考图
+   ├─ governance/
+   ├─ audits/
+   ├─ reference-images/
    ├─ DEVELOPMENT_DIRECTION_20260707.md
    ├─ PRD_Link168_V2_DIRECTION_20260707.md
    └─ CURATED_CODE_MANIFEST.md
 ```
 
-不得提交：`.env*`、`node_modules`、`.next`、运行期上传目录、密钥、构建缓存和本地临时报告。
-
-不存在的`tests/`、`config/`、`docker/`等目录不得为了“结构完整”空建。真实新增顶层目录前必须说明用途、Owner和更新本文件。
+不得提交：`.env*`、`node_modules`、`.next`、运行期上传目录、真实密钥、构建缓存和本地临时报告。
 
 ---
 
@@ -87,16 +91,16 @@ link168.me/
 
 1. **就近测试：** 与业务文件同目录，使用`*.test.ts`、`*.test.tsx`、`*.spec.ts`或`*.spec.tsx`。
 2. **集中测试：** 跨模块或端到端测试放在根`tests/`或现有专项测试目录。
-3. **可重复验收脚本：** 需要启动应用、连接临时数据库或执行多接口流程时，放在现有`scripts/`中并由CI调用。
+3. **可重复验收脚本：** 需要启动应用、连接临时数据库或执行多接口和浏览器流程时，放在`scripts/`并由CI调用。
 
 规则：
 
-- Agent07负责测试策略和验收，不代表只有Agent07可以编写测试。
-- 开发Agent应为自己修改的业务能力补相关测试。
 - 测试不得包含真实生产密钥、真实客户数据和不可控外部调用。
 - 不允许为通过测试复制一套独立业务逻辑。
-- 邮箱认证集成测试只能使用临时PostgreSQL、测试账号和关闭的真实邮件发送。
-- 新增测试框架或顶层测试目录需要更新本地图和开发规则。
+- 邮箱和Console集成测试使用临时PostgreSQL、测试账号和关闭的真实邮件发送。
+- 移动端验收使用CI临时安装的Playwright与Chromium，不写入项目依赖或锁文件。
+- 浏览器截图属于短期CI证据，不提交到正式仓库。
+- Agent07负责测试策略和验收，不代表只有Agent07可以编写测试。
 
 ---
 
@@ -109,12 +113,11 @@ link168.me/
 | `/` | public / growth | 官网价值、注册登录和模板入口 |
 | `/register`、`/login` | identity | V2邮箱注册、密码登录和账号恢复 |
 | `/[username]` | card | 公开经营名片、产品、联系方式、留资和访客AI接待 |
-| `/templates` | card-components | 模板浏览与选择 |
-| `/templates/[id]` | card-components | 模板详情与移动端预览 |
+| `/templates`、`/templates/[id]` | card-components | 模板浏览、详情和移动端预览 |
 | `/s/[code]`或`/go/[code]` | analytics / channel | 短链跳转、来源和归因 |
 | `/report` | governance | 用户举报入口 |
 
-### 4.2 用户侧`/console`
+### 4.2 用户侧一级分类
 
 一级分类永久固定：
 
@@ -122,17 +125,34 @@ link168.me/
 首页 / 名片 / 客户 / AI / 我的
 ```
 
-| 一级分类 | 路由方向 | 承载内容 |
+| 分类 | 正式路由 | 承载内容 |
 |---|---|---|
-| 首页 | `/console` | 经营总览、名片状态、数据摘要、待办、最近客户、快捷操作 |
-| 名片 | `/console/card`及二级页面 | 资料、组件、产品、主题、模板、预览、发布、二维码、短链 |
-| 客户 | `/console/customers`、`/console/leads`等 | 线索、状态、跟进、来源、转化 |
-| AI | `/console/ai`及二级页面 | 六大AI、访客AI、知识库、额度、记录、加量包 |
-| 我的 | `/console/account`、会员和企业入口等 | 会员、订单、支付、账号安全、通知、推广、企业空间、设置 |
+| 首页 | `/console` | 经营总览、状态、数据摘要、待办和快捷操作 |
+| 名片 | `/console/card` | 名片资料、组件、主题、分享和内部装修工具 |
+| 客户 | `/console/customers` | 线索、状态、跟进、来源和转化 |
+| AI | `/console/ai` | 六大AI、访客接待、知识库和服务配置 |
+| 我的 | `/console/account` | 会员、企业、通知、账号和安全设置 |
 
-其他功能只能作为组件、快捷入口或二级页面，不增加第六个一级导航。
+普通用户导航不得出现`/jeepwork`。
 
-### 4.3 企业空间
+### 4.3 正式二级路由
+
+| 分类 | 二级路由 | 当前实现 |
+|---|---|---|
+| 名片 | `/console/card/products` | 复用现有产品与服务页面 |
+| 名片 | `/console/card/short-links` | 复用现有短链接页面 |
+| 名片 | `/console/card/analytics` | 复用现有数据分析页面 |
+| AI | `/console/ai/[assistant]` | 六大AI会话页 |
+| AI | `/console/ai/service` | 访客AI服务配置 |
+| AI | `/console/ai/reception` | 访客AI接待页面 |
+| AI | `/console/ai/knowledge` | 知识库页面 |
+| 我的 | `/console/account/membership` | 会员与套餐 |
+| 我的 | `/console/account/enterprise` | 企业空间入口 |
+| 我的 | `/console/account/notifications` | 通知中心 |
+
+适配页只复用成熟实现，不复制业务服务、权限判断或数据库逻辑。
+
+### 4.4 企业空间
 
 | 路由方向 | 角色 | 主要职责 |
 |---|---|---|
@@ -141,12 +161,12 @@ link168.me/
 
 企业空间按`workspaceId`、角色和资源范围进行服务端隔离。V2成员接入采用Link168站内邮箱邀请，不依赖企业协作平台同步。
 
-### 4.4 平台后台
+### 4.5 平台后台
 
 | 路由 | 主要职责 |
 |---|---|
 | `/jeepwork` | 平台运营总览 |
-| `/jeepwork/users` | 用户治理、冻结、会员处理 |
+| `/jeepwork/users` | 用户治理、冻结和会员处理 |
 | `/jeepwork/orders` | 订单、退款和对账 |
 | `/jeepwork/reports` | 举报、审核和申诉 |
 | `/jeepwork/ai-usage` | AI用量、成本、风险和额度 |
@@ -156,14 +176,44 @@ link168.me/
 
 ---
 
-## 5. 目录与领域映射
+## 5. 旧路径兼容地图
 
-十四个领域来自产品宪法。当前代码可能分散在`src/app`、`src/components`、`src/features`、`src/lib`和`prisma`，后续迁移不得破坏现有闭环。
+旧页面代码保留，但用户访问以下旧地址时使用临时307跳入正式Console路径：
+
+| 旧地址 | 正式地址 |
+|---|---|
+| `/dashboard` | `/console/card` |
+| `/workbench` | `/console` |
+| `/workbench/card` | `/console/card` |
+| `/workbench/products` | `/console/card/products` |
+| `/workbench/short-links` | `/console/card/short-links` |
+| `/workbench/analytics` | `/console/card/analytics` |
+| `/workbench/leads` | `/console/customers` |
+| `/workbench/ai` | `/console/ai` |
+| `/workbench/ai/:assistant` | `/console/ai/:assistant` |
+| `/workbench/ai-service` | `/console/ai/service` |
+| `/workbench/knowledge` | `/console/ai/knowledge` |
+| `/workbench/account` | `/console/account` |
+| `/workbench/membership` | `/console/account/membership` |
+| `/workbench/enterprise` | `/console/account/enterprise` |
+| `/workbench/notifications` | `/console/account/notifications` |
+
+处理规则：
+
+1. 新用户能力只进入`/console`对应分类。
+2. 旧业务文件继续作为兼容与复用来源，不直接删除。
+3. 删除旧路径或模型前必须完成依赖、数据、migration和生产影响评估，并取得老板批准。
+4. 旧`/admin`不作为V2平台后台；平台后台统一使用`/jeepwork`。
+5. `/showcase`不得在普通首页提供入口，历史模型和migration不得未经审批删除。
+
+---
+
+## 6. 目录与领域映射
 
 | 领域 | 主要能力 | 典型位置 |
 |---|---|---|
-| `identity` | User、Session、邮箱登录、账号安全 | `src/app`、`src/features`、`src/lib`、`prisma` |
-| `social-identity` | 微信和企业协作身份绑定；V2暂缓，已有未来结构保留 | `src/features`、`src/lib`、`prisma` |
+| `identity` | User、Session、邮箱登录、账号安全 | `src/app`、`src/lib`、`prisma` |
+| `social-identity` | 微信和企业协作身份绑定；V2暂缓，未来结构保留 | `src/features`、`src/lib`、`prisma` |
 | `card` | 名片、发布、公开页、联系方式 | `src/app`、`src/components`、`src/features` |
 | `card-components` | 页面组件、模板、主题、统一渲染 | `src/components`、`src/features` |
 | `catalog` | 产品与服务 | `src/app`、`src/features`、`prisma` |
@@ -174,35 +224,10 @@ link168.me/
 | `channel` | 推广、归因、佣金和结算 | `src/features`、`src/lib`、`prisma` |
 | `ai-platform` | 六大AI、知识库、额度、扣点、回补 | `src/app`、`src/features`、`src/lib/ai`、`prisma` |
 | `workspace` | 企业空间、成员、权限、企业资产 | `src/features`、`src/lib`、`prisma` |
-| `enterprise-integration` | 企业连接器、组织同步、成员生命周期；V2暂缓，结构保留 | `src/features`、`src/lib`、`prisma` |
-| `governance` | Jeepwork、举报、审计、安全、系统健康 | `src/app/jeepwork`、`src/lib`、`prisma` |
+| `enterprise-integration` | 企业连接器；V2暂缓，未来结构保留 | `src/features`、`src/lib`、`prisma` |
+| `governance` | Jeepwork、举报、审计、安全和系统健康 | `src/app/jeepwork`、`src/lib`、`prisma` |
 
-通知、配置、文件存储、监控和Console首页属于平台支撑或聚合能力，具体边界见`03_MODULE_BOUNDARY.md`，不新增为宪法外的核心领域。
-
----
-
-## 6. 兼容区与迁移区
-
-可能仍有可复用代码但不再是V2新功能目标入口：
-
-- `/dashboard`
-- `/workbench`
-- `/api/dashboard`
-- `/api/workbench`
-- `src/components/dashboard*`
-- `src/components/workbench`
-
-处理规则：
-
-1. 确认是否被`/console`复用或依赖。
-2. 新能力只进入`/console`对应领域。
-3. 旧路径优先保留兼容跳转或适配层。
-4. 未完成迁移前不得直接删除旧路径、字段或模型。
-5. 删除需依赖、数据、migration和生产影响评估，并取得老板批准。
-
-旧`/admin`不作为V2平台后台；平台后台统一使用`/jeepwork`。
-
-`/showcase`不得在普通首页提供入口。相关历史模型和migration不得未经专项审批直接删除。
+通知、配置、文件存储、监控和Console首页属于平台支撑或聚合能力，不新增为宪法外核心领域。
 
 ---
 
@@ -230,12 +255,13 @@ link168.me/
 
 | 能力 | 当前方向 | 边界 |
 |---|---|---|
-| 邮件 | 阿里云邮件推送 | 服务端调用，失败不得伪装成功；CI只使用关闭邮件的临时环境 |
-| AI | 阿里云百炼 | 服务端鉴权、扣点、成本、回补 |
-| 支付 | 支付宝 | 订单、签名、回调、金额、幂等真实校验 |
-| 数据库 | 阿里云PostgreSQL | 生产只允许正式migration流程；CI使用临时PostgreSQL 16 |
+| 邮件 | 阿里云邮件推送 | 服务端调用，失败不得伪装成功；CI关闭真实发送 |
+| AI | 阿里云百炼 | 服务端鉴权、扣点、成本和回补 |
+| 支付 | 支付宝 | 订单、签名、回调、金额和幂等真实校验 |
+| 数据库 | 阿里云PostgreSQL | 生产只允许正式migration；CI使用临时PostgreSQL 16 |
 | 网站服务 | 腾讯云主服务器 | 部署由Agent08按授权执行 |
-| 企业协作 | 企业微信、飞书、钉钉 | V2不接入，已有未来结构保留，不作为当前运行依赖 |
+| 浏览器验收 | Playwright Chromium | CI临时安装，不写项目依赖，覆盖360/390/430px |
+| 企业协作 | 企业微信、飞书、钉钉 | V2不接入，未来结构保留 |
 
 真实密钥不得进入仓库、前端、PRD、Agent报告或明文日志。
 
@@ -246,7 +272,7 @@ link168.me/
 - 页面和Route Handler：`src/app`
 - 可复用视觉与交互组件：`src/components`
 - 领域功能编排：`src/features`
-- 服务端领域服务、第三方适配和基础库：`src/lib`
+- 服务端领域服务和基础库：`src/lib`
 - 跨模块稳定类型：`src/types`
 - 数据模型与迁移：`prisma`
 - 可重复维护和测试脚本：`scripts`
@@ -255,8 +281,6 @@ link168.me/
 - 正式规则：根目录四份正式文件
 - 工程治理附件：`docs/governance`
 - 唯一持续整改状态：`docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md`
-
-禁止把业务规则散落到页面文案、组件常量和重复配置中。
 
 ---
 
@@ -267,11 +291,10 @@ link168.me/
 - 新增、删除或调整顶层目录
 - 新增或调整核心领域
 - `/console`或`/jeepwork`信息架构变化
-- 重要目录迁移
+- 正式或兼容路由变化
 - 数据模型权威来源变化
 - 第三方能力接入方式变化
-- 旧兼容入口正式退出
-- 测试目录或CI结构变化
+- 测试目录、浏览器验收或CI结构变化
 
 流程：
 
@@ -283,5 +306,3 @@ link168.me/
 → 修改代码和本地图
 → npm run governance:check
 ```
-
-普通样式、文案和局部组件调整不需要更新代码地图。
