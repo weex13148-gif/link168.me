@@ -1,7 +1,7 @@
 # Link168 V2 代码地图
 
 **文件名：** `docs/governance/02_CODE_MAP.md`  
-**版本：** v1.5  
+**版本：** v1.6  
 **生效日期：** 2026-07-12  
 **性质：** 工程治理附件  
 **上位规则：** `PRODUCT_CONSTITUTION.md` v1.6、`PRD.md` v2.0-rc8、`PROJECT_RULES.md` v1.0-rc3
@@ -19,9 +19,7 @@
 - 架构：模块化单体
 - 用户后台：`/console`
 - 平台后台：`/jeepwork`
-- 公开个人经营名片：`/[username]`
-
-旧`master`、归档分支和旧工作区不作为V2当前代码事实。
+- 个人公开名片：`/[username]`
 
 ---
 
@@ -39,39 +37,36 @@ link168.me/
 │  ├─ workspace-invitation.prisma
 │  ├─ workspace-resource.prisma
 │  ├─ workspace-crm.prisma
+│  ├─ workspace-card.prisma
 │  └─ migrations/
 ├─ src/
-│  ├─ app/
-│  │  ├─ console/
-│  │  ├─ dashboard/
-│  │  ├─ workbench/
-│  │  ├─ workspace-invitations/
-│  │  ├─ api/workspaces/
-│  │  ├─ api/workspace-invitations/
-│  │  └─ jeepwork/
+│  ├─ app/api/workspaces/
+│  ├─ app/console/
+│  ├─ app/dashboard/
+│  ├─ app/workbench/
+│  ├─ app/jeepwork/
 │  ├─ components/
-│  │  ├─ layout/
-│  │  ├─ workspace/
-│  │  ├─ workbench/
-│  │  └─ dashboard-v1/
-│  └─ lib/
-│     ├─ workspace/
-│     ├─ billing/
-│     └─ ai/
-└─ scripts/
-   ├─ auth-integration-test.mjs
-   ├─ console-integration-test.mjs
-   ├─ console-mobile-browser-test.cjs
-   ├─ workspace-invitation-integration-test.mjs
-   ├─ workspace-resource-integration-test.mjs
-   └─ workspace-customer-integration-test.mjs
+│  └─ lib/workspace/
+├─ scripts/
+│  ├─ auth-integration-test.mjs
+│  ├─ console-integration-test.mjs
+│  ├─ console-mobile-browser-test.cjs
+│  ├─ workspace-invitation-integration-test.mjs
+│  ├─ workspace-resource-integration-test.mjs
+│  ├─ workspace-customer-integration-test.mjs
+│  └─ workspace-card-integration-test.mjs
+└─ docs/
+   ├─ governance/
+   ├─ audits/
+   ├─ history/
+   └─ PRD_AI名片_AI客服_微信联系组件.md
 ```
 
-不得提交`.env*`、真实密钥、`node_modules`、`.next`、构建缓存和运行期上传目录。
+根目录只保留一份正式`PRD.md`。组件级、历史和研究文档进入`docs/`，不得在根目录建立并行PRD。
 
 ---
 
-## 3. 用户Console路由
+## 3. Console路由
 
 一级分类固定为：
 
@@ -93,7 +88,7 @@ link168.me/
 
 ## 4. Workspace成员与邀请
 
-### 模型
+模型：
 
 ```text
 Workspace
@@ -101,7 +96,7 @@ WorkspaceMember
 WorkspaceInvitation
 ```
 
-### 服务和策略
+服务与策略：
 
 ```text
 src/lib/workspace/index.ts
@@ -109,37 +104,34 @@ src/lib/workspace/invitation-policy.ts
 src/lib/workspace/invitations.ts
 ```
 
-### API和页面
+正式API：
 
 ```text
 /api/workspaces/[workspaceId]/members
 /api/workspaces/[workspaceId]/invitations
 /api/workspace-invitations
 /api/workspace-invitations/[token]
-/workspace-invitations/[token]
 ```
-
-旧`/api/enterprise/organizations/[orgId]/*`只作为适配层，正式权限和邀请规则统一由Workspace处理器执行。
 
 ---
 
-## 5. 企业产品与知识资源归属
+## 5. 企业产品和知识资源
 
-### 模型
+模型：
 
 ```text
 WorkspaceResource
 WorkspaceAuditLog
 ```
 
-当前正式支持：
+当前资源类型：
 
 ```text
 product
 knowledge_doc
 ```
 
-### 服务和API
+服务与API：
 
 ```text
 src/lib/workspace/resource-policy.ts
@@ -148,22 +140,20 @@ src/lib/workspace/resources.ts
 /api/workspaces/[workspaceId]/knowledge/**
 ```
 
-企业资源Owner是Workspace。个人Dashboard、旧Workbench、个人公开主页和个人套餐计数必须排除企业归属资源。
+企业资源Owner是Workspace。个人Dashboard、旧Workbench、个人公开页和个人套餐计数必须排除企业归属资源。
 
 ---
 
-## 6. 企业客户池与任务
+## 6. 企业客户池和任务
 
-### 6.1 个人域与企业域分离
+个人与企业客户分离：
 
 ```text
 个人客户：Lead / LeadFollowUp
 企业客户：WorkspaceCustomer / WorkspaceCustomerFollowUp
 ```
 
-不得把个人`Lead`自动迁移或改写为企业客户。
-
-### 6.2 模型
+模型：
 
 ```text
 prisma/workspace-crm.prisma
@@ -173,120 +163,146 @@ WorkspaceCustomerTask
 WorkspaceCustomerAssignmentHistory
 ```
 
-正式migration：
-
-```text
-20260712_workspace_customer_pool
-```
-
-### 6.3 服务和策略
+服务与API：
 
 ```text
 src/lib/workspace/customer-policy.ts
 src/lib/workspace/customers.ts
-```
-
-职责：
-
-- 判断owner/admin/member/viewer的客户PII权限。
-- 校验客户和任务负责人属于当前Workspace且为活跃非viewer成员。
-- 查询管理员全部客户或成员本人负责客户。
-- 校验单客户的Workspace归属和负责人。
-- 统计成员名下未完成客户和任务。
-
-### 6.4 正式API
-
-```text
 /api/workspaces/[workspaceId]/customers
 /api/workspaces/[workspaceId]/customers/[customerId]
 /api/workspaces/[workspaceId]/customers/[customerId]/tasks
 ```
 
-### 6.5 权限边界
-
-- owner/admin可管理全部企业客户、跟进和任务。
-- member只读写分配给自己的客户与任务。
-- viewer不允许读取客户PII。
-- 所有查询必须同时校验`workspaceId`和成员状态。
-- 普通成员不能重新分配客户或任务。
-- 客户跨Workspace访问返回404。
-
-### 6.6 离职重分配
-
-成员API：
-
-```text
-src/app/api/workspaces/[workspaceId]/members/route.ts
-```
-
-当成员仍有未完成客户或任务时，`remove`、`disable`和主动`leave`不得直接完成。
-
-管理员提供`reassignToUserId`后，在同一事务中：
-
-1. 重新分配未完成客户。
-2. 重新分配未完成任务。
-3. 写`WorkspaceCustomerAssignmentHistory`。
-4. 写`WorkspaceAuditLog`。
-5. 最后更新成员状态。
+owner/admin管理全部企业客户；member只处理分配给自己的客户和任务；viewer不能查看PII。成员离职前必须重新分配未完成客户和任务。
 
 ---
 
-## 7. 数据领域映射
+## 7. 企业主页和成员名片
+
+个人与企业名片分离：
+
+```text
+个人经营名片：Profile / Link
+企业主页和成员名片：WorkspaceCard / WorkspaceCardComponent
+```
+
+模型：
+
+```text
+prisma/workspace-card.prisma
+WorkspaceCard
+WorkspaceCardComponent
+```
+
+正式migration：
+
+```text
+20260712_workspace_cards
+```
+
+服务与策略：
+
+```text
+src/lib/workspace/card-policy.ts
+src/lib/workspace/cards.ts
+```
+
+内部API：
+
+```text
+/api/workspaces/[workspaceId]/cards
+/api/workspaces/[workspaceId]/cards/[cardId]
+/api/workspaces/[workspaceId]/cards/[cardId]/components
+```
+
+规则：
+
+- 每个Workspace最多一张企业主页。
+- 每个成员在同一Workspace最多一张成员名片。
+- owner/admin管理和发布全部企业名片。
+- member只创建、读取和编辑自己的成员名片。
+- member可读取企业主页；viewer只读取企业主页。
+- 企业组件继承对应名片权限。
+- 成员移除后失去访问权，但企业名片和组件继续保留。
+- 企业名片不写入个人Profile或Link。
+- 最终公网域名和成员二级域名尚未批准，本轮API仅供企业后台和内部预览。
+
+---
+
+## 8. 领域映射
 
 | 领域 | 主要能力 | 典型位置 |
 |---|---|---|
-| `identity` | 邮箱身份、Session、账号安全 | `src/lib/auth*`、`src/app/api/auth`、`prisma` |
-| `card` | 个人经营名片、公开页和组件 | `src/app/[username]`、`src/components` |
-| `catalog` | 个人及企业产品 | Dashboard API、Workspace产品API、Product、WorkspaceResource |
-| `crm-personal` | 个人名片线索和跟进 | Lead、LeadFollowUp、Workbench leads API |
-| `crm-workspace` | 企业客户池、跟进、任务和分配历史 | workspace-crm.prisma、Workspace customers API |
-| `analytics` | 访问、点击、短链和来源 | `src/lib`、ShortLink、Visit、Click |
+| `identity` | 邮箱身份、Session、账号安全 | `src/app/api/auth`、`src/lib/auth*`、`prisma` |
+| `card-personal` | 个人经营名片和公开页 | Profile、Link、`/[username]` |
+| `card-workspace` | 企业主页、成员名片和企业组件 | WorkspaceCard系列模型和API |
+| `catalog` | 个人及企业产品 | Product、WorkspaceResource、Workspace产品API |
+| `crm-personal` | 个人名片线索 | Lead、LeadFollowUp |
+| `crm-workspace` | 企业客户、任务和分配历史 | WorkspaceCustomer系列模型和API |
+| `analytics` | 访问、点击、短链和来源 | Visit、Click、ShortLink |
 | `billing` | 套餐、订单、退款和权益 | `src/lib/billing`、Order、MembershipSubscription |
-| `ai-platform` | 六大AI、知识库、额度和账本 | `src/app`、`src/lib/ai`、AI模型 |
-| `workspace` | 企业成员、邀请、资源归属和审计 | `src/lib/workspace`、Workspace系列模型 |
+| `ai-platform` | 六大AI、知识库、额度和账本 | `src/lib/ai`、AI模型 |
+| `workspace` | 企业成员、邀请、资产归属和审计 | `src/lib/workspace`、Workspace系列模型 |
 | `governance` | Jeepwork、举报、安全和平台审计 | `src/app/jeepwork`、AdminAuditLog |
-
-`crm`仍表示轻量经营线索，不表示扩张为完整CRM、ERP或OA。
 
 ---
 
-## 8. 测试与CI地图
+## 9. 测试和CI
 
 | 测试 | 负责内容 |
 |---|---|
 | `auth-credential-policy.test.ts` | 邮箱身份策略 |
 | `console-route-policy.test.ts` | 五分类和旧路由归类 |
 | `invitation-policy.test.ts` | 邀请有效期、Token和角色边界 |
-| `resource-policy.test.ts` | 企业产品/知识读写和分配边界 |
-| `customer-policy.test.ts` | 企业客户PII、跟进、任务和重分配边界 |
-| `auth-integration-test.mjs` | 认证真实API回归 |
-| `workspace-invitation-integration-test.mjs` | 邀请并发、邮箱和Workspace隔离 |
-| `workspace-resource-integration-test.mjs` | 企业产品/知识归属和跨空间隔离 |
-| `workspace-customer-integration-test.mjs` | 企业客户、任务、离职重分配和审计 |
-| `console-integration-test.mjs` | Console正式和兼容路由 |
-| `console-mobile-browser-test.cjs` | 360/390/430px真实Chromium回归 |
+| `resource-policy.test.ts` | 企业产品/知识权限 |
+| `customer-policy.test.ts` | 企业客户PII、任务和重分配 |
+| `card-policy.test.ts` | 企业主页、成员名片和发布权限 |
+| `workspace-invitation-integration-test.mjs` | 邀请并发和Workspace隔离 |
+| `workspace-resource-integration-test.mjs` | 企业产品/知识归属 |
+| `workspace-customer-integration-test.mjs` | 企业客户、任务和离职重分配 |
+| `workspace-card-integration-test.mjs` | 企业主页、成员名片、组件和离职保留 |
+| `console-mobile-browser-test.cjs` | 360/390/430px Chromium回归 |
 
-CI使用临时PostgreSQL 16、测试账号、`MAIL_ENABLED=false`和临时Playwright，不连接生产数据库或真实第三方服务。
+CI使用临时PostgreSQL 16、测试账号、`MAIL_ENABLED=false`和临时Playwright，不连接生产数据库或第三方服务。
+
+治理错误写入：
+
+```text
+artifacts/integration/governance.log
+```
 
 ---
 
-## 9. D后续未完成域
+## 10. 并发文档治理
 
-- 企业主页和企业成员名片归属。
-- 企业AI共享账户、成员额度与企业AI账本。
+微信联系组件文档内容全部保留：
+
+```text
+docs/history/PRD_WECHAT_CONTACT_COMPONENT.md
+docs/PRD_AI名片_AI客服_微信联系组件.md
+```
+
+D2分支通过双父提交接入并发文档，没有覆盖其他Agent业务代码。
+
+---
+
+## 11. 未完成域
+
+- 企业AI共享账户、成员额度和企业AI账本。
 - 企业管理员页和成员页完整UI。
-- 企业品牌、域名、报表、订单和发票。
+- 企业名片最终公网域名、成员二级域名和自购域名渲染。
+- 企业品牌、域名验证、报表、订单和发票。
 
-不得把个人Profile、Lead或AI账本直接批量迁移、覆盖或清空。
+不得把个人Profile、Link、Lead或AI账本批量迁移、覆盖或清空。
 
 ---
 
-## 10. 更新规则
+## 12. 更新规则
 
 出现以下变化时必须同步本文件：
 
 - 新增或调整正式路由。
-- 新增Workspace资源或客户类型。
+- 新增Workspace资产类型。
 - 数据Owner或权限来源变化。
 - 新增migration、集成测试或CI入口。
-- 个人与企业资产读取边界变化。
+- 个人与企业资产边界变化。
