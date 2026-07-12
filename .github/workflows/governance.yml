@@ -1,3 +1,4 @@
+# Temporary source snapshot export for C workspace isolation audit; do not merge.
 name: Governance, Auth, Console and Workspace Check
 
 on:
@@ -191,3 +192,18 @@ jobs:
           path: artifacts/console-mobile/**
           if-no-files-found: ignore
           retention-days: 7
+
+      - name: Upload temporary V2 source snapshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v2-source-snapshot
+          path: |
+            src/**
+            prisma/**
+            scripts/**
+            package.json
+            tsconfig.json
+            next.config.ts
+          if-no-files-found: error
+          retention-days: 1
