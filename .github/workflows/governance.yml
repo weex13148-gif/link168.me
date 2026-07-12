@@ -17,6 +17,7 @@ on:
       - 'scripts/console-integration-test.mjs'
       - 'scripts/console-mobile-browser-test.cjs'
       - 'scripts/workspace-invitation-integration-test.mjs'
+      - 'scripts/workspace-resource-integration-test.mjs'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
@@ -31,11 +32,20 @@ on:
       - 'src/lib/email-verification.ts'
       - 'src/lib/mail.ts'
       - 'src/lib/workspace/**'
+      - 'src/lib/billing/entitlements/**'
       - 'src/app/api/auth/**'
       - 'src/app/api/workspaces/**'
       - 'src/app/api/workspace-invitations/**'
+      - 'src/app/api/enterprise/organizations/**'
+      - 'src/app/api/dashboard/products/**'
+      - 'src/app/api/dashboard/knowledge/**'
+      - 'src/app/api/workbench/knowledge/**'
+      - 'src/app/api/*/products/**'
       - 'src/app/workspace-invitations/**'
       - 'src/app/console/**'
+      - 'src/app/workbench/products/**'
+      - 'src/app/workbench/knowledge/**'
+      - 'src/app/*/page.tsx'
       - 'src/components/workspace/**'
       - 'src/components/layout/ConsoleShell.tsx'
       - 'src/components/layout/console-navigation.ts'
@@ -59,6 +69,7 @@ on:
       - 'scripts/console-integration-test.mjs'
       - 'scripts/console-mobile-browser-test.cjs'
       - 'scripts/workspace-invitation-integration-test.mjs'
+      - 'scripts/workspace-resource-integration-test.mjs'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
@@ -73,11 +84,20 @@ on:
       - 'src/lib/email-verification.ts'
       - 'src/lib/mail.ts'
       - 'src/lib/workspace/**'
+      - 'src/lib/billing/entitlements/**'
       - 'src/app/api/auth/**'
       - 'src/app/api/workspaces/**'
       - 'src/app/api/workspace-invitations/**'
+      - 'src/app/api/enterprise/organizations/**'
+      - 'src/app/api/dashboard/products/**'
+      - 'src/app/api/dashboard/knowledge/**'
+      - 'src/app/api/workbench/knowledge/**'
+      - 'src/app/api/*/products/**'
       - 'src/app/workspace-invitations/**'
       - 'src/app/console/**'
+      - 'src/app/workbench/products/**'
+      - 'src/app/workbench/knowledge/**'
+      - 'src/app/*/page.tsx'
       - 'src/components/workspace/**'
       - 'src/components/layout/ConsoleShell.tsx'
       - 'src/components/layout/console-navigation.ts'
@@ -91,9 +111,9 @@ permissions:
 
 jobs:
   governance-auth-console-workspace:
-    name: Validate governance, auth, console and workspace invitations
+    name: Validate governance, auth, console and workspace isolation
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     services:
       postgres:
         image: postgres:16
@@ -145,6 +165,9 @@ jobs:
       - name: Run workspace invitation policy tests
         run: npm run test:workspace-invite
 
+      - name: Run workspace resource policy tests
+        run: npm run test:workspace-resource
+
       - name: Run lint
         run: npm run lint
 
@@ -170,7 +193,8 @@ jobs:
           APP_PID=$!
           trap 'kill "$APP_PID" 2>/dev/null || true' EXIT
           node scripts/auth-integration-test.mjs 2>&1 | tee artifacts/integration/auth.log
-          node scripts/workspace-invitation-integration-test.mjs 2>&1 | tee artifacts/integration/workspace.log
+          node scripts/workspace-invitation-integration-test.mjs 2>&1 | tee artifacts/integration/workspace-invitation.log
+          node scripts/workspace-resource-integration-test.mjs 2>&1 | tee artifacts/integration/workspace-resource.log
           node scripts/console-integration-test.mjs 2>&1 | tee artifacts/integration/console.log
           node scripts/console-mobile-browser-test.cjs 2>&1 | tee artifacts/console-mobile/browser-test.log
 
