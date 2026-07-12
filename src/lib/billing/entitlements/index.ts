@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { getWorkspaceOwnedResourceIds } from "@/lib/workspace/resources";
 import { getPlanDefinition, type PlanCode, type PlanDefinition } from "../plans";
 
 export type EntitlementCheck = {
@@ -73,7 +74,6 @@ export async function getUserEntitlements(userId: string): Promise<UserEntitleme
     const normalized = normalizePlanCode(subscription.planCode);
     if (normalized !== "free") {
       if (!currentPeriodEnd) {
-        // 兼容早期已经开通但尚未补齐周期字段的会员数据。
         effectivePlanCode = normalized;
         hasActiveMembership = true;
         isLegacyActive = true;
@@ -92,9 +92,25 @@ export async function getUserEntitlements(userId: string): Promise<UserEntitleme
   }
 
   const plan = getPlanDefinition(effectivePlanCode);
+  const [enterpriseProductIds, enterpriseKnowledgeIds] = await Promise.all([
+    getWorkspaceOwnedResourceIds("product"),
+    getWorkspaceOwnedResourceIds("knowledge_doc"),
+  ]);
   const [productsUsed, knowledgeDocsUsed, creditAccount] = await Promise.all([
-    db.product.count({ where: { userId, isActive: true } }),
-    db.knowledgeDoc.count({ where: { userId, isActive: true } }),
+    db.product.count({
+      where: {
+        userId,
+        isActive: true,
+        ...(enterpriseProductIds.length > 0 ? { id: { notIn: enterpriseProductIds } } : {}),
+      },
+    }),
+    db.knowledgeDoc.count({
+      where: {
+        userId,
+        isActive: true,
+        ...(enterpriseKnowledgeIds.length > 0 ? { id: { notIn: enterpriseKnowledgeIds } } : {}),
+      },
+    }),
     db.aiCreditAccount.findUnique({ where: { userId } }),
   ]);
 
