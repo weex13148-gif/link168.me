@@ -1,15 +1,15 @@
 # Link168 V2 后续整改开发报告
 
-**版本：** v2.0  
+**版本：** v2.1  
 **更新日期：** 2026-07-12  
-**状态：** 持续更新；A邮箱身份与B Console主线已完成开发和自动化验收  
+**状态：** A邮箱身份、B Console、C企业邀请及产品/知识资源隔离已完成开发和自动化验收  
 **依据：** `PRODUCT_CONSTITUTION.md` v1.6、`PRD.md` v2.0-rc8、`PROJECT_RULES.md` v1.0-rc3
 
 ---
 
 ## 1. 报告用途
 
-本文件是Link168唯一持续整改报告，记录正式决策、代码差距、开发进度和验收证据。
+本文件是Link168唯一持续整改报告，统一记录正式决策、代码差距、开发进度和验收证据。
 
 ```text
 老板最新决定
@@ -17,36 +17,22 @@
 → PRD
 → 工程规则
 → 本报告
-→ 代码与部署结果
+→ 代码、自动化证据与部署结果
 ```
 
-代码存在、静态检查、临时数据库验收、自动化浏览器验收、真实第三方服务验证和生产验证必须分开表述。
+代码存在、临时数据库验收、浏览器验收、真实第三方服务验证和生产验证必须分开表述。
 
 ---
 
-## 2. 当前V2正式范围
-
-```text
-邮箱注册和登录
-→ 创建经营名片
-→ 发布和分享
-→ 访客访问与留资
-→ 客户跟进
-→ 数据分析
-→ 会员和支付宝
-→ AI经营能力
-→ 企业空间与站内成员管理
-```
-
-当前边界：
+## 2. 当前V2边界
 
 - V2只开放邮箱注册和登录。
-- 普通微信注册、登录和绑定退出V2。
-- 企业微信、飞书和钉钉连接退出V2。
 - 企业成员采用Link168站内邮箱邀请。
-- 账号合并、最后登录身份解绑、多平台成员去重暂不处理。
-- 企业管理员不能查看成员AI对话正文。
-- 已有未来代码和数据结构保留、隐藏或关闭，不因暂缓而删除。
+- 普通微信、企业微信、飞书和钉钉接入不属于V2。
+- 邀请未接受前不得获得企业数据访问权。
+- 企业成员冻结或移除后保留个人账号，但立即失去企业访问权。
+- 企业管理员不能查看成员密码、个人空间、私人会话或AI对话正文。
+- 未来代码和数据结构采用保留、隐藏或关闭，不擅自删除。
 
 ---
 
@@ -56,25 +42,23 @@
 
 已完成：
 
-- 注册满30天未验证后仍可登录受限后台。
-- 公开主页和敏感操作按邮箱验证状态进行服务端限制。
-- 验证码按User ID隔离，并兼容历史凭证。
-- 邮箱验证和密码重置令牌原子单次消费。
-- 邮箱验证只解除`EMAIL_UNVERIFIED`，不解除其他冻结或封禁。
-- 重置密码后旧Session和旧密码失效。
+- 30天未验证规则、受限后台和公开主页限制。
+- 邮箱验证码按User ID隔离。
+- 验证和重置令牌原子单次消费。
+- 重置密码撤销旧Session。
 - Session创建失败不记录虚假登录成功。
-- 注册完成但Session失败的账号可以恢复登录。
-- 临时PostgreSQL 16、migration、Lint、TypeScript、生产构建和真实API集成测试通过。
+- 注册Session失败后的账号可恢复登录。
+- 临时PostgreSQL、真实Next.js API、Lint、TypeScript和生产构建通过。
 
-尚未执行：阿里云邮件真实投递、生产数据库迁移、生产服务器部署和生产域名冒烟。
+尚未执行：阿里云邮件真实投递、生产数据库migration、生产部署和生产域名冒烟。
 
 ---
 
 ## 4. B主线：Console五分类兼容收口
 
-### 4.1 正式一级入口
+**状态：开发、登录态路由和真实移动端浏览器验收完成。**
 
-用户后台固定为：
+正式一级入口固定为：
 
 ```text
 首页  /console
@@ -84,215 +68,289 @@ AI    /console/ai
 我的  /console/account
 ```
 
-其他能力只能进入组件、快捷入口或二级页面，不增加第六个一级入口。
+已完成：
 
-### 4.2 已完成实现
-
-#### 五分类与共享导航
-
-- 新增统一路由策略，集中定义五项顺序、正式路径和旧路径归类。
-- ConsoleShell、WorkbenchShell和DashboardFrame统一为同一套五项桌面导航与手机底栏。
+- ConsoleShell、WorkbenchShell和DashboardFrame统一五项导航。
 - 手机底栏固定为：首页、名片、客户、AI、我的。
-- 普通用户共享导航彻底移除Jeepwork。
-- 名片编辑器内部七个装修标签移到页面内工具条，不再占用一级底栏。
+- 普通用户导航不显示Jeepwork。
+- 正式二级路由覆盖产品、短链、分析、AI服务、知识库、会员、企业和通知。
+- `/dashboard`和`/workbench/*`保留兼容并临时307跳转至正式Console路径。
+- 新增统一加载态、可恢复错误态和移动端横向溢出保护。
+- Chromium验证360px、390px、430px五个主页面无文档级横向溢出。
 
-#### 正式主路径和二级路径
-
-已建立并通过构建：
-
-```text
-/console
-/console/card
-/console/card/products
-/console/card/short-links
-/console/card/analytics
-/console/customers
-/console/ai
-/console/ai/[assistant]
-/console/ai/service
-/console/ai/reception
-/console/ai/knowledge
-/console/account
-/console/account/membership
-/console/account/enterprise
-/console/account/notifications
-```
-
-适配页复用现有成熟业务实现，没有复制服务、权限或数据库逻辑。
-
-#### 旧路径兼容
-
-以下旧地址继续有效，并使用临时307跳转进入正式Console路径：
+权威最终证据：
 
 ```text
-/dashboard
-/workbench
-/workbench/card
-/workbench/products
-/workbench/short-links
-/workbench/analytics
-/workbench/leads
-/workbench/ai
-/workbench/ai/:assistant
-/workbench/ai-service
-/workbench/knowledge
-/workbench/account
-/workbench/membership
-/workbench/enterprise
-/workbench/notifications
+PR #33
+Workflow Run 29188363168
+Conclusion: success
+Artifact: console-mobile-evidence（ID 8258742618）
 ```
 
-旧业务文件和历史数据结构没有删除。
+B主线未部署生产，也未连接生产数据库和真实密钥。
 
-#### Console首页与状态页面
+---
 
-- 首页所有用户入口统一使用`/console/*`，不再直接跳向`/dashboard`或`/workbench/*`。
-- 首页只展示五个正式分类。
-- 产品总数改为真实`count`，最近产品列表仍只展示3条。
-- 新增统一加载态和可恢复错误态。
-- 页面外层增加`min-w-0`、换行和横向溢出保护。
+## 5. C主线第一批：企业邮箱邀请与成员权限
 
-### 4.3 测试与CI
+**状态：开发和真实临时数据库集成验收完成。**
 
-#### 导航策略测试
+### 5.1 数据模型
+
+新增多文件Prisma模型：
 
 ```text
-src/components/layout/console-route-policy.test.ts
+prisma/workspace-invitation.prisma
+WorkspaceInvitation
 ```
 
-锁定：
-
-- 五项顺序和正式路径。
-- 正式嵌套路由选中状态。
-- 旧路径所属分类。
-- Jeepwork不属于任何用户Console分类。
-
-#### 登录态路由烟测
+正式migration：
 
 ```text
-scripts/console-integration-test.mjs
+20260712_workspace_email_invitations
 ```
 
-验证：
+邀请记录与`WorkspaceMember`最终成员资格分离。邀请接受前不创建活跃成员。
 
-- 五个一级页面在登录态返回200。
-- 正式二级路径在登录态返回200。
-- Console首页只包含正式Console入口。
-- 旧Dashboard和Workbench路径跳向正确正式地址。
-- 普通用户页面不暴露Jeepwork。
-
-#### 真实移动端浏览器验收
+### 5.2 正式邀请流程
 
 ```text
-scripts/console-mobile-browser-test.cjs
+企业所有者或管理员输入邮箱
+→ 创建7天有效邀请
+→ Token只保存SHA-256哈希
+→ 发送邀请邮件
+→ 受邀者注册或登录对应邮箱
+→ 校验Token、邮箱、有效期和Workspace
+→ 事务内单次接受
+→ 创建或恢复WorkspaceMember(active)
 ```
 
-测试环境：
+规则：
+
+- 支持已注册和未注册邮箱。
+- 同一Token并发接受只能成功一次。
+- 邀请错误邮箱不能接受。
+- 邮件未配置或发送失败不得返回虚假成功。
+- owner不能通过邀请授予。
+- admin只能邀请和管理member或viewer，不能管理其他admin。
+- 邀请操作同时校验目标`workspaceId`。
+- 被移除成员再次加入必须重新接受邀请。
+- 旧`/api/enterprise/organizations/*`成员接口统一适配正式Workspace处理器，不能绕过邀请流程直接激活成员。
+
+### 5.3 页面与API
+
+新增：
 
 ```text
-GitHub Actions Ubuntu Runner
-Node.js 22
-PostgreSQL 16临时数据库
-Next.js生产构建
-Playwright 1.55.0临时安装
-Chromium无头浏览器
-MAIL_ENABLED=false
-无生产密钥
+/api/workspaces/[workspaceId]/invitations
+/api/workspace-invitations
+/api/workspace-invitations/[token]
+/workspace-invitations/[token]
 ```
 
-测试宽度：
+企业成员页面已区分：
+
+- 正式成员
+- 待处理邀请
+- 发送失败邀请
+- 撤销邀请
+
+### 5.4 第一批验收断言
+
+真实临时PostgreSQL验证：
+
+- 邮件失败明确返回，且不创建活跃成员。
+- 待接受邀请没有企业访问权。
+- 只有邀请邮箱可以接受。
+- 并发接受只有一次成功。
+- 接受后仅生成一条活跃成员记录。
+- admin不能邀请或授予其他admin。
+- 跨Workspace撤销邀请被拒绝。
+
+---
+
+## 6. C主线第二批：企业产品与知识资源隔离
+
+**状态：开发和真实临时数据库集成验收完成。**
+
+### 6.1 审计结论
+
+只完成成员表隔离并不足以形成企业数据隔离。原有`Product`和`KnowledgeDoc`主要按创建人`userId`归属，成员离职后可能通过个人接口继续读取。
+
+采用兼容式企业资源归属层：
+
+- 原有个人业务表和历史数据保持不变。
+- 企业归属由独立映射表判定。
+- 现有个人数据默认不自动转移到企业。
+- 企业资源保留创建人记录，但真正Owner是Workspace。
+
+### 6.2 新增模型与migration
 
 ```text
-360px
-390px
-430px
+prisma/workspace-resource.prisma
+WorkspaceResource
+WorkspaceAuditLog
 ```
 
-测试页面：
+正式migration：
 
 ```text
-/console
-/console/card
-/console/customers
-/console/ai
-/console/account
+20260712_workspace_resource_ownership
 ```
 
-每个页面均验证：
+当前正式支持的企业资源类型：
 
-- HTTP 200且登录态有效。
-- 文档宽度不超过视口，不存在文档级横向溢出。
-- 手机底栏恰好为首页、名片、客户、AI、我的。
-- 不存在指向Jeepwork的普通用户链接。
-- 保存全页截图作为短期CI证据。
+```text
+product
+knowledge_doc
+```
 
-### 4.4 最终验收证据
+`WorkspaceResource`记录：
 
-最终草稿验证PR：`#33 ci: rerun final B mobile console validation`  
-最终成功运行：`29188134805`  
-结论：`success`
+- `workspaceId`
+- 资源类型和资源ID
+- 创建人
+- 可选分配成员
+- active / archived状态
+
+`WorkspaceAuditLog`独立记录企业资源创建、更新、分配和删除，不与平台超级管理员日志混用。
+
+### 6.3 权限规则
+
+- owner和admin可以创建、修改、分配和删除企业产品及知识文档。
+- member和viewer只能读取。
+- 未指定分配人表示企业共享资源。
+- 指定分配人后，普通成员只能读取分配给自己的资源。
+- 资源只能分配给当前Workspace的活跃成员。
+- 成员被禁用或移除后立即失去企业资源访问权。
+- 所有单资源操作同时校验`workspaceId`、资源类型和资源ID。
+- 通过其他Workspace ID访问同一资源返回不存在或拒绝。
+
+### 6.4 正式API
+
+```text
+/api/workspaces/[workspaceId]/products
+/api/workspaces/[workspaceId]/products/[productId]
+/api/workspaces/[workspaceId]/knowledge
+/api/workspaces/[workspaceId]/knowledge/[docId]
+```
+
+### 6.5 个人与企业边界
+
+企业归属产品和知识文档已从以下个人入口排除：
+
+- 个人Dashboard产品和知识API。
+- 旧Workbench知识API和服务端页面。
+- 旧Workbench个人产品页面。
+- 个人公开名片产品API和公开页面。
+- 个人套餐产品、知识文档使用量计算。
+
+因此企业资产不会因为底层保留创建人`userId`而被当作个人资产展示、修改或占用个人套餐数量。
+
+### 6.6 第二批真实集成断言
+
+```text
+PASS 企业产品和知识文档与归属映射在事务中创建
+PASS 企业资源不出现在个人API和个人公开主页
+PASS 活跃成员可读共享资源但不能管理
+PASS 成员只看共享或分配给自己的资源
+PASS 跨Workspace资源访问被拒绝
+PASS 移除成员立即失去资源访问权
+PASS 删除资源同时删除映射并写入企业审计日志
+```
+
+### 6.7 C阶段权威验收证据
+
+最终草稿验证PR：
+
+```text
+#38 ci: verify C workspace resource isolation
+```
+
+最终成功运行：
+
+```text
+Workflow Run 29192341961
+Conclusion: success
+```
 
 以下步骤全部成功：
 
 ```text
-PostgreSQL 16临时容器初始化
+PostgreSQL 16临时数据库
 → npm ci
-→ npx prisma generate
-→ npx prisma migrate deploy
-→ npm run governance:check
-→ npm run test:auth
-→ npm run test:console-nav
-→ npm run lint
-→ npm run typecheck
-→ npm run build
-→ 临时安装Playwright和Chromium
+→ Prisma多文件Schema生成
+→ 全部正式migration部署
+→ governance:check
+→ 邮箱身份策略测试
+→ Console导航策略测试
+→ Workspace邀请策略测试
+→ Workspace资源策略测试
+→ Lint
+→ TypeScript
+→ Next.js生产构建
 → 邮箱认证真实API回归
-→ Console登录态路由烟测
-→ 360/390/430px真实Chromium移动端验收
-→ 上传移动端截图与浏览器日志
+→ Workspace邀请并发与隔离回归
+→ Workspace产品/知识资源真实隔离回归
+→ Console登录态路由回归
+→ 360/390/430px Chromium回归
 ```
 
 证据产物：
 
 ```text
-名称：console-mobile-evidence
-Artifact ID：8258673568
-大小：4,201,341 bytes
+integration-evidence：Artifact ID 8259909885
+console-mobile-evidence：Artifact ID 8259910070
 保留至：2026-07-19
 ```
 
-前一次PR #32的浏览器步骤在打开页面前因临时Playwright模块解析失败而失败；应用迁移、测试、Lint、TypeScript和构建当时均已通过。CI工具加载方式修复后，PR #33完整通过，因此PR #33是B主线权威验收结果。
+### 6.8 C阶段尚未完成的企业域
 
-### 4.5 明确未执行
+以下能力仍需后续独立主线，不得宣称已经完成：
 
-- 未修改Prisma Schema或新增migration。
-- 未删除旧Dashboard、Workbench或未来业务结构。
-- 未修改支付、AI额度、会员核心、Workspace隔离或企业成员模型。
-- 未接入微信、企业微信、飞书或钉钉。
-- 未连接生产数据库、真实密钥或生产服务器。
-- 未部署到生产域名。
+- 企业主页和企业成员名片归属。
+- 企业客户池、任务和离职重新分配。
+- 企业AI共享额度、成员额度分配和企业AI账本。
+- 企业品牌、域名、报表、订单、发票和更完整的企业操作日志页面。
+- 企业管理员页和成员页的完整企业产品/知识管理UI。
+
+当前完成的是**邮箱邀请、成员权限、企业产品库和企业知识库的数据归属与服务端隔离底座**。
 
 ---
 
-## 5. 当前自动化命令
+## 7. 当前自动化命令
 
 ```bash
 npm run governance:check
 npm run test:auth
 npm run test:console-nav
+npm run test:workspace-invite
+npm run test:workspace-resource
 npm run lint
 npm run typecheck
 npm run build
 ```
 
-GitHub Actions还会执行认证API、Console路由和真实移动端Chromium验收。
+GitHub Actions额外执行认证、Workspace邀请、Workspace资源、Console和真实移动端浏览器集成测试。
 
 ---
 
-## 6. 下一主线
+## 8. 明确未执行
 
-A和B完成后，下一项正式任务为：
+- 未连接生产数据库。
+- 未执行生产migration。
+- 未调用真实阿里云邮件。
+- 未使用真实AI、支付宝或企业协作平台。
+- 未修改生产服务器、Nginx、PM2或`.env`。
+- 未部署生产域名。
+- 未删除旧业务结构、未来模型或历史migration。
 
-> **C：企业邮箱邀请、成员权限和Workspace隔离。**
+---
 
-C主线开始前必须先检查现有Workspace、WorkspaceMember、邀请接口和资源查询是否完整按`workspaceId`隔离；不得提前接入企业微信、飞书或钉钉。
+## 9. 下一主线
+
+C数据隔离底座完成后，下一项应从以下企业域继续：
+
+> **D：企业客户池、企业名片归属、任务重新分配与企业AI共享额度。**
+
+D开始前必须分别确定客户、Profile和AI账本的兼容归属模型，禁止把个人历史数据自动迁移或清空。
