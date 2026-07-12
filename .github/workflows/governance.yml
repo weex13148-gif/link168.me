@@ -1,4 +1,4 @@
-name: Governance Check
+name: Governance and Auth Policy Check
 
 on:
   pull_request:
@@ -11,11 +11,18 @@ on:
       - 'DOCUMENT_INDEX.md'
       - 'README.md'
       - 'docs/governance/**'
+      - 'docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md'
       - 'scripts/governance/**'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
       - 'package.json'
+      - 'tsconfig.json'
+      - 'src/lib/auth-credential-policy.ts'
+      - 'src/lib/auth-credential-policy.test.ts'
+      - 'src/lib/auth-hardening.ts'
+      - 'src/lib/email-verification.ts'
+      - 'src/app/api/auth/**'
   push:
     branches:
       - codex/link168-v2-direction
@@ -26,18 +33,25 @@ on:
       - 'DOCUMENT_INDEX.md'
       - 'README.md'
       - 'docs/governance/**'
+      - 'docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md'
       - 'scripts/governance/**'
       - '.github/CODEOWNERS'
       - '.github/pull_request_template.md'
       - '.github/workflows/governance.yml'
       - 'package.json'
+      - 'tsconfig.json'
+      - 'src/lib/auth-credential-policy.ts'
+      - 'src/lib/auth-credential-policy.test.ts'
+      - 'src/lib/auth-hardening.ts'
+      - 'src/lib/email-verification.ts'
+      - 'src/app/api/auth/**'
 
 permissions:
   contents: read
 
 jobs:
-  governance:
-    name: Validate governance files
+  governance-and-auth-policy:
+    name: Validate governance and auth policy
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -52,3 +66,6 @@ jobs:
 
       - name: Run governance consistency check
         run: npm run governance:check
+
+      - name: Run focused auth policy tests
+        run: npm run test:auth
