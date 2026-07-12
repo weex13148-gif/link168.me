@@ -2,19 +2,14 @@
  * KnowledgeDoc 单条操作 API
  * 路径: /api/dashboard/knowledge/[id]
  *
- * GET    /api/dashboard/knowledge/[id]  — 获取单条文档
- * PUT    /api/dashboard/knowledge/[id]  — 更新文档
- * DELETE /api/dashboard/knowledge/[id]  — 删除文档
+ * 企业归属文档只能通过 Workspace API 访问；个人接口统一返回不存在。
  */
 import { NextResponse } from "next/server";
 import { requireDashboardUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import {
-  newId,
-  normalizeNullableString,
-  toKnowledgeDocDto,
-} from "@/lib/dashboard-data";
-import { hasSensitiveContent, sanitizePublicText } from "@/lib/content-safety";
+import { normalizeNullableString, toKnowledgeDocDto } from "@/lib/dashboard-data";
+import { hasSensitiveContent } from "@/lib/content-safety";
+import { isWorkspaceOwnedResource } from "@/lib/workspace/resources";
 
 export const runtime = "nodejs";
 
@@ -28,17 +23,21 @@ type RouteContext = { params: Promise<{ id: string }> };
 function sanitizeBool(raw: unknown, fallback: boolean): boolean {
   if (typeof raw === "boolean") return raw;
   if (raw === "true" || raw === "1") return true;
+  if (raw === "false" || raw === "0") return false;
   return fallback;
 }
 
-export async function GET(_request: Request, context: RouteContext) {
-  const { user, response } = await requireDashboardUser(_request);
+async function isPersonalKnowledgeDoc(userId: string, id: string) {
+  if (await isWorkspaceOwnedResource("knowledge_doc", id)) return null;
+  return db.knowledgeDoc.findFirst({ where: { id, userId } });
+}
+
+export async function GET(request: Request, context: RouteContext) {
+  const { user, response } = await requireDashboardUser(request);
   if (response || !user) return response;
   const { id } = await context.params;
 
-  const doc = await db.knowledgeDoc.findFirst({
-    where: { id, userId: user.id },
-  });
+  const doc = await isPersonalKnowledgeDoc(user.id, id);
   if (!doc) {
     return NextResponse.json({ success: false, error: "文档不存在。" }, { status: 404 });
   }
@@ -50,7 +49,7 @@ export async function PUT(request: Request, context: RouteContext) {
   if (response || !user) return response;
   const { id } = await context.params;
 
-  const existing = await db.knowledgeDoc.findFirst({ where: { id, userId: user.id } });
+  const existing = await isPersonalKnowledgeDoc(user.id, id);
   if (!existing) {
     return NextResponse.json({ success: false, error: "文档不存在。" }, { status: 404 });
   }
@@ -74,27 +73,30 @@ export async function PUT(request: Request, context: RouteContext) {
 
   const category = normalizeNullableString(body.category);
   const safeCategory = category && category.length <= MAX_CATEGORY_LENGTH ? category : existing.category;
-
   const rawSourceType = typeof body.sourceType === "string" ? body.sourceType.trim() : existing.sourceType;
   const sourceType = VALID_SOURCE_TYPES.includes(rawSourceType) ? rawSourceType : existing.sourceType;
 
-  const isActive = sanitizeBool(body.isActive, existing.isActive);
-  const allowAiCitation = sanitizeBool(body.allowAiCitation, existing.allowAiCitation);
-
   const updated = await db.knowledgeDoc.update({
     where: { id },
-    data: { title, category: safeCategory, content, sourceType, isActive, allowAiCitation },
+    data: {
+      title,
+      category: safeCategory,
+      content,
+      sourceType,
+      isActive: sanitizeBool(body.isActive, existing.isActive),
+      allowAiCitation: sanitizeBool(body.allowAiCitation, existing.allowAiCitation),
+    },
   });
 
   return NextResponse.json({ success: true, doc: toKnowledgeDocDto(updated) });
 }
 
-export async function DELETE(_request: Request, context: RouteContext) {
-  const { user, response } = await requireDashboardUser(_request);
+export async function DELETE(request: Request, context: RouteContext) {
+  const { user, response } = await requireDashboardUser(request);
   if (response || !user) return response;
   const { id } = await context.params;
 
-  const existing = await db.knowledgeDoc.findFirst({ where: { id, userId: user.id } });
+  const existing = await isPersonalKnowledgeDoc(user.id, id);
   if (!existing) {
     return NextResponse.json({ success: false, error: "文档不存在。" }, { status: 404 });
   }
