@@ -61,7 +61,7 @@ async function main() {
   assert.equal(registration.status, 200, `registration failed: ${JSON.stringify(registration.body)}`);
   assert.ok(registration.cookie, "registration did not establish an authenticated session");
 
-  const formalRoutes = [
+  const primaryRoutes = [
     "/console",
     "/console/card",
     "/console/customers",
@@ -69,38 +69,72 @@ async function main() {
     "/console/account",
   ];
 
+  const secondaryRoutes = [
+    "/console/card/products",
+    "/console/card/short-links",
+    "/console/card/analytics",
+    "/console/ai/service",
+    "/console/ai/knowledge",
+    "/console/ai/reception",
+    "/console/account/membership",
+    "/console/account/enterprise",
+    "/console/account/notifications",
+  ];
+
   const formalResponses = new Map();
-  for (const route of formalRoutes) {
+  for (const route of [...primaryRoutes, ...secondaryRoutes]) {
     const result = await request(route, { cookie: registration.cookie });
     assert.equal(result.status, 200, `${route} returned ${result.status}`);
     assert.notEqual(result.headers.get("location"), "/login", `${route} redirected to login`);
-    assert.doesNotMatch(result.text, /href=["']\/jeepwork(?:[\/"'])/, `${route} exposed Jeepwork in user navigation`);
+    assert.doesNotMatch(
+      result.text,
+      /href=["']\/jeepwork(?:[\/"'])/,
+      `${route} exposed Jeepwork in user navigation`,
+    );
     formalResponses.set(route, result);
   }
 
   const home = formalResponses.get("/console");
   assert.ok(home);
-  for (const route of formalRoutes) {
-    assert.match(home.text, new RegExp(`href=["']${route.replaceAll("/", "\\/")}["']`), `home is missing ${route}`);
+  for (const route of primaryRoutes) {
+    assert.match(
+      home.text,
+      new RegExp(`href=["']${route.replaceAll("/", "\\/")}["']`),
+      `home is missing ${route}`,
+    );
   }
-  assert.doesNotMatch(home.text, /href=["']\/(?:dashboard|workbench)(?:[\/"'])/, "console home still links directly to legacy user routes");
+  assert.doesNotMatch(
+    home.text,
+    /href=["']\/(?:dashboard|workbench)(?:[\/"'])/,
+    "console home still links directly to legacy user routes",
+  );
 
-  const legacyRoutes = [
-    "/dashboard",
-    "/workbench/leads",
-    "/workbench/ai",
-    "/workbench/account",
-  ];
+  const legacyRedirects = new Map([
+    ["/dashboard", "/console/card"],
+    ["/workbench", "/console"],
+    ["/workbench/products", "/console/card/products"],
+    ["/workbench/short-links", "/console/card/short-links"],
+    ["/workbench/analytics", "/console/card/analytics"],
+    ["/workbench/leads", "/console/customers"],
+    ["/workbench/ai", "/console/ai"],
+    ["/workbench/ai-service", "/console/ai/service"],
+    ["/workbench/knowledge", "/console/ai/knowledge"],
+    ["/workbench/account", "/console/account"],
+    ["/workbench/membership", "/console/account/membership"],
+    ["/workbench/enterprise", "/console/account/enterprise"],
+    ["/workbench/notifications", "/console/account/notifications"],
+  ]);
 
-  for (const route of legacyRoutes) {
-    const result = await request(route, { cookie: registration.cookie });
-    assert.equal(result.status, 200, `${route} compatibility route returned ${result.status}`);
-    assert.doesNotMatch(result.text, /href=["']\/jeepwork(?:[\/"'])/, `${route} exposed Jeepwork in user navigation`);
+  for (const [legacyRoute, destination] of legacyRedirects) {
+    const result = await request(legacyRoute, { cookie: registration.cookie });
+    assert.equal(result.status, 307, `${legacyRoute} did not return a temporary compatibility redirect`);
+    assert.equal(result.headers.get("location"), destination, `${legacyRoute} redirected to the wrong destination`);
   }
 
-  console.log("PASS five formal Console routes render for an authenticated user");
+  console.log("PASS five primary Console routes render for an authenticated user");
+  console.log("PASS formal Console secondary routes render inside their approved category");
   console.log("PASS Console home links only to approved /console sections");
-  console.log("PASS legacy Dashboard and Workbench routes remain compatible");
+  console.log("PASS legacy Dashboard and Workbench routes redirect to formal Console routes");
   console.log("PASS Jeepwork is absent from ordinary user navigation");
 }
 
