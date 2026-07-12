@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireDashboardUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { assertWorkspaceMember, isValidRole, roleAtLeast } from "@/lib/workspace";
+import { rateLimit } from "@/lib/rate-limit";
+import { assertWorkspaceMember, isValidRole } from "@/lib/workspace";
+import { canGrantWorkspaceRole, canManageWorkspaceRole } from "@/lib/workspace/invitation-policy";
+import { WorkspaceInvitationError, createWorkspaceInvitation } from "@/lib/workspace/invitations";
 
 export const runtime = "nodejs";
 
@@ -9,12 +12,24 @@ type RouteContext = {
   params: Promise<{ workspaceId: string }>;
 };
 
+function invitationErrorResponse(error: unknown) {
+  if (error instanceof WorkspaceInvitationError) {
+    return NextResponse.json(
+      { success: false, error: error.message, code: error.code },
+      { status: error.status },
+    );
+  }
+  return NextResponse.json(
+    { success: false, error: "企业邀请服务暂时不可用。", code: "INVITATION_SERVICE_UNAVAILABLE" },
+    { status: 503 },
+  );
+}
+
 export async function GET(request: NextRequest, context: RouteContext) {
   const { user, response } = await requireDashboardUser(request);
   if (response || !user) return response;
 
   const { workspaceId } = await context.params;
-
   const check = await assertWorkspaceMember(workspaceId, user.id, { minRole: "viewer", requireActive: true });
   if (!check.allowed) {
     return NextResponse.json({ success: false, error: check.message, code: check.code }, { status: 403 });
@@ -30,124 +45,58 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
   return NextResponse.json({
     success: true,
-    members: members.map((m) => ({
-      id: m.id,
-      userId: m.userId,
-      email: m.user.email,
-      role: m.role,
-      status: m.status,
-      invitedBy: m.invitedBy,
-      invitedAt: m.invitedAt.toISOString(),
-      joinedAt: m.joinedAt?.toISOString() ?? null,
-      disabledAt: m.disabledAt?.toISOString() ?? null,
+    members: members.map((member) => ({
+      id: member.id,
+      userId: member.userId,
+      email: member.user.email,
+      role: member.role,
+      status: member.status,
+      invitedBy: member.invitedBy,
+      invitedAt: member.invitedAt.toISOString(),
+      joinedAt: member.joinedAt?.toISOString() ?? null,
+      disabledAt: member.disabledAt?.toISOString() ?? null,
     })),
   });
 }
 
+/**
+ * 兼容旧客户端：POST members 不再直接激活成员，统一创建邮箱邀请。
+ */
 export async function POST(request: NextRequest, context: RouteContext) {
   const { user, response } = await requireDashboardUser(request);
   if (response || !user) return response;
 
-  const { workspaceId } = await context.params;
-
-  const check = await assertWorkspaceMember(workspaceId, user.id, { minRole: "admin", requireActive: true });
-  if (!check.allowed) {
-    return NextResponse.json({ success: false, error: check.message, code: check.code }, { status: 403 });
+  const limited = await rateLimit(request, "workspace:invite:legacy", 20, 60 * 60 * 1000);
+  if (!limited.passed) {
+    return NextResponse.json(
+      { success: false, error: "邀请操作过于频繁，请稍后再试。", code: "INVITATION_RATE_LIMITED" },
+      { status: 429 },
+    );
   }
 
-  let body: {
-    email?: unknown;
-    role?: unknown;
-  };
+  let body: { email?: unknown; role?: unknown };
   try {
     body = (await request.json()) as typeof body;
   } catch {
     return NextResponse.json({ success: false, error: "请求格式不正确。" }, { status: 400 });
   }
 
-  const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
-  if (!email || !email.includes("@")) {
-    return NextResponse.json({ success: false, error: "请输入有效的邮箱地址。" }, { status: 400 });
-  }
-
-  const role = typeof body.role === "string" && isValidRole(body.role) ? body.role : "member";
-  if (role === "owner") {
-    return NextResponse.json({ success: false, error: "不能添加 owner 角色。" }, { status: 400 });
-  }
-
-  const invitee = await db.user.findUnique({ where: { email } });
-  if (!invitee) {
-    return NextResponse.json(
-      { success: false, error: "该邮箱未注册，无法添加为成员。", code: "USER_NOT_FOUND" },
-      { status: 404 },
-    );
-  }
-
-  if (invitee.id === user.id) {
-    return NextResponse.json({ success: false, error: "不能添加自己。" }, { status: 400 });
-  }
-
-  const existing = await db.workspaceMember.findFirst({
-    where: { workspaceId, userId: invitee.id },
-  });
-
-  if (existing) {
-    if (existing.status === "removed") {
-      const restored = await db.workspaceMember.update({
-        where: { id: existing.id },
-        data: {
-          role,
-          status: "invited",
-          invitedBy: user.id,
-          invitedAt: new Date(),
-          joinedAt: null,
-          disabledAt: null,
-          removedAt: null,
-        },
-      });
-      return NextResponse.json({
-        success: true,
-        member: {
-          id: restored.id,
-          userId: restored.userId,
-          email,
-          role: restored.role,
-          status: restored.status,
-          invitedBy: restored.invitedBy,
-          invitedAt: restored.invitedAt.toISOString(),
-        },
-      });
-    }
-    return NextResponse.json(
-      { success: false, error: "该用户已在工作空间中。", code: "MEMBER_ALREADY_EXISTS" },
-      { status: 409 },
-    );
-  }
-
-  // 直接添加已有注册用户（不发送邀请邮件），状态为 active
-  const member = await db.workspaceMember.create({
-    data: {
+  const { workspaceId } = await context.params;
+  try {
+    const invitation = await createWorkspaceInvitation({
       workspaceId,
-      userId: invitee.id,
-      role,
-      status: "active",
-      invitedBy: user.id,
-      joinedAt: new Date(),
-    },
-  });
-
-  return NextResponse.json({
-    success: true,
-    member: {
-      id: member.id,
-      userId: member.userId,
-      email,
-      role: member.role,
-      status: member.status,
-      invitedBy: member.invitedBy,
-      invitedAt: member.invitedAt.toISOString(),
-    },
-  });
+      actorUserId: user.id,
+      actorEmail: user.email,
+      email: body.email,
+      role: body.role,
+    });
+    return NextResponse.json(
+      { success: true, invitation, message: "邀请邮件已发送，对方接受后才会成为成员。" },
+      { status: 201 },
+    );
+  } catch (error) {
+    return invitationErrorResponse(error);
+  }
 }
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
@@ -179,6 +128,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
   const action = typeof body.action === "string" ? body.action : "update_role";
 
+  // 仅为部署前已经存在的 invited WorkspaceMember 保留兼容入口。
   if (action === "accept") {
     if (targetMember.userId !== user.id) {
       return NextResponse.json({ success: false, error: "只能接受自己的邀请。" }, { status: 403 });
@@ -188,7 +138,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     }
     const updated = await db.workspaceMember.update({
       where: { id: memberId },
-      data: { status: "active", joinedAt: new Date() },
+      data: { status: "active", joinedAt: new Date(), disabledAt: null, removedAt: null },
     });
     return NextResponse.json({
       success: true,
@@ -214,20 +164,13 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   }
 
   const check = await assertWorkspaceMember(workspaceId, user.id, { minRole: "admin", requireActive: true });
-  if (!check.allowed) {
+  if (!check.allowed || !check.member) {
     return NextResponse.json({ success: false, error: check.message, code: check.code }, { status: 403 });
   }
 
-  if (targetMember.role === "owner") {
+  if (!canManageWorkspaceRole(check.member.role, targetMember.role)) {
     return NextResponse.json(
-      { success: false, error: "不能修改所有者角色。", code: "OWNER_IMMUTABLE" },
-      { status: 403 },
-    );
-  }
-
-  if (!roleAtLeast(check.member!.role, targetMember.role as "admin" | "member" | "viewer")) {
-    return NextResponse.json(
-      { success: false, error: "无权管理更高角色的成员。", code: "INSUFFICIENT_HIERARCHY" },
+      { success: false, error: "无权管理该角色的成员。", code: "INSUFFICIENT_HIERARCHY" },
       { status: 403 },
     );
   }
@@ -251,19 +194,16 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   if (action === "enable") {
     const updated = await db.workspaceMember.update({
       where: { id: memberId },
-      data: { status: "active", disabledAt: null },
+      data: { status: "active", disabledAt: null, removedAt: null },
     });
     return NextResponse.json({ success: true, member: { id: updated.id, status: updated.status } });
   }
 
   if (action === "update_role") {
     const newRole = typeof body.role === "string" && isValidRole(body.role) ? body.role : null;
-    if (!newRole || newRole === "owner") {
-      return NextResponse.json({ success: false, error: "无效的目标角色。" }, { status: 400 });
-    }
-    if (!roleAtLeast(check.member!.role, newRole as "admin" | "member" | "viewer")) {
+    if (!newRole || !canGrantWorkspaceRole(check.member.role, newRole)) {
       return NextResponse.json(
-        { success: false, error: "不能授予高于自己的角色。", code: "INSUFFICIENT_HIERARCHY" },
+        { success: false, error: "无权授予该角色。", code: "WORKSPACE_ROLE_NOT_GRANTABLE" },
         { status: 403 },
       );
     }
