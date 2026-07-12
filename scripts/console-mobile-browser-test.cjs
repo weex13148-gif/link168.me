@@ -24,7 +24,12 @@ function routeSlug(route) {
 async function main() {
   await fs.mkdir(screenshotDir, { recursive: true });
 
-  const api = await request.newContext({ baseURL: baseUrl });
+  // Use a dedicated RFC 5737 test address so this test does not share the
+  // registration rate-limit bucket with earlier API integration suites.
+  const api = await request.newContext({
+    baseURL: baseUrl,
+    extraHTTPHeaders: { "x-forwarded-for": "192.0.2.88" },
+  });
   const email = `console-browser-${Date.now()}-${crypto.randomBytes(4).toString("hex")}@example.com`;
   const registration = await api.post("/api/auth/register", {
     data: {
