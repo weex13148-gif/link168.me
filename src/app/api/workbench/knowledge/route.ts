@@ -1,26 +1,13 @@
-/**
- * 知识库 CRUD API
- * 支持 7 种资料类型：company / product / faq / brand_voice / customer_profile / sop / document
- */
+import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 import { requireDashboardUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import crypto from "crypto";
+import { getWorkspaceOwnedResourceIds } from "@/lib/workspace/resources";
 
 export const runtime = "nodejs";
 
-const VALID_CATEGORIES = [
-  "company",
-  "product",
-  "faq",
-  "brand_voice",
-  "customer_profile",
-  "sop",
-  "document",
-] as const;
-
+const VALID_CATEGORIES = ["company", "product", "faq", "brand_voice", "customer_profile", "sop", "document"] as const;
 type Category = (typeof VALID_CATEGORIES)[number];
-
 const CATEGORY_LABELS: Record<string, string> = {
   company: "公司资料",
   product: "产品资料",
@@ -43,14 +30,14 @@ export async function GET(request: Request) {
   const category = searchParams.get("category");
   const search = searchParams.get("search");
   const activeOnly = searchParams.get("active") === "true";
+  const enterpriseDocIds = await getWorkspaceOwnedResourceIds("knowledge_doc");
 
-  const where: Record<string, unknown> = { userId: user.id };
-  if (category && isValidCategory(category)) {
-    where.category = category;
-  }
-  if (activeOnly) {
-    where.isActive = true;
-  }
+  const where: Record<string, unknown> = {
+    userId: user.id,
+    ...(enterpriseDocIds.length > 0 ? { id: { notIn: enterpriseDocIds } } : {}),
+  };
+  if (category && isValidCategory(category)) where.category = category;
+  if (activeOnly) where.isActive = true;
   if (search) {
     where.OR = [
       { title: { contains: search, mode: "insensitive" } },
@@ -58,26 +45,22 @@ export async function GET(request: Request) {
     ];
   }
 
-  const docs = await db.knowledgeDoc.findMany({
-    where,
-    orderBy: { updatedAt: "desc" },
-  });
-
+  const docs = await db.knowledgeDoc.findMany({ where, orderBy: { updatedAt: "desc" } });
   return NextResponse.json({
     success: true,
-    docs: docs.map((d) => ({
-      id: d.id,
-      title: d.title,
-      category: d.category,
-      categoryLabel: d.category ? CATEGORY_LABELS[d.category] || d.category : "未分类",
-      content: d.content,
-      sourceType: d.sourceType,
-      isActive: d.isActive,
-      allowAiCitation: d.allowAiCitation,
-      createdAt: d.createdAt.toISOString(),
-      updatedAt: d.updatedAt.toISOString(),
+    docs: docs.map((doc) => ({
+      id: doc.id,
+      title: doc.title,
+      category: doc.category,
+      categoryLabel: doc.category ? CATEGORY_LABELS[doc.category] || doc.category : "未分类",
+      content: doc.content,
+      sourceType: doc.sourceType,
+      isActive: doc.isActive,
+      allowAiCitation: doc.allowAiCitation,
+      createdAt: doc.createdAt.toISOString(),
+      updatedAt: doc.updatedAt.toISOString(),
     })),
-    categories: VALID_CATEGORIES.map((c) => ({ value: c, label: CATEGORY_LABELS[c] })),
+    categories: VALID_CATEGORIES.map((value) => ({ value, label: CATEGORY_LABELS[value] })),
   });
 }
 
@@ -95,15 +78,8 @@ export async function POST(request: Request) {
   const title = typeof body.title === "string" ? body.title.trim() : "";
   const content = typeof body.content === "string" ? body.content.trim() : "";
   const category = typeof body.category === "string" ? body.category : "document";
-  const isActive = body.isActive !== false;
-  const allowAiCitation = body.allowAiCitation !== false;
-
-  if (!title) {
-    return NextResponse.json({ success: false, error: "标题不能为空。" }, { status: 400 });
-  }
-  if (!content) {
-    return NextResponse.json({ success: false, error: "内容不能为空。" }, { status: 400 });
-  }
+  if (!title) return NextResponse.json({ success: false, error: "标题不能为空。" }, { status: 400 });
+  if (!content) return NextResponse.json({ success: false, error: "内容不能为空。" }, { status: 400 });
   if (!isValidCategory(category)) {
     return NextResponse.json({ success: false, error: `无效的资料类型。可用值：${VALID_CATEGORIES.join("、")}` }, { status: 400 });
   }
@@ -116,8 +92,8 @@ export async function POST(request: Request) {
       content,
       category,
       sourceType: "manual",
-      isActive,
-      allowAiCitation,
+      isActive: body.isActive !== false,
+      allowAiCitation: body.allowAiCitation !== false,
     },
   });
 
