@@ -1,0 +1,59 @@
+// D2 企业主页与企业成员名片。
+// 与个人 Profile / Link 完全分离，不改变个人用户名、公开地址或历史数据。
+model WorkspaceCard {
+  id                String    @id @default(uuid()) @db.Uuid
+  workspaceId       String    @map("workspace_id") @db.Uuid
+  // enterprise_home / member_card
+  cardType          String    @map("card_type")
+  memberUserId      String?   @map("member_user_id") @db.Uuid
+  // draft / published / archived
+  status            String    @default("draft")
+  displayName       String?   @map("display_name")
+  bio               String?
+  avatarUrl         String?   @map("avatar_url")
+  coverImageUrl     String?   @map("cover_image_url")
+  company           String?
+  jobTitle          String?   @map("job_title")
+  phone             String?
+  email             String?
+  wechat            String?
+  city              String?
+  address           String?
+  website           String?
+  socialLinks       Json?     @map("social_links") @db.JsonB
+  // public / members_only / private
+  contactVisibility String    @default("public") @map("contact_visibility")
+  theme             String    @default("default")
+  customTheme       String?   @map("custom_theme")
+  // business / creator / conversion
+  template          String    @default("business")
+  createdByUserId   String    @map("created_by_user_id") @db.Uuid
+  publishedAt       DateTime? @map("published_at") @db.Timestamptz(6)
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([workspaceId, cardType, status])
+  @@index([workspaceId, memberUserId, status])
+  @@index([createdByUserId, createdAt])
+  @@map("workspace_cards")
+}
+
+model WorkspaceCardComponent {
+  id              String   @id @default(uuid()) @db.Uuid
+  workspaceId     String   @map("workspace_id") @db.Uuid
+  cardId          String   @map("card_id") @db.Uuid
+  type            String   @default("link")
+  title           String
+  description     String?
+  url             String?
+  payloadJson     String?  @map("payload_json")
+  position        Int      @default(0)
+  isActive        Boolean  @default(true) @map("is_active")
+  createdByUserId String   @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([workspaceId, cardId, position])
+  @@index([workspaceId, type, isActive])
+  @@map("workspace_card_components")
+}
