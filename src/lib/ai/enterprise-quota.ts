@@ -50,6 +50,7 @@ export type MemberUsageDetail = {
   succeededCount: number;
   failedCount: number;
   refundedCount: number;
+  refundPendingCount: number;
   pendingCount: number;
   lastSucceededAt: Date | null;
 };

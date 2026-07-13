@@ -940,7 +940,7 @@ model EnterpriseQuotaConsumption {
   operationId   String   @map("operation_id")
   amount        Int      @default(0)
   source        String   @map("source")
-  // pending → reserved → succeeded / refunded; failed = pre-allocation failed
+  // pending → reserved → succeeded; reserved/succeeded → refund_pending → refunded; failed = pre-allocation failed
   status        String   @default("pending")
   failureReason String?  @map("failure_reason")
   metadata      Json?    @db.JsonB

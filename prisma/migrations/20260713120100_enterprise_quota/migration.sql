@@ -4,7 +4,7 @@
 -- 1. operation_id 改为 (workspace_id, operation_id) 复合唯一，不同 Workspace 可复用同一 operationId
 -- 2. 增加 CHECK 约束：total_quota >= 0, used_quota >= 0, used_quota <= total_quota, amount > 0
 -- 3. 增加 status CHECK 约束：pending / reserved / succeeded / failed / refunded
--- 4. consumption 新增 reserved 和 refunded 状态，区分预占成功与 AI 调用成功
+-- 4. consumption 新增 reserved/refund_pending/refunded 状态，区分预占成功与 AI 调用成功
 
 CREATE TABLE "enterprise_quota_pools" (
     "id" UUID NOT NULL PRIMARY KEY,
@@ -34,7 +34,7 @@ CREATE TABLE "enterprise_quota_consumptions" (
     "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "enterprise_quota_consumptions_amount_check" CHECK (amount > 0),
     CONSTRAINT "enterprise_quota_consumptions_status_check"
-        CHECK (status IN ('pending', 'reserved', 'succeeded', 'failed', 'refunded'))
+        CHECK (status IN ('pending', 'reserved', 'succeeded', 'failed', 'refund_pending', 'refunded'))
 );
 
 -- 复合唯一：同一 Workspace 内 operationId 唯一，不同 Workspace 可复用
