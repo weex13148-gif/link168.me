@@ -15,7 +15,8 @@ import {
   moderateAiOutput,
 } from "@/lib/content-safety";
 import { checkUserAiRestricted } from "@/lib/ai/permissions";
-import { assertAiEntitlement, buildAiUsageMetadata } from "@/lib/ai/entitlement-guard";
+import { buildAiUsageMetadata } from "@/lib/ai/entitlement-guard";
+import { assertEnterpriseWorkspaceAiAccess } from "@/lib/ai/enterprise-workspace-ai-guard";
 import { logAiRiskEvent } from "@/lib/ai/risk-log";
 import {
   callBailianApplication,
@@ -42,6 +43,7 @@ type ChatPayload = {
   history?: unknown;
   sessionId?: unknown;
   workspaceId?: unknown;
+  idempotencyKey?: unknown;
 };
 
 type ChatHistoryItem = { role: "user" | "assistant"; content: string };
@@ -147,40 +149,26 @@ export async function POST(request: Request) {
   const userId = user.id;
   const userEmail = user.email;
 
-  // ===== 统一 AI 权益守卫（enterprise_ai）=====
-  const guard = await assertAiEntitlement(userId, "enterprise_ai");
-  if (!guard.ok) {
-    if (guard.code === "AI_RESTRICTED") {
-      await logAiRiskEvent({
-        userId,
-        eventType: "user_ai_restricted",
-        assistant: "",
-        riskLevel: "high",
-        userMessage: null,
-        ipAddress: ip,
-        metadata: { restrictionType: guard.restriction?.type, reason: guard.restriction?.reason, traceId: traceCtx.traceId },
-      });
-    }
+  // ===== 企业 AI 权益守卫：检查 Workspace 成员状态 + 企业套餐 =====
+  const workspaceAiAccess = await assertEnterpriseWorkspaceAiAccess({ userId, workspaceId });
+  if (!workspaceAiAccess.allowed) {
     recordAiMetrics({
       traceCtx,
       userId: user.id,
       usageType: "enterprise_ai",
       success: false,
-      errorCode: guard.code,
-      httpStatus: guard.status,
+      errorCode: workspaceAiAccess.code,
+      httpStatus: 403,
       ipAddress: ip,
     });
     const resp = NextResponse.json(
       {
-        ok: false,
-        code: guard.code,
-        message: guard.message,
         success: false,
-        error: guard.message,
-        usageType: guard.usageType,
+        error: workspaceAiAccess.message,
+        code: workspaceAiAccess.code,
         traceId: traceCtx.traceId,
       },
-      { status: guard.status },
+      { status: 403 },
     );
     setTraceIdOnNextResponse(resp, traceCtx.traceId);
     return resp;
@@ -206,9 +194,9 @@ export async function POST(request: Request) {
   }
 
   const enterpriseAccess = await getEnterpriseBailianAccess(userId, userEmail);
-  if (!enterpriseAccess.access.allowed) {
+  if (!enterpriseAccess.resolved.configured) {
     const resp = NextResponse.json(
-      { success: false, error: enterpriseAccess.access.reason || "当前账户没有企业 AI 权限。", traceId: traceCtx.traceId },
+      { success: false, error: "平台百炼配置不完整。", traceId: traceCtx.traceId },
       { status: 403 },
     );
     setTraceIdOnNextResponse(resp, traceCtx.traceId);
@@ -242,6 +230,7 @@ export async function POST(request: Request) {
   const sessionId = normalizeString(body.sessionId);
   const history = normalizeHistory(body.history);
   const workspaceId = normalizeString(body.workspaceId);
+  const idempotencyKey = normalizeString(body.idempotencyKey);
 
   // 企业 AI 必须提供明确的 Workspace 上下文，不自动选择 workspaceMemberships[0]
   if (!workspaceId) {
@@ -425,7 +414,8 @@ export async function POST(request: Request) {
   }
 
   // ===== 企业 AI 只扣企业共享额度，不扣个人 AI Credits =====
-  const enterpriseQuotaOperationId = `enterprise-ai:${userId}:${Date.now()}:${Math.random().toString(36).slice(2, 10)}`;
+  const resolvedIdempotencyKey = idempotencyKey || `${Date.now()}:${Math.random().toString(36).slice(2, 10)}`;
+  const enterpriseQuotaOperationId = `enterprise-ai:${workspaceId}:${userId}:${resolvedIdempotencyKey}`;
   const quotaMetadata = buildAiUsageMetadata({
     usageType: "enterprise_ai",
     assistant: assistantTitle,
@@ -466,7 +456,7 @@ export async function POST(request: Request) {
   try {
     result = await callBailianApplication(providerConfig, prompt, sessionId || undefined);
   } catch (error) {
-    await refundEnterpriseQuota(workspaceId, enterpriseQuotaOperationId);
+    const refundResult = await refundEnterpriseQuota(workspaceId, enterpriseQuotaOperationId);
     const mappedAiCode = mapProviderErrorToAiCode(statusCodeToErrorType(502));
     recordAiMetrics({
       traceCtx,
@@ -478,11 +468,15 @@ export async function POST(request: Request) {
       httpStatus: 502,
     });
     console.error("[enterprise-ai] 百炼请求异常:", error);
+    const errorMessage = refundResult.refunded
+      ? "AI 服务请求失败，企业额度已自动退回。"
+      : "AI 服务请求失败，额度退款正在处理中。";
     const resp = NextResponse.json(
       {
         success: false,
-        error: "AI 服务请求失败，企业额度已自动退回。",
+        error: errorMessage,
         code: mappedAiCode,
+        quotaRefunded: refundResult.refunded,
         traceId: traceCtx.traceId,
       },
       { status: 502 },
@@ -531,7 +525,7 @@ export async function POST(request: Request) {
       latencyMs,
       usage: null,
       enterpriseQuotaOperationId,
-      quotaRefunded: true,
+      quotaRefunded: refundResult.refunded,
     }));
 
     const resp = NextResponse.json(
@@ -602,7 +596,7 @@ export async function POST(request: Request) {
       latencyMs,
       usage: result.usage,
       enterpriseQuotaOperationId,
-      quotaRefunded: true,
+      quotaRefunded: refundResult.refunded,
     }));
 
     const resp = NextResponse.json(
@@ -619,7 +613,75 @@ export async function POST(request: Request) {
   }
 
   // 百炼调用成功且输出通过审核 → 确认企业额度消费
-  await confirmEnterpriseQuota(workspaceId, enterpriseQuotaOperationId);
+  const confirmResult = const confirmResult = await confirmEnterpriseQuota(workspaceId, enterpriseQuotaOperationId);
+  if (!confirmResult.success) {
+    console.error("[enterprise-ai] confirmEnterpriseQuota failed:", {
+      workspaceId,
+      operationId: enterpriseQuotaOperationId,
+      code: confirmResult.code,
+    });
+    recordAiMetrics({
+      traceCtx,
+      userId,
+      usageType: "enterprise_ai",
+      provider: "bailian-app",
+      model: providerConfig.appId,
+      inputTokens: result.usage?.inputTokens ?? 0,
+      outputTokens: result.usage?.outputTokens ?? 0,
+      durationMs: latencyMs,
+      success: false,
+      errorCode: "QUOTA_CONFIRM_FAILED",
+      httpStatus: 503,
+    });
+    const resp = NextResponse.json(
+      {
+        success: false,
+        error: "AI 调用成功，但额度确认失败，请联系管理员。",
+        reply: result.reply,
+        sessionId: result.sessionId || sessionId || "",
+        requestId: result.requestId || "",
+        quotaConfirmed: false,
+        traceId: traceCtx.traceId,
+      },
+      { status: 503 },
+    );
+    setTraceIdOnNextResponse(resp, traceCtx.traceId);
+    return resp;
+  }
+  if (!confirmResult.success) {
+    console.error('[enterprise-ai] confirmEnterpriseQuota failed:', {
+      workspaceId,
+      operationId: enterpriseQuotaOperationId,
+      code: confirmResult.code,
+    });
+    recordAiMetrics({
+      traceCtx,
+      userId,
+      usageType: 'enterprise_ai',
+      provider: 'bailian-app',
+      model: providerConfig.appId,
+      inputTokens: result.usage?.inputTokens ?? 0,
+      outputTokens: result.usage?.outputTokens ?? 0,
+      durationMs: latencyMs,
+      success: false,
+      errorCode: 'QUOTA_CONFIRM_FAILED',
+      httpStatus: 503,
+    });
+    const resp = NextResponse.json(
+      {
+        success: false,
+        error: 'AI 调用成功，但额度确认失败，请联系管理员。',
+        reply: result.reply,
+        sessionId: result.sessionId || sessionId || '',
+        requestId: result.requestId || '',
+        quotaConfirmed: false,
+        traceId: traceCtx.traceId,
+      },
+      { status: 503 },
+    );
+    setTraceIdOnNextResponse(resp, traceCtx.traceId);
+    return resp;
+  }
 
   const finalUsage = await getAiDailyUsage(userId, assistantTitle);
   recordAiMetrics({
