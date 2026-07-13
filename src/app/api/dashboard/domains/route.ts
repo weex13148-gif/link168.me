@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     const domainId = url.searchParams.get("domainId");
 
     if (domainId) {
-      const domain = await getDomainVerificationInfo(domainId);
+      const domain = await getDomainVerificationInfo(domainId, user.id);
       if (!domain) {
         return NextResponse.json(
           { success: false, code: "DOMAIN_NOT_FOUND", message: "域名记录不存在" },
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
             { status: 400 },
           );
         }
-        const result = await verifyDomain(domainId);
+        const result = await verifyDomain(domainId, user.id);
         return NextResponse.json({ ...result });
       }
 
