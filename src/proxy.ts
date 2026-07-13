@@ -75,7 +75,7 @@ export async function proxy(request: NextRequest) {
   // 解析域名
   const resolved = await resolveDomain(normalizedHost);
   if (!resolved) {
-    return NextResponse.next();
+    return NextResponse.json({ success: false, error: 'Not Found' }, { status: 404 });
   }
 
   if (resolved.kind === "personal-subdomain") {

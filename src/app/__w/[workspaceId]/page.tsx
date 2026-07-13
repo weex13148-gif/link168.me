@@ -9,7 +9,12 @@ type Props = {
   params: Promise<{ workspaceId: string }>;
 };
 
-async function loadWorkspace(workspaceId: string) {
+async function loadWorkspace(workspaceId: string, host?: string) {
+  if (host) {
+    const hostVerified = await assertWorkspacePublicHost(workspaceId, host);
+    if (!hostVerified) return null;
+  }
+
   const workspace = await db.workspace.findUnique({
     where: { id: workspaceId },
     select: {
@@ -40,7 +45,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function EnterpriseHomePage({ params }: Props) {
   const { workspaceId } = await params;
-  const workspace = await loadWorkspace(workspaceId);
+  const host = process.env.NEXT_PUBLIC_APP_URL ? null : (await import('next/headers')).headers().get('host');
+  const workspace = await loadWorkspace(workspaceId, host ?? undefined);
   if (!workspace) notFound();
 
   // 读取企业主（owner）的 Profile 作为联系方式回退

@@ -84,6 +84,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? `${profile.avatarUrl.split("?")[0]}?v=${profile.updatedAt.getTime()}`
     : null;
 
+  const hostUrl = getHostUrl(host);
+  const pageUrl = `${hostUrl}/${resolved.slug}`;
+
   return buildPublicProfileMetadata({
     username: profile.username,
     displayName: profile.displayName,
@@ -92,14 +95,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     isPublic: profile.isPublic,
     isIndexable: indexable,
     updatedAt: profile.updatedAt,
-    pageUrl: `${appUrl}/${profile.username}`,
-    appUrl,
+    pageUrl,
+    appUrl: hostUrl,
   });
 }
 
 export default async function WorkspaceEmployeeProfilePage({ params, searchParams }: Props & { searchParams?: Promise<{ template?: string }> }) {
   const { workspaceId, slug } = await params;
   const query = searchParams ? await searchParams : {};
+  const host = process.env.NEXT_PUBLIC_APP_URL ? null : (await import('next/headers')).headers().get('host');
+
+  if (host) {
+    const hostVerified = await assertWorkspacePublicHost(workspaceId, host);
+    if (!hostVerified) notFound();
+  }
 
   const resolved = await resolveWorkspacePublicProfile(workspaceId, slug);
   if (!resolved) notFound();
@@ -190,7 +199,9 @@ export default async function WorkspaceEmployeeProfilePage({ params, searchParam
     };
   });
 
-  const reportUrl = `/report?url=${encodeURIComponent(`${appUrl}/${profile.username}`)}`;
+  const hostUrl = getHostUrl(host);
+  const pageUrl = `${hostUrl}/${resolved.slug}`;
+  const reportUrl = `/report?url=${encodeURIComponent(pageUrl)}`;
   const themeName = profile.theme || "Link168 草木默认";
   const surfaceClass = getThemeClasses(themeName).surfaceClassName;
 
@@ -205,7 +216,7 @@ export default async function WorkspaceEmployeeProfilePage({ params, searchParam
     username: profile.username,
     bio: profile.bio,
     avatarUrl: avatarUrlWithCacheBust,
-    pageUrl: `${appUrl}/${profile.username}`,
+    pageUrl,
     jobTitle: profile.jobTitle,
     company: profile.company,
     email: contactIsPublic ? profile.email : null,
@@ -218,7 +229,7 @@ export default async function WorkspaceEmployeeProfilePage({ params, searchParam
 
   const profilePageSchema = generateProfilePageSchema({
     person: personSchema,
-    pageUrl: `${appUrl}/${profile.username}`,
+    pageUrl,
     updatedAt: profile.updatedAt,
     createdAt: profile.createdAt,
   });
