@@ -17,7 +17,9 @@ CREATE TABLE "domains" (
     "unbound_at" TIMESTAMPTZ(6),
     "last_verified_at" TIMESTAMPTZ(6),
     "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "updated_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "domains_status_check" CHECK (status IN ('pending', 'verified', 'failed', 'unbound')),
+    CONSTRAINT "domains_domain_type_check" CHECK (domain_type IN ('custom', 'subdomain'))
 );
 
 CREATE INDEX "domains_workspace_id_status_idx" ON "domains" ("workspace_id", "status");
@@ -48,7 +50,8 @@ CREATE TABLE "workspace_public_profiles" (
     "slug" TEXT NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'active',
     "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "updated_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "workspace_public_profiles_status_check" CHECK (status IN ('active', 'disabled', 'removed'))
 );
 
 -- 同一 Workspace 内 slug 唯一

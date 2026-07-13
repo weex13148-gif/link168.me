@@ -250,7 +250,6 @@ export function getWorkspaceDomainLimit(planCode: string | null | undefined): nu
 export async function bindWorkspaceDomain(
   domain: string,
   workspaceId: string,
-  planCode: string,
 ): Promise<DomainInfo> {
   const validation = validateCustomDomainInput(domain);
   if (!validation.valid) {
@@ -259,79 +258,78 @@ export async function bindWorkspaceDomain(
 
   const normalizedDomain = validation.normalized;
 
-  // 校验套餐允许绑定企业域名（纯函数检查，优先于 DB 查询）
-  const limit = getWorkspaceDomainLimit(planCode);
-  if (limit <= 0) {
-    throw new Error("当前套餐不支持绑定企业域名");
-  }
+  return await db.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM workspaces WHERE id = ${workspaceId}::uuid FOR UPDATE`;
 
-  // 校验 Workspace 存在且 active
-  const workspace = await db.workspace.findUnique({
-    where: { id: workspaceId },
-    select: { id: true, isActive: true, planCode: true },
-  });
-  if (!workspace || !workspace.isActive) {
-    throw new Error("Workspace 不存在或已停用");
-  }
-
-  // 校验同一 Workspace 未超过套餐数量
-  const activeCount = await db.domain.count({
-    where: {
-      workspaceId,
-      domainType: "custom",
-      status: { not: "unbound" },
-    },
-  });
-  if (activeCount >= limit) {
-    throw new Error(`当前套餐最多绑定 ${limit} 个企业域名`);
-  }
-
-  // 检查域名是否已被其他 Workspace 绑定
-  const existing = await db.domain.findUnique({
-    where: { normalizedDomain },
-  });
-
-  if (existing) {
-    // 同一 Workspace 重新绑定已解绑的域名
-    if (existing.workspaceId === workspaceId && existing.status === "unbound") {
-      const newToken = crypto.randomBytes(16).toString("hex");
-      const newCnameTarget = `${newToken}.cname.${BASE_DOMAIN}`;
-
-      const updated = await db.domain.update({
-        where: { id: existing.id },
-        data: {
-          workspaceId,
-          verificationToken: newToken,
-          cnameTarget: newCnameTarget,
-          status: "pending",
-          verifiedAt: null,
-          failureReason: null,
-          unboundAt: null,
-        },
-        select: domainSelectFields,
-      });
-      return toDomainInfo(updated);
+    const workspace = await tx.workspace.findUnique({
+      where: { id: workspaceId },
+      select: { id: true, isActive: true, planCode: true },
+    });
+    if (!workspace || !workspace.isActive) {
+      throw new Error("Workspace 不存在或已停用");
     }
-    throw new Error("域名已被其他 Workspace 绑定");
-  }
 
-  const verificationToken = crypto.randomBytes(16).toString("hex");
-  const cnameTarget = `${verificationToken}.cname.${BASE_DOMAIN}`;
+    const limit = getWorkspaceDomainLimit(workspace.planCode);
+    if (limit <= 0) {
+      throw new Error("当前套餐不支持绑定企业域名");
+    }
 
-  const domainRecord = await db.domain.create({
-    data: {
-      workspaceId,
-      domain: normalizedDomain,
-      normalizedDomain,
-      domainType: "custom",
-      status: "pending",
-      verificationToken,
-      cnameTarget,
-    },
-    select: domainSelectFields,
+    const activeCount = await tx.domain.count({
+      where: {
+        workspaceId,
+        domainType: "custom",
+        status: { not: "unbound" },
+      },
+    });
+    if (activeCount >= limit) {
+      throw new Error(`当前套餐最多绑定 ${limit} 个企业域名`);
+    }
+
+    const existing = await tx.domain.findUnique({
+      where: { normalizedDomain },
+    });
+
+    if (existing) {
+      if (existing.workspaceId === workspaceId && existing.status === "unbound") {
+        const newToken = crypto.randomBytes(16).toString("hex");
+        const newCnameTarget = `${newToken}.cname.${BASE_DOMAIN}`;
+
+        const updated = await tx.domain.update({
+          where: { id: existing.id },
+          data: {
+            workspaceId,
+            verificationToken: newToken,
+            cnameTarget: newCnameTarget,
+            status: "pending",
+            verifiedAt: null,
+            failureReason: null,
+            unboundAt: null,
+          },
+          select: domainSelectFields,
+        });
+        return toDomainInfo(updated);
+      }
+      throw new Error("域名已被其他 Workspace 绑定");
+    }
+
+    const verificationToken = crypto.randomBytes(16).toString("hex");
+    const cnameTarget = `${verificationToken}.cname.${BASE_DOMAIN}`;
+
+    const domainRecord = await tx.domain.create({
+      data: {
+        workspaceId,
+        domain: normalizedDomain,
+        normalizedDomain,
+        domainType: "custom",
+        status: "pending",
+        verificationToken,
+        cnameTarget,
+      },
+      select: domainSelectFields,
+    });
+
+    return toDomainInfo(domainRecord);
   });
-
-  return toDomainInfo(domainRecord);
 }
 
 export async function verifyWorkspaceDomain(

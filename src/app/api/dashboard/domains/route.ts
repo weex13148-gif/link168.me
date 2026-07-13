@@ -99,20 +99,13 @@ export async function POST(request: Request) {
     switch (action) {
       case "bind": {
         const domain = body.domain as string;
-        const planCode = body.planCode as string | undefined;
         if (!domain) {
           return NextResponse.json(
             { success: false, code: "DOMAIN_REQUIRED", message: "请提供要绑定的域名" },
             { status: 400 },
           );
         }
-        if (!planCode) {
-          return NextResponse.json(
-            { success: false, code: "PLAN_CODE_REQUIRED", message: "请提供当前 Workspace 套餐" },
-            { status: 400 },
-          );
-        }
-        const result = await bindWorkspaceDomain(domain, workspaceId, planCode);
+        const result = await bindWorkspaceDomain(domain, workspaceId);
         return NextResponse.json({ success: true, domain: result });
       }
 
