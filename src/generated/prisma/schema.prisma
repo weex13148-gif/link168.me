@@ -43,6 +43,7 @@ model User {
   orders                 Order[]
   workspaceMemberships   WorkspaceMember[]
   ownedWorkspaces        Workspace[]              @relation("WorkspaceOwner")
+  domains                Domain[]
 
   @@map("users")
 }
@@ -146,6 +147,43 @@ model Profile {
   visits                     ProfileVisit[]
 
   @@map("profiles")
+}
+
+// ============================================
+// D2: Domain（域名绑定与解析）
+// ============================================
+
+model Domain {
+  id                String    @id @default(uuid()) @db.Uuid
+  userId            String    @map("user_id") @db.Uuid
+  // 域名（如 username.link168.me 或 custom.example.com）
+  domain            String    @unique
+  // normalized 域名（小写，用于唯一性检查）
+  normalizedDomain  String    @unique @map("normalized_domain")
+  // 域名类型：subdomain（系统分配）/ custom（用户绑定）
+  domainType        String    @map("domain_type")
+  // 状态：pending（待验证）/ verified（已验证）/ failed（验证失败）/ unbound（已解绑）
+  status            String    @default("pending")
+  // 验证失败原因
+  failureReason     String?   @map("failure_reason")
+  // DNS 验证 token
+  verificationToken String    @unique @map("verification_token")
+  // CNAME 目标值（系统生成的验证记录）
+  cnameTarget       String    @map("cname_target")
+  // 验证通过时间
+  verifiedAt        DateTime? @map("verified_at") @db.Timestamptz(6)
+  // 解绑时间
+  unboundAt         DateTime? @map("unbound_at") @db.Timestamptz(6)
+  // 最后一次验证尝试时间
+  lastVerifiedAt    DateTime? @map("last_verified_at") @db.Timestamptz(6)
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([normalizedDomain])
+  @@map("domains")
 }
 
 model Link {

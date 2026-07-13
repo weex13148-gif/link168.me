@@ -1,13 +1,29 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { resolveDomain } from "@/lib/domains";
 
-// 旧 /admin 与 /api/admin 路由统一返回 404。
-// 真实的后台入口在 /jeepwork，权限校验由各页面/路由的 Server 代码直接读取 link168_admin_session 完成。
-// 这里不做重定向，也不暴露任何提示信息，保持"路径不存在"的统一表现。
+export async function proxy(request: NextRequest) {
+  const adminMatch = request.nextUrl.pathname.match(/^\/(api\/)?admin\//);
+  if (adminMatch) {
+    return NextResponse.json({ success: false, error: "Not Found" }, { status: 404 });
+  }
 
-export function proxy(request: NextRequest) {
-  return NextResponse.json({ success: false, error: "Not Found" }, { status: 404 });
+  const host = request.headers.get("host");
+  if (!host) {
+    return NextResponse.next();
+  }
+
+  const resolved = await resolveDomain(host);
+  if (!resolved) {
+    return NextResponse.next();
+  }
+
+  if (request.nextUrl.pathname === "/") {
+    return NextResponse.rewrite(new URL(`/${resolved.username}`, request.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

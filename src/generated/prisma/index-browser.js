@@ -206,6 +206,23 @@ exports.Prisma.ProfileScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.DomainScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  domain: 'domain',
+  normalizedDomain: 'normalizedDomain',
+  domainType: 'domainType',
+  status: 'status',
+  failureReason: 'failureReason',
+  verificationToken: 'verificationToken',
+  cnameTarget: 'cnameTarget',
+  verifiedAt: 'verifiedAt',
+  unboundAt: 'unboundAt',
+  lastVerifiedAt: 'lastVerifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.LinkScalarFieldEnum = {
   id: 'id',
   profileId: 'profileId',
@@ -728,6 +745,7 @@ exports.Prisma.ModelName = {
   UsernameHistory: 'UsernameHistory',
   UsernameRegistry: 'UsernameRegistry',
   Profile: 'Profile',
+  Domain: 'Domain',
   Link: 'Link',
   LinkClick: 'LinkClick',
   ProfileVisit: 'ProfileVisit',
