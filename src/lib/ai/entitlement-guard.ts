@@ -18,6 +18,7 @@
 
 import { getUserEntitlements, type UserEntitlements } from "@/lib/billing/entitlements";
 import { checkUserAiRestricted, type AiRestrictionResult } from "@/lib/ai/permissions";
+import { getAiCreditBalance } from "./credits";
 
 // ---------- 用量类型 ----------
 export type AiUsageType =
@@ -100,21 +101,38 @@ export async function assertAiEntitlement(
 
   // 3. 套餐权益检查（单一权威来源：entitlements → plans.ts）
   const entitlements = await getUserEntitlements(userId);
+  const isFreePlan = entitlements.planCode === "free";
+  let creditBalance: number | null = null;
 
-  // 免费用户拒绝真实 AI 调用
-  if (entitlements.planCode === "free") {
-    return {
-      ok: false,
-      userId,
-      code: "AI_ENTITLEMENT_REQUIRED",
-      message: "当前套餐不支持真实 AI 调用，请升级会员。",
-      status: 403,
-      usageType,
-    };
+  // 免费用户检查
+  if (isFreePlan) {
+    if (usageType === "visitor_reception") {
+      const credit = await getAiCreditBalance(userId);
+      creditBalance = credit.balance;
+      if (creditBalance <= 0) {
+        return {
+          ok: false,
+          userId,
+          code: "AI_ENTITLEMENT_REQUIRED",
+          message: "当前套餐不支持真实 AI 调用，请升级会员或购买加油包。",
+          status: 403,
+          usageType,
+        };
+      }
+    } else {
+      return {
+        ok: false,
+        userId,
+        code: "AI_ENTITLEMENT_REQUIRED",
+        message: "当前套餐不支持经营 AI，请升级会员。",
+        status: 403,
+        usageType,
+      };
+    }
   }
 
-  // aiEnabled 为 false（套餐未知或额度为 0）拒绝
-  if (!entitlements.features.aiEnabled) {
+  // aiEnabled 为 false（套餐未知或额度为 0）拒绝（免费用户有 credit 不走这里）
+  if (!isFreePlan && !entitlements.features.aiEnabled) {
     return {
       ok: false,
       userId,
@@ -126,7 +144,7 @@ export async function assertAiEntitlement(
   }
 
   // 4. 会员有效期检查（非有效会员且不在宽限期内拒绝）
-  const isActive = entitlements.hasActiveMembership || entitlements.isLegacyActive || entitlements.isGracePeriod;
+  const isActive = isFreePlan || entitlements.hasActiveMembership || entitlements.isLegacyActive || entitlements.isGracePeriod;
   if (!isActive) {
     return {
       ok: false,
@@ -138,19 +156,31 @@ export async function assertAiEntitlement(
     };
   }
 
-  // 5. 额度检查（套餐月度额度耗尽拒绝）
-  const aiLimit = entitlements.limits.aiChatsPerMonth.max;
-  const aiRemaining = entitlements.limits.aiChatsPerMonth.remaining;
-  // aiLimit === -1 表示无限额度（enterprise / enterprise_pro_plus / internal_test），不拦截
-  if (aiLimit !== -1 && aiRemaining <= 0) {
-    return {
-      ok: false,
-      userId,
-      code: "AI_QUOTA_EXHAUSTED",
-      message: "本月 AI 额度已用完，请升级套餐或购买额度包。",
-      status: 402,
-      usageType,
-    };
+  // 5. 额度检查
+  if (isFreePlan) {
+    if (creditBalance !== null && creditBalance <= 0) {
+      return {
+        ok: false,
+        userId,
+        code: "AI_QUOTA_EXHAUSTED",
+        message: "AI 加油包次数已用完，请继续购买或升级会员。",
+        status: 402,
+        usageType,
+      };
+    }
+  } else {
+    const aiLimit = entitlements.limits.aiChatsPerMonth.max;
+    const aiRemaining = entitlements.limits.aiChatsPerMonth.remaining;
+    if (aiLimit !== -1 && aiRemaining <= 0) {
+      return {
+        ok: false,
+        userId,
+        code: "AI_QUOTA_EXHAUSTED",
+        message: "本月 AI 额度已用完，请升级套餐或购买额度包。",
+        status: 402,
+        usageType,
+      };
+    }
   }
 
   // 6. 通过

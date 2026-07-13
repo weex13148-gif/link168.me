@@ -2,16 +2,18 @@ import crypto from "crypto";
 
 const PRICES: Record<string, { monthly: number | null; yearly: number | null }> = {
   free: { monthly: 0, yearly: 0 },
+  plus: { monthly: null, yearly: 18800 },
   member_basic: { monthly: null, yearly: 18800 },
   member_plus: { monthly: null, yearly: 18800 },
   pro: { monthly: null, yearly: 38800 },
-  enterprise: { monthly: null, yearly: null },
-  enterprise_pro_plus: { monthly: null, yearly: 398800 },
+  enterprise: { monthly: null, yearly: 128000 },
+  enterprise_pro_plus: { monthly: null, yearly: 268000 },
   internal_test: { monthly: 1, yearly: 1 },
 };
 
 export const PLAN_CODES = {
   FREE: "free",
+  PLUS: "plus",
   MEMBER_BASIC: "member_basic",
   MEMBER_PLUS: "member_plus",
   PRO: "pro",
@@ -68,6 +70,32 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
       teamSeats: 1,
       customDomain: false,
       removeBranding: false,
+      prioritySupport: false,
+    },
+  },
+  plus: {
+    code: "plus",
+    name: "Plus",
+    description: "让主页拥有基础 AI 资料助理",
+    priceMonthly: PRICES.plus.monthly,
+    priceYearly: PRICES.plus.yearly,
+    currency: "CNY",
+    features: [
+      "无限链接与中英文主页",
+      "基础访客 AI 助理窗口",
+      "基础资料与文件交付",
+      "更多主题与高级二维码",
+      "90 天访问与点击数据",
+      "隐藏 Link168 品牌标识",
+    ],
+    limits: {
+      products: 10,
+      knowledgeDocs: 3,
+      aiChatsPerMonth: 300,
+      aiCreditsGrant: 300,
+      teamSeats: 1,
+      customDomain: false,
+      removeBranding: true,
       prioritySupport: false,
     },
   },
@@ -230,6 +258,7 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
 
 export const PLAN_ORDER: PlanCode[] = [
   "free",
+  "plus",
   "member_plus",
   "pro",
   "enterprise",
@@ -238,6 +267,7 @@ export const PLAN_ORDER: PlanCode[] = [
 
 export const PUBLIC_PLAN_ORDER: PlanCode[] = [
   "free",
+  "plus",
   "pro",
   "enterprise",
 ];
@@ -250,12 +280,16 @@ export function isPriceConfirmed(planCode: PlanCode, billingCycle: "monthly" | "
 
 export function formatPriceDisplay(planCode: PlanCode, billingCycle: "monthly" | "yearly"): string {
   const plan = getPlanDefinition(planCode);
-  if (plan.contactSales) return "联系销售";
   const price = billingCycle === "yearly" ? plan.priceYearly : plan.priceMonthly;
-  if (price === null) return "不可用";
+  if (price === null) {
+    if (plan.contactSales) return "联系销售";
+    return "不可用";
+  }
   if (price === 0) return "免费";
   const period = billingCycle === "yearly" ? "/年" : "/月";
-  return `${(price / 100).toFixed(0)} 元${period}`;
+  const base = `${(price / 100).toFixed(0)} 元${period}`;
+  if (plan.contactSales) return `${base} 起`;
+  return base;
 }
 
 export function getPlanPriceCents(planCode: PlanCode, billingCycle: "monthly" | "yearly"): number | null {
@@ -280,3 +314,13 @@ export function generateOrderId(): string {
   const random = crypto.randomBytes(4).toString("hex").toUpperCase();
   return `L${timestamp}${random}`;
 }
+
+export const AI_RECEPTION_ADDON = {
+  code: "ai_reception_addon_100",
+  name: "AI 接待通用加油包",
+  description: "100 次 AI 接待会话额度，90 天有效",
+  priceCents: 990,
+  quantity: 100,
+  unit: "session",
+  validityDays: 90,
+} as const;
