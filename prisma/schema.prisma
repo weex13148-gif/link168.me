@@ -43,6 +43,7 @@ model User {
   orders                 Order[]
   workspaceMemberships   WorkspaceMember[]
   ownedWorkspaces        Workspace[]              @relation("WorkspaceOwner")
+  enterpriseQuotaConsumptions EnterpriseQuotaConsumption[]
 
   @@map("users")
 }
@@ -879,6 +880,8 @@ model Workspace {
 
   owner   User              @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Restrict)
   members WorkspaceMember[]
+  quotaPool EnterpriseQuotaPool?
+  enterpriseQuotaConsumptions EnterpriseQuotaConsumption[]
 
   @@index([isActive, createdAt])
   @@map("workspaces")
@@ -907,4 +910,47 @@ model WorkspaceMember {
   @@index([workspaceId, status])
   @@index([userId, status])
   @@map("workspace_members")
+}
+
+// ============================================
+// D4: Enterprise AI Quota（企业 AI 共享额度）
+// ============================================
+
+model EnterpriseQuotaPool {
+  id            String   @id @default(uuid()) @db.Uuid
+  workspaceId   String   @unique @map("workspace_id") @db.Uuid
+  totalQuota    Int      @default(0) @map("total_quota")
+  usedQuota     Int      @default(0) @map("used_quota")
+  periodStart   DateTime @map("period_start") @db.Timestamptz(6)
+  periodEnd     DateTime @map("period_end") @db.Timestamptz(6)
+  version       Int      @default(0)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  workspace           Workspace                      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, periodStart])
+  @@map("enterprise_quota_pools")
+}
+
+model EnterpriseQuotaConsumption {
+  id            String   @id @default(uuid()) @db.Uuid
+  workspaceId   String   @map("workspace_id") @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  operationId   String   @unique @map("operation_id")
+  amount        Int      @default(0)
+  source        String   @map("source")
+  status        String   @default("pending")
+  failureReason String?  @map("failure_reason")
+  metadata      Json?    @db.JsonB
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([workspaceId, userId, createdAt])
+  @@map("enterprise_quota_consumptions")
 }

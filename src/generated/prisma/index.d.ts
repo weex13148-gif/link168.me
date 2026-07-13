@@ -15,199 +15,209 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 
 /**
  * Model User
- *
+ * 
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
  * Model FreezeRecord
- *
+ * 
  */
 export type FreezeRecord = $Result.DefaultSelection<Prisma.$FreezeRecordPayload>
 /**
  * Model UsernameHistory
- *
+ * 
  */
 export type UsernameHistory = $Result.DefaultSelection<Prisma.$UsernameHistoryPayload>
 /**
  * Model UsernameRegistry
- *
+ * 
  */
 export type UsernameRegistry = $Result.DefaultSelection<Prisma.$UsernameRegistryPayload>
 /**
  * Model Profile
- *
+ * 
  */
 export type Profile = $Result.DefaultSelection<Prisma.$ProfilePayload>
 /**
  * Model Link
- *
+ * 
  */
 export type Link = $Result.DefaultSelection<Prisma.$LinkPayload>
 /**
  * Model LinkClick
- *
+ * 
  */
 export type LinkClick = $Result.DefaultSelection<Prisma.$LinkClickPayload>
 /**
  * Model ProfileVisit
- *
+ * 
  */
 export type ProfileVisit = $Result.DefaultSelection<Prisma.$ProfileVisitPayload>
 /**
  * Model ShortLink
- *
+ * 
  */
 export type ShortLink = $Result.DefaultSelection<Prisma.$ShortLinkPayload>
 /**
  * Model ShortLinkClick
- *
+ * 
  */
 export type ShortLinkClick = $Result.DefaultSelection<Prisma.$ShortLinkClickPayload>
 /**
  * Model Session
- *
+ * 
  */
 export type Session = $Result.DefaultSelection<Prisma.$SessionPayload>
 /**
  * Model Report
- *
+ * 
  */
 export type Report = $Result.DefaultSelection<Prisma.$ReportPayload>
 /**
  * Model PasswordResetToken
- *
+ * 
  */
 export type PasswordResetToken = $Result.DefaultSelection<Prisma.$PasswordResetTokenPayload>
 /**
  * Model EmailVerificationToken
- *
+ * 
  */
 export type EmailVerificationToken = $Result.DefaultSelection<Prisma.$EmailVerificationTokenPayload>
 /**
  * Model LoginAttempt
- *
+ * 
  */
 export type LoginAttempt = $Result.DefaultSelection<Prisma.$LoginAttemptPayload>
 /**
  * Model AppConfig
- *
+ * 
  */
 export type AppConfig = $Result.DefaultSelection<Prisma.$AppConfigPayload>
 /**
  * Model AiUsageLog
- *
+ * 
  */
 export type AiUsageLog = $Result.DefaultSelection<Prisma.$AiUsageLogPayload>
 /**
  * Model AdminAuditLog
- *
+ * 
  */
 export type AdminAuditLog = $Result.DefaultSelection<Prisma.$AdminAuditLogPayload>
 /**
  * Model Lead
- *
+ * 
  */
 export type Lead = $Result.DefaultSelection<Prisma.$LeadPayload>
 /**
  * Model LeadFollowUp
- *
+ * 
  */
 export type LeadFollowUp = $Result.DefaultSelection<Prisma.$LeadFollowUpPayload>
 /**
  * Model EmailSendLog
- *
+ * 
  */
 export type EmailSendLog = $Result.DefaultSelection<Prisma.$EmailSendLogPayload>
 /**
  * Model Product
- *
+ * 
  */
 export type Product = $Result.DefaultSelection<Prisma.$ProductPayload>
 /**
  * Model KnowledgeDoc
- *
+ * 
  */
 export type KnowledgeDoc = $Result.DefaultSelection<Prisma.$KnowledgeDocPayload>
 /**
  * Model AiServiceConfig
- *
+ * 
  */
 export type AiServiceConfig = $Result.DefaultSelection<Prisma.$AiServiceConfigPayload>
 /**
  * Model AiConversation
- *
+ * 
  */
 export type AiConversation = $Result.DefaultSelection<Prisma.$AiConversationPayload>
 /**
  * Model AiMessage
- *
+ * 
  */
 export type AiMessage = $Result.DefaultSelection<Prisma.$AiMessagePayload>
 /**
  * Model AiCreditAccount
- *
+ * 
  */
 export type AiCreditAccount = $Result.DefaultSelection<Prisma.$AiCreditAccountPayload>
 /**
  * Model AiCreditLedger
- *
+ * 
  */
 export type AiCreditLedger = $Result.DefaultSelection<Prisma.$AiCreditLedgerPayload>
 /**
  * Model MembershipSubscription
- *
+ * 
  */
 export type MembershipSubscription = $Result.DefaultSelection<Prisma.$MembershipSubscriptionPayload>
 /**
  * Model Order
- *
+ * 
  */
 export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
 /**
  * Model CompetitionFile
- *
+ * 
  */
 export type CompetitionFile = $Result.DefaultSelection<Prisma.$CompetitionFilePayload>
 /**
  * Model ShowcaseContent
- *
+ * 
  */
 export type ShowcaseContent = $Result.DefaultSelection<Prisma.$ShowcaseContentPayload>
 /**
  * Model ShowcaseSequence
- *
+ * 
  */
 export type ShowcaseSequence = $Result.DefaultSelection<Prisma.$ShowcaseSequencePayload>
 /**
  * Model ShowcaseAIDemoCall
- *
+ * 
  */
 export type ShowcaseAIDemoCall = $Result.DefaultSelection<Prisma.$ShowcaseAIDemoCallPayload>
 /**
  * Model ShowcaseAIDebugLog
- *
+ * 
  */
 export type ShowcaseAIDebugLog = $Result.DefaultSelection<Prisma.$ShowcaseAIDebugLogPayload>
 /**
  * Model ShowcasePromptDraft
- *
+ * 
  */
 export type ShowcasePromptDraft = $Result.DefaultSelection<Prisma.$ShowcasePromptDraftPayload>
 /**
  * Model ContentModerationRecord
- *
+ * 
  */
 export type ContentModerationRecord = $Result.DefaultSelection<Prisma.$ContentModerationRecordPayload>
 /**
  * Model Workspace
- *
+ * 
  */
 export type Workspace = $Result.DefaultSelection<Prisma.$WorkspacePayload>
 /**
  * Model WorkspaceMember
- *
+ * 
  */
 export type WorkspaceMember = $Result.DefaultSelection<Prisma.$WorkspaceMemberPayload>
+/**
+ * Model EnterpriseQuotaPool
+ * 
+ */
+export type EnterpriseQuotaPool = $Result.DefaultSelection<Prisma.$EnterpriseQuotaPoolPayload>
+/**
+ * Model EnterpriseQuotaConsumption
+ * 
+ */
+export type EnterpriseQuotaConsumption = $Result.DefaultSelection<Prisma.$EnterpriseQuotaConsumptionPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -319,7 +329,7 @@ export class PrismaClient<
    *   prisma.user.create({ data: { name: 'Alice' } }),
    * ])
    * ```
-   *
+   * 
    * Read more in our [docs](https://www.prisma.io/docs/orm/prisma-client/queries/transactions).
    */
   $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
@@ -719,6 +729,26 @@ export class PrismaClient<
     * ```
     */
   get workspaceMember(): Prisma.WorkspaceMemberDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.enterpriseQuotaPool`: Exposes CRUD operations for the **EnterpriseQuotaPool** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more EnterpriseQuotaPools
+    * const enterpriseQuotaPools = await prisma.enterpriseQuotaPool.findMany()
+    * ```
+    */
+  get enterpriseQuotaPool(): Prisma.EnterpriseQuotaPoolDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.enterpriseQuotaConsumption`: Exposes CRUD operations for the **EnterpriseQuotaConsumption** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more EnterpriseQuotaConsumptions
+    * const enterpriseQuotaConsumptions = await prisma.enterpriseQuotaConsumption.findMany()
+    * ```
+    */
+  get enterpriseQuotaConsumption(): Prisma.EnterpriseQuotaConsumptionDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1191,7 +1221,9 @@ export namespace Prisma {
     ShowcasePromptDraft: 'ShowcasePromptDraft',
     ContentModerationRecord: 'ContentModerationRecord',
     Workspace: 'Workspace',
-    WorkspaceMember: 'WorkspaceMember'
+    WorkspaceMember: 'WorkspaceMember',
+    EnterpriseQuotaPool: 'EnterpriseQuotaPool',
+    EnterpriseQuotaConsumption: 'EnterpriseQuotaConsumption'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1207,7 +1239,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "freezeRecord" | "usernameHistory" | "usernameRegistry" | "profile" | "link" | "linkClick" | "profileVisit" | "shortLink" | "shortLinkClick" | "session" | "report" | "passwordResetToken" | "emailVerificationToken" | "loginAttempt" | "appConfig" | "aiUsageLog" | "adminAuditLog" | "lead" | "leadFollowUp" | "emailSendLog" | "product" | "knowledgeDoc" | "aiServiceConfig" | "aiConversation" | "aiMessage" | "aiCreditAccount" | "aiCreditLedger" | "membershipSubscription" | "order" | "competitionFile" | "showcaseContent" | "showcaseSequence" | "showcaseAIDemoCall" | "showcaseAIDebugLog" | "showcasePromptDraft" | "contentModerationRecord" | "workspace" | "workspaceMember"
+      modelProps: "user" | "freezeRecord" | "usernameHistory" | "usernameRegistry" | "profile" | "link" | "linkClick" | "profileVisit" | "shortLink" | "shortLinkClick" | "session" | "report" | "passwordResetToken" | "emailVerificationToken" | "loginAttempt" | "appConfig" | "aiUsageLog" | "adminAuditLog" | "lead" | "leadFollowUp" | "emailSendLog" | "product" | "knowledgeDoc" | "aiServiceConfig" | "aiConversation" | "aiMessage" | "aiCreditAccount" | "aiCreditLedger" | "membershipSubscription" | "order" | "competitionFile" | "showcaseContent" | "showcaseSequence" | "showcaseAIDemoCall" | "showcaseAIDebugLog" | "showcasePromptDraft" | "contentModerationRecord" | "workspace" | "workspaceMember" | "enterpriseQuotaPool" | "enterpriseQuotaConsumption"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4097,6 +4129,154 @@ export namespace Prisma {
           }
         }
       }
+      EnterpriseQuotaPool: {
+        payload: Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>
+        fields: Prisma.EnterpriseQuotaPoolFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.EnterpriseQuotaPoolFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.EnterpriseQuotaPoolFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>
+          }
+          findFirst: {
+            args: Prisma.EnterpriseQuotaPoolFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.EnterpriseQuotaPoolFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>
+          }
+          findMany: {
+            args: Prisma.EnterpriseQuotaPoolFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>[]
+          }
+          create: {
+            args: Prisma.EnterpriseQuotaPoolCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>
+          }
+          createMany: {
+            args: Prisma.EnterpriseQuotaPoolCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.EnterpriseQuotaPoolCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>[]
+          }
+          delete: {
+            args: Prisma.EnterpriseQuotaPoolDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>
+          }
+          update: {
+            args: Prisma.EnterpriseQuotaPoolUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>
+          }
+          deleteMany: {
+            args: Prisma.EnterpriseQuotaPoolDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.EnterpriseQuotaPoolUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.EnterpriseQuotaPoolUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>[]
+          }
+          upsert: {
+            args: Prisma.EnterpriseQuotaPoolUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>
+          }
+          aggregate: {
+            args: Prisma.EnterpriseQuotaPoolAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateEnterpriseQuotaPool>
+          }
+          groupBy: {
+            args: Prisma.EnterpriseQuotaPoolGroupByArgs<ExtArgs>
+            result: $Utils.Optional<EnterpriseQuotaPoolGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.EnterpriseQuotaPoolCountArgs<ExtArgs>
+            result: $Utils.Optional<EnterpriseQuotaPoolCountAggregateOutputType> | number
+          }
+        }
+      }
+      EnterpriseQuotaConsumption: {
+        payload: Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>
+        fields: Prisma.EnterpriseQuotaConsumptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.EnterpriseQuotaConsumptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.EnterpriseQuotaConsumptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>
+          }
+          findFirst: {
+            args: Prisma.EnterpriseQuotaConsumptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.EnterpriseQuotaConsumptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>
+          }
+          findMany: {
+            args: Prisma.EnterpriseQuotaConsumptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>[]
+          }
+          create: {
+            args: Prisma.EnterpriseQuotaConsumptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>
+          }
+          createMany: {
+            args: Prisma.EnterpriseQuotaConsumptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.EnterpriseQuotaConsumptionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>[]
+          }
+          delete: {
+            args: Prisma.EnterpriseQuotaConsumptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>
+          }
+          update: {
+            args: Prisma.EnterpriseQuotaConsumptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.EnterpriseQuotaConsumptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.EnterpriseQuotaConsumptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.EnterpriseQuotaConsumptionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>[]
+          }
+          upsert: {
+            args: Prisma.EnterpriseQuotaConsumptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>
+          }
+          aggregate: {
+            args: Prisma.EnterpriseQuotaConsumptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateEnterpriseQuotaConsumption>
+          }
+          groupBy: {
+            args: Prisma.EnterpriseQuotaConsumptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<EnterpriseQuotaConsumptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.EnterpriseQuotaConsumptionCountArgs<ExtArgs>
+            result: $Utils.Optional<EnterpriseQuotaConsumptionCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -4134,7 +4314,7 @@ export namespace Prisma {
      * ```
      * // Shorthand for `emit: 'stdout'`
      * log: ['query', 'info', 'warn', 'error']
-     *
+     * 
      * // Emit as events only
      * log: [
      *   { emit: 'event', level: 'query' },
@@ -4142,14 +4322,14 @@ export namespace Prisma {
      *   { emit: 'event', level: 'warn' }
      *   { emit: 'event', level: 'error' }
      * ]
-     *
+     * 
      * / Emit as events and log to stdout
      * og: [
      *  { emit: 'stdout', level: 'query' },
      *  { emit: 'stdout', level: 'info' },
      *  { emit: 'stdout', level: 'warn' }
      *  { emit: 'stdout', level: 'error' }
-     *
+     * 
      * ```
      * Read more in our [docs](https://pris.ly/d/logging).
      */
@@ -4174,7 +4354,7 @@ export namespace Prisma {
     accelerateUrl?: string
     /**
      * Global configuration for omitting model fields by default.
-     *
+     * 
      * @example
      * ```
      * const prisma = new PrismaClient({
@@ -4190,7 +4370,7 @@ export namespace Prisma {
     /**
      * SQL commenter plugins that add metadata to SQL queries as comments.
      * Comments follow the sqlcommenter format: https://google.github.io/sqlcommenter/
-     *
+     * 
      * @example
      * ```
      * const prisma = new PrismaClient({
@@ -4244,6 +4424,8 @@ export namespace Prisma {
     contentModerationRecord?: ContentModerationRecordOmit
     workspace?: WorkspaceOmit
     workspaceMember?: WorkspaceMemberOmit
+    enterpriseQuotaPool?: EnterpriseQuotaPoolOmit
+    enterpriseQuotaConsumption?: EnterpriseQuotaConsumptionOmit
   }
 
   /* Types for Logging */
@@ -4336,6 +4518,7 @@ export namespace Prisma {
     orders: number
     workspaceMemberships: number
     ownedWorkspaces: number
+    enterpriseQuotaConsumptions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4351,6 +4534,7 @@ export namespace Prisma {
     orders?: boolean | UserCountOutputTypeCountOrdersArgs
     workspaceMemberships?: boolean | UserCountOutputTypeCountWorkspaceMembershipsArgs
     ownedWorkspaces?: boolean | UserCountOutputTypeCountOwnedWorkspacesArgs
+    enterpriseQuotaConsumptions?: boolean | UserCountOutputTypeCountEnterpriseQuotaConsumptionsArgs
   }
 
   // Custom InputTypes
@@ -4446,6 +4630,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountOwnedWorkspacesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WorkspaceWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountEnterpriseQuotaConsumptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EnterpriseQuotaConsumptionWhereInput
   }
 
 
@@ -4699,10 +4890,12 @@ export namespace Prisma {
 
   export type WorkspaceCountOutputType = {
     members: number
+    enterpriseQuotaConsumptions: number
   }
 
   export type WorkspaceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     members?: boolean | WorkspaceCountOutputTypeCountMembersArgs
+    enterpriseQuotaConsumptions?: boolean | WorkspaceCountOutputTypeCountEnterpriseQuotaConsumptionsArgs
   }
 
   // Custom InputTypes
@@ -4721,6 +4914,13 @@ export namespace Prisma {
    */
   export type WorkspaceCountOutputTypeCountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WorkspaceMemberWhereInput
+  }
+
+  /**
+   * WorkspaceCountOutputType without action
+   */
+  export type WorkspaceCountOutputTypeCountEnterpriseQuotaConsumptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EnterpriseQuotaConsumptionWhereInput
   }
 
 
@@ -4868,55 +5068,55 @@ export namespace Prisma {
     where?: UserWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Users to fetch.
      */
     orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: UserWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Users from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Users.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned Users
     **/
     _count?: true | UserCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to average
     **/
     _avg?: UserAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to sum
     **/
     _sum?: UserSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: UserMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: UserMaxAggregateInputType
@@ -5014,6 +5214,7 @@ export namespace Prisma {
     orders?: boolean | User$ordersArgs<ExtArgs>
     workspaceMemberships?: boolean | User$workspaceMembershipsArgs<ExtArgs>
     ownedWorkspaces?: boolean | User$ownedWorkspacesArgs<ExtArgs>
+    enterpriseQuotaConsumptions?: boolean | User$enterpriseQuotaConsumptionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -5086,6 +5287,7 @@ export namespace Prisma {
     orders?: boolean | User$ordersArgs<ExtArgs>
     workspaceMemberships?: boolean | User$workspaceMembershipsArgs<ExtArgs>
     ownedWorkspaces?: boolean | User$ownedWorkspacesArgs<ExtArgs>
+    enterpriseQuotaConsumptions?: boolean | User$enterpriseQuotaConsumptionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5110,6 +5312,7 @@ export namespace Prisma {
       orders: Prisma.$OrderPayload<ExtArgs>[]
       workspaceMemberships: Prisma.$WorkspaceMemberPayload<ExtArgs>[]
       ownedWorkspaces: Prisma.$WorkspacePayload<ExtArgs>[]
+      enterpriseQuotaConsumptions: Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5205,13 +5408,13 @@ export namespace Prisma {
      * @example
      * // Get all Users
      * const users = await prisma.user.findMany()
-     *
+     * 
      * // Get first 10 Users
      * const users = await prisma.user.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const userWithIdOnly = await prisma.user.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends UserFindManyArgs>(args?: SelectSubset<T, UserFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -5225,7 +5428,7 @@ export namespace Prisma {
      *     // ... data to create a User
      *   }
      * })
-     *
+     * 
      */
     create<T extends UserCreateArgs>(args: SelectSubset<T, UserCreateArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -5239,7 +5442,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends UserCreateManyArgs>(args?: SelectSubset<T, UserCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -5253,7 +5456,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many Users and only return the `id`
      * const userWithIdOnly = await prisma.user.createManyAndReturn({
      *   select: { id: true },
@@ -5263,7 +5466,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends UserCreateManyAndReturnArgs>(args?: SelectSubset<T, UserCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -5277,7 +5480,7 @@ export namespace Prisma {
      *     // ... filter to delete one User
      *   }
      * })
-     *
+     * 
      */
     delete<T extends UserDeleteArgs>(args: SelectSubset<T, UserDeleteArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -5294,7 +5497,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends UserUpdateArgs>(args: SelectSubset<T, UserUpdateArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -5308,7 +5511,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends UserDeleteManyArgs>(args?: SelectSubset<T, UserDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -5327,7 +5530,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends UserUpdateManyArgs>(args: SelectSubset<T, UserUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -5344,7 +5547,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more Users and only return the `id`
      * const userWithIdOnly = await prisma.user.updateManyAndReturn({
      *   select: { id: true },
@@ -5357,7 +5560,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends UserUpdateManyAndReturnArgs>(args: SelectSubset<T, UserUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -5446,7 +5649,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends UserGroupByArgs,
@@ -5536,6 +5739,7 @@ export namespace Prisma {
     orders<T extends User$ordersArgs<ExtArgs> = {}>(args?: Subset<T, User$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     workspaceMemberships<T extends User$workspaceMembershipsArgs<ExtArgs> = {}>(args?: Subset<T, User$workspaceMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ownedWorkspaces<T extends User$ownedWorkspacesArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedWorkspacesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    enterpriseQuotaConsumptions<T extends User$enterpriseQuotaConsumptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$enterpriseQuotaConsumptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5580,7 +5784,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -5649,31 +5853,31 @@ export namespace Prisma {
     where?: UserWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Users to fetch.
      */
     orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Users.
      */
     cursor?: UserWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Users from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Users.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Users.
      */
     distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
@@ -5701,31 +5905,31 @@ export namespace Prisma {
     where?: UserWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Users to fetch.
      */
     orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Users.
      */
     cursor?: UserWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Users from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Users.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Users.
      */
     distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
@@ -5753,31 +5957,31 @@ export namespace Prisma {
     where?: UserWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Users to fetch.
      */
     orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing Users.
      */
     cursor?: UserWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Users from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Users.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Users.
      */
     distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
@@ -6336,6 +6540,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.enterpriseQuotaConsumptions
+   */
+  export type User$enterpriseQuotaConsumptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    where?: EnterpriseQuotaConsumptionWhereInput
+    orderBy?: EnterpriseQuotaConsumptionOrderByWithRelationInput | EnterpriseQuotaConsumptionOrderByWithRelationInput[]
+    cursor?: EnterpriseQuotaConsumptionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EnterpriseQuotaConsumptionScalarFieldEnum | EnterpriseQuotaConsumptionScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6476,43 +6704,43 @@ export namespace Prisma {
     where?: FreezeRecordWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of FreezeRecords to fetch.
      */
     orderBy?: FreezeRecordOrderByWithRelationInput | FreezeRecordOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: FreezeRecordWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` FreezeRecords from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` FreezeRecords.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned FreezeRecords
     **/
     _count?: true | FreezeRecordCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: FreezeRecordMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: FreezeRecordMaxAggregateInputType
@@ -6756,13 +6984,13 @@ export namespace Prisma {
      * @example
      * // Get all FreezeRecords
      * const freezeRecords = await prisma.freezeRecord.findMany()
-     *
+     * 
      * // Get first 10 FreezeRecords
      * const freezeRecords = await prisma.freezeRecord.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const freezeRecordWithIdOnly = await prisma.freezeRecord.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends FreezeRecordFindManyArgs>(args?: SelectSubset<T, FreezeRecordFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FreezeRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -6776,7 +7004,7 @@ export namespace Prisma {
      *     // ... data to create a FreezeRecord
      *   }
      * })
-     *
+     * 
      */
     create<T extends FreezeRecordCreateArgs>(args: SelectSubset<T, FreezeRecordCreateArgs<ExtArgs>>): Prisma__FreezeRecordClient<$Result.GetResult<Prisma.$FreezeRecordPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -6790,7 +7018,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends FreezeRecordCreateManyArgs>(args?: SelectSubset<T, FreezeRecordCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -6804,7 +7032,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many FreezeRecords and only return the `id`
      * const freezeRecordWithIdOnly = await prisma.freezeRecord.createManyAndReturn({
      *   select: { id: true },
@@ -6814,7 +7042,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends FreezeRecordCreateManyAndReturnArgs>(args?: SelectSubset<T, FreezeRecordCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FreezeRecordPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -6828,7 +7056,7 @@ export namespace Prisma {
      *     // ... filter to delete one FreezeRecord
      *   }
      * })
-     *
+     * 
      */
     delete<T extends FreezeRecordDeleteArgs>(args: SelectSubset<T, FreezeRecordDeleteArgs<ExtArgs>>): Prisma__FreezeRecordClient<$Result.GetResult<Prisma.$FreezeRecordPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -6845,7 +7073,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends FreezeRecordUpdateArgs>(args: SelectSubset<T, FreezeRecordUpdateArgs<ExtArgs>>): Prisma__FreezeRecordClient<$Result.GetResult<Prisma.$FreezeRecordPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -6859,7 +7087,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends FreezeRecordDeleteManyArgs>(args?: SelectSubset<T, FreezeRecordDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -6878,7 +7106,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends FreezeRecordUpdateManyArgs>(args: SelectSubset<T, FreezeRecordUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -6895,7 +7123,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more FreezeRecords and only return the `id`
      * const freezeRecordWithIdOnly = await prisma.freezeRecord.updateManyAndReturn({
      *   select: { id: true },
@@ -6908,7 +7136,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends FreezeRecordUpdateManyAndReturnArgs>(args: SelectSubset<T, FreezeRecordUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FreezeRecordPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -6997,7 +7225,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends FreezeRecordGroupByArgs,
@@ -7116,7 +7344,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"FreezeRecord", 'DateTime'>
     readonly updatedAt: FieldRef<"FreezeRecord", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -7185,31 +7413,31 @@ export namespace Prisma {
     where?: FreezeRecordWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of FreezeRecords to fetch.
      */
     orderBy?: FreezeRecordOrderByWithRelationInput | FreezeRecordOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for FreezeRecords.
      */
     cursor?: FreezeRecordWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` FreezeRecords from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` FreezeRecords.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of FreezeRecords.
      */
     distinct?: FreezeRecordScalarFieldEnum | FreezeRecordScalarFieldEnum[]
@@ -7237,31 +7465,31 @@ export namespace Prisma {
     where?: FreezeRecordWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of FreezeRecords to fetch.
      */
     orderBy?: FreezeRecordOrderByWithRelationInput | FreezeRecordOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for FreezeRecords.
      */
     cursor?: FreezeRecordWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` FreezeRecords from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` FreezeRecords.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of FreezeRecords.
      */
     distinct?: FreezeRecordScalarFieldEnum | FreezeRecordScalarFieldEnum[]
@@ -7289,31 +7517,31 @@ export namespace Prisma {
     where?: FreezeRecordWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of FreezeRecords to fetch.
      */
     orderBy?: FreezeRecordOrderByWithRelationInput | FreezeRecordOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing FreezeRecords.
      */
     cursor?: FreezeRecordWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` FreezeRecords from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` FreezeRecords.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of FreezeRecords.
      */
     distinct?: FreezeRecordScalarFieldEnum | FreezeRecordScalarFieldEnum[]
@@ -7614,43 +7842,43 @@ export namespace Prisma {
     where?: UsernameHistoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of UsernameHistories to fetch.
      */
     orderBy?: UsernameHistoryOrderByWithRelationInput | UsernameHistoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: UsernameHistoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` UsernameHistories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` UsernameHistories.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned UsernameHistories
     **/
     _count?: true | UsernameHistoryCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: UsernameHistoryMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: UsernameHistoryMaxAggregateInputType
@@ -7852,13 +8080,13 @@ export namespace Prisma {
      * @example
      * // Get all UsernameHistories
      * const usernameHistories = await prisma.usernameHistory.findMany()
-     *
+     * 
      * // Get first 10 UsernameHistories
      * const usernameHistories = await prisma.usernameHistory.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const usernameHistoryWithIdOnly = await prisma.usernameHistory.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends UsernameHistoryFindManyArgs>(args?: SelectSubset<T, UsernameHistoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsernameHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -7872,7 +8100,7 @@ export namespace Prisma {
      *     // ... data to create a UsernameHistory
      *   }
      * })
-     *
+     * 
      */
     create<T extends UsernameHistoryCreateArgs>(args: SelectSubset<T, UsernameHistoryCreateArgs<ExtArgs>>): Prisma__UsernameHistoryClient<$Result.GetResult<Prisma.$UsernameHistoryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -7886,7 +8114,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends UsernameHistoryCreateManyArgs>(args?: SelectSubset<T, UsernameHistoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -7900,7 +8128,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many UsernameHistories and only return the `id`
      * const usernameHistoryWithIdOnly = await prisma.usernameHistory.createManyAndReturn({
      *   select: { id: true },
@@ -7910,7 +8138,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends UsernameHistoryCreateManyAndReturnArgs>(args?: SelectSubset<T, UsernameHistoryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsernameHistoryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -7924,7 +8152,7 @@ export namespace Prisma {
      *     // ... filter to delete one UsernameHistory
      *   }
      * })
-     *
+     * 
      */
     delete<T extends UsernameHistoryDeleteArgs>(args: SelectSubset<T, UsernameHistoryDeleteArgs<ExtArgs>>): Prisma__UsernameHistoryClient<$Result.GetResult<Prisma.$UsernameHistoryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -7941,7 +8169,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends UsernameHistoryUpdateArgs>(args: SelectSubset<T, UsernameHistoryUpdateArgs<ExtArgs>>): Prisma__UsernameHistoryClient<$Result.GetResult<Prisma.$UsernameHistoryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -7955,7 +8183,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends UsernameHistoryDeleteManyArgs>(args?: SelectSubset<T, UsernameHistoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -7974,7 +8202,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends UsernameHistoryUpdateManyArgs>(args: SelectSubset<T, UsernameHistoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -7991,7 +8219,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more UsernameHistories and only return the `id`
      * const usernameHistoryWithIdOnly = await prisma.usernameHistory.updateManyAndReturn({
      *   select: { id: true },
@@ -8004,7 +8232,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends UsernameHistoryUpdateManyAndReturnArgs>(args: SelectSubset<T, UsernameHistoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsernameHistoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -8093,7 +8321,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends UsernameHistoryGroupByArgs,
@@ -8205,7 +8433,7 @@ export namespace Prisma {
     readonly reservedUntil: FieldRef<"UsernameHistory", 'DateTime'>
     readonly createdAt: FieldRef<"UsernameHistory", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -8274,31 +8502,31 @@ export namespace Prisma {
     where?: UsernameHistoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of UsernameHistories to fetch.
      */
     orderBy?: UsernameHistoryOrderByWithRelationInput | UsernameHistoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for UsernameHistories.
      */
     cursor?: UsernameHistoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` UsernameHistories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` UsernameHistories.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of UsernameHistories.
      */
     distinct?: UsernameHistoryScalarFieldEnum | UsernameHistoryScalarFieldEnum[]
@@ -8326,31 +8554,31 @@ export namespace Prisma {
     where?: UsernameHistoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of UsernameHistories to fetch.
      */
     orderBy?: UsernameHistoryOrderByWithRelationInput | UsernameHistoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for UsernameHistories.
      */
     cursor?: UsernameHistoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` UsernameHistories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` UsernameHistories.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of UsernameHistories.
      */
     distinct?: UsernameHistoryScalarFieldEnum | UsernameHistoryScalarFieldEnum[]
@@ -8378,31 +8606,31 @@ export namespace Prisma {
     where?: UsernameHistoryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of UsernameHistories to fetch.
      */
     orderBy?: UsernameHistoryOrderByWithRelationInput | UsernameHistoryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing UsernameHistories.
      */
     cursor?: UsernameHistoryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` UsernameHistories from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` UsernameHistories.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of UsernameHistories.
      */
     distinct?: UsernameHistoryScalarFieldEnum | UsernameHistoryScalarFieldEnum[]
@@ -8715,43 +8943,43 @@ export namespace Prisma {
     where?: UsernameRegistryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of UsernameRegistries to fetch.
      */
     orderBy?: UsernameRegistryOrderByWithRelationInput | UsernameRegistryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: UsernameRegistryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` UsernameRegistries from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` UsernameRegistries.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned UsernameRegistries
     **/
     _count?: true | UsernameRegistryCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: UsernameRegistryMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: UsernameRegistryMaxAggregateInputType
@@ -8951,13 +9179,13 @@ export namespace Prisma {
      * @example
      * // Get all UsernameRegistries
      * const usernameRegistries = await prisma.usernameRegistry.findMany()
-     *
+     * 
      * // Get first 10 UsernameRegistries
      * const usernameRegistries = await prisma.usernameRegistry.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const usernameRegistryWithIdOnly = await prisma.usernameRegistry.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends UsernameRegistryFindManyArgs>(args?: SelectSubset<T, UsernameRegistryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsernameRegistryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -8971,7 +9199,7 @@ export namespace Prisma {
      *     // ... data to create a UsernameRegistry
      *   }
      * })
-     *
+     * 
      */
     create<T extends UsernameRegistryCreateArgs>(args: SelectSubset<T, UsernameRegistryCreateArgs<ExtArgs>>): Prisma__UsernameRegistryClient<$Result.GetResult<Prisma.$UsernameRegistryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -8985,7 +9213,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends UsernameRegistryCreateManyArgs>(args?: SelectSubset<T, UsernameRegistryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -8999,7 +9227,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many UsernameRegistries and only return the `id`
      * const usernameRegistryWithIdOnly = await prisma.usernameRegistry.createManyAndReturn({
      *   select: { id: true },
@@ -9009,7 +9237,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends UsernameRegistryCreateManyAndReturnArgs>(args?: SelectSubset<T, UsernameRegistryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsernameRegistryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -9023,7 +9251,7 @@ export namespace Prisma {
      *     // ... filter to delete one UsernameRegistry
      *   }
      * })
-     *
+     * 
      */
     delete<T extends UsernameRegistryDeleteArgs>(args: SelectSubset<T, UsernameRegistryDeleteArgs<ExtArgs>>): Prisma__UsernameRegistryClient<$Result.GetResult<Prisma.$UsernameRegistryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -9040,7 +9268,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends UsernameRegistryUpdateArgs>(args: SelectSubset<T, UsernameRegistryUpdateArgs<ExtArgs>>): Prisma__UsernameRegistryClient<$Result.GetResult<Prisma.$UsernameRegistryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -9054,7 +9282,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends UsernameRegistryDeleteManyArgs>(args?: SelectSubset<T, UsernameRegistryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -9073,7 +9301,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends UsernameRegistryUpdateManyArgs>(args: SelectSubset<T, UsernameRegistryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -9090,7 +9318,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more UsernameRegistries and only return the `id`
      * const usernameRegistryWithIdOnly = await prisma.usernameRegistry.updateManyAndReturn({
      *   select: { id: true },
@@ -9103,7 +9331,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends UsernameRegistryUpdateManyAndReturnArgs>(args: SelectSubset<T, UsernameRegistryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsernameRegistryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -9192,7 +9420,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends UsernameRegistryGroupByArgs,
@@ -9305,7 +9533,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"UsernameRegistry", 'DateTime'>
     readonly updatedAt: FieldRef<"UsernameRegistry", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -9362,31 +9590,31 @@ export namespace Prisma {
     where?: UsernameRegistryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of UsernameRegistries to fetch.
      */
     orderBy?: UsernameRegistryOrderByWithRelationInput | UsernameRegistryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for UsernameRegistries.
      */
     cursor?: UsernameRegistryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` UsernameRegistries from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` UsernameRegistries.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of UsernameRegistries.
      */
     distinct?: UsernameRegistryScalarFieldEnum | UsernameRegistryScalarFieldEnum[]
@@ -9410,31 +9638,31 @@ export namespace Prisma {
     where?: UsernameRegistryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of UsernameRegistries to fetch.
      */
     orderBy?: UsernameRegistryOrderByWithRelationInput | UsernameRegistryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for UsernameRegistries.
      */
     cursor?: UsernameRegistryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` UsernameRegistries from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` UsernameRegistries.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of UsernameRegistries.
      */
     distinct?: UsernameRegistryScalarFieldEnum | UsernameRegistryScalarFieldEnum[]
@@ -9458,31 +9686,31 @@ export namespace Prisma {
     where?: UsernameRegistryWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of UsernameRegistries to fetch.
      */
     orderBy?: UsernameRegistryOrderByWithRelationInput | UsernameRegistryOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing UsernameRegistries.
      */
     cursor?: UsernameRegistryWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` UsernameRegistries from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` UsernameRegistries.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of UsernameRegistries.
      */
     distinct?: UsernameRegistryScalarFieldEnum | UsernameRegistryScalarFieldEnum[]
@@ -9871,43 +10099,43 @@ export namespace Prisma {
     where?: ProfileWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Profiles to fetch.
      */
     orderBy?: ProfileOrderByWithRelationInput | ProfileOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: ProfileWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Profiles from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Profiles.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned Profiles
     **/
     _count?: true | ProfileCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ProfileMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: ProfileMaxAggregateInputType
@@ -10243,13 +10471,13 @@ export namespace Prisma {
      * @example
      * // Get all Profiles
      * const profiles = await prisma.profile.findMany()
-     *
+     * 
      * // Get first 10 Profiles
      * const profiles = await prisma.profile.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const profileWithIdOnly = await prisma.profile.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends ProfileFindManyArgs>(args?: SelectSubset<T, ProfileFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -10263,7 +10491,7 @@ export namespace Prisma {
      *     // ... data to create a Profile
      *   }
      * })
-     *
+     * 
      */
     create<T extends ProfileCreateArgs>(args: SelectSubset<T, ProfileCreateArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -10277,7 +10505,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends ProfileCreateManyArgs>(args?: SelectSubset<T, ProfileCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -10291,7 +10519,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many Profiles and only return the `id`
      * const profileWithIdOnly = await prisma.profile.createManyAndReturn({
      *   select: { id: true },
@@ -10301,7 +10529,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends ProfileCreateManyAndReturnArgs>(args?: SelectSubset<T, ProfileCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -10315,7 +10543,7 @@ export namespace Prisma {
      *     // ... filter to delete one Profile
      *   }
      * })
-     *
+     * 
      */
     delete<T extends ProfileDeleteArgs>(args: SelectSubset<T, ProfileDeleteArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -10332,7 +10560,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends ProfileUpdateArgs>(args: SelectSubset<T, ProfileUpdateArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -10346,7 +10574,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends ProfileDeleteManyArgs>(args?: SelectSubset<T, ProfileDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -10365,7 +10593,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends ProfileUpdateManyArgs>(args: SelectSubset<T, ProfileUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -10382,7 +10610,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more Profiles and only return the `id`
      * const profileWithIdOnly = await prisma.profile.updateManyAndReturn({
      *   select: { id: true },
@@ -10395,7 +10623,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends ProfileUpdateManyAndReturnArgs>(args: SelectSubset<T, ProfileUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -10484,7 +10712,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends ProfileGroupByArgs,
@@ -10620,7 +10848,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Profile", 'DateTime'>
     readonly updatedAt: FieldRef<"Profile", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -10689,31 +10917,31 @@ export namespace Prisma {
     where?: ProfileWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Profiles to fetch.
      */
     orderBy?: ProfileOrderByWithRelationInput | ProfileOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Profiles.
      */
     cursor?: ProfileWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Profiles from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Profiles.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Profiles.
      */
     distinct?: ProfileScalarFieldEnum | ProfileScalarFieldEnum[]
@@ -10741,31 +10969,31 @@ export namespace Prisma {
     where?: ProfileWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Profiles to fetch.
      */
     orderBy?: ProfileOrderByWithRelationInput | ProfileOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Profiles.
      */
     cursor?: ProfileWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Profiles from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Profiles.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Profiles.
      */
     distinct?: ProfileScalarFieldEnum | ProfileScalarFieldEnum[]
@@ -10793,31 +11021,31 @@ export namespace Prisma {
     where?: ProfileWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Profiles to fetch.
      */
     orderBy?: ProfileOrderByWithRelationInput | ProfileOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing Profiles.
      */
     cursor?: ProfileWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Profiles from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Profiles.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Profiles.
      */
     distinct?: ProfileScalarFieldEnum | ProfileScalarFieldEnum[]
@@ -11290,55 +11518,55 @@ export namespace Prisma {
     where?: LinkWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Links to fetch.
      */
     orderBy?: LinkOrderByWithRelationInput | LinkOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: LinkWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Links from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Links.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned Links
     **/
     _count?: true | LinkCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to average
     **/
     _avg?: LinkAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to sum
     **/
     _sum?: LinkSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: LinkMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: LinkMaxAggregateInputType
@@ -11603,13 +11831,13 @@ export namespace Prisma {
      * @example
      * // Get all Links
      * const links = await prisma.link.findMany()
-     *
+     * 
      * // Get first 10 Links
      * const links = await prisma.link.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const linkWithIdOnly = await prisma.link.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends LinkFindManyArgs>(args?: SelectSubset<T, LinkFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -11623,7 +11851,7 @@ export namespace Prisma {
      *     // ... data to create a Link
      *   }
      * })
-     *
+     * 
      */
     create<T extends LinkCreateArgs>(args: SelectSubset<T, LinkCreateArgs<ExtArgs>>): Prisma__LinkClient<$Result.GetResult<Prisma.$LinkPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -11637,7 +11865,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends LinkCreateManyArgs>(args?: SelectSubset<T, LinkCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -11651,7 +11879,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many Links and only return the `id`
      * const linkWithIdOnly = await prisma.link.createManyAndReturn({
      *   select: { id: true },
@@ -11661,7 +11889,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends LinkCreateManyAndReturnArgs>(args?: SelectSubset<T, LinkCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -11675,7 +11903,7 @@ export namespace Prisma {
      *     // ... filter to delete one Link
      *   }
      * })
-     *
+     * 
      */
     delete<T extends LinkDeleteArgs>(args: SelectSubset<T, LinkDeleteArgs<ExtArgs>>): Prisma__LinkClient<$Result.GetResult<Prisma.$LinkPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -11692,7 +11920,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends LinkUpdateArgs>(args: SelectSubset<T, LinkUpdateArgs<ExtArgs>>): Prisma__LinkClient<$Result.GetResult<Prisma.$LinkPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -11706,7 +11934,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends LinkDeleteManyArgs>(args?: SelectSubset<T, LinkDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -11725,7 +11953,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends LinkUpdateManyArgs>(args: SelectSubset<T, LinkUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -11742,7 +11970,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more Links and only return the `id`
      * const linkWithIdOnly = await prisma.link.updateManyAndReturn({
      *   select: { id: true },
@@ -11755,7 +11983,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends LinkUpdateManyAndReturnArgs>(args: SelectSubset<T, LinkUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -11844,7 +12072,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends LinkGroupByArgs,
@@ -11966,7 +12194,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Link", 'DateTime'>
     readonly updatedAt: FieldRef<"Link", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -12035,31 +12263,31 @@ export namespace Prisma {
     where?: LinkWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Links to fetch.
      */
     orderBy?: LinkOrderByWithRelationInput | LinkOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Links.
      */
     cursor?: LinkWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Links from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Links.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Links.
      */
     distinct?: LinkScalarFieldEnum | LinkScalarFieldEnum[]
@@ -12087,31 +12315,31 @@ export namespace Prisma {
     where?: LinkWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Links to fetch.
      */
     orderBy?: LinkOrderByWithRelationInput | LinkOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Links.
      */
     cursor?: LinkWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Links from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Links.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Links.
      */
     distinct?: LinkScalarFieldEnum | LinkScalarFieldEnum[]
@@ -12139,31 +12367,31 @@ export namespace Prisma {
     where?: LinkWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Links to fetch.
      */
     orderBy?: LinkOrderByWithRelationInput | LinkOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing Links.
      */
     cursor?: LinkWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Links from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Links.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Links.
      */
     distinct?: LinkScalarFieldEnum | LinkScalarFieldEnum[]
@@ -12512,43 +12740,43 @@ export namespace Prisma {
     where?: LinkClickWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of LinkClicks to fetch.
      */
     orderBy?: LinkClickOrderByWithRelationInput | LinkClickOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: LinkClickWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` LinkClicks from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` LinkClicks.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned LinkClicks
     **/
     _count?: true | LinkClickCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: LinkClickMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: LinkClickMaxAggregateInputType
@@ -12774,13 +13002,13 @@ export namespace Prisma {
      * @example
      * // Get all LinkClicks
      * const linkClicks = await prisma.linkClick.findMany()
-     *
+     * 
      * // Get first 10 LinkClicks
      * const linkClicks = await prisma.linkClick.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const linkClickWithIdOnly = await prisma.linkClick.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends LinkClickFindManyArgs>(args?: SelectSubset<T, LinkClickFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkClickPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -12794,7 +13022,7 @@ export namespace Prisma {
      *     // ... data to create a LinkClick
      *   }
      * })
-     *
+     * 
      */
     create<T extends LinkClickCreateArgs>(args: SelectSubset<T, LinkClickCreateArgs<ExtArgs>>): Prisma__LinkClickClient<$Result.GetResult<Prisma.$LinkClickPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -12808,7 +13036,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends LinkClickCreateManyArgs>(args?: SelectSubset<T, LinkClickCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -12822,7 +13050,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many LinkClicks and only return the `id`
      * const linkClickWithIdOnly = await prisma.linkClick.createManyAndReturn({
      *   select: { id: true },
@@ -12832,7 +13060,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends LinkClickCreateManyAndReturnArgs>(args?: SelectSubset<T, LinkClickCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkClickPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -12846,7 +13074,7 @@ export namespace Prisma {
      *     // ... filter to delete one LinkClick
      *   }
      * })
-     *
+     * 
      */
     delete<T extends LinkClickDeleteArgs>(args: SelectSubset<T, LinkClickDeleteArgs<ExtArgs>>): Prisma__LinkClickClient<$Result.GetResult<Prisma.$LinkClickPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -12863,7 +13091,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends LinkClickUpdateArgs>(args: SelectSubset<T, LinkClickUpdateArgs<ExtArgs>>): Prisma__LinkClickClient<$Result.GetResult<Prisma.$LinkClickPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -12877,7 +13105,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends LinkClickDeleteManyArgs>(args?: SelectSubset<T, LinkClickDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -12896,7 +13124,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends LinkClickUpdateManyArgs>(args: SelectSubset<T, LinkClickUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -12913,7 +13141,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more LinkClicks and only return the `id`
      * const linkClickWithIdOnly = await prisma.linkClick.updateManyAndReturn({
      *   select: { id: true },
@@ -12926,7 +13154,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends LinkClickUpdateManyAndReturnArgs>(args: SelectSubset<T, LinkClickUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkClickPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -13015,7 +13243,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends LinkClickGroupByArgs,
@@ -13131,7 +13359,7 @@ export namespace Prisma {
     readonly ipHash: FieldRef<"LinkClick", 'String'>
     readonly createdAt: FieldRef<"LinkClick", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -13200,31 +13428,31 @@ export namespace Prisma {
     where?: LinkClickWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of LinkClicks to fetch.
      */
     orderBy?: LinkClickOrderByWithRelationInput | LinkClickOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for LinkClicks.
      */
     cursor?: LinkClickWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` LinkClicks from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` LinkClicks.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of LinkClicks.
      */
     distinct?: LinkClickScalarFieldEnum | LinkClickScalarFieldEnum[]
@@ -13252,31 +13480,31 @@ export namespace Prisma {
     where?: LinkClickWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of LinkClicks to fetch.
      */
     orderBy?: LinkClickOrderByWithRelationInput | LinkClickOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for LinkClicks.
      */
     cursor?: LinkClickWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` LinkClicks from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` LinkClicks.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of LinkClicks.
      */
     distinct?: LinkClickScalarFieldEnum | LinkClickScalarFieldEnum[]
@@ -13304,31 +13532,31 @@ export namespace Prisma {
     where?: LinkClickWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of LinkClicks to fetch.
      */
     orderBy?: LinkClickOrderByWithRelationInput | LinkClickOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing LinkClicks.
      */
     cursor?: LinkClickWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` LinkClicks from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` LinkClicks.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of LinkClicks.
      */
     distinct?: LinkClickScalarFieldEnum | LinkClickScalarFieldEnum[]
@@ -13665,43 +13893,43 @@ export namespace Prisma {
     where?: ProfileVisitWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ProfileVisits to fetch.
      */
     orderBy?: ProfileVisitOrderByWithRelationInput | ProfileVisitOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: ProfileVisitWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ProfileVisits from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ProfileVisits.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned ProfileVisits
     **/
     _count?: true | ProfileVisitCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ProfileVisitMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: ProfileVisitMaxAggregateInputType
@@ -13939,13 +14167,13 @@ export namespace Prisma {
      * @example
      * // Get all ProfileVisits
      * const profileVisits = await prisma.profileVisit.findMany()
-     *
+     * 
      * // Get first 10 ProfileVisits
      * const profileVisits = await prisma.profileVisit.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const profileVisitWithIdOnly = await prisma.profileVisit.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends ProfileVisitFindManyArgs>(args?: SelectSubset<T, ProfileVisitFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfileVisitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -13959,7 +14187,7 @@ export namespace Prisma {
      *     // ... data to create a ProfileVisit
      *   }
      * })
-     *
+     * 
      */
     create<T extends ProfileVisitCreateArgs>(args: SelectSubset<T, ProfileVisitCreateArgs<ExtArgs>>): Prisma__ProfileVisitClient<$Result.GetResult<Prisma.$ProfileVisitPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -13973,7 +14201,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends ProfileVisitCreateManyArgs>(args?: SelectSubset<T, ProfileVisitCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -13987,7 +14215,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many ProfileVisits and only return the `id`
      * const profileVisitWithIdOnly = await prisma.profileVisit.createManyAndReturn({
      *   select: { id: true },
@@ -13997,7 +14225,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends ProfileVisitCreateManyAndReturnArgs>(args?: SelectSubset<T, ProfileVisitCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfileVisitPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -14011,7 +14239,7 @@ export namespace Prisma {
      *     // ... filter to delete one ProfileVisit
      *   }
      * })
-     *
+     * 
      */
     delete<T extends ProfileVisitDeleteArgs>(args: SelectSubset<T, ProfileVisitDeleteArgs<ExtArgs>>): Prisma__ProfileVisitClient<$Result.GetResult<Prisma.$ProfileVisitPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -14028,7 +14256,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends ProfileVisitUpdateArgs>(args: SelectSubset<T, ProfileVisitUpdateArgs<ExtArgs>>): Prisma__ProfileVisitClient<$Result.GetResult<Prisma.$ProfileVisitPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -14042,7 +14270,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends ProfileVisitDeleteManyArgs>(args?: SelectSubset<T, ProfileVisitDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -14061,7 +14289,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends ProfileVisitUpdateManyArgs>(args: SelectSubset<T, ProfileVisitUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -14078,7 +14306,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more ProfileVisits and only return the `id`
      * const profileVisitWithIdOnly = await prisma.profileVisit.updateManyAndReturn({
      *   select: { id: true },
@@ -14091,7 +14319,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends ProfileVisitUpdateManyAndReturnArgs>(args: SelectSubset<T, ProfileVisitUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfileVisitPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -14180,7 +14408,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends ProfileVisitGroupByArgs,
@@ -14298,7 +14526,7 @@ export namespace Prisma {
     readonly isBot: FieldRef<"ProfileVisit", 'Boolean'>
     readonly createdAt: FieldRef<"ProfileVisit", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -14367,31 +14595,31 @@ export namespace Prisma {
     where?: ProfileVisitWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ProfileVisits to fetch.
      */
     orderBy?: ProfileVisitOrderByWithRelationInput | ProfileVisitOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ProfileVisits.
      */
     cursor?: ProfileVisitWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ProfileVisits from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ProfileVisits.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ProfileVisits.
      */
     distinct?: ProfileVisitScalarFieldEnum | ProfileVisitScalarFieldEnum[]
@@ -14419,31 +14647,31 @@ export namespace Prisma {
     where?: ProfileVisitWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ProfileVisits to fetch.
      */
     orderBy?: ProfileVisitOrderByWithRelationInput | ProfileVisitOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ProfileVisits.
      */
     cursor?: ProfileVisitWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ProfileVisits from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ProfileVisits.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ProfileVisits.
      */
     distinct?: ProfileVisitScalarFieldEnum | ProfileVisitScalarFieldEnum[]
@@ -14471,31 +14699,31 @@ export namespace Prisma {
     where?: ProfileVisitWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ProfileVisits to fetch.
      */
     orderBy?: ProfileVisitOrderByWithRelationInput | ProfileVisitOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing ProfileVisits.
      */
     cursor?: ProfileVisitWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ProfileVisits from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ProfileVisits.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ProfileVisits.
      */
     distinct?: ProfileVisitScalarFieldEnum | ProfileVisitScalarFieldEnum[]
@@ -14832,55 +15060,55 @@ export namespace Prisma {
     where?: ShortLinkWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShortLinks to fetch.
      */
     orderBy?: ShortLinkOrderByWithRelationInput | ShortLinkOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: ShortLinkWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShortLinks from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShortLinks.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned ShortLinks
     **/
     _count?: true | ShortLinkCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to average
     **/
     _avg?: ShortLinkAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to sum
     **/
     _sum?: ShortLinkSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ShortLinkMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: ShortLinkMaxAggregateInputType
@@ -15109,13 +15337,13 @@ export namespace Prisma {
      * @example
      * // Get all ShortLinks
      * const shortLinks = await prisma.shortLink.findMany()
-     *
+     * 
      * // Get first 10 ShortLinks
      * const shortLinks = await prisma.shortLink.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const shortLinkWithIdOnly = await prisma.shortLink.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends ShortLinkFindManyArgs>(args?: SelectSubset<T, ShortLinkFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShortLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -15129,7 +15357,7 @@ export namespace Prisma {
      *     // ... data to create a ShortLink
      *   }
      * })
-     *
+     * 
      */
     create<T extends ShortLinkCreateArgs>(args: SelectSubset<T, ShortLinkCreateArgs<ExtArgs>>): Prisma__ShortLinkClient<$Result.GetResult<Prisma.$ShortLinkPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -15143,7 +15371,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends ShortLinkCreateManyArgs>(args?: SelectSubset<T, ShortLinkCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -15157,7 +15385,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many ShortLinks and only return the `id`
      * const shortLinkWithIdOnly = await prisma.shortLink.createManyAndReturn({
      *   select: { id: true },
@@ -15167,7 +15395,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends ShortLinkCreateManyAndReturnArgs>(args?: SelectSubset<T, ShortLinkCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShortLinkPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -15181,7 +15409,7 @@ export namespace Prisma {
      *     // ... filter to delete one ShortLink
      *   }
      * })
-     *
+     * 
      */
     delete<T extends ShortLinkDeleteArgs>(args: SelectSubset<T, ShortLinkDeleteArgs<ExtArgs>>): Prisma__ShortLinkClient<$Result.GetResult<Prisma.$ShortLinkPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -15198,7 +15426,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends ShortLinkUpdateArgs>(args: SelectSubset<T, ShortLinkUpdateArgs<ExtArgs>>): Prisma__ShortLinkClient<$Result.GetResult<Prisma.$ShortLinkPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -15212,7 +15440,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends ShortLinkDeleteManyArgs>(args?: SelectSubset<T, ShortLinkDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -15231,7 +15459,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends ShortLinkUpdateManyArgs>(args: SelectSubset<T, ShortLinkUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -15248,7 +15476,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more ShortLinks and only return the `id`
      * const shortLinkWithIdOnly = await prisma.shortLink.updateManyAndReturn({
      *   select: { id: true },
@@ -15261,7 +15489,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends ShortLinkUpdateManyAndReturnArgs>(args: SelectSubset<T, ShortLinkUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShortLinkPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -15350,7 +15578,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends ShortLinkGroupByArgs,
@@ -15466,7 +15694,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"ShortLink", 'DateTime'>
     readonly updatedAt: FieldRef<"ShortLink", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -15535,31 +15763,31 @@ export namespace Prisma {
     where?: ShortLinkWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShortLinks to fetch.
      */
     orderBy?: ShortLinkOrderByWithRelationInput | ShortLinkOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ShortLinks.
      */
     cursor?: ShortLinkWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShortLinks from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShortLinks.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShortLinks.
      */
     distinct?: ShortLinkScalarFieldEnum | ShortLinkScalarFieldEnum[]
@@ -15587,31 +15815,31 @@ export namespace Prisma {
     where?: ShortLinkWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShortLinks to fetch.
      */
     orderBy?: ShortLinkOrderByWithRelationInput | ShortLinkOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ShortLinks.
      */
     cursor?: ShortLinkWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShortLinks from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShortLinks.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShortLinks.
      */
     distinct?: ShortLinkScalarFieldEnum | ShortLinkScalarFieldEnum[]
@@ -15639,31 +15867,31 @@ export namespace Prisma {
     where?: ShortLinkWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShortLinks to fetch.
      */
     orderBy?: ShortLinkOrderByWithRelationInput | ShortLinkOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing ShortLinks.
      */
     cursor?: ShortLinkWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShortLinks from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShortLinks.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShortLinks.
      */
     distinct?: ShortLinkScalarFieldEnum | ShortLinkScalarFieldEnum[]
@@ -16072,43 +16300,43 @@ export namespace Prisma {
     where?: ShortLinkClickWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShortLinkClicks to fetch.
      */
     orderBy?: ShortLinkClickOrderByWithRelationInput | ShortLinkClickOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: ShortLinkClickWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShortLinkClicks from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShortLinkClicks.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned ShortLinkClicks
     **/
     _count?: true | ShortLinkClickCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ShortLinkClickMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: ShortLinkClickMaxAggregateInputType
@@ -16394,13 +16622,13 @@ export namespace Prisma {
      * @example
      * // Get all ShortLinkClicks
      * const shortLinkClicks = await prisma.shortLinkClick.findMany()
-     *
+     * 
      * // Get first 10 ShortLinkClicks
      * const shortLinkClicks = await prisma.shortLinkClick.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const shortLinkClickWithIdOnly = await prisma.shortLinkClick.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends ShortLinkClickFindManyArgs>(args?: SelectSubset<T, ShortLinkClickFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShortLinkClickPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -16414,7 +16642,7 @@ export namespace Prisma {
      *     // ... data to create a ShortLinkClick
      *   }
      * })
-     *
+     * 
      */
     create<T extends ShortLinkClickCreateArgs>(args: SelectSubset<T, ShortLinkClickCreateArgs<ExtArgs>>): Prisma__ShortLinkClickClient<$Result.GetResult<Prisma.$ShortLinkClickPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -16428,7 +16656,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends ShortLinkClickCreateManyArgs>(args?: SelectSubset<T, ShortLinkClickCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -16442,7 +16670,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many ShortLinkClicks and only return the `id`
      * const shortLinkClickWithIdOnly = await prisma.shortLinkClick.createManyAndReturn({
      *   select: { id: true },
@@ -16452,7 +16680,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends ShortLinkClickCreateManyAndReturnArgs>(args?: SelectSubset<T, ShortLinkClickCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShortLinkClickPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -16466,7 +16694,7 @@ export namespace Prisma {
      *     // ... filter to delete one ShortLinkClick
      *   }
      * })
-     *
+     * 
      */
     delete<T extends ShortLinkClickDeleteArgs>(args: SelectSubset<T, ShortLinkClickDeleteArgs<ExtArgs>>): Prisma__ShortLinkClickClient<$Result.GetResult<Prisma.$ShortLinkClickPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -16483,7 +16711,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends ShortLinkClickUpdateArgs>(args: SelectSubset<T, ShortLinkClickUpdateArgs<ExtArgs>>): Prisma__ShortLinkClickClient<$Result.GetResult<Prisma.$ShortLinkClickPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -16497,7 +16725,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends ShortLinkClickDeleteManyArgs>(args?: SelectSubset<T, ShortLinkClickDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -16516,7 +16744,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends ShortLinkClickUpdateManyArgs>(args: SelectSubset<T, ShortLinkClickUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -16533,7 +16761,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more ShortLinkClicks and only return the `id`
      * const shortLinkClickWithIdOnly = await prisma.shortLinkClick.updateManyAndReturn({
      *   select: { id: true },
@@ -16546,7 +16774,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends ShortLinkClickUpdateManyAndReturnArgs>(args: SelectSubset<T, ShortLinkClickUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShortLinkClickPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -16635,7 +16863,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends ShortLinkClickGroupByArgs,
@@ -16761,7 +16989,7 @@ export namespace Prisma {
     readonly isBot: FieldRef<"ShortLinkClick", 'Boolean'>
     readonly createdAt: FieldRef<"ShortLinkClick", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -16830,31 +17058,31 @@ export namespace Prisma {
     where?: ShortLinkClickWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShortLinkClicks to fetch.
      */
     orderBy?: ShortLinkClickOrderByWithRelationInput | ShortLinkClickOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ShortLinkClicks.
      */
     cursor?: ShortLinkClickWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShortLinkClicks from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShortLinkClicks.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShortLinkClicks.
      */
     distinct?: ShortLinkClickScalarFieldEnum | ShortLinkClickScalarFieldEnum[]
@@ -16882,31 +17110,31 @@ export namespace Prisma {
     where?: ShortLinkClickWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShortLinkClicks to fetch.
      */
     orderBy?: ShortLinkClickOrderByWithRelationInput | ShortLinkClickOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ShortLinkClicks.
      */
     cursor?: ShortLinkClickWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShortLinkClicks from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShortLinkClicks.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShortLinkClicks.
      */
     distinct?: ShortLinkClickScalarFieldEnum | ShortLinkClickScalarFieldEnum[]
@@ -16934,31 +17162,31 @@ export namespace Prisma {
     where?: ShortLinkClickWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShortLinkClicks to fetch.
      */
     orderBy?: ShortLinkClickOrderByWithRelationInput | ShortLinkClickOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing ShortLinkClicks.
      */
     cursor?: ShortLinkClickWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShortLinkClicks from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShortLinkClicks.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShortLinkClicks.
      */
     distinct?: ShortLinkClickScalarFieldEnum | ShortLinkClickScalarFieldEnum[]
@@ -17265,43 +17493,43 @@ export namespace Prisma {
     where?: SessionWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Sessions to fetch.
      */
     orderBy?: SessionOrderByWithRelationInput | SessionOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: SessionWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Sessions from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Sessions.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned Sessions
     **/
     _count?: true | SessionCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: SessionMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: SessionMaxAggregateInputType
@@ -17509,13 +17737,13 @@ export namespace Prisma {
      * @example
      * // Get all Sessions
      * const sessions = await prisma.session.findMany()
-     *
+     * 
      * // Get first 10 Sessions
      * const sessions = await prisma.session.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const sessionWithIdOnly = await prisma.session.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends SessionFindManyArgs>(args?: SelectSubset<T, SessionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -17529,7 +17757,7 @@ export namespace Prisma {
      *     // ... data to create a Session
      *   }
      * })
-     *
+     * 
      */
     create<T extends SessionCreateArgs>(args: SelectSubset<T, SessionCreateArgs<ExtArgs>>): Prisma__SessionClient<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -17543,7 +17771,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends SessionCreateManyArgs>(args?: SelectSubset<T, SessionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -17557,7 +17785,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many Sessions and only return the `id`
      * const sessionWithIdOnly = await prisma.session.createManyAndReturn({
      *   select: { id: true },
@@ -17567,7 +17795,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends SessionCreateManyAndReturnArgs>(args?: SelectSubset<T, SessionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -17581,7 +17809,7 @@ export namespace Prisma {
      *     // ... filter to delete one Session
      *   }
      * })
-     *
+     * 
      */
     delete<T extends SessionDeleteArgs>(args: SelectSubset<T, SessionDeleteArgs<ExtArgs>>): Prisma__SessionClient<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -17598,7 +17826,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends SessionUpdateArgs>(args: SelectSubset<T, SessionUpdateArgs<ExtArgs>>): Prisma__SessionClient<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -17612,7 +17840,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends SessionDeleteManyArgs>(args?: SelectSubset<T, SessionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -17631,7 +17859,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends SessionUpdateManyArgs>(args: SelectSubset<T, SessionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -17648,7 +17876,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more Sessions and only return the `id`
      * const sessionWithIdOnly = await prisma.session.updateManyAndReturn({
      *   select: { id: true },
@@ -17661,7 +17889,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends SessionUpdateManyAndReturnArgs>(args: SelectSubset<T, SessionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -17750,7 +17978,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends SessionGroupByArgs,
@@ -17863,7 +18091,7 @@ export namespace Prisma {
     readonly lastActive: FieldRef<"Session", 'DateTime'>
     readonly createdAt: FieldRef<"Session", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -17932,31 +18160,31 @@ export namespace Prisma {
     where?: SessionWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Sessions to fetch.
      */
     orderBy?: SessionOrderByWithRelationInput | SessionOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Sessions.
      */
     cursor?: SessionWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Sessions from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Sessions.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Sessions.
      */
     distinct?: SessionScalarFieldEnum | SessionScalarFieldEnum[]
@@ -17984,31 +18212,31 @@ export namespace Prisma {
     where?: SessionWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Sessions to fetch.
      */
     orderBy?: SessionOrderByWithRelationInput | SessionOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Sessions.
      */
     cursor?: SessionWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Sessions from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Sessions.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Sessions.
      */
     distinct?: SessionScalarFieldEnum | SessionScalarFieldEnum[]
@@ -18036,31 +18264,31 @@ export namespace Prisma {
     where?: SessionWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Sessions to fetch.
      */
     orderBy?: SessionOrderByWithRelationInput | SessionOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing Sessions.
      */
     cursor?: SessionWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Sessions from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Sessions.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Sessions.
      */
     distinct?: SessionScalarFieldEnum | SessionScalarFieldEnum[]
@@ -18379,43 +18607,43 @@ export namespace Prisma {
     where?: ReportWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Reports to fetch.
      */
     orderBy?: ReportOrderByWithRelationInput | ReportOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: ReportWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Reports from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Reports.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned Reports
     **/
     _count?: true | ReportCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ReportMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: ReportMaxAggregateInputType
@@ -18621,13 +18849,13 @@ export namespace Prisma {
      * @example
      * // Get all Reports
      * const reports = await prisma.report.findMany()
-     *
+     * 
      * // Get first 10 Reports
      * const reports = await prisma.report.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const reportWithIdOnly = await prisma.report.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends ReportFindManyArgs>(args?: SelectSubset<T, ReportFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -18641,7 +18869,7 @@ export namespace Prisma {
      *     // ... data to create a Report
      *   }
      * })
-     *
+     * 
      */
     create<T extends ReportCreateArgs>(args: SelectSubset<T, ReportCreateArgs<ExtArgs>>): Prisma__ReportClient<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -18655,7 +18883,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends ReportCreateManyArgs>(args?: SelectSubset<T, ReportCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -18669,7 +18897,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many Reports and only return the `id`
      * const reportWithIdOnly = await prisma.report.createManyAndReturn({
      *   select: { id: true },
@@ -18679,7 +18907,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends ReportCreateManyAndReturnArgs>(args?: SelectSubset<T, ReportCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -18693,7 +18921,7 @@ export namespace Prisma {
      *     // ... filter to delete one Report
      *   }
      * })
-     *
+     * 
      */
     delete<T extends ReportDeleteArgs>(args: SelectSubset<T, ReportDeleteArgs<ExtArgs>>): Prisma__ReportClient<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -18710,7 +18938,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends ReportUpdateArgs>(args: SelectSubset<T, ReportUpdateArgs<ExtArgs>>): Prisma__ReportClient<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -18724,7 +18952,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends ReportDeleteManyArgs>(args?: SelectSubset<T, ReportDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -18743,7 +18971,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends ReportUpdateManyArgs>(args: SelectSubset<T, ReportUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -18760,7 +18988,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more Reports and only return the `id`
      * const reportWithIdOnly = await prisma.report.updateManyAndReturn({
      *   select: { id: true },
@@ -18773,7 +19001,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends ReportUpdateManyAndReturnArgs>(args: SelectSubset<T, ReportUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -18862,7 +19090,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends ReportGroupByArgs,
@@ -18976,7 +19204,7 @@ export namespace Prisma {
     readonly processedAt: FieldRef<"Report", 'DateTime'>
     readonly createdAt: FieldRef<"Report", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -19033,31 +19261,31 @@ export namespace Prisma {
     where?: ReportWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Reports to fetch.
      */
     orderBy?: ReportOrderByWithRelationInput | ReportOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Reports.
      */
     cursor?: ReportWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Reports from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Reports.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Reports.
      */
     distinct?: ReportScalarFieldEnum | ReportScalarFieldEnum[]
@@ -19081,31 +19309,31 @@ export namespace Prisma {
     where?: ReportWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Reports to fetch.
      */
     orderBy?: ReportOrderByWithRelationInput | ReportOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Reports.
      */
     cursor?: ReportWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Reports from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Reports.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Reports.
      */
     distinct?: ReportScalarFieldEnum | ReportScalarFieldEnum[]
@@ -19129,31 +19357,31 @@ export namespace Prisma {
     where?: ReportWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Reports to fetch.
      */
     orderBy?: ReportOrderByWithRelationInput | ReportOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing Reports.
      */
     cursor?: ReportWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Reports from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Reports.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Reports.
      */
     distinct?: ReportScalarFieldEnum | ReportScalarFieldEnum[]
@@ -19420,43 +19648,43 @@ export namespace Prisma {
     where?: PasswordResetTokenWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of PasswordResetTokens to fetch.
      */
     orderBy?: PasswordResetTokenOrderByWithRelationInput | PasswordResetTokenOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: PasswordResetTokenWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` PasswordResetTokens from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` PasswordResetTokens.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned PasswordResetTokens
     **/
     _count?: true | PasswordResetTokenCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: PasswordResetTokenMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: PasswordResetTokenMaxAggregateInputType
@@ -19652,13 +19880,13 @@ export namespace Prisma {
      * @example
      * // Get all PasswordResetTokens
      * const passwordResetTokens = await prisma.passwordResetToken.findMany()
-     *
+     * 
      * // Get first 10 PasswordResetTokens
      * const passwordResetTokens = await prisma.passwordResetToken.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const passwordResetTokenWithIdOnly = await prisma.passwordResetToken.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends PasswordResetTokenFindManyArgs>(args?: SelectSubset<T, PasswordResetTokenFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -19672,7 +19900,7 @@ export namespace Prisma {
      *     // ... data to create a PasswordResetToken
      *   }
      * })
-     *
+     * 
      */
     create<T extends PasswordResetTokenCreateArgs>(args: SelectSubset<T, PasswordResetTokenCreateArgs<ExtArgs>>): Prisma__PasswordResetTokenClient<$Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -19686,7 +19914,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends PasswordResetTokenCreateManyArgs>(args?: SelectSubset<T, PasswordResetTokenCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -19700,7 +19928,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many PasswordResetTokens and only return the `id`
      * const passwordResetTokenWithIdOnly = await prisma.passwordResetToken.createManyAndReturn({
      *   select: { id: true },
@@ -19710,7 +19938,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends PasswordResetTokenCreateManyAndReturnArgs>(args?: SelectSubset<T, PasswordResetTokenCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -19724,7 +19952,7 @@ export namespace Prisma {
      *     // ... filter to delete one PasswordResetToken
      *   }
      * })
-     *
+     * 
      */
     delete<T extends PasswordResetTokenDeleteArgs>(args: SelectSubset<T, PasswordResetTokenDeleteArgs<ExtArgs>>): Prisma__PasswordResetTokenClient<$Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -19741,7 +19969,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends PasswordResetTokenUpdateArgs>(args: SelectSubset<T, PasswordResetTokenUpdateArgs<ExtArgs>>): Prisma__PasswordResetTokenClient<$Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -19755,7 +19983,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends PasswordResetTokenDeleteManyArgs>(args?: SelectSubset<T, PasswordResetTokenDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -19774,7 +20002,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends PasswordResetTokenUpdateManyArgs>(args: SelectSubset<T, PasswordResetTokenUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -19791,7 +20019,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more PasswordResetTokens and only return the `id`
      * const passwordResetTokenWithIdOnly = await prisma.passwordResetToken.updateManyAndReturn({
      *   select: { id: true },
@@ -19804,7 +20032,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends PasswordResetTokenUpdateManyAndReturnArgs>(args: SelectSubset<T, PasswordResetTokenUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -19893,7 +20121,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends PasswordResetTokenGroupByArgs,
@@ -20004,7 +20232,7 @@ export namespace Prisma {
     readonly used: FieldRef<"PasswordResetToken", 'Boolean'>
     readonly createdAt: FieldRef<"PasswordResetToken", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -20073,31 +20301,31 @@ export namespace Prisma {
     where?: PasswordResetTokenWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of PasswordResetTokens to fetch.
      */
     orderBy?: PasswordResetTokenOrderByWithRelationInput | PasswordResetTokenOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for PasswordResetTokens.
      */
     cursor?: PasswordResetTokenWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` PasswordResetTokens from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` PasswordResetTokens.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of PasswordResetTokens.
      */
     distinct?: PasswordResetTokenScalarFieldEnum | PasswordResetTokenScalarFieldEnum[]
@@ -20125,31 +20353,31 @@ export namespace Prisma {
     where?: PasswordResetTokenWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of PasswordResetTokens to fetch.
      */
     orderBy?: PasswordResetTokenOrderByWithRelationInput | PasswordResetTokenOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for PasswordResetTokens.
      */
     cursor?: PasswordResetTokenWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` PasswordResetTokens from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` PasswordResetTokens.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of PasswordResetTokens.
      */
     distinct?: PasswordResetTokenScalarFieldEnum | PasswordResetTokenScalarFieldEnum[]
@@ -20177,31 +20405,31 @@ export namespace Prisma {
     where?: PasswordResetTokenWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of PasswordResetTokens to fetch.
      */
     orderBy?: PasswordResetTokenOrderByWithRelationInput | PasswordResetTokenOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing PasswordResetTokens.
      */
     cursor?: PasswordResetTokenWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` PasswordResetTokens from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` PasswordResetTokens.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of PasswordResetTokens.
      */
     distinct?: PasswordResetTokenScalarFieldEnum | PasswordResetTokenScalarFieldEnum[]
@@ -20508,43 +20736,43 @@ export namespace Prisma {
     where?: EmailVerificationTokenWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of EmailVerificationTokens to fetch.
      */
     orderBy?: EmailVerificationTokenOrderByWithRelationInput | EmailVerificationTokenOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: EmailVerificationTokenWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` EmailVerificationTokens from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` EmailVerificationTokens.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned EmailVerificationTokens
     **/
     _count?: true | EmailVerificationTokenCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: EmailVerificationTokenMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: EmailVerificationTokenMaxAggregateInputType
@@ -20752,13 +20980,13 @@ export namespace Prisma {
      * @example
      * // Get all EmailVerificationTokens
      * const emailVerificationTokens = await prisma.emailVerificationToken.findMany()
-     *
+     * 
      * // Get first 10 EmailVerificationTokens
      * const emailVerificationTokens = await prisma.emailVerificationToken.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const emailVerificationTokenWithIdOnly = await prisma.emailVerificationToken.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends EmailVerificationTokenFindManyArgs>(args?: SelectSubset<T, EmailVerificationTokenFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailVerificationTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -20772,7 +21000,7 @@ export namespace Prisma {
      *     // ... data to create a EmailVerificationToken
      *   }
      * })
-     *
+     * 
      */
     create<T extends EmailVerificationTokenCreateArgs>(args: SelectSubset<T, EmailVerificationTokenCreateArgs<ExtArgs>>): Prisma__EmailVerificationTokenClient<$Result.GetResult<Prisma.$EmailVerificationTokenPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -20786,7 +21014,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends EmailVerificationTokenCreateManyArgs>(args?: SelectSubset<T, EmailVerificationTokenCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -20800,7 +21028,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many EmailVerificationTokens and only return the `id`
      * const emailVerificationTokenWithIdOnly = await prisma.emailVerificationToken.createManyAndReturn({
      *   select: { id: true },
@@ -20810,7 +21038,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends EmailVerificationTokenCreateManyAndReturnArgs>(args?: SelectSubset<T, EmailVerificationTokenCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailVerificationTokenPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -20824,7 +21052,7 @@ export namespace Prisma {
      *     // ... filter to delete one EmailVerificationToken
      *   }
      * })
-     *
+     * 
      */
     delete<T extends EmailVerificationTokenDeleteArgs>(args: SelectSubset<T, EmailVerificationTokenDeleteArgs<ExtArgs>>): Prisma__EmailVerificationTokenClient<$Result.GetResult<Prisma.$EmailVerificationTokenPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -20841,7 +21069,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends EmailVerificationTokenUpdateArgs>(args: SelectSubset<T, EmailVerificationTokenUpdateArgs<ExtArgs>>): Prisma__EmailVerificationTokenClient<$Result.GetResult<Prisma.$EmailVerificationTokenPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -20855,7 +21083,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends EmailVerificationTokenDeleteManyArgs>(args?: SelectSubset<T, EmailVerificationTokenDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -20874,7 +21102,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends EmailVerificationTokenUpdateManyArgs>(args: SelectSubset<T, EmailVerificationTokenUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -20891,7 +21119,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more EmailVerificationTokens and only return the `id`
      * const emailVerificationTokenWithIdOnly = await prisma.emailVerificationToken.updateManyAndReturn({
      *   select: { id: true },
@@ -20904,7 +21132,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends EmailVerificationTokenUpdateManyAndReturnArgs>(args: SelectSubset<T, EmailVerificationTokenUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailVerificationTokenPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -20993,7 +21221,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends EmailVerificationTokenGroupByArgs,
@@ -21106,7 +21334,7 @@ export namespace Prisma {
     readonly sentAt: FieldRef<"EmailVerificationToken", 'DateTime'>
     readonly createdAt: FieldRef<"EmailVerificationToken", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -21175,31 +21403,31 @@ export namespace Prisma {
     where?: EmailVerificationTokenWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of EmailVerificationTokens to fetch.
      */
     orderBy?: EmailVerificationTokenOrderByWithRelationInput | EmailVerificationTokenOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for EmailVerificationTokens.
      */
     cursor?: EmailVerificationTokenWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` EmailVerificationTokens from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` EmailVerificationTokens.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of EmailVerificationTokens.
      */
     distinct?: EmailVerificationTokenScalarFieldEnum | EmailVerificationTokenScalarFieldEnum[]
@@ -21227,31 +21455,31 @@ export namespace Prisma {
     where?: EmailVerificationTokenWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of EmailVerificationTokens to fetch.
      */
     orderBy?: EmailVerificationTokenOrderByWithRelationInput | EmailVerificationTokenOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for EmailVerificationTokens.
      */
     cursor?: EmailVerificationTokenWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` EmailVerificationTokens from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` EmailVerificationTokens.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of EmailVerificationTokens.
      */
     distinct?: EmailVerificationTokenScalarFieldEnum | EmailVerificationTokenScalarFieldEnum[]
@@ -21279,31 +21507,31 @@ export namespace Prisma {
     where?: EmailVerificationTokenWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of EmailVerificationTokens to fetch.
      */
     orderBy?: EmailVerificationTokenOrderByWithRelationInput | EmailVerificationTokenOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing EmailVerificationTokens.
      */
     cursor?: EmailVerificationTokenWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` EmailVerificationTokens from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` EmailVerificationTokens.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of EmailVerificationTokens.
      */
     distinct?: EmailVerificationTokenScalarFieldEnum | EmailVerificationTokenScalarFieldEnum[]
@@ -21604,43 +21832,43 @@ export namespace Prisma {
     where?: LoginAttemptWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of LoginAttempts to fetch.
      */
     orderBy?: LoginAttemptOrderByWithRelationInput | LoginAttemptOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: LoginAttemptWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` LoginAttempts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` LoginAttempts.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned LoginAttempts
     **/
     _count?: true | LoginAttemptCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: LoginAttemptMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: LoginAttemptMaxAggregateInputType
@@ -21828,13 +22056,13 @@ export namespace Prisma {
      * @example
      * // Get all LoginAttempts
      * const loginAttempts = await prisma.loginAttempt.findMany()
-     *
+     * 
      * // Get first 10 LoginAttempts
      * const loginAttempts = await prisma.loginAttempt.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const loginAttemptWithIdOnly = await prisma.loginAttempt.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends LoginAttemptFindManyArgs>(args?: SelectSubset<T, LoginAttemptFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LoginAttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -21848,7 +22076,7 @@ export namespace Prisma {
      *     // ... data to create a LoginAttempt
      *   }
      * })
-     *
+     * 
      */
     create<T extends LoginAttemptCreateArgs>(args: SelectSubset<T, LoginAttemptCreateArgs<ExtArgs>>): Prisma__LoginAttemptClient<$Result.GetResult<Prisma.$LoginAttemptPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -21862,7 +22090,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends LoginAttemptCreateManyArgs>(args?: SelectSubset<T, LoginAttemptCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -21876,7 +22104,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many LoginAttempts and only return the `id`
      * const loginAttemptWithIdOnly = await prisma.loginAttempt.createManyAndReturn({
      *   select: { id: true },
@@ -21886,7 +22114,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends LoginAttemptCreateManyAndReturnArgs>(args?: SelectSubset<T, LoginAttemptCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LoginAttemptPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -21900,7 +22128,7 @@ export namespace Prisma {
      *     // ... filter to delete one LoginAttempt
      *   }
      * })
-     *
+     * 
      */
     delete<T extends LoginAttemptDeleteArgs>(args: SelectSubset<T, LoginAttemptDeleteArgs<ExtArgs>>): Prisma__LoginAttemptClient<$Result.GetResult<Prisma.$LoginAttemptPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -21917,7 +22145,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends LoginAttemptUpdateArgs>(args: SelectSubset<T, LoginAttemptUpdateArgs<ExtArgs>>): Prisma__LoginAttemptClient<$Result.GetResult<Prisma.$LoginAttemptPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -21931,7 +22159,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends LoginAttemptDeleteManyArgs>(args?: SelectSubset<T, LoginAttemptDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -21950,7 +22178,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends LoginAttemptUpdateManyArgs>(args: SelectSubset<T, LoginAttemptUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -21967,7 +22195,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more LoginAttempts and only return the `id`
      * const loginAttemptWithIdOnly = await prisma.loginAttempt.updateManyAndReturn({
      *   select: { id: true },
@@ -21980,7 +22208,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends LoginAttemptUpdateManyAndReturnArgs>(args: SelectSubset<T, LoginAttemptUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LoginAttemptPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -22069,7 +22297,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends LoginAttemptGroupByArgs,
@@ -22180,7 +22408,7 @@ export namespace Prisma {
     readonly lockUntil: FieldRef<"LoginAttempt", 'DateTime'>
     readonly createdAt: FieldRef<"LoginAttempt", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -22237,31 +22465,31 @@ export namespace Prisma {
     where?: LoginAttemptWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of LoginAttempts to fetch.
      */
     orderBy?: LoginAttemptOrderByWithRelationInput | LoginAttemptOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for LoginAttempts.
      */
     cursor?: LoginAttemptWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` LoginAttempts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` LoginAttempts.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of LoginAttempts.
      */
     distinct?: LoginAttemptScalarFieldEnum | LoginAttemptScalarFieldEnum[]
@@ -22285,31 +22513,31 @@ export namespace Prisma {
     where?: LoginAttemptWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of LoginAttempts to fetch.
      */
     orderBy?: LoginAttemptOrderByWithRelationInput | LoginAttemptOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for LoginAttempts.
      */
     cursor?: LoginAttemptWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` LoginAttempts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` LoginAttempts.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of LoginAttempts.
      */
     distinct?: LoginAttemptScalarFieldEnum | LoginAttemptScalarFieldEnum[]
@@ -22333,31 +22561,31 @@ export namespace Prisma {
     where?: LoginAttemptWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of LoginAttempts to fetch.
      */
     orderBy?: LoginAttemptOrderByWithRelationInput | LoginAttemptOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing LoginAttempts.
      */
     cursor?: LoginAttemptWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` LoginAttempts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` LoginAttempts.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of LoginAttempts.
      */
     distinct?: LoginAttemptScalarFieldEnum | LoginAttemptScalarFieldEnum[]
@@ -22624,43 +22852,43 @@ export namespace Prisma {
     where?: AppConfigWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AppConfigs to fetch.
      */
     orderBy?: AppConfigOrderByWithRelationInput | AppConfigOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: AppConfigWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AppConfigs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AppConfigs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned AppConfigs
     **/
     _count?: true | AppConfigCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: AppConfigMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: AppConfigMaxAggregateInputType
@@ -22842,13 +23070,13 @@ export namespace Prisma {
      * @example
      * // Get all AppConfigs
      * const appConfigs = await prisma.appConfig.findMany()
-     *
+     * 
      * // Get first 10 AppConfigs
      * const appConfigs = await prisma.appConfig.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const appConfigWithIdOnly = await prisma.appConfig.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends AppConfigFindManyArgs>(args?: SelectSubset<T, AppConfigFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AppConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -22862,7 +23090,7 @@ export namespace Prisma {
      *     // ... data to create a AppConfig
      *   }
      * })
-     *
+     * 
      */
     create<T extends AppConfigCreateArgs>(args: SelectSubset<T, AppConfigCreateArgs<ExtArgs>>): Prisma__AppConfigClient<$Result.GetResult<Prisma.$AppConfigPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -22876,7 +23104,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends AppConfigCreateManyArgs>(args?: SelectSubset<T, AppConfigCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -22890,7 +23118,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many AppConfigs and only return the `id`
      * const appConfigWithIdOnly = await prisma.appConfig.createManyAndReturn({
      *   select: { id: true },
@@ -22900,7 +23128,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends AppConfigCreateManyAndReturnArgs>(args?: SelectSubset<T, AppConfigCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AppConfigPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -22914,7 +23142,7 @@ export namespace Prisma {
      *     // ... filter to delete one AppConfig
      *   }
      * })
-     *
+     * 
      */
     delete<T extends AppConfigDeleteArgs>(args: SelectSubset<T, AppConfigDeleteArgs<ExtArgs>>): Prisma__AppConfigClient<$Result.GetResult<Prisma.$AppConfigPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -22931,7 +23159,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends AppConfigUpdateArgs>(args: SelectSubset<T, AppConfigUpdateArgs<ExtArgs>>): Prisma__AppConfigClient<$Result.GetResult<Prisma.$AppConfigPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -22945,7 +23173,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends AppConfigDeleteManyArgs>(args?: SelectSubset<T, AppConfigDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -22964,7 +23192,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends AppConfigUpdateManyArgs>(args: SelectSubset<T, AppConfigUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -22981,7 +23209,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more AppConfigs and only return the `id`
      * const appConfigWithIdOnly = await prisma.appConfig.updateManyAndReturn({
      *   select: { id: true },
@@ -22994,7 +23222,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends AppConfigUpdateManyAndReturnArgs>(args: SelectSubset<T, AppConfigUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AppConfigPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -23083,7 +23311,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends AppConfigGroupByArgs,
@@ -23193,7 +23421,7 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"AppConfig", 'DateTime'>
     readonly createdAt: FieldRef<"AppConfig", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -23250,31 +23478,31 @@ export namespace Prisma {
     where?: AppConfigWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AppConfigs to fetch.
      */
     orderBy?: AppConfigOrderByWithRelationInput | AppConfigOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AppConfigs.
      */
     cursor?: AppConfigWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AppConfigs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AppConfigs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AppConfigs.
      */
     distinct?: AppConfigScalarFieldEnum | AppConfigScalarFieldEnum[]
@@ -23298,31 +23526,31 @@ export namespace Prisma {
     where?: AppConfigWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AppConfigs to fetch.
      */
     orderBy?: AppConfigOrderByWithRelationInput | AppConfigOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AppConfigs.
      */
     cursor?: AppConfigWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AppConfigs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AppConfigs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AppConfigs.
      */
     distinct?: AppConfigScalarFieldEnum | AppConfigScalarFieldEnum[]
@@ -23346,31 +23574,31 @@ export namespace Prisma {
     where?: AppConfigWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AppConfigs to fetch.
      */
     orderBy?: AppConfigOrderByWithRelationInput | AppConfigOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing AppConfigs.
      */
     cursor?: AppConfigWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AppConfigs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AppConfigs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AppConfigs.
      */
     distinct?: AppConfigScalarFieldEnum | AppConfigScalarFieldEnum[]
@@ -23661,55 +23889,55 @@ export namespace Prisma {
     where?: AiUsageLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiUsageLogs to fetch.
      */
     orderBy?: AiUsageLogOrderByWithRelationInput | AiUsageLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: AiUsageLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiUsageLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiUsageLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned AiUsageLogs
     **/
     _count?: true | AiUsageLogCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to average
     **/
     _avg?: AiUsageLogAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to sum
     **/
     _sum?: AiUsageLogSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: AiUsageLogMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: AiUsageLogMaxAggregateInputType
@@ -23915,13 +24143,13 @@ export namespace Prisma {
      * @example
      * // Get all AiUsageLogs
      * const aiUsageLogs = await prisma.aiUsageLog.findMany()
-     *
+     * 
      * // Get first 10 AiUsageLogs
      * const aiUsageLogs = await prisma.aiUsageLog.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const aiUsageLogWithIdOnly = await prisma.aiUsageLog.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends AiUsageLogFindManyArgs>(args?: SelectSubset<T, AiUsageLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiUsageLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -23935,7 +24163,7 @@ export namespace Prisma {
      *     // ... data to create a AiUsageLog
      *   }
      * })
-     *
+     * 
      */
     create<T extends AiUsageLogCreateArgs>(args: SelectSubset<T, AiUsageLogCreateArgs<ExtArgs>>): Prisma__AiUsageLogClient<$Result.GetResult<Prisma.$AiUsageLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -23949,7 +24177,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends AiUsageLogCreateManyArgs>(args?: SelectSubset<T, AiUsageLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -23963,7 +24191,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many AiUsageLogs and only return the `id`
      * const aiUsageLogWithIdOnly = await prisma.aiUsageLog.createManyAndReturn({
      *   select: { id: true },
@@ -23973,7 +24201,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends AiUsageLogCreateManyAndReturnArgs>(args?: SelectSubset<T, AiUsageLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiUsageLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -23987,7 +24215,7 @@ export namespace Prisma {
      *     // ... filter to delete one AiUsageLog
      *   }
      * })
-     *
+     * 
      */
     delete<T extends AiUsageLogDeleteArgs>(args: SelectSubset<T, AiUsageLogDeleteArgs<ExtArgs>>): Prisma__AiUsageLogClient<$Result.GetResult<Prisma.$AiUsageLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -24004,7 +24232,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends AiUsageLogUpdateArgs>(args: SelectSubset<T, AiUsageLogUpdateArgs<ExtArgs>>): Prisma__AiUsageLogClient<$Result.GetResult<Prisma.$AiUsageLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -24018,7 +24246,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends AiUsageLogDeleteManyArgs>(args?: SelectSubset<T, AiUsageLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -24037,7 +24265,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends AiUsageLogUpdateManyArgs>(args: SelectSubset<T, AiUsageLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -24054,7 +24282,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more AiUsageLogs and only return the `id`
      * const aiUsageLogWithIdOnly = await prisma.aiUsageLog.updateManyAndReturn({
      *   select: { id: true },
@@ -24067,7 +24295,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends AiUsageLogUpdateManyAndReturnArgs>(args: SelectSubset<T, AiUsageLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiUsageLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -24156,7 +24384,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends AiUsageLogGroupByArgs,
@@ -24268,7 +24496,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"AiUsageLog", 'DateTime'>
     readonly updatedAt: FieldRef<"AiUsageLog", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -24337,31 +24565,31 @@ export namespace Prisma {
     where?: AiUsageLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiUsageLogs to fetch.
      */
     orderBy?: AiUsageLogOrderByWithRelationInput | AiUsageLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AiUsageLogs.
      */
     cursor?: AiUsageLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiUsageLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiUsageLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiUsageLogs.
      */
     distinct?: AiUsageLogScalarFieldEnum | AiUsageLogScalarFieldEnum[]
@@ -24389,31 +24617,31 @@ export namespace Prisma {
     where?: AiUsageLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiUsageLogs to fetch.
      */
     orderBy?: AiUsageLogOrderByWithRelationInput | AiUsageLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AiUsageLogs.
      */
     cursor?: AiUsageLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiUsageLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiUsageLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiUsageLogs.
      */
     distinct?: AiUsageLogScalarFieldEnum | AiUsageLogScalarFieldEnum[]
@@ -24441,31 +24669,31 @@ export namespace Prisma {
     where?: AiUsageLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiUsageLogs to fetch.
      */
     orderBy?: AiUsageLogOrderByWithRelationInput | AiUsageLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing AiUsageLogs.
      */
     cursor?: AiUsageLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiUsageLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiUsageLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiUsageLogs.
      */
     distinct?: AiUsageLogScalarFieldEnum | AiUsageLogScalarFieldEnum[]
@@ -24796,43 +25024,43 @@ export namespace Prisma {
     where?: AdminAuditLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AdminAuditLogs to fetch.
      */
     orderBy?: AdminAuditLogOrderByWithRelationInput | AdminAuditLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: AdminAuditLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AdminAuditLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AdminAuditLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned AdminAuditLogs
     **/
     _count?: true | AdminAuditLogCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: AdminAuditLogMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: AdminAuditLogMaxAggregateInputType
@@ -25050,13 +25278,13 @@ export namespace Prisma {
      * @example
      * // Get all AdminAuditLogs
      * const adminAuditLogs = await prisma.adminAuditLog.findMany()
-     *
+     * 
      * // Get first 10 AdminAuditLogs
      * const adminAuditLogs = await prisma.adminAuditLog.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const adminAuditLogWithIdOnly = await prisma.adminAuditLog.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends AdminAuditLogFindManyArgs>(args?: SelectSubset<T, AdminAuditLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -25070,7 +25298,7 @@ export namespace Prisma {
      *     // ... data to create a AdminAuditLog
      *   }
      * })
-     *
+     * 
      */
     create<T extends AdminAuditLogCreateArgs>(args: SelectSubset<T, AdminAuditLogCreateArgs<ExtArgs>>): Prisma__AdminAuditLogClient<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -25084,7 +25312,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends AdminAuditLogCreateManyArgs>(args?: SelectSubset<T, AdminAuditLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -25098,7 +25326,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many AdminAuditLogs and only return the `id`
      * const adminAuditLogWithIdOnly = await prisma.adminAuditLog.createManyAndReturn({
      *   select: { id: true },
@@ -25108,7 +25336,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends AdminAuditLogCreateManyAndReturnArgs>(args?: SelectSubset<T, AdminAuditLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -25122,7 +25350,7 @@ export namespace Prisma {
      *     // ... filter to delete one AdminAuditLog
      *   }
      * })
-     *
+     * 
      */
     delete<T extends AdminAuditLogDeleteArgs>(args: SelectSubset<T, AdminAuditLogDeleteArgs<ExtArgs>>): Prisma__AdminAuditLogClient<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -25139,7 +25367,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends AdminAuditLogUpdateArgs>(args: SelectSubset<T, AdminAuditLogUpdateArgs<ExtArgs>>): Prisma__AdminAuditLogClient<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -25153,7 +25381,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends AdminAuditLogDeleteManyArgs>(args?: SelectSubset<T, AdminAuditLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -25172,7 +25400,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends AdminAuditLogUpdateManyArgs>(args: SelectSubset<T, AdminAuditLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -25189,7 +25417,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more AdminAuditLogs and only return the `id`
      * const adminAuditLogWithIdOnly = await prisma.adminAuditLog.updateManyAndReturn({
      *   select: { id: true },
@@ -25202,7 +25430,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends AdminAuditLogUpdateManyAndReturnArgs>(args: SelectSubset<T, AdminAuditLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminAuditLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -25291,7 +25519,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends AdminAuditLogGroupByArgs,
@@ -25407,7 +25635,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"AdminAuditLog", 'DateTime'>
     readonly success: FieldRef<"AdminAuditLog", 'Boolean'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -25464,31 +25692,31 @@ export namespace Prisma {
     where?: AdminAuditLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AdminAuditLogs to fetch.
      */
     orderBy?: AdminAuditLogOrderByWithRelationInput | AdminAuditLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AdminAuditLogs.
      */
     cursor?: AdminAuditLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AdminAuditLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AdminAuditLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AdminAuditLogs.
      */
     distinct?: AdminAuditLogScalarFieldEnum | AdminAuditLogScalarFieldEnum[]
@@ -25512,31 +25740,31 @@ export namespace Prisma {
     where?: AdminAuditLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AdminAuditLogs to fetch.
      */
     orderBy?: AdminAuditLogOrderByWithRelationInput | AdminAuditLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AdminAuditLogs.
      */
     cursor?: AdminAuditLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AdminAuditLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AdminAuditLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AdminAuditLogs.
      */
     distinct?: AdminAuditLogScalarFieldEnum | AdminAuditLogScalarFieldEnum[]
@@ -25560,31 +25788,31 @@ export namespace Prisma {
     where?: AdminAuditLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AdminAuditLogs to fetch.
      */
     orderBy?: AdminAuditLogOrderByWithRelationInput | AdminAuditLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing AdminAuditLogs.
      */
     cursor?: AdminAuditLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AdminAuditLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AdminAuditLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AdminAuditLogs.
      */
     distinct?: AdminAuditLogScalarFieldEnum | AdminAuditLogScalarFieldEnum[]
@@ -25935,43 +26163,43 @@ export namespace Prisma {
     where?: LeadWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Leads to fetch.
      */
     orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: LeadWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Leads from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Leads.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned Leads
     **/
     _count?: true | LeadCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: LeadMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: LeadMaxAggregateInputType
@@ -26270,13 +26498,13 @@ export namespace Prisma {
      * @example
      * // Get all Leads
      * const leads = await prisma.lead.findMany()
-     *
+     * 
      * // Get first 10 Leads
      * const leads = await prisma.lead.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const leadWithIdOnly = await prisma.lead.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends LeadFindManyArgs>(args?: SelectSubset<T, LeadFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -26290,7 +26518,7 @@ export namespace Prisma {
      *     // ... data to create a Lead
      *   }
      * })
-     *
+     * 
      */
     create<T extends LeadCreateArgs>(args: SelectSubset<T, LeadCreateArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -26304,7 +26532,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends LeadCreateManyArgs>(args?: SelectSubset<T, LeadCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -26318,7 +26546,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many Leads and only return the `id`
      * const leadWithIdOnly = await prisma.lead.createManyAndReturn({
      *   select: { id: true },
@@ -26328,7 +26556,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends LeadCreateManyAndReturnArgs>(args?: SelectSubset<T, LeadCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -26342,7 +26570,7 @@ export namespace Prisma {
      *     // ... filter to delete one Lead
      *   }
      * })
-     *
+     * 
      */
     delete<T extends LeadDeleteArgs>(args: SelectSubset<T, LeadDeleteArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -26359,7 +26587,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends LeadUpdateArgs>(args: SelectSubset<T, LeadUpdateArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -26373,7 +26601,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends LeadDeleteManyArgs>(args?: SelectSubset<T, LeadDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -26392,7 +26620,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends LeadUpdateManyArgs>(args: SelectSubset<T, LeadUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -26409,7 +26637,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more Leads and only return the `id`
      * const leadWithIdOnly = await prisma.lead.updateManyAndReturn({
      *   select: { id: true },
@@ -26422,7 +26650,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends LeadUpdateManyAndReturnArgs>(args: SelectSubset<T, LeadUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -26511,7 +26739,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends LeadGroupByArgs,
@@ -26639,7 +26867,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Lead", 'DateTime'>
     readonly updatedAt: FieldRef<"Lead", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -26708,31 +26936,31 @@ export namespace Prisma {
     where?: LeadWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Leads to fetch.
      */
     orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Leads.
      */
     cursor?: LeadWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Leads from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Leads.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Leads.
      */
     distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
@@ -26760,31 +26988,31 @@ export namespace Prisma {
     where?: LeadWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Leads to fetch.
      */
     orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Leads.
      */
     cursor?: LeadWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Leads from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Leads.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Leads.
      */
     distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
@@ -26812,31 +27040,31 @@ export namespace Prisma {
     where?: LeadWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Leads to fetch.
      */
     orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing Leads.
      */
     cursor?: LeadWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Leads from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Leads.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Leads.
      */
     distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
@@ -27211,43 +27439,43 @@ export namespace Prisma {
     where?: LeadFollowUpWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of LeadFollowUps to fetch.
      */
     orderBy?: LeadFollowUpOrderByWithRelationInput | LeadFollowUpOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: LeadFollowUpWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` LeadFollowUps from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` LeadFollowUps.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned LeadFollowUps
     **/
     _count?: true | LeadFollowUpCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: LeadFollowUpMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: LeadFollowUpMaxAggregateInputType
@@ -27461,13 +27689,13 @@ export namespace Prisma {
      * @example
      * // Get all LeadFollowUps
      * const leadFollowUps = await prisma.leadFollowUp.findMany()
-     *
+     * 
      * // Get first 10 LeadFollowUps
      * const leadFollowUps = await prisma.leadFollowUp.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const leadFollowUpWithIdOnly = await prisma.leadFollowUp.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends LeadFollowUpFindManyArgs>(args?: SelectSubset<T, LeadFollowUpFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadFollowUpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -27481,7 +27709,7 @@ export namespace Prisma {
      *     // ... data to create a LeadFollowUp
      *   }
      * })
-     *
+     * 
      */
     create<T extends LeadFollowUpCreateArgs>(args: SelectSubset<T, LeadFollowUpCreateArgs<ExtArgs>>): Prisma__LeadFollowUpClient<$Result.GetResult<Prisma.$LeadFollowUpPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -27495,7 +27723,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends LeadFollowUpCreateManyArgs>(args?: SelectSubset<T, LeadFollowUpCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -27509,7 +27737,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many LeadFollowUps and only return the `id`
      * const leadFollowUpWithIdOnly = await prisma.leadFollowUp.createManyAndReturn({
      *   select: { id: true },
@@ -27519,7 +27747,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends LeadFollowUpCreateManyAndReturnArgs>(args?: SelectSubset<T, LeadFollowUpCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadFollowUpPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -27533,7 +27761,7 @@ export namespace Prisma {
      *     // ... filter to delete one LeadFollowUp
      *   }
      * })
-     *
+     * 
      */
     delete<T extends LeadFollowUpDeleteArgs>(args: SelectSubset<T, LeadFollowUpDeleteArgs<ExtArgs>>): Prisma__LeadFollowUpClient<$Result.GetResult<Prisma.$LeadFollowUpPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -27550,7 +27778,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends LeadFollowUpUpdateArgs>(args: SelectSubset<T, LeadFollowUpUpdateArgs<ExtArgs>>): Prisma__LeadFollowUpClient<$Result.GetResult<Prisma.$LeadFollowUpPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -27564,7 +27792,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends LeadFollowUpDeleteManyArgs>(args?: SelectSubset<T, LeadFollowUpDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -27583,7 +27811,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends LeadFollowUpUpdateManyArgs>(args: SelectSubset<T, LeadFollowUpUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -27600,7 +27828,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more LeadFollowUps and only return the `id`
      * const leadFollowUpWithIdOnly = await prisma.leadFollowUp.updateManyAndReturn({
      *   select: { id: true },
@@ -27613,7 +27841,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends LeadFollowUpUpdateManyAndReturnArgs>(args: SelectSubset<T, LeadFollowUpUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadFollowUpPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -27702,7 +27930,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends LeadFollowUpGroupByArgs,
@@ -27816,7 +28044,7 @@ export namespace Prisma {
     readonly newStatus: FieldRef<"LeadFollowUp", 'String'>
     readonly createdAt: FieldRef<"LeadFollowUp", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -27885,31 +28113,31 @@ export namespace Prisma {
     where?: LeadFollowUpWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of LeadFollowUps to fetch.
      */
     orderBy?: LeadFollowUpOrderByWithRelationInput | LeadFollowUpOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for LeadFollowUps.
      */
     cursor?: LeadFollowUpWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` LeadFollowUps from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` LeadFollowUps.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of LeadFollowUps.
      */
     distinct?: LeadFollowUpScalarFieldEnum | LeadFollowUpScalarFieldEnum[]
@@ -27937,31 +28165,31 @@ export namespace Prisma {
     where?: LeadFollowUpWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of LeadFollowUps to fetch.
      */
     orderBy?: LeadFollowUpOrderByWithRelationInput | LeadFollowUpOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for LeadFollowUps.
      */
     cursor?: LeadFollowUpWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` LeadFollowUps from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` LeadFollowUps.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of LeadFollowUps.
      */
     distinct?: LeadFollowUpScalarFieldEnum | LeadFollowUpScalarFieldEnum[]
@@ -27989,31 +28217,31 @@ export namespace Prisma {
     where?: LeadFollowUpWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of LeadFollowUps to fetch.
      */
     orderBy?: LeadFollowUpOrderByWithRelationInput | LeadFollowUpOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing LeadFollowUps.
      */
     cursor?: LeadFollowUpWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` LeadFollowUps from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` LeadFollowUps.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of LeadFollowUps.
      */
     distinct?: LeadFollowUpScalarFieldEnum | LeadFollowUpScalarFieldEnum[]
@@ -28320,43 +28548,43 @@ export namespace Prisma {
     where?: EmailSendLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of EmailSendLogs to fetch.
      */
     orderBy?: EmailSendLogOrderByWithRelationInput | EmailSendLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: EmailSendLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` EmailSendLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` EmailSendLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned EmailSendLogs
     **/
     _count?: true | EmailSendLogCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: EmailSendLogMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: EmailSendLogMaxAggregateInputType
@@ -28550,13 +28778,13 @@ export namespace Prisma {
      * @example
      * // Get all EmailSendLogs
      * const emailSendLogs = await prisma.emailSendLog.findMany()
-     *
+     * 
      * // Get first 10 EmailSendLogs
      * const emailSendLogs = await prisma.emailSendLog.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const emailSendLogWithIdOnly = await prisma.emailSendLog.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends EmailSendLogFindManyArgs>(args?: SelectSubset<T, EmailSendLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailSendLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -28570,7 +28798,7 @@ export namespace Prisma {
      *     // ... data to create a EmailSendLog
      *   }
      * })
-     *
+     * 
      */
     create<T extends EmailSendLogCreateArgs>(args: SelectSubset<T, EmailSendLogCreateArgs<ExtArgs>>): Prisma__EmailSendLogClient<$Result.GetResult<Prisma.$EmailSendLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -28584,7 +28812,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends EmailSendLogCreateManyArgs>(args?: SelectSubset<T, EmailSendLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -28598,7 +28826,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many EmailSendLogs and only return the `id`
      * const emailSendLogWithIdOnly = await prisma.emailSendLog.createManyAndReturn({
      *   select: { id: true },
@@ -28608,7 +28836,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends EmailSendLogCreateManyAndReturnArgs>(args?: SelectSubset<T, EmailSendLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailSendLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -28622,7 +28850,7 @@ export namespace Prisma {
      *     // ... filter to delete one EmailSendLog
      *   }
      * })
-     *
+     * 
      */
     delete<T extends EmailSendLogDeleteArgs>(args: SelectSubset<T, EmailSendLogDeleteArgs<ExtArgs>>): Prisma__EmailSendLogClient<$Result.GetResult<Prisma.$EmailSendLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -28639,7 +28867,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends EmailSendLogUpdateArgs>(args: SelectSubset<T, EmailSendLogUpdateArgs<ExtArgs>>): Prisma__EmailSendLogClient<$Result.GetResult<Prisma.$EmailSendLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -28653,7 +28881,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends EmailSendLogDeleteManyArgs>(args?: SelectSubset<T, EmailSendLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -28672,7 +28900,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends EmailSendLogUpdateManyArgs>(args: SelectSubset<T, EmailSendLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -28689,7 +28917,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more EmailSendLogs and only return the `id`
      * const emailSendLogWithIdOnly = await prisma.emailSendLog.updateManyAndReturn({
      *   select: { id: true },
@@ -28702,7 +28930,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends EmailSendLogUpdateManyAndReturnArgs>(args: SelectSubset<T, EmailSendLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailSendLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -28791,7 +29019,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends EmailSendLogGroupByArgs,
@@ -28903,7 +29131,7 @@ export namespace Prisma {
     readonly ipHash: FieldRef<"EmailSendLog", 'String'>
     readonly createdAt: FieldRef<"EmailSendLog", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -28960,31 +29188,31 @@ export namespace Prisma {
     where?: EmailSendLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of EmailSendLogs to fetch.
      */
     orderBy?: EmailSendLogOrderByWithRelationInput | EmailSendLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for EmailSendLogs.
      */
     cursor?: EmailSendLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` EmailSendLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` EmailSendLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of EmailSendLogs.
      */
     distinct?: EmailSendLogScalarFieldEnum | EmailSendLogScalarFieldEnum[]
@@ -29008,31 +29236,31 @@ export namespace Prisma {
     where?: EmailSendLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of EmailSendLogs to fetch.
      */
     orderBy?: EmailSendLogOrderByWithRelationInput | EmailSendLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for EmailSendLogs.
      */
     cursor?: EmailSendLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` EmailSendLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` EmailSendLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of EmailSendLogs.
      */
     distinct?: EmailSendLogScalarFieldEnum | EmailSendLogScalarFieldEnum[]
@@ -29056,31 +29284,31 @@ export namespace Prisma {
     where?: EmailSendLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of EmailSendLogs to fetch.
      */
     orderBy?: EmailSendLogOrderByWithRelationInput | EmailSendLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing EmailSendLogs.
      */
     cursor?: EmailSendLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` EmailSendLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` EmailSendLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of EmailSendLogs.
      */
     distinct?: EmailSendLogScalarFieldEnum | EmailSendLogScalarFieldEnum[]
@@ -29413,55 +29641,55 @@ export namespace Prisma {
     where?: ProductWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Products to fetch.
      */
     orderBy?: ProductOrderByWithRelationInput | ProductOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: ProductWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Products from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Products.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned Products
     **/
     _count?: true | ProductCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to average
     **/
     _avg?: ProductAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to sum
     **/
     _sum?: ProductSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ProductMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: ProductMaxAggregateInputType
@@ -29714,13 +29942,13 @@ export namespace Prisma {
      * @example
      * // Get all Products
      * const products = await prisma.product.findMany()
-     *
+     * 
      * // Get first 10 Products
      * const products = await prisma.product.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const productWithIdOnly = await prisma.product.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends ProductFindManyArgs>(args?: SelectSubset<T, ProductFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -29734,7 +29962,7 @@ export namespace Prisma {
      *     // ... data to create a Product
      *   }
      * })
-     *
+     * 
      */
     create<T extends ProductCreateArgs>(args: SelectSubset<T, ProductCreateArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -29748,7 +29976,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends ProductCreateManyArgs>(args?: SelectSubset<T, ProductCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -29762,7 +29990,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many Products and only return the `id`
      * const productWithIdOnly = await prisma.product.createManyAndReturn({
      *   select: { id: true },
@@ -29772,7 +30000,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends ProductCreateManyAndReturnArgs>(args?: SelectSubset<T, ProductCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -29786,7 +30014,7 @@ export namespace Prisma {
      *     // ... filter to delete one Product
      *   }
      * })
-     *
+     * 
      */
     delete<T extends ProductDeleteArgs>(args: SelectSubset<T, ProductDeleteArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -29803,7 +30031,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends ProductUpdateArgs>(args: SelectSubset<T, ProductUpdateArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -29817,7 +30045,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends ProductDeleteManyArgs>(args?: SelectSubset<T, ProductDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -29836,7 +30064,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends ProductUpdateManyArgs>(args: SelectSubset<T, ProductUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -29853,7 +30081,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more Products and only return the `id`
      * const productWithIdOnly = await prisma.product.updateManyAndReturn({
      *   select: { id: true },
@@ -29866,7 +30094,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends ProductUpdateManyAndReturnArgs>(args: SelectSubset<T, ProductUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -29955,7 +30183,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends ProductGroupByArgs,
@@ -30075,7 +30303,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Product", 'DateTime'>
     readonly updatedAt: FieldRef<"Product", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -30144,31 +30372,31 @@ export namespace Prisma {
     where?: ProductWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Products to fetch.
      */
     orderBy?: ProductOrderByWithRelationInput | ProductOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Products.
      */
     cursor?: ProductWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Products from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Products.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Products.
      */
     distinct?: ProductScalarFieldEnum | ProductScalarFieldEnum[]
@@ -30196,31 +30424,31 @@ export namespace Prisma {
     where?: ProductWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Products to fetch.
      */
     orderBy?: ProductOrderByWithRelationInput | ProductOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Products.
      */
     cursor?: ProductWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Products from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Products.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Products.
      */
     distinct?: ProductScalarFieldEnum | ProductScalarFieldEnum[]
@@ -30248,31 +30476,31 @@ export namespace Prisma {
     where?: ProductWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Products to fetch.
      */
     orderBy?: ProductOrderByWithRelationInput | ProductOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing Products.
      */
     cursor?: ProductWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Products from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Products.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Products.
      */
     distinct?: ProductScalarFieldEnum | ProductScalarFieldEnum[]
@@ -30615,43 +30843,43 @@ export namespace Prisma {
     where?: KnowledgeDocWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of KnowledgeDocs to fetch.
      */
     orderBy?: KnowledgeDocOrderByWithRelationInput | KnowledgeDocOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: KnowledgeDocWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` KnowledgeDocs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` KnowledgeDocs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned KnowledgeDocs
     **/
     _count?: true | KnowledgeDocCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: KnowledgeDocMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: KnowledgeDocMaxAggregateInputType
@@ -30871,13 +31099,13 @@ export namespace Prisma {
      * @example
      * // Get all KnowledgeDocs
      * const knowledgeDocs = await prisma.knowledgeDoc.findMany()
-     *
+     * 
      * // Get first 10 KnowledgeDocs
      * const knowledgeDocs = await prisma.knowledgeDoc.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const knowledgeDocWithIdOnly = await prisma.knowledgeDoc.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends KnowledgeDocFindManyArgs>(args?: SelectSubset<T, KnowledgeDocFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KnowledgeDocPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -30891,7 +31119,7 @@ export namespace Prisma {
      *     // ... data to create a KnowledgeDoc
      *   }
      * })
-     *
+     * 
      */
     create<T extends KnowledgeDocCreateArgs>(args: SelectSubset<T, KnowledgeDocCreateArgs<ExtArgs>>): Prisma__KnowledgeDocClient<$Result.GetResult<Prisma.$KnowledgeDocPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -30905,7 +31133,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends KnowledgeDocCreateManyArgs>(args?: SelectSubset<T, KnowledgeDocCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -30919,7 +31147,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many KnowledgeDocs and only return the `id`
      * const knowledgeDocWithIdOnly = await prisma.knowledgeDoc.createManyAndReturn({
      *   select: { id: true },
@@ -30929,7 +31157,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends KnowledgeDocCreateManyAndReturnArgs>(args?: SelectSubset<T, KnowledgeDocCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KnowledgeDocPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -30943,7 +31171,7 @@ export namespace Prisma {
      *     // ... filter to delete one KnowledgeDoc
      *   }
      * })
-     *
+     * 
      */
     delete<T extends KnowledgeDocDeleteArgs>(args: SelectSubset<T, KnowledgeDocDeleteArgs<ExtArgs>>): Prisma__KnowledgeDocClient<$Result.GetResult<Prisma.$KnowledgeDocPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -30960,7 +31188,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends KnowledgeDocUpdateArgs>(args: SelectSubset<T, KnowledgeDocUpdateArgs<ExtArgs>>): Prisma__KnowledgeDocClient<$Result.GetResult<Prisma.$KnowledgeDocPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -30974,7 +31202,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends KnowledgeDocDeleteManyArgs>(args?: SelectSubset<T, KnowledgeDocDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -30993,7 +31221,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends KnowledgeDocUpdateManyArgs>(args: SelectSubset<T, KnowledgeDocUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -31010,7 +31238,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more KnowledgeDocs and only return the `id`
      * const knowledgeDocWithIdOnly = await prisma.knowledgeDoc.updateManyAndReturn({
      *   select: { id: true },
@@ -31023,7 +31251,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends KnowledgeDocUpdateManyAndReturnArgs>(args: SelectSubset<T, KnowledgeDocUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KnowledgeDocPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -31112,7 +31340,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends KnowledgeDocGroupByArgs,
@@ -31227,7 +31455,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"KnowledgeDoc", 'DateTime'>
     readonly updatedAt: FieldRef<"KnowledgeDoc", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -31296,31 +31524,31 @@ export namespace Prisma {
     where?: KnowledgeDocWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of KnowledgeDocs to fetch.
      */
     orderBy?: KnowledgeDocOrderByWithRelationInput | KnowledgeDocOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for KnowledgeDocs.
      */
     cursor?: KnowledgeDocWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` KnowledgeDocs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` KnowledgeDocs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of KnowledgeDocs.
      */
     distinct?: KnowledgeDocScalarFieldEnum | KnowledgeDocScalarFieldEnum[]
@@ -31348,31 +31576,31 @@ export namespace Prisma {
     where?: KnowledgeDocWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of KnowledgeDocs to fetch.
      */
     orderBy?: KnowledgeDocOrderByWithRelationInput | KnowledgeDocOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for KnowledgeDocs.
      */
     cursor?: KnowledgeDocWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` KnowledgeDocs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` KnowledgeDocs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of KnowledgeDocs.
      */
     distinct?: KnowledgeDocScalarFieldEnum | KnowledgeDocScalarFieldEnum[]
@@ -31400,31 +31628,31 @@ export namespace Prisma {
     where?: KnowledgeDocWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of KnowledgeDocs to fetch.
      */
     orderBy?: KnowledgeDocOrderByWithRelationInput | KnowledgeDocOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing KnowledgeDocs.
      */
     cursor?: KnowledgeDocWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` KnowledgeDocs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` KnowledgeDocs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of KnowledgeDocs.
      */
     distinct?: KnowledgeDocScalarFieldEnum | KnowledgeDocScalarFieldEnum[]
@@ -31767,43 +31995,43 @@ export namespace Prisma {
     where?: AiServiceConfigWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiServiceConfigs to fetch.
      */
     orderBy?: AiServiceConfigOrderByWithRelationInput | AiServiceConfigOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: AiServiceConfigWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiServiceConfigs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiServiceConfigs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned AiServiceConfigs
     **/
     _count?: true | AiServiceConfigCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: AiServiceConfigMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: AiServiceConfigMaxAggregateInputType
@@ -32047,13 +32275,13 @@ export namespace Prisma {
      * @example
      * // Get all AiServiceConfigs
      * const aiServiceConfigs = await prisma.aiServiceConfig.findMany()
-     *
+     * 
      * // Get first 10 AiServiceConfigs
      * const aiServiceConfigs = await prisma.aiServiceConfig.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const aiServiceConfigWithIdOnly = await prisma.aiServiceConfig.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends AiServiceConfigFindManyArgs>(args?: SelectSubset<T, AiServiceConfigFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiServiceConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -32067,7 +32295,7 @@ export namespace Prisma {
      *     // ... data to create a AiServiceConfig
      *   }
      * })
-     *
+     * 
      */
     create<T extends AiServiceConfigCreateArgs>(args: SelectSubset<T, AiServiceConfigCreateArgs<ExtArgs>>): Prisma__AiServiceConfigClient<$Result.GetResult<Prisma.$AiServiceConfigPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -32081,7 +32309,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends AiServiceConfigCreateManyArgs>(args?: SelectSubset<T, AiServiceConfigCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -32095,7 +32323,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many AiServiceConfigs and only return the `id`
      * const aiServiceConfigWithIdOnly = await prisma.aiServiceConfig.createManyAndReturn({
      *   select: { id: true },
@@ -32105,7 +32333,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends AiServiceConfigCreateManyAndReturnArgs>(args?: SelectSubset<T, AiServiceConfigCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiServiceConfigPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -32119,7 +32347,7 @@ export namespace Prisma {
      *     // ... filter to delete one AiServiceConfig
      *   }
      * })
-     *
+     * 
      */
     delete<T extends AiServiceConfigDeleteArgs>(args: SelectSubset<T, AiServiceConfigDeleteArgs<ExtArgs>>): Prisma__AiServiceConfigClient<$Result.GetResult<Prisma.$AiServiceConfigPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -32136,7 +32364,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends AiServiceConfigUpdateArgs>(args: SelectSubset<T, AiServiceConfigUpdateArgs<ExtArgs>>): Prisma__AiServiceConfigClient<$Result.GetResult<Prisma.$AiServiceConfigPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -32150,7 +32378,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends AiServiceConfigDeleteManyArgs>(args?: SelectSubset<T, AiServiceConfigDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -32169,7 +32397,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends AiServiceConfigUpdateManyArgs>(args: SelectSubset<T, AiServiceConfigUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -32186,7 +32414,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more AiServiceConfigs and only return the `id`
      * const aiServiceConfigWithIdOnly = await prisma.aiServiceConfig.updateManyAndReturn({
      *   select: { id: true },
@@ -32199,7 +32427,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends AiServiceConfigUpdateManyAndReturnArgs>(args: SelectSubset<T, AiServiceConfigUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiServiceConfigPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -32288,7 +32516,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends AiServiceConfigGroupByArgs,
@@ -32407,7 +32635,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"AiServiceConfig", 'DateTime'>
     readonly updatedAt: FieldRef<"AiServiceConfig", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -32476,31 +32704,31 @@ export namespace Prisma {
     where?: AiServiceConfigWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiServiceConfigs to fetch.
      */
     orderBy?: AiServiceConfigOrderByWithRelationInput | AiServiceConfigOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AiServiceConfigs.
      */
     cursor?: AiServiceConfigWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiServiceConfigs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiServiceConfigs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiServiceConfigs.
      */
     distinct?: AiServiceConfigScalarFieldEnum | AiServiceConfigScalarFieldEnum[]
@@ -32528,31 +32756,31 @@ export namespace Prisma {
     where?: AiServiceConfigWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiServiceConfigs to fetch.
      */
     orderBy?: AiServiceConfigOrderByWithRelationInput | AiServiceConfigOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AiServiceConfigs.
      */
     cursor?: AiServiceConfigWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiServiceConfigs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiServiceConfigs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiServiceConfigs.
      */
     distinct?: AiServiceConfigScalarFieldEnum | AiServiceConfigScalarFieldEnum[]
@@ -32580,31 +32808,31 @@ export namespace Prisma {
     where?: AiServiceConfigWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiServiceConfigs to fetch.
      */
     orderBy?: AiServiceConfigOrderByWithRelationInput | AiServiceConfigOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing AiServiceConfigs.
      */
     cursor?: AiServiceConfigWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiServiceConfigs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiServiceConfigs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiServiceConfigs.
      */
     distinct?: AiServiceConfigScalarFieldEnum | AiServiceConfigScalarFieldEnum[]
@@ -32905,43 +33133,43 @@ export namespace Prisma {
     where?: AiConversationWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiConversations to fetch.
      */
     orderBy?: AiConversationOrderByWithRelationInput | AiConversationOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: AiConversationWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiConversations from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiConversations.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned AiConversations
     **/
     _count?: true | AiConversationCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: AiConversationMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: AiConversationMaxAggregateInputType
@@ -33151,13 +33379,13 @@ export namespace Prisma {
      * @example
      * // Get all AiConversations
      * const aiConversations = await prisma.aiConversation.findMany()
-     *
+     * 
      * // Get first 10 AiConversations
      * const aiConversations = await prisma.aiConversation.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const aiConversationWithIdOnly = await prisma.aiConversation.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends AiConversationFindManyArgs>(args?: SelectSubset<T, AiConversationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -33171,7 +33399,7 @@ export namespace Prisma {
      *     // ... data to create a AiConversation
      *   }
      * })
-     *
+     * 
      */
     create<T extends AiConversationCreateArgs>(args: SelectSubset<T, AiConversationCreateArgs<ExtArgs>>): Prisma__AiConversationClient<$Result.GetResult<Prisma.$AiConversationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -33185,7 +33413,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends AiConversationCreateManyArgs>(args?: SelectSubset<T, AiConversationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -33199,7 +33427,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many AiConversations and only return the `id`
      * const aiConversationWithIdOnly = await prisma.aiConversation.createManyAndReturn({
      *   select: { id: true },
@@ -33209,7 +33437,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends AiConversationCreateManyAndReturnArgs>(args?: SelectSubset<T, AiConversationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiConversationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -33223,7 +33451,7 @@ export namespace Prisma {
      *     // ... filter to delete one AiConversation
      *   }
      * })
-     *
+     * 
      */
     delete<T extends AiConversationDeleteArgs>(args: SelectSubset<T, AiConversationDeleteArgs<ExtArgs>>): Prisma__AiConversationClient<$Result.GetResult<Prisma.$AiConversationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -33240,7 +33468,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends AiConversationUpdateArgs>(args: SelectSubset<T, AiConversationUpdateArgs<ExtArgs>>): Prisma__AiConversationClient<$Result.GetResult<Prisma.$AiConversationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -33254,7 +33482,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends AiConversationDeleteManyArgs>(args?: SelectSubset<T, AiConversationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -33273,7 +33501,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends AiConversationUpdateManyArgs>(args: SelectSubset<T, AiConversationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -33290,7 +33518,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more AiConversations and only return the `id`
      * const aiConversationWithIdOnly = await prisma.aiConversation.updateManyAndReturn({
      *   select: { id: true },
@@ -33303,7 +33531,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends AiConversationUpdateManyAndReturnArgs>(args: SelectSubset<T, AiConversationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiConversationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -33392,7 +33620,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends AiConversationGroupByArgs,
@@ -33506,7 +33734,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"AiConversation", 'DateTime'>
     readonly updatedAt: FieldRef<"AiConversation", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -33575,31 +33803,31 @@ export namespace Prisma {
     where?: AiConversationWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiConversations to fetch.
      */
     orderBy?: AiConversationOrderByWithRelationInput | AiConversationOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AiConversations.
      */
     cursor?: AiConversationWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiConversations from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiConversations.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiConversations.
      */
     distinct?: AiConversationScalarFieldEnum | AiConversationScalarFieldEnum[]
@@ -33627,31 +33855,31 @@ export namespace Prisma {
     where?: AiConversationWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiConversations to fetch.
      */
     orderBy?: AiConversationOrderByWithRelationInput | AiConversationOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AiConversations.
      */
     cursor?: AiConversationWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiConversations from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiConversations.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiConversations.
      */
     distinct?: AiConversationScalarFieldEnum | AiConversationScalarFieldEnum[]
@@ -33679,31 +33907,31 @@ export namespace Prisma {
     where?: AiConversationWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiConversations to fetch.
      */
     orderBy?: AiConversationOrderByWithRelationInput | AiConversationOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing AiConversations.
      */
     cursor?: AiConversationWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiConversations from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiConversations.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiConversations.
      */
     distinct?: AiConversationScalarFieldEnum | AiConversationScalarFieldEnum[]
@@ -34061,55 +34289,55 @@ export namespace Prisma {
     where?: AiMessageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiMessages to fetch.
      */
     orderBy?: AiMessageOrderByWithRelationInput | AiMessageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: AiMessageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiMessages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiMessages.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned AiMessages
     **/
     _count?: true | AiMessageCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to average
     **/
     _avg?: AiMessageAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to sum
     **/
     _sum?: AiMessageSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: AiMessageMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: AiMessageMaxAggregateInputType
@@ -34315,13 +34543,13 @@ export namespace Prisma {
      * @example
      * // Get all AiMessages
      * const aiMessages = await prisma.aiMessage.findMany()
-     *
+     * 
      * // Get first 10 AiMessages
      * const aiMessages = await prisma.aiMessage.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const aiMessageWithIdOnly = await prisma.aiMessage.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends AiMessageFindManyArgs>(args?: SelectSubset<T, AiMessageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -34335,7 +34563,7 @@ export namespace Prisma {
      *     // ... data to create a AiMessage
      *   }
      * })
-     *
+     * 
      */
     create<T extends AiMessageCreateArgs>(args: SelectSubset<T, AiMessageCreateArgs<ExtArgs>>): Prisma__AiMessageClient<$Result.GetResult<Prisma.$AiMessagePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -34349,7 +34577,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends AiMessageCreateManyArgs>(args?: SelectSubset<T, AiMessageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -34363,7 +34591,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many AiMessages and only return the `id`
      * const aiMessageWithIdOnly = await prisma.aiMessage.createManyAndReturn({
      *   select: { id: true },
@@ -34373,7 +34601,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends AiMessageCreateManyAndReturnArgs>(args?: SelectSubset<T, AiMessageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiMessagePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -34387,7 +34615,7 @@ export namespace Prisma {
      *     // ... filter to delete one AiMessage
      *   }
      * })
-     *
+     * 
      */
     delete<T extends AiMessageDeleteArgs>(args: SelectSubset<T, AiMessageDeleteArgs<ExtArgs>>): Prisma__AiMessageClient<$Result.GetResult<Prisma.$AiMessagePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -34404,7 +34632,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends AiMessageUpdateArgs>(args: SelectSubset<T, AiMessageUpdateArgs<ExtArgs>>): Prisma__AiMessageClient<$Result.GetResult<Prisma.$AiMessagePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -34418,7 +34646,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends AiMessageDeleteManyArgs>(args?: SelectSubset<T, AiMessageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -34437,7 +34665,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends AiMessageUpdateManyArgs>(args: SelectSubset<T, AiMessageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -34454,7 +34682,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more AiMessages and only return the `id`
      * const aiMessageWithIdOnly = await prisma.aiMessage.updateManyAndReturn({
      *   select: { id: true },
@@ -34467,7 +34695,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends AiMessageUpdateManyAndReturnArgs>(args: SelectSubset<T, AiMessageUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiMessagePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -34556,7 +34784,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends AiMessageGroupByArgs,
@@ -34668,7 +34896,7 @@ export namespace Prisma {
     readonly creditCost: FieldRef<"AiMessage", 'Int'>
     readonly createdAt: FieldRef<"AiMessage", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -34737,31 +34965,31 @@ export namespace Prisma {
     where?: AiMessageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiMessages to fetch.
      */
     orderBy?: AiMessageOrderByWithRelationInput | AiMessageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AiMessages.
      */
     cursor?: AiMessageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiMessages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiMessages.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiMessages.
      */
     distinct?: AiMessageScalarFieldEnum | AiMessageScalarFieldEnum[]
@@ -34789,31 +35017,31 @@ export namespace Prisma {
     where?: AiMessageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiMessages to fetch.
      */
     orderBy?: AiMessageOrderByWithRelationInput | AiMessageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AiMessages.
      */
     cursor?: AiMessageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiMessages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiMessages.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiMessages.
      */
     distinct?: AiMessageScalarFieldEnum | AiMessageScalarFieldEnum[]
@@ -34841,31 +35069,31 @@ export namespace Prisma {
     where?: AiMessageWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiMessages to fetch.
      */
     orderBy?: AiMessageOrderByWithRelationInput | AiMessageOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing AiMessages.
      */
     cursor?: AiMessageWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiMessages from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiMessages.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiMessages.
      */
     distinct?: AiMessageScalarFieldEnum | AiMessageScalarFieldEnum[]
@@ -35182,55 +35410,55 @@ export namespace Prisma {
     where?: AiCreditAccountWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiCreditAccounts to fetch.
      */
     orderBy?: AiCreditAccountOrderByWithRelationInput | AiCreditAccountOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: AiCreditAccountWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiCreditAccounts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiCreditAccounts.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned AiCreditAccounts
     **/
     _count?: true | AiCreditAccountCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to average
     **/
     _avg?: AiCreditAccountAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to sum
     **/
     _sum?: AiCreditAccountSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: AiCreditAccountMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: AiCreditAccountMaxAggregateInputType
@@ -35435,13 +35663,13 @@ export namespace Prisma {
      * @example
      * // Get all AiCreditAccounts
      * const aiCreditAccounts = await prisma.aiCreditAccount.findMany()
-     *
+     * 
      * // Get first 10 AiCreditAccounts
      * const aiCreditAccounts = await prisma.aiCreditAccount.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const aiCreditAccountWithIdOnly = await prisma.aiCreditAccount.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends AiCreditAccountFindManyArgs>(args?: SelectSubset<T, AiCreditAccountFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -35455,7 +35683,7 @@ export namespace Prisma {
      *     // ... data to create a AiCreditAccount
      *   }
      * })
-     *
+     * 
      */
     create<T extends AiCreditAccountCreateArgs>(args: SelectSubset<T, AiCreditAccountCreateArgs<ExtArgs>>): Prisma__AiCreditAccountClient<$Result.GetResult<Prisma.$AiCreditAccountPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -35469,7 +35697,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends AiCreditAccountCreateManyArgs>(args?: SelectSubset<T, AiCreditAccountCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -35483,7 +35711,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many AiCreditAccounts and only return the `id`
      * const aiCreditAccountWithIdOnly = await prisma.aiCreditAccount.createManyAndReturn({
      *   select: { id: true },
@@ -35493,7 +35721,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends AiCreditAccountCreateManyAndReturnArgs>(args?: SelectSubset<T, AiCreditAccountCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditAccountPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -35507,7 +35735,7 @@ export namespace Prisma {
      *     // ... filter to delete one AiCreditAccount
      *   }
      * })
-     *
+     * 
      */
     delete<T extends AiCreditAccountDeleteArgs>(args: SelectSubset<T, AiCreditAccountDeleteArgs<ExtArgs>>): Prisma__AiCreditAccountClient<$Result.GetResult<Prisma.$AiCreditAccountPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -35524,7 +35752,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends AiCreditAccountUpdateArgs>(args: SelectSubset<T, AiCreditAccountUpdateArgs<ExtArgs>>): Prisma__AiCreditAccountClient<$Result.GetResult<Prisma.$AiCreditAccountPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -35538,7 +35766,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends AiCreditAccountDeleteManyArgs>(args?: SelectSubset<T, AiCreditAccountDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -35557,7 +35785,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends AiCreditAccountUpdateManyArgs>(args: SelectSubset<T, AiCreditAccountUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -35574,7 +35802,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more AiCreditAccounts and only return the `id`
      * const aiCreditAccountWithIdOnly = await prisma.aiCreditAccount.updateManyAndReturn({
      *   select: { id: true },
@@ -35587,7 +35815,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends AiCreditAccountUpdateManyAndReturnArgs>(args: SelectSubset<T, AiCreditAccountUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditAccountPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -35676,7 +35904,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends AiCreditAccountGroupByArgs,
@@ -35788,7 +36016,7 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"AiCreditAccount", 'DateTime'>
     readonly createdAt: FieldRef<"AiCreditAccount", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -35857,31 +36085,31 @@ export namespace Prisma {
     where?: AiCreditAccountWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiCreditAccounts to fetch.
      */
     orderBy?: AiCreditAccountOrderByWithRelationInput | AiCreditAccountOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AiCreditAccounts.
      */
     cursor?: AiCreditAccountWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiCreditAccounts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiCreditAccounts.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiCreditAccounts.
      */
     distinct?: AiCreditAccountScalarFieldEnum | AiCreditAccountScalarFieldEnum[]
@@ -35909,31 +36137,31 @@ export namespace Prisma {
     where?: AiCreditAccountWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiCreditAccounts to fetch.
      */
     orderBy?: AiCreditAccountOrderByWithRelationInput | AiCreditAccountOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AiCreditAccounts.
      */
     cursor?: AiCreditAccountWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiCreditAccounts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiCreditAccounts.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiCreditAccounts.
      */
     distinct?: AiCreditAccountScalarFieldEnum | AiCreditAccountScalarFieldEnum[]
@@ -35961,31 +36189,31 @@ export namespace Prisma {
     where?: AiCreditAccountWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiCreditAccounts to fetch.
      */
     orderBy?: AiCreditAccountOrderByWithRelationInput | AiCreditAccountOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing AiCreditAccounts.
      */
     cursor?: AiCreditAccountWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiCreditAccounts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiCreditAccounts.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiCreditAccounts.
      */
     distinct?: AiCreditAccountScalarFieldEnum | AiCreditAccountScalarFieldEnum[]
@@ -36352,55 +36580,55 @@ export namespace Prisma {
     where?: AiCreditLedgerWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiCreditLedgers to fetch.
      */
     orderBy?: AiCreditLedgerOrderByWithRelationInput | AiCreditLedgerOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: AiCreditLedgerWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiCreditLedgers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiCreditLedgers.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned AiCreditLedgers
     **/
     _count?: true | AiCreditLedgerCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to average
     **/
     _avg?: AiCreditLedgerAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to sum
     **/
     _sum?: AiCreditLedgerSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: AiCreditLedgerMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: AiCreditLedgerMaxAggregateInputType
@@ -36630,13 +36858,13 @@ export namespace Prisma {
      * @example
      * // Get all AiCreditLedgers
      * const aiCreditLedgers = await prisma.aiCreditLedger.findMany()
-     *
+     * 
      * // Get first 10 AiCreditLedgers
      * const aiCreditLedgers = await prisma.aiCreditLedger.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const aiCreditLedgerWithIdOnly = await prisma.aiCreditLedger.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends AiCreditLedgerFindManyArgs>(args?: SelectSubset<T, AiCreditLedgerFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditLedgerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -36650,7 +36878,7 @@ export namespace Prisma {
      *     // ... data to create a AiCreditLedger
      *   }
      * })
-     *
+     * 
      */
     create<T extends AiCreditLedgerCreateArgs>(args: SelectSubset<T, AiCreditLedgerCreateArgs<ExtArgs>>): Prisma__AiCreditLedgerClient<$Result.GetResult<Prisma.$AiCreditLedgerPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -36664,7 +36892,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends AiCreditLedgerCreateManyArgs>(args?: SelectSubset<T, AiCreditLedgerCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -36678,7 +36906,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many AiCreditLedgers and only return the `id`
      * const aiCreditLedgerWithIdOnly = await prisma.aiCreditLedger.createManyAndReturn({
      *   select: { id: true },
@@ -36688,7 +36916,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends AiCreditLedgerCreateManyAndReturnArgs>(args?: SelectSubset<T, AiCreditLedgerCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditLedgerPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -36702,7 +36930,7 @@ export namespace Prisma {
      *     // ... filter to delete one AiCreditLedger
      *   }
      * })
-     *
+     * 
      */
     delete<T extends AiCreditLedgerDeleteArgs>(args: SelectSubset<T, AiCreditLedgerDeleteArgs<ExtArgs>>): Prisma__AiCreditLedgerClient<$Result.GetResult<Prisma.$AiCreditLedgerPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -36719,7 +36947,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends AiCreditLedgerUpdateArgs>(args: SelectSubset<T, AiCreditLedgerUpdateArgs<ExtArgs>>): Prisma__AiCreditLedgerClient<$Result.GetResult<Prisma.$AiCreditLedgerPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -36733,7 +36961,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends AiCreditLedgerDeleteManyArgs>(args?: SelectSubset<T, AiCreditLedgerDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -36752,7 +36980,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends AiCreditLedgerUpdateManyArgs>(args: SelectSubset<T, AiCreditLedgerUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -36769,7 +36997,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more AiCreditLedgers and only return the `id`
      * const aiCreditLedgerWithIdOnly = await prisma.aiCreditLedger.updateManyAndReturn({
      *   select: { id: true },
@@ -36782,7 +37010,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends AiCreditLedgerUpdateManyAndReturnArgs>(args: SelectSubset<T, AiCreditLedgerUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditLedgerPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -36871,7 +37099,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends AiCreditLedgerGroupByArgs,
@@ -36987,7 +37215,7 @@ export namespace Prisma {
     readonly reason: FieldRef<"AiCreditLedger", 'String'>
     readonly createdAt: FieldRef<"AiCreditLedger", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -37056,31 +37284,31 @@ export namespace Prisma {
     where?: AiCreditLedgerWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiCreditLedgers to fetch.
      */
     orderBy?: AiCreditLedgerOrderByWithRelationInput | AiCreditLedgerOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AiCreditLedgers.
      */
     cursor?: AiCreditLedgerWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiCreditLedgers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiCreditLedgers.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiCreditLedgers.
      */
     distinct?: AiCreditLedgerScalarFieldEnum | AiCreditLedgerScalarFieldEnum[]
@@ -37108,31 +37336,31 @@ export namespace Prisma {
     where?: AiCreditLedgerWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiCreditLedgers to fetch.
      */
     orderBy?: AiCreditLedgerOrderByWithRelationInput | AiCreditLedgerOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for AiCreditLedgers.
      */
     cursor?: AiCreditLedgerWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiCreditLedgers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiCreditLedgers.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiCreditLedgers.
      */
     distinct?: AiCreditLedgerScalarFieldEnum | AiCreditLedgerScalarFieldEnum[]
@@ -37160,31 +37388,31 @@ export namespace Prisma {
     where?: AiCreditLedgerWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of AiCreditLedgers to fetch.
      */
     orderBy?: AiCreditLedgerOrderByWithRelationInput | AiCreditLedgerOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing AiCreditLedgers.
      */
     cursor?: AiCreditLedgerWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` AiCreditLedgers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` AiCreditLedgers.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of AiCreditLedgers.
      */
     distinct?: AiCreditLedgerScalarFieldEnum | AiCreditLedgerScalarFieldEnum[]
@@ -37491,43 +37719,43 @@ export namespace Prisma {
     where?: MembershipSubscriptionWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of MembershipSubscriptions to fetch.
      */
     orderBy?: MembershipSubscriptionOrderByWithRelationInput | MembershipSubscriptionOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: MembershipSubscriptionWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` MembershipSubscriptions from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` MembershipSubscriptions.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned MembershipSubscriptions
     **/
     _count?: true | MembershipSubscriptionCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: MembershipSubscriptionMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: MembershipSubscriptionMaxAggregateInputType
@@ -37735,13 +37963,13 @@ export namespace Prisma {
      * @example
      * // Get all MembershipSubscriptions
      * const membershipSubscriptions = await prisma.membershipSubscription.findMany()
-     *
+     * 
      * // Get first 10 MembershipSubscriptions
      * const membershipSubscriptions = await prisma.membershipSubscription.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const membershipSubscriptionWithIdOnly = await prisma.membershipSubscription.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends MembershipSubscriptionFindManyArgs>(args?: SelectSubset<T, MembershipSubscriptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MembershipSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -37755,7 +37983,7 @@ export namespace Prisma {
      *     // ... data to create a MembershipSubscription
      *   }
      * })
-     *
+     * 
      */
     create<T extends MembershipSubscriptionCreateArgs>(args: SelectSubset<T, MembershipSubscriptionCreateArgs<ExtArgs>>): Prisma__MembershipSubscriptionClient<$Result.GetResult<Prisma.$MembershipSubscriptionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -37769,7 +37997,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends MembershipSubscriptionCreateManyArgs>(args?: SelectSubset<T, MembershipSubscriptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -37783,7 +38011,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many MembershipSubscriptions and only return the `id`
      * const membershipSubscriptionWithIdOnly = await prisma.membershipSubscription.createManyAndReturn({
      *   select: { id: true },
@@ -37793,7 +38021,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends MembershipSubscriptionCreateManyAndReturnArgs>(args?: SelectSubset<T, MembershipSubscriptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MembershipSubscriptionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -37807,7 +38035,7 @@ export namespace Prisma {
      *     // ... filter to delete one MembershipSubscription
      *   }
      * })
-     *
+     * 
      */
     delete<T extends MembershipSubscriptionDeleteArgs>(args: SelectSubset<T, MembershipSubscriptionDeleteArgs<ExtArgs>>): Prisma__MembershipSubscriptionClient<$Result.GetResult<Prisma.$MembershipSubscriptionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -37824,7 +38052,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends MembershipSubscriptionUpdateArgs>(args: SelectSubset<T, MembershipSubscriptionUpdateArgs<ExtArgs>>): Prisma__MembershipSubscriptionClient<$Result.GetResult<Prisma.$MembershipSubscriptionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -37838,7 +38066,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends MembershipSubscriptionDeleteManyArgs>(args?: SelectSubset<T, MembershipSubscriptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -37857,7 +38085,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends MembershipSubscriptionUpdateManyArgs>(args: SelectSubset<T, MembershipSubscriptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -37874,7 +38102,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more MembershipSubscriptions and only return the `id`
      * const membershipSubscriptionWithIdOnly = await prisma.membershipSubscription.updateManyAndReturn({
      *   select: { id: true },
@@ -37887,7 +38115,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends MembershipSubscriptionUpdateManyAndReturnArgs>(args: SelectSubset<T, MembershipSubscriptionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MembershipSubscriptionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -37976,7 +38204,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends MembershipSubscriptionGroupByArgs,
@@ -38089,7 +38317,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"MembershipSubscription", 'DateTime'>
     readonly updatedAt: FieldRef<"MembershipSubscription", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -38158,31 +38386,31 @@ export namespace Prisma {
     where?: MembershipSubscriptionWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of MembershipSubscriptions to fetch.
      */
     orderBy?: MembershipSubscriptionOrderByWithRelationInput | MembershipSubscriptionOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for MembershipSubscriptions.
      */
     cursor?: MembershipSubscriptionWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` MembershipSubscriptions from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` MembershipSubscriptions.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of MembershipSubscriptions.
      */
     distinct?: MembershipSubscriptionScalarFieldEnum | MembershipSubscriptionScalarFieldEnum[]
@@ -38210,31 +38438,31 @@ export namespace Prisma {
     where?: MembershipSubscriptionWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of MembershipSubscriptions to fetch.
      */
     orderBy?: MembershipSubscriptionOrderByWithRelationInput | MembershipSubscriptionOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for MembershipSubscriptions.
      */
     cursor?: MembershipSubscriptionWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` MembershipSubscriptions from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` MembershipSubscriptions.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of MembershipSubscriptions.
      */
     distinct?: MembershipSubscriptionScalarFieldEnum | MembershipSubscriptionScalarFieldEnum[]
@@ -38262,31 +38490,31 @@ export namespace Prisma {
     where?: MembershipSubscriptionWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of MembershipSubscriptions to fetch.
      */
     orderBy?: MembershipSubscriptionOrderByWithRelationInput | MembershipSubscriptionOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing MembershipSubscriptions.
      */
     cursor?: MembershipSubscriptionWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` MembershipSubscriptions from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` MembershipSubscriptions.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of MembershipSubscriptions.
      */
     distinct?: MembershipSubscriptionScalarFieldEnum | MembershipSubscriptionScalarFieldEnum[]
@@ -38707,55 +38935,55 @@ export namespace Prisma {
     where?: OrderWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Orders to fetch.
      */
     orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: OrderWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Orders from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Orders.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned Orders
     **/
     _count?: true | OrderCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to average
     **/
     _avg?: OrderAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to sum
     **/
     _sum?: OrderSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: OrderMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: OrderMaxAggregateInputType
@@ -39063,13 +39291,13 @@ export namespace Prisma {
      * @example
      * // Get all Orders
      * const orders = await prisma.order.findMany()
-     *
+     * 
      * // Get first 10 Orders
      * const orders = await prisma.order.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const orderWithIdOnly = await prisma.order.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends OrderFindManyArgs>(args?: SelectSubset<T, OrderFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -39083,7 +39311,7 @@ export namespace Prisma {
      *     // ... data to create a Order
      *   }
      * })
-     *
+     * 
      */
     create<T extends OrderCreateArgs>(args: SelectSubset<T, OrderCreateArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -39097,7 +39325,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends OrderCreateManyArgs>(args?: SelectSubset<T, OrderCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -39111,7 +39339,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many Orders and only return the `id`
      * const orderWithIdOnly = await prisma.order.createManyAndReturn({
      *   select: { id: true },
@@ -39121,7 +39349,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends OrderCreateManyAndReturnArgs>(args?: SelectSubset<T, OrderCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -39135,7 +39363,7 @@ export namespace Prisma {
      *     // ... filter to delete one Order
      *   }
      * })
-     *
+     * 
      */
     delete<T extends OrderDeleteArgs>(args: SelectSubset<T, OrderDeleteArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -39152,7 +39380,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends OrderUpdateArgs>(args: SelectSubset<T, OrderUpdateArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -39166,7 +39394,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends OrderDeleteManyArgs>(args?: SelectSubset<T, OrderDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -39185,7 +39413,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends OrderUpdateManyArgs>(args: SelectSubset<T, OrderUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -39202,7 +39430,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more Orders and only return the `id`
      * const orderWithIdOnly = await prisma.order.updateManyAndReturn({
      *   select: { id: true },
@@ -39215,7 +39443,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends OrderUpdateManyAndReturnArgs>(args: SelectSubset<T, OrderUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -39304,7 +39532,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends OrderGroupByArgs,
@@ -39433,7 +39661,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -39502,31 +39730,31 @@ export namespace Prisma {
     where?: OrderWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Orders to fetch.
      */
     orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Orders.
      */
     cursor?: OrderWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Orders from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Orders.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Orders.
      */
     distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
@@ -39554,31 +39782,31 @@ export namespace Prisma {
     where?: OrderWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Orders to fetch.
      */
     orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Orders.
      */
     cursor?: OrderWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Orders from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Orders.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Orders.
      */
     distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
@@ -39606,31 +39834,31 @@ export namespace Prisma {
     where?: OrderWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Orders to fetch.
      */
     orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing Orders.
      */
     cursor?: OrderWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Orders from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Orders.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Orders.
      */
     distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
@@ -39985,55 +40213,55 @@ export namespace Prisma {
     where?: CompetitionFileWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of CompetitionFiles to fetch.
      */
     orderBy?: CompetitionFileOrderByWithRelationInput | CompetitionFileOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: CompetitionFileWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` CompetitionFiles from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` CompetitionFiles.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned CompetitionFiles
     **/
     _count?: true | CompetitionFileCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to average
     **/
     _avg?: CompetitionFileAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to sum
     **/
     _sum?: CompetitionFileSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: CompetitionFileMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: CompetitionFileMaxAggregateInputType
@@ -40261,13 +40489,13 @@ export namespace Prisma {
      * @example
      * // Get all CompetitionFiles
      * const competitionFiles = await prisma.competitionFile.findMany()
-     *
+     * 
      * // Get first 10 CompetitionFiles
      * const competitionFiles = await prisma.competitionFile.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const competitionFileWithIdOnly = await prisma.competitionFile.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends CompetitionFileFindManyArgs>(args?: SelectSubset<T, CompetitionFileFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CompetitionFilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -40281,7 +40509,7 @@ export namespace Prisma {
      *     // ... data to create a CompetitionFile
      *   }
      * })
-     *
+     * 
      */
     create<T extends CompetitionFileCreateArgs>(args: SelectSubset<T, CompetitionFileCreateArgs<ExtArgs>>): Prisma__CompetitionFileClient<$Result.GetResult<Prisma.$CompetitionFilePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -40295,7 +40523,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends CompetitionFileCreateManyArgs>(args?: SelectSubset<T, CompetitionFileCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -40309,7 +40537,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many CompetitionFiles and only return the `id`
      * const competitionFileWithIdOnly = await prisma.competitionFile.createManyAndReturn({
      *   select: { id: true },
@@ -40319,7 +40547,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends CompetitionFileCreateManyAndReturnArgs>(args?: SelectSubset<T, CompetitionFileCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CompetitionFilePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -40333,7 +40561,7 @@ export namespace Prisma {
      *     // ... filter to delete one CompetitionFile
      *   }
      * })
-     *
+     * 
      */
     delete<T extends CompetitionFileDeleteArgs>(args: SelectSubset<T, CompetitionFileDeleteArgs<ExtArgs>>): Prisma__CompetitionFileClient<$Result.GetResult<Prisma.$CompetitionFilePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -40350,7 +40578,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends CompetitionFileUpdateArgs>(args: SelectSubset<T, CompetitionFileUpdateArgs<ExtArgs>>): Prisma__CompetitionFileClient<$Result.GetResult<Prisma.$CompetitionFilePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -40364,7 +40592,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends CompetitionFileDeleteManyArgs>(args?: SelectSubset<T, CompetitionFileDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -40383,7 +40611,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends CompetitionFileUpdateManyArgs>(args: SelectSubset<T, CompetitionFileUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -40400,7 +40628,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more CompetitionFiles and only return the `id`
      * const competitionFileWithIdOnly = await prisma.competitionFile.updateManyAndReturn({
      *   select: { id: true },
@@ -40413,7 +40641,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends CompetitionFileUpdateManyAndReturnArgs>(args: SelectSubset<T, CompetitionFileUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CompetitionFilePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -40502,7 +40730,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends CompetitionFileGroupByArgs,
@@ -40619,7 +40847,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"CompetitionFile", 'DateTime'>
     readonly updatedAt: FieldRef<"CompetitionFile", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -40676,31 +40904,31 @@ export namespace Prisma {
     where?: CompetitionFileWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of CompetitionFiles to fetch.
      */
     orderBy?: CompetitionFileOrderByWithRelationInput | CompetitionFileOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for CompetitionFiles.
      */
     cursor?: CompetitionFileWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` CompetitionFiles from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` CompetitionFiles.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of CompetitionFiles.
      */
     distinct?: CompetitionFileScalarFieldEnum | CompetitionFileScalarFieldEnum[]
@@ -40724,31 +40952,31 @@ export namespace Prisma {
     where?: CompetitionFileWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of CompetitionFiles to fetch.
      */
     orderBy?: CompetitionFileOrderByWithRelationInput | CompetitionFileOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for CompetitionFiles.
      */
     cursor?: CompetitionFileWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` CompetitionFiles from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` CompetitionFiles.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of CompetitionFiles.
      */
     distinct?: CompetitionFileScalarFieldEnum | CompetitionFileScalarFieldEnum[]
@@ -40772,31 +41000,31 @@ export namespace Prisma {
     where?: CompetitionFileWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of CompetitionFiles to fetch.
      */
     orderBy?: CompetitionFileOrderByWithRelationInput | CompetitionFileOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing CompetitionFiles.
      */
     cursor?: CompetitionFileWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` CompetitionFiles from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` CompetitionFiles.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of CompetitionFiles.
      */
     distinct?: CompetitionFileScalarFieldEnum | CompetitionFileScalarFieldEnum[]
@@ -41093,43 +41321,43 @@ export namespace Prisma {
     where?: ShowcaseContentWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseContents to fetch.
      */
     orderBy?: ShowcaseContentOrderByWithRelationInput | ShowcaseContentOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: ShowcaseContentWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseContents from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseContents.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned ShowcaseContents
     **/
     _count?: true | ShowcaseContentCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ShowcaseContentMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: ShowcaseContentMaxAggregateInputType
@@ -41353,13 +41581,13 @@ export namespace Prisma {
      * @example
      * // Get all ShowcaseContents
      * const showcaseContents = await prisma.showcaseContent.findMany()
-     *
+     * 
      * // Get first 10 ShowcaseContents
      * const showcaseContents = await prisma.showcaseContent.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const showcaseContentWithIdOnly = await prisma.showcaseContent.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends ShowcaseContentFindManyArgs>(args?: SelectSubset<T, ShowcaseContentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowcaseContentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -41373,7 +41601,7 @@ export namespace Prisma {
      *     // ... data to create a ShowcaseContent
      *   }
      * })
-     *
+     * 
      */
     create<T extends ShowcaseContentCreateArgs>(args: SelectSubset<T, ShowcaseContentCreateArgs<ExtArgs>>): Prisma__ShowcaseContentClient<$Result.GetResult<Prisma.$ShowcaseContentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -41387,7 +41615,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends ShowcaseContentCreateManyArgs>(args?: SelectSubset<T, ShowcaseContentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -41401,7 +41629,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many ShowcaseContents and only return the `id`
      * const showcaseContentWithIdOnly = await prisma.showcaseContent.createManyAndReturn({
      *   select: { id: true },
@@ -41411,7 +41639,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends ShowcaseContentCreateManyAndReturnArgs>(args?: SelectSubset<T, ShowcaseContentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowcaseContentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -41425,7 +41653,7 @@ export namespace Prisma {
      *     // ... filter to delete one ShowcaseContent
      *   }
      * })
-     *
+     * 
      */
     delete<T extends ShowcaseContentDeleteArgs>(args: SelectSubset<T, ShowcaseContentDeleteArgs<ExtArgs>>): Prisma__ShowcaseContentClient<$Result.GetResult<Prisma.$ShowcaseContentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -41442,7 +41670,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends ShowcaseContentUpdateArgs>(args: SelectSubset<T, ShowcaseContentUpdateArgs<ExtArgs>>): Prisma__ShowcaseContentClient<$Result.GetResult<Prisma.$ShowcaseContentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -41456,7 +41684,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends ShowcaseContentDeleteManyArgs>(args?: SelectSubset<T, ShowcaseContentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -41475,7 +41703,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends ShowcaseContentUpdateManyArgs>(args: SelectSubset<T, ShowcaseContentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -41492,7 +41720,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more ShowcaseContents and only return the `id`
      * const showcaseContentWithIdOnly = await prisma.showcaseContent.updateManyAndReturn({
      *   select: { id: true },
@@ -41505,7 +41733,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends ShowcaseContentUpdateManyAndReturnArgs>(args: SelectSubset<T, ShowcaseContentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowcaseContentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -41594,7 +41822,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends ShowcaseContentGroupByArgs,
@@ -41711,7 +41939,7 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"ShowcaseContent", 'DateTime'>
     readonly createdAt: FieldRef<"ShowcaseContent", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -41768,31 +41996,31 @@ export namespace Prisma {
     where?: ShowcaseContentWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseContents to fetch.
      */
     orderBy?: ShowcaseContentOrderByWithRelationInput | ShowcaseContentOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ShowcaseContents.
      */
     cursor?: ShowcaseContentWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseContents from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseContents.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShowcaseContents.
      */
     distinct?: ShowcaseContentScalarFieldEnum | ShowcaseContentScalarFieldEnum[]
@@ -41816,31 +42044,31 @@ export namespace Prisma {
     where?: ShowcaseContentWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseContents to fetch.
      */
     orderBy?: ShowcaseContentOrderByWithRelationInput | ShowcaseContentOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ShowcaseContents.
      */
     cursor?: ShowcaseContentWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseContents from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseContents.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShowcaseContents.
      */
     distinct?: ShowcaseContentScalarFieldEnum | ShowcaseContentScalarFieldEnum[]
@@ -41864,31 +42092,31 @@ export namespace Prisma {
     where?: ShowcaseContentWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseContents to fetch.
      */
     orderBy?: ShowcaseContentOrderByWithRelationInput | ShowcaseContentOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing ShowcaseContents.
      */
     cursor?: ShowcaseContentWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseContents from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseContents.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShowcaseContents.
      */
     distinct?: ShowcaseContentScalarFieldEnum | ShowcaseContentScalarFieldEnum[]
@@ -42201,55 +42429,55 @@ export namespace Prisma {
     where?: ShowcaseSequenceWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseSequences to fetch.
      */
     orderBy?: ShowcaseSequenceOrderByWithRelationInput | ShowcaseSequenceOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: ShowcaseSequenceWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseSequences from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseSequences.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned ShowcaseSequences
     **/
     _count?: true | ShowcaseSequenceCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to average
     **/
     _avg?: ShowcaseSequenceAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to sum
     **/
     _sum?: ShowcaseSequenceSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ShowcaseSequenceMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: ShowcaseSequenceMaxAggregateInputType
@@ -42459,13 +42687,13 @@ export namespace Prisma {
      * @example
      * // Get all ShowcaseSequences
      * const showcaseSequences = await prisma.showcaseSequence.findMany()
-     *
+     * 
      * // Get first 10 ShowcaseSequences
      * const showcaseSequences = await prisma.showcaseSequence.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const showcaseSequenceWithIdOnly = await prisma.showcaseSequence.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends ShowcaseSequenceFindManyArgs>(args?: SelectSubset<T, ShowcaseSequenceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowcaseSequencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -42479,7 +42707,7 @@ export namespace Prisma {
      *     // ... data to create a ShowcaseSequence
      *   }
      * })
-     *
+     * 
      */
     create<T extends ShowcaseSequenceCreateArgs>(args: SelectSubset<T, ShowcaseSequenceCreateArgs<ExtArgs>>): Prisma__ShowcaseSequenceClient<$Result.GetResult<Prisma.$ShowcaseSequencePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -42493,7 +42721,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends ShowcaseSequenceCreateManyArgs>(args?: SelectSubset<T, ShowcaseSequenceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -42507,7 +42735,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many ShowcaseSequences and only return the `id`
      * const showcaseSequenceWithIdOnly = await prisma.showcaseSequence.createManyAndReturn({
      *   select: { id: true },
@@ -42517,7 +42745,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends ShowcaseSequenceCreateManyAndReturnArgs>(args?: SelectSubset<T, ShowcaseSequenceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowcaseSequencePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -42531,7 +42759,7 @@ export namespace Prisma {
      *     // ... filter to delete one ShowcaseSequence
      *   }
      * })
-     *
+     * 
      */
     delete<T extends ShowcaseSequenceDeleteArgs>(args: SelectSubset<T, ShowcaseSequenceDeleteArgs<ExtArgs>>): Prisma__ShowcaseSequenceClient<$Result.GetResult<Prisma.$ShowcaseSequencePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -42548,7 +42776,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends ShowcaseSequenceUpdateArgs>(args: SelectSubset<T, ShowcaseSequenceUpdateArgs<ExtArgs>>): Prisma__ShowcaseSequenceClient<$Result.GetResult<Prisma.$ShowcaseSequencePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -42562,7 +42790,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends ShowcaseSequenceDeleteManyArgs>(args?: SelectSubset<T, ShowcaseSequenceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -42581,7 +42809,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends ShowcaseSequenceUpdateManyArgs>(args: SelectSubset<T, ShowcaseSequenceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -42598,7 +42826,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more ShowcaseSequences and only return the `id`
      * const showcaseSequenceWithIdOnly = await prisma.showcaseSequence.updateManyAndReturn({
      *   select: { id: true },
@@ -42611,7 +42839,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends ShowcaseSequenceUpdateManyAndReturnArgs>(args: SelectSubset<T, ShowcaseSequenceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowcaseSequencePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -42700,7 +42928,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends ShowcaseSequenceGroupByArgs,
@@ -42814,7 +43042,7 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"ShowcaseSequence", 'DateTime'>
     readonly createdAt: FieldRef<"ShowcaseSequence", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -42871,31 +43099,31 @@ export namespace Prisma {
     where?: ShowcaseSequenceWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseSequences to fetch.
      */
     orderBy?: ShowcaseSequenceOrderByWithRelationInput | ShowcaseSequenceOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ShowcaseSequences.
      */
     cursor?: ShowcaseSequenceWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseSequences from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseSequences.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShowcaseSequences.
      */
     distinct?: ShowcaseSequenceScalarFieldEnum | ShowcaseSequenceScalarFieldEnum[]
@@ -42919,31 +43147,31 @@ export namespace Prisma {
     where?: ShowcaseSequenceWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseSequences to fetch.
      */
     orderBy?: ShowcaseSequenceOrderByWithRelationInput | ShowcaseSequenceOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ShowcaseSequences.
      */
     cursor?: ShowcaseSequenceWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseSequences from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseSequences.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShowcaseSequences.
      */
     distinct?: ShowcaseSequenceScalarFieldEnum | ShowcaseSequenceScalarFieldEnum[]
@@ -42967,31 +43195,31 @@ export namespace Prisma {
     where?: ShowcaseSequenceWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseSequences to fetch.
      */
     orderBy?: ShowcaseSequenceOrderByWithRelationInput | ShowcaseSequenceOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing ShowcaseSequences.
      */
     cursor?: ShowcaseSequenceWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseSequences from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseSequences.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShowcaseSequences.
      */
     distinct?: ShowcaseSequenceScalarFieldEnum | ShowcaseSequenceScalarFieldEnum[]
@@ -43338,55 +43566,55 @@ export namespace Prisma {
     where?: ShowcaseAIDemoCallWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseAIDemoCalls to fetch.
      */
     orderBy?: ShowcaseAIDemoCallOrderByWithRelationInput | ShowcaseAIDemoCallOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: ShowcaseAIDemoCallWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseAIDemoCalls from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseAIDemoCalls.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned ShowcaseAIDemoCalls
     **/
     _count?: true | ShowcaseAIDemoCallCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to average
     **/
     _avg?: ShowcaseAIDemoCallAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to sum
     **/
     _sum?: ShowcaseAIDemoCallSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ShowcaseAIDemoCallMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: ShowcaseAIDemoCallMaxAggregateInputType
@@ -43626,13 +43854,13 @@ export namespace Prisma {
      * @example
      * // Get all ShowcaseAIDemoCalls
      * const showcaseAIDemoCalls = await prisma.showcaseAIDemoCall.findMany()
-     *
+     * 
      * // Get first 10 ShowcaseAIDemoCalls
      * const showcaseAIDemoCalls = await prisma.showcaseAIDemoCall.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const showcaseAIDemoCallWithIdOnly = await prisma.showcaseAIDemoCall.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends ShowcaseAIDemoCallFindManyArgs>(args?: SelectSubset<T, ShowcaseAIDemoCallFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowcaseAIDemoCallPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -43646,7 +43874,7 @@ export namespace Prisma {
      *     // ... data to create a ShowcaseAIDemoCall
      *   }
      * })
-     *
+     * 
      */
     create<T extends ShowcaseAIDemoCallCreateArgs>(args: SelectSubset<T, ShowcaseAIDemoCallCreateArgs<ExtArgs>>): Prisma__ShowcaseAIDemoCallClient<$Result.GetResult<Prisma.$ShowcaseAIDemoCallPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -43660,7 +43888,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends ShowcaseAIDemoCallCreateManyArgs>(args?: SelectSubset<T, ShowcaseAIDemoCallCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -43674,7 +43902,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many ShowcaseAIDemoCalls and only return the `id`
      * const showcaseAIDemoCallWithIdOnly = await prisma.showcaseAIDemoCall.createManyAndReturn({
      *   select: { id: true },
@@ -43684,7 +43912,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends ShowcaseAIDemoCallCreateManyAndReturnArgs>(args?: SelectSubset<T, ShowcaseAIDemoCallCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowcaseAIDemoCallPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -43698,7 +43926,7 @@ export namespace Prisma {
      *     // ... filter to delete one ShowcaseAIDemoCall
      *   }
      * })
-     *
+     * 
      */
     delete<T extends ShowcaseAIDemoCallDeleteArgs>(args: SelectSubset<T, ShowcaseAIDemoCallDeleteArgs<ExtArgs>>): Prisma__ShowcaseAIDemoCallClient<$Result.GetResult<Prisma.$ShowcaseAIDemoCallPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -43715,7 +43943,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends ShowcaseAIDemoCallUpdateArgs>(args: SelectSubset<T, ShowcaseAIDemoCallUpdateArgs<ExtArgs>>): Prisma__ShowcaseAIDemoCallClient<$Result.GetResult<Prisma.$ShowcaseAIDemoCallPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -43729,7 +43957,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends ShowcaseAIDemoCallDeleteManyArgs>(args?: SelectSubset<T, ShowcaseAIDemoCallDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -43748,7 +43976,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends ShowcaseAIDemoCallUpdateManyArgs>(args: SelectSubset<T, ShowcaseAIDemoCallUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -43765,7 +43993,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more ShowcaseAIDemoCalls and only return the `id`
      * const showcaseAIDemoCallWithIdOnly = await prisma.showcaseAIDemoCall.updateManyAndReturn({
      *   select: { id: true },
@@ -43778,7 +44006,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends ShowcaseAIDemoCallUpdateManyAndReturnArgs>(args: SelectSubset<T, ShowcaseAIDemoCallUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowcaseAIDemoCallPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -43867,7 +44095,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends ShowcaseAIDemoCallGroupByArgs,
@@ -43986,7 +44214,7 @@ export namespace Prisma {
     readonly saved: FieldRef<"ShowcaseAIDemoCall", 'Boolean'>
     readonly createdAt: FieldRef<"ShowcaseAIDemoCall", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -44043,31 +44271,31 @@ export namespace Prisma {
     where?: ShowcaseAIDemoCallWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseAIDemoCalls to fetch.
      */
     orderBy?: ShowcaseAIDemoCallOrderByWithRelationInput | ShowcaseAIDemoCallOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ShowcaseAIDemoCalls.
      */
     cursor?: ShowcaseAIDemoCallWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseAIDemoCalls from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseAIDemoCalls.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShowcaseAIDemoCalls.
      */
     distinct?: ShowcaseAIDemoCallScalarFieldEnum | ShowcaseAIDemoCallScalarFieldEnum[]
@@ -44091,31 +44319,31 @@ export namespace Prisma {
     where?: ShowcaseAIDemoCallWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseAIDemoCalls to fetch.
      */
     orderBy?: ShowcaseAIDemoCallOrderByWithRelationInput | ShowcaseAIDemoCallOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ShowcaseAIDemoCalls.
      */
     cursor?: ShowcaseAIDemoCallWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseAIDemoCalls from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseAIDemoCalls.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShowcaseAIDemoCalls.
      */
     distinct?: ShowcaseAIDemoCallScalarFieldEnum | ShowcaseAIDemoCallScalarFieldEnum[]
@@ -44139,31 +44367,31 @@ export namespace Prisma {
     where?: ShowcaseAIDemoCallWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseAIDemoCalls to fetch.
      */
     orderBy?: ShowcaseAIDemoCallOrderByWithRelationInput | ShowcaseAIDemoCallOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing ShowcaseAIDemoCalls.
      */
     cursor?: ShowcaseAIDemoCallWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseAIDemoCalls from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseAIDemoCalls.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShowcaseAIDemoCalls.
      */
     distinct?: ShowcaseAIDemoCallScalarFieldEnum | ShowcaseAIDemoCallScalarFieldEnum[]
@@ -44502,55 +44730,55 @@ export namespace Prisma {
     where?: ShowcaseAIDebugLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseAIDebugLogs to fetch.
      */
     orderBy?: ShowcaseAIDebugLogOrderByWithRelationInput | ShowcaseAIDebugLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: ShowcaseAIDebugLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseAIDebugLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseAIDebugLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned ShowcaseAIDebugLogs
     **/
     _count?: true | ShowcaseAIDebugLogCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to average
     **/
     _avg?: ShowcaseAIDebugLogAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to sum
     **/
     _sum?: ShowcaseAIDebugLogSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ShowcaseAIDebugLogMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: ShowcaseAIDebugLogMaxAggregateInputType
@@ -44790,13 +45018,13 @@ export namespace Prisma {
      * @example
      * // Get all ShowcaseAIDebugLogs
      * const showcaseAIDebugLogs = await prisma.showcaseAIDebugLog.findMany()
-     *
+     * 
      * // Get first 10 ShowcaseAIDebugLogs
      * const showcaseAIDebugLogs = await prisma.showcaseAIDebugLog.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const showcaseAIDebugLogWithIdOnly = await prisma.showcaseAIDebugLog.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends ShowcaseAIDebugLogFindManyArgs>(args?: SelectSubset<T, ShowcaseAIDebugLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowcaseAIDebugLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -44810,7 +45038,7 @@ export namespace Prisma {
      *     // ... data to create a ShowcaseAIDebugLog
      *   }
      * })
-     *
+     * 
      */
     create<T extends ShowcaseAIDebugLogCreateArgs>(args: SelectSubset<T, ShowcaseAIDebugLogCreateArgs<ExtArgs>>): Prisma__ShowcaseAIDebugLogClient<$Result.GetResult<Prisma.$ShowcaseAIDebugLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -44824,7 +45052,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends ShowcaseAIDebugLogCreateManyArgs>(args?: SelectSubset<T, ShowcaseAIDebugLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -44838,7 +45066,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many ShowcaseAIDebugLogs and only return the `id`
      * const showcaseAIDebugLogWithIdOnly = await prisma.showcaseAIDebugLog.createManyAndReturn({
      *   select: { id: true },
@@ -44848,7 +45076,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends ShowcaseAIDebugLogCreateManyAndReturnArgs>(args?: SelectSubset<T, ShowcaseAIDebugLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowcaseAIDebugLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -44862,7 +45090,7 @@ export namespace Prisma {
      *     // ... filter to delete one ShowcaseAIDebugLog
      *   }
      * })
-     *
+     * 
      */
     delete<T extends ShowcaseAIDebugLogDeleteArgs>(args: SelectSubset<T, ShowcaseAIDebugLogDeleteArgs<ExtArgs>>): Prisma__ShowcaseAIDebugLogClient<$Result.GetResult<Prisma.$ShowcaseAIDebugLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -44879,7 +45107,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends ShowcaseAIDebugLogUpdateArgs>(args: SelectSubset<T, ShowcaseAIDebugLogUpdateArgs<ExtArgs>>): Prisma__ShowcaseAIDebugLogClient<$Result.GetResult<Prisma.$ShowcaseAIDebugLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -44893,7 +45121,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends ShowcaseAIDebugLogDeleteManyArgs>(args?: SelectSubset<T, ShowcaseAIDebugLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -44912,7 +45140,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends ShowcaseAIDebugLogUpdateManyArgs>(args: SelectSubset<T, ShowcaseAIDebugLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -44929,7 +45157,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more ShowcaseAIDebugLogs and only return the `id`
      * const showcaseAIDebugLogWithIdOnly = await prisma.showcaseAIDebugLog.updateManyAndReturn({
      *   select: { id: true },
@@ -44942,7 +45170,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends ShowcaseAIDebugLogUpdateManyAndReturnArgs>(args: SelectSubset<T, ShowcaseAIDebugLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowcaseAIDebugLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -45031,7 +45259,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends ShowcaseAIDebugLogGroupByArgs,
@@ -45150,7 +45378,7 @@ export namespace Prisma {
     readonly published: FieldRef<"ShowcaseAIDebugLog", 'Boolean'>
     readonly createdAt: FieldRef<"ShowcaseAIDebugLog", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -45207,31 +45435,31 @@ export namespace Prisma {
     where?: ShowcaseAIDebugLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseAIDebugLogs to fetch.
      */
     orderBy?: ShowcaseAIDebugLogOrderByWithRelationInput | ShowcaseAIDebugLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ShowcaseAIDebugLogs.
      */
     cursor?: ShowcaseAIDebugLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseAIDebugLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseAIDebugLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShowcaseAIDebugLogs.
      */
     distinct?: ShowcaseAIDebugLogScalarFieldEnum | ShowcaseAIDebugLogScalarFieldEnum[]
@@ -45255,31 +45483,31 @@ export namespace Prisma {
     where?: ShowcaseAIDebugLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseAIDebugLogs to fetch.
      */
     orderBy?: ShowcaseAIDebugLogOrderByWithRelationInput | ShowcaseAIDebugLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ShowcaseAIDebugLogs.
      */
     cursor?: ShowcaseAIDebugLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseAIDebugLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseAIDebugLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShowcaseAIDebugLogs.
      */
     distinct?: ShowcaseAIDebugLogScalarFieldEnum | ShowcaseAIDebugLogScalarFieldEnum[]
@@ -45303,31 +45531,31 @@ export namespace Prisma {
     where?: ShowcaseAIDebugLogWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcaseAIDebugLogs to fetch.
      */
     orderBy?: ShowcaseAIDebugLogOrderByWithRelationInput | ShowcaseAIDebugLogOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing ShowcaseAIDebugLogs.
      */
     cursor?: ShowcaseAIDebugLogWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcaseAIDebugLogs from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcaseAIDebugLogs.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShowcaseAIDebugLogs.
      */
     distinct?: ShowcaseAIDebugLogScalarFieldEnum | ShowcaseAIDebugLogScalarFieldEnum[]
@@ -45626,43 +45854,43 @@ export namespace Prisma {
     where?: ShowcasePromptDraftWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcasePromptDrafts to fetch.
      */
     orderBy?: ShowcasePromptDraftOrderByWithRelationInput | ShowcasePromptDraftOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: ShowcasePromptDraftWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcasePromptDrafts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcasePromptDrafts.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned ShowcasePromptDrafts
     **/
     _count?: true | ShowcasePromptDraftCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ShowcasePromptDraftMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: ShowcasePromptDraftMaxAggregateInputType
@@ -45880,13 +46108,13 @@ export namespace Prisma {
      * @example
      * // Get all ShowcasePromptDrafts
      * const showcasePromptDrafts = await prisma.showcasePromptDraft.findMany()
-     *
+     * 
      * // Get first 10 ShowcasePromptDrafts
      * const showcasePromptDrafts = await prisma.showcasePromptDraft.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const showcasePromptDraftWithIdOnly = await prisma.showcasePromptDraft.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends ShowcasePromptDraftFindManyArgs>(args?: SelectSubset<T, ShowcasePromptDraftFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowcasePromptDraftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -45900,7 +46128,7 @@ export namespace Prisma {
      *     // ... data to create a ShowcasePromptDraft
      *   }
      * })
-     *
+     * 
      */
     create<T extends ShowcasePromptDraftCreateArgs>(args: SelectSubset<T, ShowcasePromptDraftCreateArgs<ExtArgs>>): Prisma__ShowcasePromptDraftClient<$Result.GetResult<Prisma.$ShowcasePromptDraftPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -45914,7 +46142,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends ShowcasePromptDraftCreateManyArgs>(args?: SelectSubset<T, ShowcasePromptDraftCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -45928,7 +46156,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many ShowcasePromptDrafts and only return the `id`
      * const showcasePromptDraftWithIdOnly = await prisma.showcasePromptDraft.createManyAndReturn({
      *   select: { id: true },
@@ -45938,7 +46166,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends ShowcasePromptDraftCreateManyAndReturnArgs>(args?: SelectSubset<T, ShowcasePromptDraftCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowcasePromptDraftPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -45952,7 +46180,7 @@ export namespace Prisma {
      *     // ... filter to delete one ShowcasePromptDraft
      *   }
      * })
-     *
+     * 
      */
     delete<T extends ShowcasePromptDraftDeleteArgs>(args: SelectSubset<T, ShowcasePromptDraftDeleteArgs<ExtArgs>>): Prisma__ShowcasePromptDraftClient<$Result.GetResult<Prisma.$ShowcasePromptDraftPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -45969,7 +46197,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends ShowcasePromptDraftUpdateArgs>(args: SelectSubset<T, ShowcasePromptDraftUpdateArgs<ExtArgs>>): Prisma__ShowcasePromptDraftClient<$Result.GetResult<Prisma.$ShowcasePromptDraftPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -45983,7 +46211,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends ShowcasePromptDraftDeleteManyArgs>(args?: SelectSubset<T, ShowcasePromptDraftDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -46002,7 +46230,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends ShowcasePromptDraftUpdateManyArgs>(args: SelectSubset<T, ShowcasePromptDraftUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -46019,7 +46247,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more ShowcasePromptDrafts and only return the `id`
      * const showcasePromptDraftWithIdOnly = await prisma.showcasePromptDraft.updateManyAndReturn({
      *   select: { id: true },
@@ -46032,7 +46260,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends ShowcasePromptDraftUpdateManyAndReturnArgs>(args: SelectSubset<T, ShowcasePromptDraftUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ShowcasePromptDraftPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -46121,7 +46349,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends ShowcasePromptDraftGroupByArgs,
@@ -46237,7 +46465,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"ShowcasePromptDraft", 'DateTime'>
     readonly updatedAt: FieldRef<"ShowcasePromptDraft", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -46294,31 +46522,31 @@ export namespace Prisma {
     where?: ShowcasePromptDraftWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcasePromptDrafts to fetch.
      */
     orderBy?: ShowcasePromptDraftOrderByWithRelationInput | ShowcasePromptDraftOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ShowcasePromptDrafts.
      */
     cursor?: ShowcasePromptDraftWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcasePromptDrafts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcasePromptDrafts.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShowcasePromptDrafts.
      */
     distinct?: ShowcasePromptDraftScalarFieldEnum | ShowcasePromptDraftScalarFieldEnum[]
@@ -46342,31 +46570,31 @@ export namespace Prisma {
     where?: ShowcasePromptDraftWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcasePromptDrafts to fetch.
      */
     orderBy?: ShowcasePromptDraftOrderByWithRelationInput | ShowcasePromptDraftOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ShowcasePromptDrafts.
      */
     cursor?: ShowcasePromptDraftWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcasePromptDrafts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcasePromptDrafts.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShowcasePromptDrafts.
      */
     distinct?: ShowcasePromptDraftScalarFieldEnum | ShowcasePromptDraftScalarFieldEnum[]
@@ -46390,31 +46618,31 @@ export namespace Prisma {
     where?: ShowcasePromptDraftWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ShowcasePromptDrafts to fetch.
      */
     orderBy?: ShowcasePromptDraftOrderByWithRelationInput | ShowcasePromptDraftOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing ShowcasePromptDrafts.
      */
     cursor?: ShowcasePromptDraftWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ShowcasePromptDrafts from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ShowcasePromptDrafts.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ShowcasePromptDrafts.
      */
     distinct?: ShowcasePromptDraftScalarFieldEnum | ShowcasePromptDraftScalarFieldEnum[]
@@ -46725,43 +46953,43 @@ export namespace Prisma {
     where?: ContentModerationRecordWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ContentModerationRecords to fetch.
      */
     orderBy?: ContentModerationRecordOrderByWithRelationInput | ContentModerationRecordOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: ContentModerationRecordWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ContentModerationRecords from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ContentModerationRecords.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned ContentModerationRecords
     **/
     _count?: true | ContentModerationRecordCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ContentModerationRecordMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: ContentModerationRecordMaxAggregateInputType
@@ -46991,13 +47219,13 @@ export namespace Prisma {
      * @example
      * // Get all ContentModerationRecords
      * const contentModerationRecords = await prisma.contentModerationRecord.findMany()
-     *
+     * 
      * // Get first 10 ContentModerationRecords
      * const contentModerationRecords = await prisma.contentModerationRecord.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const contentModerationRecordWithIdOnly = await prisma.contentModerationRecord.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends ContentModerationRecordFindManyArgs>(args?: SelectSubset<T, ContentModerationRecordFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentModerationRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -47011,7 +47239,7 @@ export namespace Prisma {
      *     // ... data to create a ContentModerationRecord
      *   }
      * })
-     *
+     * 
      */
     create<T extends ContentModerationRecordCreateArgs>(args: SelectSubset<T, ContentModerationRecordCreateArgs<ExtArgs>>): Prisma__ContentModerationRecordClient<$Result.GetResult<Prisma.$ContentModerationRecordPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -47025,7 +47253,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends ContentModerationRecordCreateManyArgs>(args?: SelectSubset<T, ContentModerationRecordCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -47039,7 +47267,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many ContentModerationRecords and only return the `id`
      * const contentModerationRecordWithIdOnly = await prisma.contentModerationRecord.createManyAndReturn({
      *   select: { id: true },
@@ -47049,7 +47277,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends ContentModerationRecordCreateManyAndReturnArgs>(args?: SelectSubset<T, ContentModerationRecordCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentModerationRecordPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -47063,7 +47291,7 @@ export namespace Prisma {
      *     // ... filter to delete one ContentModerationRecord
      *   }
      * })
-     *
+     * 
      */
     delete<T extends ContentModerationRecordDeleteArgs>(args: SelectSubset<T, ContentModerationRecordDeleteArgs<ExtArgs>>): Prisma__ContentModerationRecordClient<$Result.GetResult<Prisma.$ContentModerationRecordPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -47080,7 +47308,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends ContentModerationRecordUpdateArgs>(args: SelectSubset<T, ContentModerationRecordUpdateArgs<ExtArgs>>): Prisma__ContentModerationRecordClient<$Result.GetResult<Prisma.$ContentModerationRecordPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -47094,7 +47322,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends ContentModerationRecordDeleteManyArgs>(args?: SelectSubset<T, ContentModerationRecordDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -47113,7 +47341,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends ContentModerationRecordUpdateManyArgs>(args: SelectSubset<T, ContentModerationRecordUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -47130,7 +47358,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more ContentModerationRecords and only return the `id`
      * const contentModerationRecordWithIdOnly = await prisma.contentModerationRecord.updateManyAndReturn({
      *   select: { id: true },
@@ -47143,7 +47371,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends ContentModerationRecordUpdateManyAndReturnArgs>(args: SelectSubset<T, ContentModerationRecordUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentModerationRecordPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -47232,7 +47460,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends ContentModerationRecordGroupByArgs,
@@ -47350,7 +47578,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"ContentModerationRecord", 'DateTime'>
     readonly updatedAt: FieldRef<"ContentModerationRecord", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -47407,31 +47635,31 @@ export namespace Prisma {
     where?: ContentModerationRecordWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ContentModerationRecords to fetch.
      */
     orderBy?: ContentModerationRecordOrderByWithRelationInput | ContentModerationRecordOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ContentModerationRecords.
      */
     cursor?: ContentModerationRecordWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ContentModerationRecords from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ContentModerationRecords.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ContentModerationRecords.
      */
     distinct?: ContentModerationRecordScalarFieldEnum | ContentModerationRecordScalarFieldEnum[]
@@ -47455,31 +47683,31 @@ export namespace Prisma {
     where?: ContentModerationRecordWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ContentModerationRecords to fetch.
      */
     orderBy?: ContentModerationRecordOrderByWithRelationInput | ContentModerationRecordOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for ContentModerationRecords.
      */
     cursor?: ContentModerationRecordWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ContentModerationRecords from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ContentModerationRecords.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ContentModerationRecords.
      */
     distinct?: ContentModerationRecordScalarFieldEnum | ContentModerationRecordScalarFieldEnum[]
@@ -47503,31 +47731,31 @@ export namespace Prisma {
     where?: ContentModerationRecordWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of ContentModerationRecords to fetch.
      */
     orderBy?: ContentModerationRecordOrderByWithRelationInput | ContentModerationRecordOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing ContentModerationRecords.
      */
     cursor?: ContentModerationRecordWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` ContentModerationRecords from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` ContentModerationRecords.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of ContentModerationRecords.
      */
     distinct?: ContentModerationRecordScalarFieldEnum | ContentModerationRecordScalarFieldEnum[]
@@ -47818,43 +48046,43 @@ export namespace Prisma {
     where?: WorkspaceWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Workspaces to fetch.
      */
     orderBy?: WorkspaceOrderByWithRelationInput | WorkspaceOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: WorkspaceWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Workspaces from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Workspaces.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned Workspaces
     **/
     _count?: true | WorkspaceCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: WorkspaceMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: WorkspaceMaxAggregateInputType
@@ -47926,6 +48154,8 @@ export namespace Prisma {
     updatedAt?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
     members?: boolean | Workspace$membersArgs<ExtArgs>
+    quotaPool?: boolean | Workspace$quotaPoolArgs<ExtArgs>
+    enterpriseQuotaConsumptions?: boolean | Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs>
     _count?: boolean | WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["workspace"]>
 
@@ -47974,6 +48204,8 @@ export namespace Prisma {
   export type WorkspaceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
     members?: boolean | Workspace$membersArgs<ExtArgs>
+    quotaPool?: boolean | Workspace$quotaPoolArgs<ExtArgs>
+    enterpriseQuotaConsumptions?: boolean | Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs>
     _count?: boolean | WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type WorkspaceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -47988,6 +48220,8 @@ export namespace Prisma {
     objects: {
       owner: Prisma.$UserPayload<ExtArgs>
       members: Prisma.$WorkspaceMemberPayload<ExtArgs>[]
+      quotaPool: Prisma.$EnterpriseQuotaPoolPayload<ExtArgs> | null
+      enterpriseQuotaConsumptions: Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -48079,13 +48313,13 @@ export namespace Prisma {
      * @example
      * // Get all Workspaces
      * const workspaces = await prisma.workspace.findMany()
-     *
+     * 
      * // Get first 10 Workspaces
      * const workspaces = await prisma.workspace.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const workspaceWithIdOnly = await prisma.workspace.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends WorkspaceFindManyArgs>(args?: SelectSubset<T, WorkspaceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -48099,7 +48333,7 @@ export namespace Prisma {
      *     // ... data to create a Workspace
      *   }
      * })
-     *
+     * 
      */
     create<T extends WorkspaceCreateArgs>(args: SelectSubset<T, WorkspaceCreateArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -48113,7 +48347,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends WorkspaceCreateManyArgs>(args?: SelectSubset<T, WorkspaceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -48127,7 +48361,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many Workspaces and only return the `id`
      * const workspaceWithIdOnly = await prisma.workspace.createManyAndReturn({
      *   select: { id: true },
@@ -48137,7 +48371,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends WorkspaceCreateManyAndReturnArgs>(args?: SelectSubset<T, WorkspaceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -48151,7 +48385,7 @@ export namespace Prisma {
      *     // ... filter to delete one Workspace
      *   }
      * })
-     *
+     * 
      */
     delete<T extends WorkspaceDeleteArgs>(args: SelectSubset<T, WorkspaceDeleteArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -48168,7 +48402,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends WorkspaceUpdateArgs>(args: SelectSubset<T, WorkspaceUpdateArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -48182,7 +48416,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends WorkspaceDeleteManyArgs>(args?: SelectSubset<T, WorkspaceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -48201,7 +48435,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends WorkspaceUpdateManyArgs>(args: SelectSubset<T, WorkspaceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -48218,7 +48452,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more Workspaces and only return the `id`
      * const workspaceWithIdOnly = await prisma.workspace.updateManyAndReturn({
      *   select: { id: true },
@@ -48231,7 +48465,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends WorkspaceUpdateManyAndReturnArgs>(args: SelectSubset<T, WorkspaceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -48320,7 +48554,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends WorkspaceGroupByArgs,
@@ -48396,6 +48630,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     members<T extends Workspace$membersArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    quotaPool<T extends Workspace$quotaPoolArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$quotaPoolArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    enterpriseQuotaConsumptions<T extends Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -48436,7 +48672,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Workspace", 'DateTime'>
     readonly updatedAt: FieldRef<"Workspace", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -48505,31 +48741,31 @@ export namespace Prisma {
     where?: WorkspaceWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Workspaces to fetch.
      */
     orderBy?: WorkspaceOrderByWithRelationInput | WorkspaceOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Workspaces.
      */
     cursor?: WorkspaceWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Workspaces from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Workspaces.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Workspaces.
      */
     distinct?: WorkspaceScalarFieldEnum | WorkspaceScalarFieldEnum[]
@@ -48557,31 +48793,31 @@ export namespace Prisma {
     where?: WorkspaceWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Workspaces to fetch.
      */
     orderBy?: WorkspaceOrderByWithRelationInput | WorkspaceOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for Workspaces.
      */
     cursor?: WorkspaceWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Workspaces from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Workspaces.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Workspaces.
      */
     distinct?: WorkspaceScalarFieldEnum | WorkspaceScalarFieldEnum[]
@@ -48609,31 +48845,31 @@ export namespace Prisma {
     where?: WorkspaceWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of Workspaces to fetch.
      */
     orderBy?: WorkspaceOrderByWithRelationInput | WorkspaceOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing Workspaces.
      */
     cursor?: WorkspaceWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` Workspaces from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` Workspaces.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of Workspaces.
      */
     distinct?: WorkspaceScalarFieldEnum | WorkspaceScalarFieldEnum[]
@@ -48860,6 +49096,49 @@ export namespace Prisma {
   }
 
   /**
+   * Workspace.quotaPool
+   */
+  export type Workspace$quotaPoolArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    where?: EnterpriseQuotaPoolWhereInput
+  }
+
+  /**
+   * Workspace.enterpriseQuotaConsumptions
+   */
+  export type Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    where?: EnterpriseQuotaConsumptionWhereInput
+    orderBy?: EnterpriseQuotaConsumptionOrderByWithRelationInput | EnterpriseQuotaConsumptionOrderByWithRelationInput[]
+    cursor?: EnterpriseQuotaConsumptionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EnterpriseQuotaConsumptionScalarFieldEnum | EnterpriseQuotaConsumptionScalarFieldEnum[]
+  }
+
+  /**
    * Workspace without action
    */
   export type WorkspaceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -48988,43 +49267,43 @@ export namespace Prisma {
     where?: WorkspaceMemberWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of WorkspaceMembers to fetch.
      */
     orderBy?: WorkspaceMemberOrderByWithRelationInput | WorkspaceMemberOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the start position
      */
     cursor?: WorkspaceMemberWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` WorkspaceMembers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` WorkspaceMembers.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Count returned WorkspaceMembers
     **/
     _count?: true | WorkspaceMemberCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: WorkspaceMemberMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     *
+     * 
      * Select which fields to find the maximum value
     **/
     _max?: WorkspaceMemberMaxAggregateInputType
@@ -49263,13 +49542,13 @@ export namespace Prisma {
      * @example
      * // Get all WorkspaceMembers
      * const workspaceMembers = await prisma.workspaceMember.findMany()
-     *
+     * 
      * // Get first 10 WorkspaceMembers
      * const workspaceMembers = await prisma.workspaceMember.findMany({ take: 10 })
-     *
+     * 
      * // Only select the `id`
      * const workspaceMemberWithIdOnly = await prisma.workspaceMember.findMany({ select: { id: true } })
-     *
+     * 
      */
     findMany<T extends WorkspaceMemberFindManyArgs>(args?: SelectSubset<T, WorkspaceMemberFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
@@ -49283,7 +49562,7 @@ export namespace Prisma {
      *     // ... data to create a WorkspaceMember
      *   }
      * })
-     *
+     * 
      */
     create<T extends WorkspaceMemberCreateArgs>(args: SelectSubset<T, WorkspaceMemberCreateArgs<ExtArgs>>): Prisma__WorkspaceMemberClient<$Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -49297,7 +49576,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     *     
      */
     createMany<T extends WorkspaceMemberCreateManyArgs>(args?: SelectSubset<T, WorkspaceMemberCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -49311,7 +49590,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Create many WorkspaceMembers and only return the `id`
      * const workspaceMemberWithIdOnly = await prisma.workspaceMember.createManyAndReturn({
      *   select: { id: true },
@@ -49321,7 +49600,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     createManyAndReturn<T extends WorkspaceMemberCreateManyAndReturnArgs>(args?: SelectSubset<T, WorkspaceMemberCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
@@ -49335,7 +49614,7 @@ export namespace Prisma {
      *     // ... filter to delete one WorkspaceMember
      *   }
      * })
-     *
+     * 
      */
     delete<T extends WorkspaceMemberDeleteArgs>(args: SelectSubset<T, WorkspaceMemberDeleteArgs<ExtArgs>>): Prisma__WorkspaceMemberClient<$Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -49352,7 +49631,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     update<T extends WorkspaceMemberUpdateArgs>(args: SelectSubset<T, WorkspaceMemberUpdateArgs<ExtArgs>>): Prisma__WorkspaceMemberClient<$Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
@@ -49366,7 +49645,7 @@ export namespace Prisma {
      *     // ... provide filter here
      *   }
      * })
-     *
+     * 
      */
     deleteMany<T extends WorkspaceMemberDeleteManyArgs>(args?: SelectSubset<T, WorkspaceMemberDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -49385,7 +49664,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   }
      * })
-     *
+     * 
      */
     updateMany<T extends WorkspaceMemberUpdateManyArgs>(args: SelectSubset<T, WorkspaceMemberUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
@@ -49402,7 +49681,7 @@ export namespace Prisma {
      *     // ... provide data here
      *   ]
      * })
-     *
+     * 
      * // Update zero or more WorkspaceMembers and only return the `id`
      * const workspaceMemberWithIdOnly = await prisma.workspaceMember.updateManyAndReturn({
      *   select: { id: true },
@@ -49415,7 +49694,7 @@ export namespace Prisma {
      * })
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     *
+     * 
      */
     updateManyAndReturn<T extends WorkspaceMemberUpdateManyAndReturnArgs>(args: SelectSubset<T, WorkspaceMemberUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
@@ -49504,7 +49783,7 @@ export namespace Prisma {
      *     _all: true
      *   },
      * })
-     *
+     * 
     **/
     groupBy<
       T extends WorkspaceMemberGroupByArgs,
@@ -49622,7 +49901,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"WorkspaceMember", 'DateTime'>
     readonly updatedAt: FieldRef<"WorkspaceMember", 'DateTime'>
   }
-
+    
 
   // Custom InputTypes
   /**
@@ -49691,31 +49970,31 @@ export namespace Prisma {
     where?: WorkspaceMemberWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of WorkspaceMembers to fetch.
      */
     orderBy?: WorkspaceMemberOrderByWithRelationInput | WorkspaceMemberOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for WorkspaceMembers.
      */
     cursor?: WorkspaceMemberWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` WorkspaceMembers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` WorkspaceMembers.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of WorkspaceMembers.
      */
     distinct?: WorkspaceMemberScalarFieldEnum | WorkspaceMemberScalarFieldEnum[]
@@ -49743,31 +50022,31 @@ export namespace Prisma {
     where?: WorkspaceMemberWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of WorkspaceMembers to fetch.
      */
     orderBy?: WorkspaceMemberOrderByWithRelationInput | WorkspaceMemberOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for searching for WorkspaceMembers.
      */
     cursor?: WorkspaceMemberWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` WorkspaceMembers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` WorkspaceMembers.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of WorkspaceMembers.
      */
     distinct?: WorkspaceMemberScalarFieldEnum | WorkspaceMemberScalarFieldEnum[]
@@ -49795,31 +50074,31 @@ export namespace Prisma {
     where?: WorkspaceMemberWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     *
+     * 
      * Determine the order of WorkspaceMembers to fetch.
      */
     orderBy?: WorkspaceMemberOrderByWithRelationInput | WorkspaceMemberOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     *
+     * 
      * Sets the position for listing WorkspaceMembers.
      */
     cursor?: WorkspaceMemberWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Take `±n` WorkspaceMembers from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     *
+     * 
      * Skip the first `n` WorkspaceMembers.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     *
+     * 
      * Filter by unique combinations of WorkspaceMembers.
      */
     distinct?: WorkspaceMemberScalarFieldEnum | WorkspaceMemberScalarFieldEnum[]
@@ -50037,6 +50316,2329 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: WorkspaceMemberInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model EnterpriseQuotaPool
+   */
+
+  export type AggregateEnterpriseQuotaPool = {
+    _count: EnterpriseQuotaPoolCountAggregateOutputType | null
+    _avg: EnterpriseQuotaPoolAvgAggregateOutputType | null
+    _sum: EnterpriseQuotaPoolSumAggregateOutputType | null
+    _min: EnterpriseQuotaPoolMinAggregateOutputType | null
+    _max: EnterpriseQuotaPoolMaxAggregateOutputType | null
+  }
+
+  export type EnterpriseQuotaPoolAvgAggregateOutputType = {
+    totalQuota: number | null
+    usedQuota: number | null
+    version: number | null
+  }
+
+  export type EnterpriseQuotaPoolSumAggregateOutputType = {
+    totalQuota: number | null
+    usedQuota: number | null
+    version: number | null
+  }
+
+  export type EnterpriseQuotaPoolMinAggregateOutputType = {
+    id: string | null
+    workspaceId: string | null
+    totalQuota: number | null
+    usedQuota: number | null
+    periodStart: Date | null
+    periodEnd: Date | null
+    version: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EnterpriseQuotaPoolMaxAggregateOutputType = {
+    id: string | null
+    workspaceId: string | null
+    totalQuota: number | null
+    usedQuota: number | null
+    periodStart: Date | null
+    periodEnd: Date | null
+    version: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EnterpriseQuotaPoolCountAggregateOutputType = {
+    id: number
+    workspaceId: number
+    totalQuota: number
+    usedQuota: number
+    periodStart: number
+    periodEnd: number
+    version: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type EnterpriseQuotaPoolAvgAggregateInputType = {
+    totalQuota?: true
+    usedQuota?: true
+    version?: true
+  }
+
+  export type EnterpriseQuotaPoolSumAggregateInputType = {
+    totalQuota?: true
+    usedQuota?: true
+    version?: true
+  }
+
+  export type EnterpriseQuotaPoolMinAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    totalQuota?: true
+    usedQuota?: true
+    periodStart?: true
+    periodEnd?: true
+    version?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EnterpriseQuotaPoolMaxAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    totalQuota?: true
+    usedQuota?: true
+    periodStart?: true
+    periodEnd?: true
+    version?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EnterpriseQuotaPoolCountAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    totalQuota?: true
+    usedQuota?: true
+    periodStart?: true
+    periodEnd?: true
+    version?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type EnterpriseQuotaPoolAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EnterpriseQuotaPool to aggregate.
+     */
+    where?: EnterpriseQuotaPoolWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaPools to fetch.
+     */
+    orderBy?: EnterpriseQuotaPoolOrderByWithRelationInput | EnterpriseQuotaPoolOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: EnterpriseQuotaPoolWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaPools from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaPools.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned EnterpriseQuotaPools
+    **/
+    _count?: true | EnterpriseQuotaPoolCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: EnterpriseQuotaPoolAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: EnterpriseQuotaPoolSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: EnterpriseQuotaPoolMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: EnterpriseQuotaPoolMaxAggregateInputType
+  }
+
+  export type GetEnterpriseQuotaPoolAggregateType<T extends EnterpriseQuotaPoolAggregateArgs> = {
+        [P in keyof T & keyof AggregateEnterpriseQuotaPool]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateEnterpriseQuotaPool[P]>
+      : GetScalarType<T[P], AggregateEnterpriseQuotaPool[P]>
+  }
+
+
+
+
+  export type EnterpriseQuotaPoolGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EnterpriseQuotaPoolWhereInput
+    orderBy?: EnterpriseQuotaPoolOrderByWithAggregationInput | EnterpriseQuotaPoolOrderByWithAggregationInput[]
+    by: EnterpriseQuotaPoolScalarFieldEnum[] | EnterpriseQuotaPoolScalarFieldEnum
+    having?: EnterpriseQuotaPoolScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: EnterpriseQuotaPoolCountAggregateInputType | true
+    _avg?: EnterpriseQuotaPoolAvgAggregateInputType
+    _sum?: EnterpriseQuotaPoolSumAggregateInputType
+    _min?: EnterpriseQuotaPoolMinAggregateInputType
+    _max?: EnterpriseQuotaPoolMaxAggregateInputType
+  }
+
+  export type EnterpriseQuotaPoolGroupByOutputType = {
+    id: string
+    workspaceId: string
+    totalQuota: number
+    usedQuota: number
+    periodStart: Date
+    periodEnd: Date
+    version: number
+    createdAt: Date
+    updatedAt: Date
+    _count: EnterpriseQuotaPoolCountAggregateOutputType | null
+    _avg: EnterpriseQuotaPoolAvgAggregateOutputType | null
+    _sum: EnterpriseQuotaPoolSumAggregateOutputType | null
+    _min: EnterpriseQuotaPoolMinAggregateOutputType | null
+    _max: EnterpriseQuotaPoolMaxAggregateOutputType | null
+  }
+
+  type GetEnterpriseQuotaPoolGroupByPayload<T extends EnterpriseQuotaPoolGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<EnterpriseQuotaPoolGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof EnterpriseQuotaPoolGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], EnterpriseQuotaPoolGroupByOutputType[P]>
+            : GetScalarType<T[P], EnterpriseQuotaPoolGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type EnterpriseQuotaPoolSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    totalQuota?: boolean
+    usedQuota?: boolean
+    periodStart?: boolean
+    periodEnd?: boolean
+    version?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["enterpriseQuotaPool"]>
+
+  export type EnterpriseQuotaPoolSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    totalQuota?: boolean
+    usedQuota?: boolean
+    periodStart?: boolean
+    periodEnd?: boolean
+    version?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["enterpriseQuotaPool"]>
+
+  export type EnterpriseQuotaPoolSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    totalQuota?: boolean
+    usedQuota?: boolean
+    periodStart?: boolean
+    periodEnd?: boolean
+    version?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["enterpriseQuotaPool"]>
+
+  export type EnterpriseQuotaPoolSelectScalar = {
+    id?: boolean
+    workspaceId?: boolean
+    totalQuota?: boolean
+    usedQuota?: boolean
+    periodStart?: boolean
+    periodEnd?: boolean
+    version?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type EnterpriseQuotaPoolOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "workspaceId" | "totalQuota" | "usedQuota" | "periodStart" | "periodEnd" | "version" | "createdAt" | "updatedAt", ExtArgs["result"]["enterpriseQuotaPool"]>
+  export type EnterpriseQuotaPoolInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+  }
+  export type EnterpriseQuotaPoolIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+  }
+  export type EnterpriseQuotaPoolIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+  }
+
+  export type $EnterpriseQuotaPoolPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "EnterpriseQuotaPool"
+    objects: {
+      workspace: Prisma.$WorkspacePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      workspaceId: string
+      totalQuota: number
+      usedQuota: number
+      periodStart: Date
+      periodEnd: Date
+      version: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["enterpriseQuotaPool"]>
+    composites: {}
+  }
+
+  type EnterpriseQuotaPoolGetPayload<S extends boolean | null | undefined | EnterpriseQuotaPoolDefaultArgs> = $Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload, S>
+
+  type EnterpriseQuotaPoolCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<EnterpriseQuotaPoolFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: EnterpriseQuotaPoolCountAggregateInputType | true
+    }
+
+  export interface EnterpriseQuotaPoolDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['EnterpriseQuotaPool'], meta: { name: 'EnterpriseQuotaPool' } }
+    /**
+     * Find zero or one EnterpriseQuotaPool that matches the filter.
+     * @param {EnterpriseQuotaPoolFindUniqueArgs} args - Arguments to find a EnterpriseQuotaPool
+     * @example
+     * // Get one EnterpriseQuotaPool
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends EnterpriseQuotaPoolFindUniqueArgs>(args: SelectSubset<T, EnterpriseQuotaPoolFindUniqueArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one EnterpriseQuotaPool that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {EnterpriseQuotaPoolFindUniqueOrThrowArgs} args - Arguments to find a EnterpriseQuotaPool
+     * @example
+     * // Get one EnterpriseQuotaPool
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends EnterpriseQuotaPoolFindUniqueOrThrowArgs>(args: SelectSubset<T, EnterpriseQuotaPoolFindUniqueOrThrowArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EnterpriseQuotaPool that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaPoolFindFirstArgs} args - Arguments to find a EnterpriseQuotaPool
+     * @example
+     * // Get one EnterpriseQuotaPool
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends EnterpriseQuotaPoolFindFirstArgs>(args?: SelectSubset<T, EnterpriseQuotaPoolFindFirstArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EnterpriseQuotaPool that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaPoolFindFirstOrThrowArgs} args - Arguments to find a EnterpriseQuotaPool
+     * @example
+     * // Get one EnterpriseQuotaPool
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends EnterpriseQuotaPoolFindFirstOrThrowArgs>(args?: SelectSubset<T, EnterpriseQuotaPoolFindFirstOrThrowArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more EnterpriseQuotaPools that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaPoolFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all EnterpriseQuotaPools
+     * const enterpriseQuotaPools = await prisma.enterpriseQuotaPool.findMany()
+     * 
+     * // Get first 10 EnterpriseQuotaPools
+     * const enterpriseQuotaPools = await prisma.enterpriseQuotaPool.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const enterpriseQuotaPoolWithIdOnly = await prisma.enterpriseQuotaPool.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends EnterpriseQuotaPoolFindManyArgs>(args?: SelectSubset<T, EnterpriseQuotaPoolFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a EnterpriseQuotaPool.
+     * @param {EnterpriseQuotaPoolCreateArgs} args - Arguments to create a EnterpriseQuotaPool.
+     * @example
+     * // Create one EnterpriseQuotaPool
+     * const EnterpriseQuotaPool = await prisma.enterpriseQuotaPool.create({
+     *   data: {
+     *     // ... data to create a EnterpriseQuotaPool
+     *   }
+     * })
+     * 
+     */
+    create<T extends EnterpriseQuotaPoolCreateArgs>(args: SelectSubset<T, EnterpriseQuotaPoolCreateArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many EnterpriseQuotaPools.
+     * @param {EnterpriseQuotaPoolCreateManyArgs} args - Arguments to create many EnterpriseQuotaPools.
+     * @example
+     * // Create many EnterpriseQuotaPools
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends EnterpriseQuotaPoolCreateManyArgs>(args?: SelectSubset<T, EnterpriseQuotaPoolCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many EnterpriseQuotaPools and returns the data saved in the database.
+     * @param {EnterpriseQuotaPoolCreateManyAndReturnArgs} args - Arguments to create many EnterpriseQuotaPools.
+     * @example
+     * // Create many EnterpriseQuotaPools
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many EnterpriseQuotaPools and only return the `id`
+     * const enterpriseQuotaPoolWithIdOnly = await prisma.enterpriseQuotaPool.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends EnterpriseQuotaPoolCreateManyAndReturnArgs>(args?: SelectSubset<T, EnterpriseQuotaPoolCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a EnterpriseQuotaPool.
+     * @param {EnterpriseQuotaPoolDeleteArgs} args - Arguments to delete one EnterpriseQuotaPool.
+     * @example
+     * // Delete one EnterpriseQuotaPool
+     * const EnterpriseQuotaPool = await prisma.enterpriseQuotaPool.delete({
+     *   where: {
+     *     // ... filter to delete one EnterpriseQuotaPool
+     *   }
+     * })
+     * 
+     */
+    delete<T extends EnterpriseQuotaPoolDeleteArgs>(args: SelectSubset<T, EnterpriseQuotaPoolDeleteArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one EnterpriseQuotaPool.
+     * @param {EnterpriseQuotaPoolUpdateArgs} args - Arguments to update one EnterpriseQuotaPool.
+     * @example
+     * // Update one EnterpriseQuotaPool
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends EnterpriseQuotaPoolUpdateArgs>(args: SelectSubset<T, EnterpriseQuotaPoolUpdateArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more EnterpriseQuotaPools.
+     * @param {EnterpriseQuotaPoolDeleteManyArgs} args - Arguments to filter EnterpriseQuotaPools to delete.
+     * @example
+     * // Delete a few EnterpriseQuotaPools
+     * const { count } = await prisma.enterpriseQuotaPool.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends EnterpriseQuotaPoolDeleteManyArgs>(args?: SelectSubset<T, EnterpriseQuotaPoolDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EnterpriseQuotaPools.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaPoolUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many EnterpriseQuotaPools
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends EnterpriseQuotaPoolUpdateManyArgs>(args: SelectSubset<T, EnterpriseQuotaPoolUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EnterpriseQuotaPools and returns the data updated in the database.
+     * @param {EnterpriseQuotaPoolUpdateManyAndReturnArgs} args - Arguments to update many EnterpriseQuotaPools.
+     * @example
+     * // Update many EnterpriseQuotaPools
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more EnterpriseQuotaPools and only return the `id`
+     * const enterpriseQuotaPoolWithIdOnly = await prisma.enterpriseQuotaPool.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends EnterpriseQuotaPoolUpdateManyAndReturnArgs>(args: SelectSubset<T, EnterpriseQuotaPoolUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one EnterpriseQuotaPool.
+     * @param {EnterpriseQuotaPoolUpsertArgs} args - Arguments to update or create a EnterpriseQuotaPool.
+     * @example
+     * // Update or create a EnterpriseQuotaPool
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.upsert({
+     *   create: {
+     *     // ... data to create a EnterpriseQuotaPool
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the EnterpriseQuotaPool we want to update
+     *   }
+     * })
+     */
+    upsert<T extends EnterpriseQuotaPoolUpsertArgs>(args: SelectSubset<T, EnterpriseQuotaPoolUpsertArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of EnterpriseQuotaPools.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaPoolCountArgs} args - Arguments to filter EnterpriseQuotaPools to count.
+     * @example
+     * // Count the number of EnterpriseQuotaPools
+     * const count = await prisma.enterpriseQuotaPool.count({
+     *   where: {
+     *     // ... the filter for the EnterpriseQuotaPools we want to count
+     *   }
+     * })
+    **/
+    count<T extends EnterpriseQuotaPoolCountArgs>(
+      args?: Subset<T, EnterpriseQuotaPoolCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], EnterpriseQuotaPoolCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a EnterpriseQuotaPool.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaPoolAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends EnterpriseQuotaPoolAggregateArgs>(args: Subset<T, EnterpriseQuotaPoolAggregateArgs>): Prisma.PrismaPromise<GetEnterpriseQuotaPoolAggregateType<T>>
+
+    /**
+     * Group by EnterpriseQuotaPool.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaPoolGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends EnterpriseQuotaPoolGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: EnterpriseQuotaPoolGroupByArgs['orderBy'] }
+        : { orderBy?: EnterpriseQuotaPoolGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, EnterpriseQuotaPoolGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEnterpriseQuotaPoolGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the EnterpriseQuotaPool model
+   */
+  readonly fields: EnterpriseQuotaPoolFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for EnterpriseQuotaPool.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__EnterpriseQuotaPoolClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    workspace<T extends WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WorkspaceDefaultArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the EnterpriseQuotaPool model
+   */
+  interface EnterpriseQuotaPoolFieldRefs {
+    readonly id: FieldRef<"EnterpriseQuotaPool", 'String'>
+    readonly workspaceId: FieldRef<"EnterpriseQuotaPool", 'String'>
+    readonly totalQuota: FieldRef<"EnterpriseQuotaPool", 'Int'>
+    readonly usedQuota: FieldRef<"EnterpriseQuotaPool", 'Int'>
+    readonly periodStart: FieldRef<"EnterpriseQuotaPool", 'DateTime'>
+    readonly periodEnd: FieldRef<"EnterpriseQuotaPool", 'DateTime'>
+    readonly version: FieldRef<"EnterpriseQuotaPool", 'Int'>
+    readonly createdAt: FieldRef<"EnterpriseQuotaPool", 'DateTime'>
+    readonly updatedAt: FieldRef<"EnterpriseQuotaPool", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * EnterpriseQuotaPool findUnique
+   */
+  export type EnterpriseQuotaPoolFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaPool to fetch.
+     */
+    where: EnterpriseQuotaPoolWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaPool findUniqueOrThrow
+   */
+  export type EnterpriseQuotaPoolFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaPool to fetch.
+     */
+    where: EnterpriseQuotaPoolWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaPool findFirst
+   */
+  export type EnterpriseQuotaPoolFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaPool to fetch.
+     */
+    where?: EnterpriseQuotaPoolWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaPools to fetch.
+     */
+    orderBy?: EnterpriseQuotaPoolOrderByWithRelationInput | EnterpriseQuotaPoolOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EnterpriseQuotaPools.
+     */
+    cursor?: EnterpriseQuotaPoolWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaPools from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaPools.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EnterpriseQuotaPools.
+     */
+    distinct?: EnterpriseQuotaPoolScalarFieldEnum | EnterpriseQuotaPoolScalarFieldEnum[]
+  }
+
+  /**
+   * EnterpriseQuotaPool findFirstOrThrow
+   */
+  export type EnterpriseQuotaPoolFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaPool to fetch.
+     */
+    where?: EnterpriseQuotaPoolWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaPools to fetch.
+     */
+    orderBy?: EnterpriseQuotaPoolOrderByWithRelationInput | EnterpriseQuotaPoolOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EnterpriseQuotaPools.
+     */
+    cursor?: EnterpriseQuotaPoolWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaPools from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaPools.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EnterpriseQuotaPools.
+     */
+    distinct?: EnterpriseQuotaPoolScalarFieldEnum | EnterpriseQuotaPoolScalarFieldEnum[]
+  }
+
+  /**
+   * EnterpriseQuotaPool findMany
+   */
+  export type EnterpriseQuotaPoolFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaPools to fetch.
+     */
+    where?: EnterpriseQuotaPoolWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaPools to fetch.
+     */
+    orderBy?: EnterpriseQuotaPoolOrderByWithRelationInput | EnterpriseQuotaPoolOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing EnterpriseQuotaPools.
+     */
+    cursor?: EnterpriseQuotaPoolWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaPools from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaPools.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EnterpriseQuotaPools.
+     */
+    distinct?: EnterpriseQuotaPoolScalarFieldEnum | EnterpriseQuotaPoolScalarFieldEnum[]
+  }
+
+  /**
+   * EnterpriseQuotaPool create
+   */
+  export type EnterpriseQuotaPoolCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * The data needed to create a EnterpriseQuotaPool.
+     */
+    data: XOR<EnterpriseQuotaPoolCreateInput, EnterpriseQuotaPoolUncheckedCreateInput>
+  }
+
+  /**
+   * EnterpriseQuotaPool createMany
+   */
+  export type EnterpriseQuotaPoolCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many EnterpriseQuotaPools.
+     */
+    data: EnterpriseQuotaPoolCreateManyInput | EnterpriseQuotaPoolCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * EnterpriseQuotaPool createManyAndReturn
+   */
+  export type EnterpriseQuotaPoolCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * The data used to create many EnterpriseQuotaPools.
+     */
+    data: EnterpriseQuotaPoolCreateManyInput | EnterpriseQuotaPoolCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * EnterpriseQuotaPool update
+   */
+  export type EnterpriseQuotaPoolUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * The data needed to update a EnterpriseQuotaPool.
+     */
+    data: XOR<EnterpriseQuotaPoolUpdateInput, EnterpriseQuotaPoolUncheckedUpdateInput>
+    /**
+     * Choose, which EnterpriseQuotaPool to update.
+     */
+    where: EnterpriseQuotaPoolWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaPool updateMany
+   */
+  export type EnterpriseQuotaPoolUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update EnterpriseQuotaPools.
+     */
+    data: XOR<EnterpriseQuotaPoolUpdateManyMutationInput, EnterpriseQuotaPoolUncheckedUpdateManyInput>
+    /**
+     * Filter which EnterpriseQuotaPools to update
+     */
+    where?: EnterpriseQuotaPoolWhereInput
+    /**
+     * Limit how many EnterpriseQuotaPools to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * EnterpriseQuotaPool updateManyAndReturn
+   */
+  export type EnterpriseQuotaPoolUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * The data used to update EnterpriseQuotaPools.
+     */
+    data: XOR<EnterpriseQuotaPoolUpdateManyMutationInput, EnterpriseQuotaPoolUncheckedUpdateManyInput>
+    /**
+     * Filter which EnterpriseQuotaPools to update
+     */
+    where?: EnterpriseQuotaPoolWhereInput
+    /**
+     * Limit how many EnterpriseQuotaPools to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * EnterpriseQuotaPool upsert
+   */
+  export type EnterpriseQuotaPoolUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * The filter to search for the EnterpriseQuotaPool to update in case it exists.
+     */
+    where: EnterpriseQuotaPoolWhereUniqueInput
+    /**
+     * In case the EnterpriseQuotaPool found by the `where` argument doesn't exist, create a new EnterpriseQuotaPool with this data.
+     */
+    create: XOR<EnterpriseQuotaPoolCreateInput, EnterpriseQuotaPoolUncheckedCreateInput>
+    /**
+     * In case the EnterpriseQuotaPool was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<EnterpriseQuotaPoolUpdateInput, EnterpriseQuotaPoolUncheckedUpdateInput>
+  }
+
+  /**
+   * EnterpriseQuotaPool delete
+   */
+  export type EnterpriseQuotaPoolDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * Filter which EnterpriseQuotaPool to delete.
+     */
+    where: EnterpriseQuotaPoolWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaPool deleteMany
+   */
+  export type EnterpriseQuotaPoolDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EnterpriseQuotaPools to delete
+     */
+    where?: EnterpriseQuotaPoolWhereInput
+    /**
+     * Limit how many EnterpriseQuotaPools to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * EnterpriseQuotaPool without action
+   */
+  export type EnterpriseQuotaPoolDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model EnterpriseQuotaConsumption
+   */
+
+  export type AggregateEnterpriseQuotaConsumption = {
+    _count: EnterpriseQuotaConsumptionCountAggregateOutputType | null
+    _avg: EnterpriseQuotaConsumptionAvgAggregateOutputType | null
+    _sum: EnterpriseQuotaConsumptionSumAggregateOutputType | null
+    _min: EnterpriseQuotaConsumptionMinAggregateOutputType | null
+    _max: EnterpriseQuotaConsumptionMaxAggregateOutputType | null
+  }
+
+  export type EnterpriseQuotaConsumptionAvgAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type EnterpriseQuotaConsumptionSumAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type EnterpriseQuotaConsumptionMinAggregateOutputType = {
+    id: string | null
+    workspaceId: string | null
+    userId: string | null
+    operationId: string | null
+    amount: number | null
+    source: string | null
+    status: string | null
+    failureReason: string | null
+    createdAt: Date | null
+  }
+
+  export type EnterpriseQuotaConsumptionMaxAggregateOutputType = {
+    id: string | null
+    workspaceId: string | null
+    userId: string | null
+    operationId: string | null
+    amount: number | null
+    source: string | null
+    status: string | null
+    failureReason: string | null
+    createdAt: Date | null
+  }
+
+  export type EnterpriseQuotaConsumptionCountAggregateOutputType = {
+    id: number
+    workspaceId: number
+    userId: number
+    operationId: number
+    amount: number
+    source: number
+    status: number
+    failureReason: number
+    metadata: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type EnterpriseQuotaConsumptionAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type EnterpriseQuotaConsumptionSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type EnterpriseQuotaConsumptionMinAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    userId?: true
+    operationId?: true
+    amount?: true
+    source?: true
+    status?: true
+    failureReason?: true
+    createdAt?: true
+  }
+
+  export type EnterpriseQuotaConsumptionMaxAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    userId?: true
+    operationId?: true
+    amount?: true
+    source?: true
+    status?: true
+    failureReason?: true
+    createdAt?: true
+  }
+
+  export type EnterpriseQuotaConsumptionCountAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    userId?: true
+    operationId?: true
+    amount?: true
+    source?: true
+    status?: true
+    failureReason?: true
+    metadata?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type EnterpriseQuotaConsumptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EnterpriseQuotaConsumption to aggregate.
+     */
+    where?: EnterpriseQuotaConsumptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaConsumptions to fetch.
+     */
+    orderBy?: EnterpriseQuotaConsumptionOrderByWithRelationInput | EnterpriseQuotaConsumptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: EnterpriseQuotaConsumptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaConsumptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaConsumptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned EnterpriseQuotaConsumptions
+    **/
+    _count?: true | EnterpriseQuotaConsumptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: EnterpriseQuotaConsumptionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: EnterpriseQuotaConsumptionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: EnterpriseQuotaConsumptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: EnterpriseQuotaConsumptionMaxAggregateInputType
+  }
+
+  export type GetEnterpriseQuotaConsumptionAggregateType<T extends EnterpriseQuotaConsumptionAggregateArgs> = {
+        [P in keyof T & keyof AggregateEnterpriseQuotaConsumption]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateEnterpriseQuotaConsumption[P]>
+      : GetScalarType<T[P], AggregateEnterpriseQuotaConsumption[P]>
+  }
+
+
+
+
+  export type EnterpriseQuotaConsumptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EnterpriseQuotaConsumptionWhereInput
+    orderBy?: EnterpriseQuotaConsumptionOrderByWithAggregationInput | EnterpriseQuotaConsumptionOrderByWithAggregationInput[]
+    by: EnterpriseQuotaConsumptionScalarFieldEnum[] | EnterpriseQuotaConsumptionScalarFieldEnum
+    having?: EnterpriseQuotaConsumptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: EnterpriseQuotaConsumptionCountAggregateInputType | true
+    _avg?: EnterpriseQuotaConsumptionAvgAggregateInputType
+    _sum?: EnterpriseQuotaConsumptionSumAggregateInputType
+    _min?: EnterpriseQuotaConsumptionMinAggregateInputType
+    _max?: EnterpriseQuotaConsumptionMaxAggregateInputType
+  }
+
+  export type EnterpriseQuotaConsumptionGroupByOutputType = {
+    id: string
+    workspaceId: string
+    userId: string
+    operationId: string
+    amount: number
+    source: string
+    status: string
+    failureReason: string | null
+    metadata: JsonValue | null
+    createdAt: Date
+    _count: EnterpriseQuotaConsumptionCountAggregateOutputType | null
+    _avg: EnterpriseQuotaConsumptionAvgAggregateOutputType | null
+    _sum: EnterpriseQuotaConsumptionSumAggregateOutputType | null
+    _min: EnterpriseQuotaConsumptionMinAggregateOutputType | null
+    _max: EnterpriseQuotaConsumptionMaxAggregateOutputType | null
+  }
+
+  type GetEnterpriseQuotaConsumptionGroupByPayload<T extends EnterpriseQuotaConsumptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<EnterpriseQuotaConsumptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof EnterpriseQuotaConsumptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], EnterpriseQuotaConsumptionGroupByOutputType[P]>
+            : GetScalarType<T[P], EnterpriseQuotaConsumptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type EnterpriseQuotaConsumptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    userId?: boolean
+    operationId?: boolean
+    amount?: boolean
+    source?: boolean
+    status?: boolean
+    failureReason?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["enterpriseQuotaConsumption"]>
+
+  export type EnterpriseQuotaConsumptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    userId?: boolean
+    operationId?: boolean
+    amount?: boolean
+    source?: boolean
+    status?: boolean
+    failureReason?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["enterpriseQuotaConsumption"]>
+
+  export type EnterpriseQuotaConsumptionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    userId?: boolean
+    operationId?: boolean
+    amount?: boolean
+    source?: boolean
+    status?: boolean
+    failureReason?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["enterpriseQuotaConsumption"]>
+
+  export type EnterpriseQuotaConsumptionSelectScalar = {
+    id?: boolean
+    workspaceId?: boolean
+    userId?: boolean
+    operationId?: boolean
+    amount?: boolean
+    source?: boolean
+    status?: boolean
+    failureReason?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+  }
+
+  export type EnterpriseQuotaConsumptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "workspaceId" | "userId" | "operationId" | "amount" | "source" | "status" | "failureReason" | "metadata" | "createdAt", ExtArgs["result"]["enterpriseQuotaConsumption"]>
+  export type EnterpriseQuotaConsumptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type EnterpriseQuotaConsumptionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type EnterpriseQuotaConsumptionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $EnterpriseQuotaConsumptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "EnterpriseQuotaConsumption"
+    objects: {
+      workspace: Prisma.$WorkspacePayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      workspaceId: string
+      userId: string
+      operationId: string
+      amount: number
+      source: string
+      status: string
+      failureReason: string | null
+      metadata: Prisma.JsonValue | null
+      createdAt: Date
+    }, ExtArgs["result"]["enterpriseQuotaConsumption"]>
+    composites: {}
+  }
+
+  type EnterpriseQuotaConsumptionGetPayload<S extends boolean | null | undefined | EnterpriseQuotaConsumptionDefaultArgs> = $Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload, S>
+
+  type EnterpriseQuotaConsumptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<EnterpriseQuotaConsumptionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: EnterpriseQuotaConsumptionCountAggregateInputType | true
+    }
+
+  export interface EnterpriseQuotaConsumptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['EnterpriseQuotaConsumption'], meta: { name: 'EnterpriseQuotaConsumption' } }
+    /**
+     * Find zero or one EnterpriseQuotaConsumption that matches the filter.
+     * @param {EnterpriseQuotaConsumptionFindUniqueArgs} args - Arguments to find a EnterpriseQuotaConsumption
+     * @example
+     * // Get one EnterpriseQuotaConsumption
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends EnterpriseQuotaConsumptionFindUniqueArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionFindUniqueArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one EnterpriseQuotaConsumption that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {EnterpriseQuotaConsumptionFindUniqueOrThrowArgs} args - Arguments to find a EnterpriseQuotaConsumption
+     * @example
+     * // Get one EnterpriseQuotaConsumption
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends EnterpriseQuotaConsumptionFindUniqueOrThrowArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EnterpriseQuotaConsumption that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaConsumptionFindFirstArgs} args - Arguments to find a EnterpriseQuotaConsumption
+     * @example
+     * // Get one EnterpriseQuotaConsumption
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends EnterpriseQuotaConsumptionFindFirstArgs>(args?: SelectSubset<T, EnterpriseQuotaConsumptionFindFirstArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EnterpriseQuotaConsumption that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaConsumptionFindFirstOrThrowArgs} args - Arguments to find a EnterpriseQuotaConsumption
+     * @example
+     * // Get one EnterpriseQuotaConsumption
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends EnterpriseQuotaConsumptionFindFirstOrThrowArgs>(args?: SelectSubset<T, EnterpriseQuotaConsumptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more EnterpriseQuotaConsumptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaConsumptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all EnterpriseQuotaConsumptions
+     * const enterpriseQuotaConsumptions = await prisma.enterpriseQuotaConsumption.findMany()
+     * 
+     * // Get first 10 EnterpriseQuotaConsumptions
+     * const enterpriseQuotaConsumptions = await prisma.enterpriseQuotaConsumption.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const enterpriseQuotaConsumptionWithIdOnly = await prisma.enterpriseQuotaConsumption.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends EnterpriseQuotaConsumptionFindManyArgs>(args?: SelectSubset<T, EnterpriseQuotaConsumptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a EnterpriseQuotaConsumption.
+     * @param {EnterpriseQuotaConsumptionCreateArgs} args - Arguments to create a EnterpriseQuotaConsumption.
+     * @example
+     * // Create one EnterpriseQuotaConsumption
+     * const EnterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.create({
+     *   data: {
+     *     // ... data to create a EnterpriseQuotaConsumption
+     *   }
+     * })
+     * 
+     */
+    create<T extends EnterpriseQuotaConsumptionCreateArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionCreateArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many EnterpriseQuotaConsumptions.
+     * @param {EnterpriseQuotaConsumptionCreateManyArgs} args - Arguments to create many EnterpriseQuotaConsumptions.
+     * @example
+     * // Create many EnterpriseQuotaConsumptions
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends EnterpriseQuotaConsumptionCreateManyArgs>(args?: SelectSubset<T, EnterpriseQuotaConsumptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many EnterpriseQuotaConsumptions and returns the data saved in the database.
+     * @param {EnterpriseQuotaConsumptionCreateManyAndReturnArgs} args - Arguments to create many EnterpriseQuotaConsumptions.
+     * @example
+     * // Create many EnterpriseQuotaConsumptions
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many EnterpriseQuotaConsumptions and only return the `id`
+     * const enterpriseQuotaConsumptionWithIdOnly = await prisma.enterpriseQuotaConsumption.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends EnterpriseQuotaConsumptionCreateManyAndReturnArgs>(args?: SelectSubset<T, EnterpriseQuotaConsumptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a EnterpriseQuotaConsumption.
+     * @param {EnterpriseQuotaConsumptionDeleteArgs} args - Arguments to delete one EnterpriseQuotaConsumption.
+     * @example
+     * // Delete one EnterpriseQuotaConsumption
+     * const EnterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.delete({
+     *   where: {
+     *     // ... filter to delete one EnterpriseQuotaConsumption
+     *   }
+     * })
+     * 
+     */
+    delete<T extends EnterpriseQuotaConsumptionDeleteArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionDeleteArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one EnterpriseQuotaConsumption.
+     * @param {EnterpriseQuotaConsumptionUpdateArgs} args - Arguments to update one EnterpriseQuotaConsumption.
+     * @example
+     * // Update one EnterpriseQuotaConsumption
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends EnterpriseQuotaConsumptionUpdateArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionUpdateArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more EnterpriseQuotaConsumptions.
+     * @param {EnterpriseQuotaConsumptionDeleteManyArgs} args - Arguments to filter EnterpriseQuotaConsumptions to delete.
+     * @example
+     * // Delete a few EnterpriseQuotaConsumptions
+     * const { count } = await prisma.enterpriseQuotaConsumption.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends EnterpriseQuotaConsumptionDeleteManyArgs>(args?: SelectSubset<T, EnterpriseQuotaConsumptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EnterpriseQuotaConsumptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaConsumptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many EnterpriseQuotaConsumptions
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends EnterpriseQuotaConsumptionUpdateManyArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EnterpriseQuotaConsumptions and returns the data updated in the database.
+     * @param {EnterpriseQuotaConsumptionUpdateManyAndReturnArgs} args - Arguments to update many EnterpriseQuotaConsumptions.
+     * @example
+     * // Update many EnterpriseQuotaConsumptions
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more EnterpriseQuotaConsumptions and only return the `id`
+     * const enterpriseQuotaConsumptionWithIdOnly = await prisma.enterpriseQuotaConsumption.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends EnterpriseQuotaConsumptionUpdateManyAndReturnArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one EnterpriseQuotaConsumption.
+     * @param {EnterpriseQuotaConsumptionUpsertArgs} args - Arguments to update or create a EnterpriseQuotaConsumption.
+     * @example
+     * // Update or create a EnterpriseQuotaConsumption
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.upsert({
+     *   create: {
+     *     // ... data to create a EnterpriseQuotaConsumption
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the EnterpriseQuotaConsumption we want to update
+     *   }
+     * })
+     */
+    upsert<T extends EnterpriseQuotaConsumptionUpsertArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionUpsertArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of EnterpriseQuotaConsumptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaConsumptionCountArgs} args - Arguments to filter EnterpriseQuotaConsumptions to count.
+     * @example
+     * // Count the number of EnterpriseQuotaConsumptions
+     * const count = await prisma.enterpriseQuotaConsumption.count({
+     *   where: {
+     *     // ... the filter for the EnterpriseQuotaConsumptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends EnterpriseQuotaConsumptionCountArgs>(
+      args?: Subset<T, EnterpriseQuotaConsumptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], EnterpriseQuotaConsumptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a EnterpriseQuotaConsumption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaConsumptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends EnterpriseQuotaConsumptionAggregateArgs>(args: Subset<T, EnterpriseQuotaConsumptionAggregateArgs>): Prisma.PrismaPromise<GetEnterpriseQuotaConsumptionAggregateType<T>>
+
+    /**
+     * Group by EnterpriseQuotaConsumption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaConsumptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends EnterpriseQuotaConsumptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: EnterpriseQuotaConsumptionGroupByArgs['orderBy'] }
+        : { orderBy?: EnterpriseQuotaConsumptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, EnterpriseQuotaConsumptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEnterpriseQuotaConsumptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the EnterpriseQuotaConsumption model
+   */
+  readonly fields: EnterpriseQuotaConsumptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for EnterpriseQuotaConsumption.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__EnterpriseQuotaConsumptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    workspace<T extends WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WorkspaceDefaultArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the EnterpriseQuotaConsumption model
+   */
+  interface EnterpriseQuotaConsumptionFieldRefs {
+    readonly id: FieldRef<"EnterpriseQuotaConsumption", 'String'>
+    readonly workspaceId: FieldRef<"EnterpriseQuotaConsumption", 'String'>
+    readonly userId: FieldRef<"EnterpriseQuotaConsumption", 'String'>
+    readonly operationId: FieldRef<"EnterpriseQuotaConsumption", 'String'>
+    readonly amount: FieldRef<"EnterpriseQuotaConsumption", 'Int'>
+    readonly source: FieldRef<"EnterpriseQuotaConsumption", 'String'>
+    readonly status: FieldRef<"EnterpriseQuotaConsumption", 'String'>
+    readonly failureReason: FieldRef<"EnterpriseQuotaConsumption", 'String'>
+    readonly metadata: FieldRef<"EnterpriseQuotaConsumption", 'Json'>
+    readonly createdAt: FieldRef<"EnterpriseQuotaConsumption", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * EnterpriseQuotaConsumption findUnique
+   */
+  export type EnterpriseQuotaConsumptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaConsumption to fetch.
+     */
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaConsumption findUniqueOrThrow
+   */
+  export type EnterpriseQuotaConsumptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaConsumption to fetch.
+     */
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaConsumption findFirst
+   */
+  export type EnterpriseQuotaConsumptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaConsumption to fetch.
+     */
+    where?: EnterpriseQuotaConsumptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaConsumptions to fetch.
+     */
+    orderBy?: EnterpriseQuotaConsumptionOrderByWithRelationInput | EnterpriseQuotaConsumptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EnterpriseQuotaConsumptions.
+     */
+    cursor?: EnterpriseQuotaConsumptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaConsumptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaConsumptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EnterpriseQuotaConsumptions.
+     */
+    distinct?: EnterpriseQuotaConsumptionScalarFieldEnum | EnterpriseQuotaConsumptionScalarFieldEnum[]
+  }
+
+  /**
+   * EnterpriseQuotaConsumption findFirstOrThrow
+   */
+  export type EnterpriseQuotaConsumptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaConsumption to fetch.
+     */
+    where?: EnterpriseQuotaConsumptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaConsumptions to fetch.
+     */
+    orderBy?: EnterpriseQuotaConsumptionOrderByWithRelationInput | EnterpriseQuotaConsumptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EnterpriseQuotaConsumptions.
+     */
+    cursor?: EnterpriseQuotaConsumptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaConsumptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaConsumptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EnterpriseQuotaConsumptions.
+     */
+    distinct?: EnterpriseQuotaConsumptionScalarFieldEnum | EnterpriseQuotaConsumptionScalarFieldEnum[]
+  }
+
+  /**
+   * EnterpriseQuotaConsumption findMany
+   */
+  export type EnterpriseQuotaConsumptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaConsumptions to fetch.
+     */
+    where?: EnterpriseQuotaConsumptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaConsumptions to fetch.
+     */
+    orderBy?: EnterpriseQuotaConsumptionOrderByWithRelationInput | EnterpriseQuotaConsumptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing EnterpriseQuotaConsumptions.
+     */
+    cursor?: EnterpriseQuotaConsumptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaConsumptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaConsumptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EnterpriseQuotaConsumptions.
+     */
+    distinct?: EnterpriseQuotaConsumptionScalarFieldEnum | EnterpriseQuotaConsumptionScalarFieldEnum[]
+  }
+
+  /**
+   * EnterpriseQuotaConsumption create
+   */
+  export type EnterpriseQuotaConsumptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a EnterpriseQuotaConsumption.
+     */
+    data: XOR<EnterpriseQuotaConsumptionCreateInput, EnterpriseQuotaConsumptionUncheckedCreateInput>
+  }
+
+  /**
+   * EnterpriseQuotaConsumption createMany
+   */
+  export type EnterpriseQuotaConsumptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many EnterpriseQuotaConsumptions.
+     */
+    data: EnterpriseQuotaConsumptionCreateManyInput | EnterpriseQuotaConsumptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * EnterpriseQuotaConsumption createManyAndReturn
+   */
+  export type EnterpriseQuotaConsumptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * The data used to create many EnterpriseQuotaConsumptions.
+     */
+    data: EnterpriseQuotaConsumptionCreateManyInput | EnterpriseQuotaConsumptionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * EnterpriseQuotaConsumption update
+   */
+  export type EnterpriseQuotaConsumptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a EnterpriseQuotaConsumption.
+     */
+    data: XOR<EnterpriseQuotaConsumptionUpdateInput, EnterpriseQuotaConsumptionUncheckedUpdateInput>
+    /**
+     * Choose, which EnterpriseQuotaConsumption to update.
+     */
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaConsumption updateMany
+   */
+  export type EnterpriseQuotaConsumptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update EnterpriseQuotaConsumptions.
+     */
+    data: XOR<EnterpriseQuotaConsumptionUpdateManyMutationInput, EnterpriseQuotaConsumptionUncheckedUpdateManyInput>
+    /**
+     * Filter which EnterpriseQuotaConsumptions to update
+     */
+    where?: EnterpriseQuotaConsumptionWhereInput
+    /**
+     * Limit how many EnterpriseQuotaConsumptions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * EnterpriseQuotaConsumption updateManyAndReturn
+   */
+  export type EnterpriseQuotaConsumptionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * The data used to update EnterpriseQuotaConsumptions.
+     */
+    data: XOR<EnterpriseQuotaConsumptionUpdateManyMutationInput, EnterpriseQuotaConsumptionUncheckedUpdateManyInput>
+    /**
+     * Filter which EnterpriseQuotaConsumptions to update
+     */
+    where?: EnterpriseQuotaConsumptionWhereInput
+    /**
+     * Limit how many EnterpriseQuotaConsumptions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * EnterpriseQuotaConsumption upsert
+   */
+  export type EnterpriseQuotaConsumptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the EnterpriseQuotaConsumption to update in case it exists.
+     */
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+    /**
+     * In case the EnterpriseQuotaConsumption found by the `where` argument doesn't exist, create a new EnterpriseQuotaConsumption with this data.
+     */
+    create: XOR<EnterpriseQuotaConsumptionCreateInput, EnterpriseQuotaConsumptionUncheckedCreateInput>
+    /**
+     * In case the EnterpriseQuotaConsumption was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<EnterpriseQuotaConsumptionUpdateInput, EnterpriseQuotaConsumptionUncheckedUpdateInput>
+  }
+
+  /**
+   * EnterpriseQuotaConsumption delete
+   */
+  export type EnterpriseQuotaConsumptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * Filter which EnterpriseQuotaConsumption to delete.
+     */
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaConsumption deleteMany
+   */
+  export type EnterpriseQuotaConsumptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EnterpriseQuotaConsumptions to delete
+     */
+    where?: EnterpriseQuotaConsumptionWhereInput
+    /**
+     * Limit how many EnterpriseQuotaConsumptions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * EnterpriseQuotaConsumption without action
+   */
+  export type EnterpriseQuotaConsumptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
   }
 
 
@@ -50746,6 +53348,37 @@ export namespace Prisma {
   export type WorkspaceMemberScalarFieldEnum = (typeof WorkspaceMemberScalarFieldEnum)[keyof typeof WorkspaceMemberScalarFieldEnum]
 
 
+  export const EnterpriseQuotaPoolScalarFieldEnum: {
+    id: 'id',
+    workspaceId: 'workspaceId',
+    totalQuota: 'totalQuota',
+    usedQuota: 'usedQuota',
+    periodStart: 'periodStart',
+    periodEnd: 'periodEnd',
+    version: 'version',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type EnterpriseQuotaPoolScalarFieldEnum = (typeof EnterpriseQuotaPoolScalarFieldEnum)[keyof typeof EnterpriseQuotaPoolScalarFieldEnum]
+
+
+  export const EnterpriseQuotaConsumptionScalarFieldEnum: {
+    id: 'id',
+    workspaceId: 'workspaceId',
+    userId: 'userId',
+    operationId: 'operationId',
+    amount: 'amount',
+    source: 'source',
+    status: 'status',
+    failureReason: 'failureReason',
+    metadata: 'metadata',
+    createdAt: 'createdAt'
+  };
+
+  export type EnterpriseQuotaConsumptionScalarFieldEnum = (typeof EnterpriseQuotaConsumptionScalarFieldEnum)[keyof typeof EnterpriseQuotaConsumptionScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -50796,77 +53429,77 @@ export namespace Prisma {
    * Reference to a field of type 'String'
    */
   export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String'>
-
+    
 
 
   /**
    * Reference to a field of type 'String[]'
    */
   export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
-
+    
 
 
   /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
-
+    
 
 
   /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-
+    
 
 
   /**
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-
+    
 
 
   /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-
+    
 
 
   /**
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-
+    
 
 
   /**
    * Reference to a field of type 'Json'
    */
   export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-
+    
 
 
   /**
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-
+    
 
 
   /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-
+    
 
 
   /**
    * Reference to a field of type 'Float[]'
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
-
+    
   /**
    * Deep Input Types
    */
@@ -50906,6 +53539,7 @@ export namespace Prisma {
     orders?: OrderListRelationFilter
     workspaceMemberships?: WorkspaceMemberListRelationFilter
     ownedWorkspaces?: WorkspaceListRelationFilter
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -50939,6 +53573,7 @@ export namespace Prisma {
     orders?: OrderOrderByRelationAggregateInput
     workspaceMemberships?: WorkspaceMemberOrderByRelationAggregateInput
     ownedWorkspaces?: WorkspaceOrderByRelationAggregateInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -50975,6 +53610,7 @@ export namespace Prisma {
     orders?: OrderListRelationFilter
     workspaceMemberships?: WorkspaceMemberListRelationFilter
     ownedWorkspaces?: WorkspaceListRelationFilter
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -54251,6 +56887,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Workspace"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     members?: WorkspaceMemberListRelationFilter
+    quotaPool?: XOR<EnterpriseQuotaPoolNullableScalarRelationFilter, EnterpriseQuotaPoolWhereInput> | null
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
   }
 
   export type WorkspaceOrderByWithRelationInput = {
@@ -54266,6 +56904,8 @@ export namespace Prisma {
     updatedAt?: SortOrder
     owner?: UserOrderByWithRelationInput
     members?: WorkspaceMemberOrderByRelationAggregateInput
+    quotaPool?: EnterpriseQuotaPoolOrderByWithRelationInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionOrderByRelationAggregateInput
   }
 
   export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
@@ -54284,6 +56924,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Workspace"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     members?: WorkspaceMemberListRelationFilter
+    quotaPool?: XOR<EnterpriseQuotaPoolNullableScalarRelationFilter, EnterpriseQuotaPoolWhereInput> | null
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
   }, "id" | "slug">
 
   export type WorkspaceOrderByWithAggregationInput = {
@@ -54412,6 +57054,168 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"WorkspaceMember"> | Date | string
   }
 
+  export type EnterpriseQuotaPoolWhereInput = {
+    AND?: EnterpriseQuotaPoolWhereInput | EnterpriseQuotaPoolWhereInput[]
+    OR?: EnterpriseQuotaPoolWhereInput[]
+    NOT?: EnterpriseQuotaPoolWhereInput | EnterpriseQuotaPoolWhereInput[]
+    id?: UuidFilter<"EnterpriseQuotaPool"> | string
+    workspaceId?: UuidFilter<"EnterpriseQuotaPool"> | string
+    totalQuota?: IntFilter<"EnterpriseQuotaPool"> | number
+    usedQuota?: IntFilter<"EnterpriseQuotaPool"> | number
+    periodStart?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    periodEnd?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    version?: IntFilter<"EnterpriseQuotaPool"> | number
+    createdAt?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    updatedAt?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+  }
+
+  export type EnterpriseQuotaPoolOrderByWithRelationInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    totalQuota?: SortOrder
+    usedQuota?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    version?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    workspace?: WorkspaceOrderByWithRelationInput
+  }
+
+  export type EnterpriseQuotaPoolWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    workspaceId?: string
+    AND?: EnterpriseQuotaPoolWhereInput | EnterpriseQuotaPoolWhereInput[]
+    OR?: EnterpriseQuotaPoolWhereInput[]
+    NOT?: EnterpriseQuotaPoolWhereInput | EnterpriseQuotaPoolWhereInput[]
+    totalQuota?: IntFilter<"EnterpriseQuotaPool"> | number
+    usedQuota?: IntFilter<"EnterpriseQuotaPool"> | number
+    periodStart?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    periodEnd?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    version?: IntFilter<"EnterpriseQuotaPool"> | number
+    createdAt?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    updatedAt?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+  }, "id" | "workspaceId">
+
+  export type EnterpriseQuotaPoolOrderByWithAggregationInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    totalQuota?: SortOrder
+    usedQuota?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    version?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: EnterpriseQuotaPoolCountOrderByAggregateInput
+    _avg?: EnterpriseQuotaPoolAvgOrderByAggregateInput
+    _max?: EnterpriseQuotaPoolMaxOrderByAggregateInput
+    _min?: EnterpriseQuotaPoolMinOrderByAggregateInput
+    _sum?: EnterpriseQuotaPoolSumOrderByAggregateInput
+  }
+
+  export type EnterpriseQuotaPoolScalarWhereWithAggregatesInput = {
+    AND?: EnterpriseQuotaPoolScalarWhereWithAggregatesInput | EnterpriseQuotaPoolScalarWhereWithAggregatesInput[]
+    OR?: EnterpriseQuotaPoolScalarWhereWithAggregatesInput[]
+    NOT?: EnterpriseQuotaPoolScalarWhereWithAggregatesInput | EnterpriseQuotaPoolScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"EnterpriseQuotaPool"> | string
+    workspaceId?: UuidWithAggregatesFilter<"EnterpriseQuotaPool"> | string
+    totalQuota?: IntWithAggregatesFilter<"EnterpriseQuotaPool"> | number
+    usedQuota?: IntWithAggregatesFilter<"EnterpriseQuotaPool"> | number
+    periodStart?: DateTimeWithAggregatesFilter<"EnterpriseQuotaPool"> | Date | string
+    periodEnd?: DateTimeWithAggregatesFilter<"EnterpriseQuotaPool"> | Date | string
+    version?: IntWithAggregatesFilter<"EnterpriseQuotaPool"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"EnterpriseQuotaPool"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"EnterpriseQuotaPool"> | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionWhereInput = {
+    AND?: EnterpriseQuotaConsumptionWhereInput | EnterpriseQuotaConsumptionWhereInput[]
+    OR?: EnterpriseQuotaConsumptionWhereInput[]
+    NOT?: EnterpriseQuotaConsumptionWhereInput | EnterpriseQuotaConsumptionWhereInput[]
+    id?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    workspaceId?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    userId?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    operationId?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    amount?: IntFilter<"EnterpriseQuotaConsumption"> | number
+    source?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    status?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    failureReason?: StringNullableFilter<"EnterpriseQuotaConsumption"> | string | null
+    metadata?: JsonNullableFilter<"EnterpriseQuotaConsumption">
+    createdAt?: DateTimeFilter<"EnterpriseQuotaConsumption"> | Date | string
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type EnterpriseQuotaConsumptionOrderByWithRelationInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    userId?: SortOrder
+    operationId?: SortOrder
+    amount?: SortOrder
+    source?: SortOrder
+    status?: SortOrder
+    failureReason?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    workspace?: WorkspaceOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type EnterpriseQuotaConsumptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    operationId?: string
+    AND?: EnterpriseQuotaConsumptionWhereInput | EnterpriseQuotaConsumptionWhereInput[]
+    OR?: EnterpriseQuotaConsumptionWhereInput[]
+    NOT?: EnterpriseQuotaConsumptionWhereInput | EnterpriseQuotaConsumptionWhereInput[]
+    workspaceId?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    userId?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    amount?: IntFilter<"EnterpriseQuotaConsumption"> | number
+    source?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    status?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    failureReason?: StringNullableFilter<"EnterpriseQuotaConsumption"> | string | null
+    metadata?: JsonNullableFilter<"EnterpriseQuotaConsumption">
+    createdAt?: DateTimeFilter<"EnterpriseQuotaConsumption"> | Date | string
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "operationId">
+
+  export type EnterpriseQuotaConsumptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    userId?: SortOrder
+    operationId?: SortOrder
+    amount?: SortOrder
+    source?: SortOrder
+    status?: SortOrder
+    failureReason?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: EnterpriseQuotaConsumptionCountOrderByAggregateInput
+    _avg?: EnterpriseQuotaConsumptionAvgOrderByAggregateInput
+    _max?: EnterpriseQuotaConsumptionMaxOrderByAggregateInput
+    _min?: EnterpriseQuotaConsumptionMinOrderByAggregateInput
+    _sum?: EnterpriseQuotaConsumptionSumOrderByAggregateInput
+  }
+
+  export type EnterpriseQuotaConsumptionScalarWhereWithAggregatesInput = {
+    AND?: EnterpriseQuotaConsumptionScalarWhereWithAggregatesInput | EnterpriseQuotaConsumptionScalarWhereWithAggregatesInput[]
+    OR?: EnterpriseQuotaConsumptionScalarWhereWithAggregatesInput[]
+    NOT?: EnterpriseQuotaConsumptionScalarWhereWithAggregatesInput | EnterpriseQuotaConsumptionScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"EnterpriseQuotaConsumption"> | string
+    workspaceId?: UuidWithAggregatesFilter<"EnterpriseQuotaConsumption"> | string
+    userId?: UuidWithAggregatesFilter<"EnterpriseQuotaConsumption"> | string
+    operationId?: StringWithAggregatesFilter<"EnterpriseQuotaConsumption"> | string
+    amount?: IntWithAggregatesFilter<"EnterpriseQuotaConsumption"> | number
+    source?: StringWithAggregatesFilter<"EnterpriseQuotaConsumption"> | string
+    status?: StringWithAggregatesFilter<"EnterpriseQuotaConsumption"> | string
+    failureReason?: StringNullableWithAggregatesFilter<"EnterpriseQuotaConsumption"> | string | null
+    metadata?: JsonNullableWithAggregatesFilter<"EnterpriseQuotaConsumption">
+    createdAt?: DateTimeWithAggregatesFilter<"EnterpriseQuotaConsumption"> | Date | string
+  }
+
   export type UserCreateInput = {
     id: string
     email: string
@@ -54443,6 +57247,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -54476,6 +57281,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -54509,6 +57315,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -54542,6 +57349,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -58336,6 +61144,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUncheckedCreateInput = {
@@ -58350,6 +61160,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUpdateInput = {
@@ -58364,6 +61176,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateInput = {
@@ -58378,6 +61192,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceCreateManyInput = {
@@ -58519,6 +61335,178 @@ export namespace Prisma {
     removedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaPoolCreateInput = {
+    id?: string
+    totalQuota?: number
+    usedQuota?: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    version?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workspace: WorkspaceCreateNestedOneWithoutQuotaPoolInput
+  }
+
+  export type EnterpriseQuotaPoolUncheckedCreateInput = {
+    id?: string
+    workspaceId: string
+    totalQuota?: number
+    usedQuota?: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    version?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EnterpriseQuotaPoolUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    totalQuota?: IntFieldUpdateOperationsInput | number
+    usedQuota?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneRequiredWithoutQuotaPoolNestedInput
+  }
+
+  export type EnterpriseQuotaPoolUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    totalQuota?: IntFieldUpdateOperationsInput | number
+    usedQuota?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaPoolCreateManyInput = {
+    id?: string
+    workspaceId: string
+    totalQuota?: number
+    usedQuota?: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    version?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EnterpriseQuotaPoolUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    totalQuota?: IntFieldUpdateOperationsInput | number
+    usedQuota?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaPoolUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    totalQuota?: IntFieldUpdateOperationsInput | number
+    usedQuota?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionCreateInput = {
+    id?: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    workspace: WorkspaceCreateNestedOneWithoutEnterpriseQuotaConsumptionsInput
+    user: UserCreateNestedOneWithoutEnterpriseQuotaConsumptionsInput
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedCreateInput = {
+    id?: string
+    workspaceId: string
+    userId: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneRequiredWithoutEnterpriseQuotaConsumptionsNestedInput
+    user?: UserUpdateOneRequiredWithoutEnterpriseQuotaConsumptionsNestedInput
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionCreateManyInput = {
+    id?: string
+    workspaceId: string
+    userId: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UuidFilter<$PrismaModel = never> = {
@@ -58693,6 +61681,12 @@ export namespace Prisma {
     none?: WorkspaceWhereInput
   }
 
+  export type EnterpriseQuotaConsumptionListRelationFilter = {
+    every?: EnterpriseQuotaConsumptionWhereInput
+    some?: EnterpriseQuotaConsumptionWhereInput
+    none?: EnterpriseQuotaConsumptionWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -58743,6 +61737,10 @@ export namespace Prisma {
   }
 
   export type WorkspaceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type EnterpriseQuotaConsumptionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -60844,6 +63842,11 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type EnterpriseQuotaPoolNullableScalarRelationFilter = {
+    is?: EnterpriseQuotaPoolWhereInput | null
+    isNot?: EnterpriseQuotaPoolWhereInput | null
+  }
+
   export type WorkspaceCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -60936,6 +63939,99 @@ export namespace Prisma {
     removedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type EnterpriseQuotaPoolCountOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    totalQuota?: SortOrder
+    usedQuota?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    version?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnterpriseQuotaPoolAvgOrderByAggregateInput = {
+    totalQuota?: SortOrder
+    usedQuota?: SortOrder
+    version?: SortOrder
+  }
+
+  export type EnterpriseQuotaPoolMaxOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    totalQuota?: SortOrder
+    usedQuota?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    version?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnterpriseQuotaPoolMinOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    totalQuota?: SortOrder
+    usedQuota?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    version?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnterpriseQuotaPoolSumOrderByAggregateInput = {
+    totalQuota?: SortOrder
+    usedQuota?: SortOrder
+    version?: SortOrder
+  }
+
+  export type EnterpriseQuotaConsumptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    userId?: SortOrder
+    operationId?: SortOrder
+    amount?: SortOrder
+    source?: SortOrder
+    status?: SortOrder
+    failureReason?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnterpriseQuotaConsumptionAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type EnterpriseQuotaConsumptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    userId?: SortOrder
+    operationId?: SortOrder
+    amount?: SortOrder
+    source?: SortOrder
+    status?: SortOrder
+    failureReason?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnterpriseQuotaConsumptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    userId?: SortOrder
+    operationId?: SortOrder
+    amount?: SortOrder
+    source?: SortOrder
+    status?: SortOrder
+    failureReason?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnterpriseQuotaConsumptionSumOrderByAggregateInput = {
+    amount?: SortOrder
   }
 
   export type ProfileCreateNestedOneWithoutUserInput = {
@@ -61046,6 +64142,13 @@ export namespace Prisma {
     connect?: WorkspaceWhereUniqueInput | WorkspaceWhereUniqueInput[]
   }
 
+  export type EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput> | EnterpriseQuotaConsumptionCreateWithoutUserInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyUserInputEnvelope
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+  }
+
   export type ProfileUncheckedCreateNestedOneWithoutUserInput = {
     create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
@@ -61152,6 +64255,13 @@ export namespace Prisma {
     connectOrCreate?: WorkspaceCreateOrConnectWithoutOwnerInput | WorkspaceCreateOrConnectWithoutOwnerInput[]
     createMany?: WorkspaceCreateManyOwnerInputEnvelope
     connect?: WorkspaceWhereUniqueInput | WorkspaceWhereUniqueInput[]
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput> | EnterpriseQuotaConsumptionCreateWithoutUserInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyUserInputEnvelope
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -61390,6 +64500,20 @@ export namespace Prisma {
     deleteMany?: WorkspaceScalarWhereInput | WorkspaceScalarWhereInput[]
   }
 
+  export type EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput> | EnterpriseQuotaConsumptionCreateWithoutUserInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput[]
+    upsert?: EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutUserInput | EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyUserInputEnvelope
+    set?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    disconnect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    delete?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    update?: EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutUserInput | EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutUserInput | EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
+  }
+
   export type ProfileUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
@@ -61596,6 +64720,20 @@ export namespace Prisma {
     update?: WorkspaceUpdateWithWhereUniqueWithoutOwnerInput | WorkspaceUpdateWithWhereUniqueWithoutOwnerInput[]
     updateMany?: WorkspaceUpdateManyWithWhereWithoutOwnerInput | WorkspaceUpdateManyWithWhereWithoutOwnerInput[]
     deleteMany?: WorkspaceScalarWhereInput | WorkspaceScalarWhereInput[]
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput> | EnterpriseQuotaConsumptionCreateWithoutUserInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput[]
+    upsert?: EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutUserInput | EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyUserInputEnvelope
+    set?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    disconnect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    delete?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    update?: EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutUserInput | EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutUserInput | EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutFreezeRecordsInput = {
@@ -62425,11 +65563,37 @@ export namespace Prisma {
     connect?: WorkspaceMemberWhereUniqueInput | WorkspaceMemberWhereUniqueInput[]
   }
 
+  export type EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput = {
+    create?: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
+    connectOrCreate?: EnterpriseQuotaPoolCreateOrConnectWithoutWorkspaceInput
+    connect?: EnterpriseQuotaPoolWhereUniqueInput
+  }
+
+  export type EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput> | EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyWorkspaceInputEnvelope
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+  }
+
   export type WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput = {
     create?: XOR<WorkspaceMemberCreateWithoutWorkspaceInput, WorkspaceMemberUncheckedCreateWithoutWorkspaceInput> | WorkspaceMemberCreateWithoutWorkspaceInput[] | WorkspaceMemberUncheckedCreateWithoutWorkspaceInput[]
     connectOrCreate?: WorkspaceMemberCreateOrConnectWithoutWorkspaceInput | WorkspaceMemberCreateOrConnectWithoutWorkspaceInput[]
     createMany?: WorkspaceMemberCreateManyWorkspaceInputEnvelope
     connect?: WorkspaceMemberWhereUniqueInput | WorkspaceMemberWhereUniqueInput[]
+  }
+
+  export type EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput = {
+    create?: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
+    connectOrCreate?: EnterpriseQuotaPoolCreateOrConnectWithoutWorkspaceInput
+    connect?: EnterpriseQuotaPoolWhereUniqueInput
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput> | EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyWorkspaceInputEnvelope
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
   }
 
   export type UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput = {
@@ -62454,6 +65618,30 @@ export namespace Prisma {
     deleteMany?: WorkspaceMemberScalarWhereInput | WorkspaceMemberScalarWhereInput[]
   }
 
+  export type EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput = {
+    create?: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
+    connectOrCreate?: EnterpriseQuotaPoolCreateOrConnectWithoutWorkspaceInput
+    upsert?: EnterpriseQuotaPoolUpsertWithoutWorkspaceInput
+    disconnect?: EnterpriseQuotaPoolWhereInput | boolean
+    delete?: EnterpriseQuotaPoolWhereInput | boolean
+    connect?: EnterpriseQuotaPoolWhereUniqueInput
+    update?: XOR<XOR<EnterpriseQuotaPoolUpdateToOneWithWhereWithoutWorkspaceInput, EnterpriseQuotaPoolUpdateWithoutWorkspaceInput>, EnterpriseQuotaPoolUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput> | EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutWorkspaceInput | EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyWorkspaceInputEnvelope
+    set?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    disconnect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    delete?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    update?: EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutWorkspaceInput | EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutWorkspaceInput | EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
+  }
+
   export type WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput = {
     create?: XOR<WorkspaceMemberCreateWithoutWorkspaceInput, WorkspaceMemberUncheckedCreateWithoutWorkspaceInput> | WorkspaceMemberCreateWithoutWorkspaceInput[] | WorkspaceMemberUncheckedCreateWithoutWorkspaceInput[]
     connectOrCreate?: WorkspaceMemberCreateOrConnectWithoutWorkspaceInput | WorkspaceMemberCreateOrConnectWithoutWorkspaceInput[]
@@ -62466,6 +65654,30 @@ export namespace Prisma {
     update?: WorkspaceMemberUpdateWithWhereUniqueWithoutWorkspaceInput | WorkspaceMemberUpdateWithWhereUniqueWithoutWorkspaceInput[]
     updateMany?: WorkspaceMemberUpdateManyWithWhereWithoutWorkspaceInput | WorkspaceMemberUpdateManyWithWhereWithoutWorkspaceInput[]
     deleteMany?: WorkspaceMemberScalarWhereInput | WorkspaceMemberScalarWhereInput[]
+  }
+
+  export type EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput = {
+    create?: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
+    connectOrCreate?: EnterpriseQuotaPoolCreateOrConnectWithoutWorkspaceInput
+    upsert?: EnterpriseQuotaPoolUpsertWithoutWorkspaceInput
+    disconnect?: EnterpriseQuotaPoolWhereInput | boolean
+    delete?: EnterpriseQuotaPoolWhereInput | boolean
+    connect?: EnterpriseQuotaPoolWhereUniqueInput
+    update?: XOR<XOR<EnterpriseQuotaPoolUpdateToOneWithWhereWithoutWorkspaceInput, EnterpriseQuotaPoolUpdateWithoutWorkspaceInput>, EnterpriseQuotaPoolUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput> | EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutWorkspaceInput | EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyWorkspaceInputEnvelope
+    set?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    disconnect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    delete?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    update?: EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutWorkspaceInput | EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutWorkspaceInput | EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
   }
 
   export type WorkspaceCreateNestedOneWithoutMembersInput = {
@@ -62494,6 +65706,48 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutWorkspaceMembershipsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutWorkspaceMembershipsInput, UserUpdateWithoutWorkspaceMembershipsInput>, UserUncheckedUpdateWithoutWorkspaceMembershipsInput>
+  }
+
+  export type WorkspaceCreateNestedOneWithoutQuotaPoolInput = {
+    create?: XOR<WorkspaceCreateWithoutQuotaPoolInput, WorkspaceUncheckedCreateWithoutQuotaPoolInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutQuotaPoolInput
+    connect?: WorkspaceWhereUniqueInput
+  }
+
+  export type WorkspaceUpdateOneRequiredWithoutQuotaPoolNestedInput = {
+    create?: XOR<WorkspaceCreateWithoutQuotaPoolInput, WorkspaceUncheckedCreateWithoutQuotaPoolInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutQuotaPoolInput
+    upsert?: WorkspaceUpsertWithoutQuotaPoolInput
+    connect?: WorkspaceWhereUniqueInput
+    update?: XOR<XOR<WorkspaceUpdateToOneWithWhereWithoutQuotaPoolInput, WorkspaceUpdateWithoutQuotaPoolInput>, WorkspaceUncheckedUpdateWithoutQuotaPoolInput>
+  }
+
+  export type WorkspaceCreateNestedOneWithoutEnterpriseQuotaConsumptionsInput = {
+    create?: XOR<WorkspaceCreateWithoutEnterpriseQuotaConsumptionsInput, WorkspaceUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutEnterpriseQuotaConsumptionsInput
+    connect?: WorkspaceWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutEnterpriseQuotaConsumptionsInput = {
+    create?: XOR<UserCreateWithoutEnterpriseQuotaConsumptionsInput, UserUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutEnterpriseQuotaConsumptionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type WorkspaceUpdateOneRequiredWithoutEnterpriseQuotaConsumptionsNestedInput = {
+    create?: XOR<WorkspaceCreateWithoutEnterpriseQuotaConsumptionsInput, WorkspaceUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutEnterpriseQuotaConsumptionsInput
+    upsert?: WorkspaceUpsertWithoutEnterpriseQuotaConsumptionsInput
+    connect?: WorkspaceWhereUniqueInput
+    update?: XOR<XOR<WorkspaceUpdateToOneWithWhereWithoutEnterpriseQuotaConsumptionsInput, WorkspaceUpdateWithoutEnterpriseQuotaConsumptionsInput>, WorkspaceUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutEnterpriseQuotaConsumptionsNestedInput = {
+    create?: XOR<UserCreateWithoutEnterpriseQuotaConsumptionsInput, UserUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutEnterpriseQuotaConsumptionsInput
+    upsert?: UserUpsertWithoutEnterpriseQuotaConsumptionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutEnterpriseQuotaConsumptionsInput, UserUpdateWithoutEnterpriseQuotaConsumptionsInput>, UserUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput>
   }
 
   export type NestedUuidFilter<$PrismaModel = never> = {
@@ -63335,6 +66589,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUncheckedCreateWithoutOwnerInput = {
@@ -63348,6 +66604,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceCreateOrConnectWithoutOwnerInput = {
@@ -63357,6 +66615,40 @@ export namespace Prisma {
 
   export type WorkspaceCreateManyOwnerInputEnvelope = {
     data: WorkspaceCreateManyOwnerInput | WorkspaceCreateManyOwnerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type EnterpriseQuotaConsumptionCreateWithoutUserInput = {
+    id?: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    workspace: WorkspaceCreateNestedOneWithoutEnterpriseQuotaConsumptionsInput
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput = {
+    id?: string
+    workspaceId: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput = {
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+    create: XOR<EnterpriseQuotaConsumptionCreateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput>
+  }
+
+  export type EnterpriseQuotaConsumptionCreateManyUserInputEnvelope = {
+    data: EnterpriseQuotaConsumptionCreateManyUserInput | EnterpriseQuotaConsumptionCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -63934,6 +67226,38 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Workspace"> | Date | string
   }
 
+  export type EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutUserInput = {
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+    update: XOR<EnterpriseQuotaConsumptionUpdateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedUpdateWithoutUserInput>
+    create: XOR<EnterpriseQuotaConsumptionCreateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput>
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutUserInput = {
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+    data: XOR<EnterpriseQuotaConsumptionUpdateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutUserInput = {
+    where: EnterpriseQuotaConsumptionScalarWhereInput
+    data: XOR<EnterpriseQuotaConsumptionUpdateManyMutationInput, EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type EnterpriseQuotaConsumptionScalarWhereInput = {
+    AND?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
+    OR?: EnterpriseQuotaConsumptionScalarWhereInput[]
+    NOT?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
+    id?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    workspaceId?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    userId?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    operationId?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    amount?: IntFilter<"EnterpriseQuotaConsumption"> | number
+    source?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    status?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    failureReason?: StringNullableFilter<"EnterpriseQuotaConsumption"> | string | null
+    metadata?: JsonNullableFilter<"EnterpriseQuotaConsumption">
+    createdAt?: DateTimeFilter<"EnterpriseQuotaConsumption"> | Date | string
+  }
+
   export type UserCreateWithoutFreezeRecordsInput = {
     id: string
     email: string
@@ -63964,6 +67288,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFreezeRecordsInput = {
@@ -63996,6 +67321,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFreezeRecordsInput = {
@@ -64044,6 +67370,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFreezeRecordsInput = {
@@ -64076,6 +67403,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutUsernameHistoryInput = {
@@ -64108,6 +67436,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUsernameHistoryInput = {
@@ -64140,6 +67469,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUsernameHistoryInput = {
@@ -64188,6 +67518,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUsernameHistoryInput = {
@@ -64220,6 +67551,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutProfileInput = {
@@ -64252,6 +67584,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProfileInput = {
@@ -64284,6 +67617,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProfileInput = {
@@ -64508,6 +67842,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProfileInput = {
@@ -64540,6 +67875,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LinkUpsertWithWhereUniqueWithoutProfileInput = {
@@ -65173,6 +68509,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutShortLinksInput = {
@@ -65205,6 +68542,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutShortLinksInput = {
@@ -65309,6 +68647,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutShortLinksInput = {
@@ -65341,6 +68680,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ShortLinkClickUpsertWithWhereUniqueWithoutShortLinkInput = {
@@ -65484,6 +68824,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -65516,6 +68857,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -65564,6 +68906,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -65596,6 +68939,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutResetTokensInput = {
@@ -65628,6 +68972,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutResetTokensInput = {
@@ -65660,6 +69005,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutResetTokensInput = {
@@ -65708,6 +69054,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutResetTokensInput = {
@@ -65740,6 +69087,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutVerifyTokensInput = {
@@ -65772,6 +69120,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutVerifyTokensInput = {
@@ -65804,6 +69153,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutVerifyTokensInput = {
@@ -65852,6 +69202,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVerifyTokensInput = {
@@ -65884,6 +69235,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAiUsageLogsInput = {
@@ -65916,6 +69268,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAiUsageLogsInput = {
@@ -65948,6 +69301,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAiUsageLogsInput = {
@@ -65996,6 +69350,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiUsageLogsInput = {
@@ -66028,6 +69383,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProfileCreateWithoutLeadsInput = {
@@ -66523,6 +69879,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProductsInput = {
@@ -66555,6 +69912,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProductsInput = {
@@ -66659,6 +70017,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProductsInput = {
@@ -66691,6 +70050,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LeadUpsertWithWhereUniqueWithoutInterestedProductInput = {
@@ -66739,6 +70099,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutKnowledgeDocsInput = {
@@ -66771,6 +70132,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutKnowledgeDocsInput = {
@@ -66819,6 +70181,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutKnowledgeDocsInput = {
@@ -66851,6 +70214,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAiServiceConfigInput = {
@@ -66883,6 +70247,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAiServiceConfigInput = {
@@ -66915,6 +70280,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAiServiceConfigInput = {
@@ -66963,6 +70329,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiServiceConfigInput = {
@@ -66995,6 +70362,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProfileCreateWithoutAiConversationsInput = {
@@ -67400,6 +70768,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAiCreditAccountInput = {
@@ -67432,6 +70801,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAiCreditAccountInput = {
@@ -67516,6 +70886,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiCreditAccountInput = {
@@ -67548,6 +70919,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AiCreditLedgerUpsertWithWhereUniqueWithoutAccountInput = {
@@ -67665,6 +71037,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMembershipSubscriptionInput = {
@@ -67697,6 +71070,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMembershipSubscriptionInput = {
@@ -67745,6 +71119,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMembershipSubscriptionInput = {
@@ -67777,6 +71152,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutOrdersInput = {
@@ -67809,6 +71185,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionCreateNestedOneWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrdersInput = {
@@ -67841,6 +71218,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUncheckedCreateNestedOneWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrdersInput = {
@@ -67889,6 +71267,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUpdateOneWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -67921,6 +71300,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUncheckedUpdateOneWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutOwnedWorkspacesInput = {
@@ -67953,6 +71333,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionCreateNestedOneWithoutUserInput
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOwnedWorkspacesInput = {
@@ -67985,6 +71366,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUncheckedCreateNestedOneWithoutUserInput
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOwnedWorkspacesInput = {
@@ -68030,6 +71412,67 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type EnterpriseQuotaPoolCreateWithoutWorkspaceInput = {
+    id?: string
+    totalQuota?: number
+    usedQuota?: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    version?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput = {
+    id?: string
+    totalQuota?: number
+    usedQuota?: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    version?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EnterpriseQuotaPoolCreateOrConnectWithoutWorkspaceInput = {
+    where: EnterpriseQuotaPoolWhereUniqueInput
+    create: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput = {
+    id?: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutEnterpriseQuotaConsumptionsInput
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput = {
+    id?: string
+    userId: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput = {
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+    create: XOR<EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type EnterpriseQuotaConsumptionCreateManyWorkspaceInputEnvelope = {
+    data: EnterpriseQuotaConsumptionCreateManyWorkspaceInput | EnterpriseQuotaConsumptionCreateManyWorkspaceInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutOwnedWorkspacesInput = {
     update: XOR<UserUpdateWithoutOwnedWorkspacesInput, UserUncheckedUpdateWithoutOwnedWorkspacesInput>
     create: XOR<UserCreateWithoutOwnedWorkspacesInput, UserUncheckedCreateWithoutOwnedWorkspacesInput>
@@ -68071,6 +71514,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUpdateOneWithoutUserNestedInput
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedWorkspacesInput = {
@@ -68103,6 +71547,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUncheckedUpdateOneWithoutUserNestedInput
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type WorkspaceMemberUpsertWithWhereUniqueWithoutWorkspaceInput = {
@@ -68121,6 +71566,55 @@ export namespace Prisma {
     data: XOR<WorkspaceMemberUpdateManyMutationInput, WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceInput>
   }
 
+  export type EnterpriseQuotaPoolUpsertWithoutWorkspaceInput = {
+    update: XOR<EnterpriseQuotaPoolUpdateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedUpdateWithoutWorkspaceInput>
+    create: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
+    where?: EnterpriseQuotaPoolWhereInput
+  }
+
+  export type EnterpriseQuotaPoolUpdateToOneWithWhereWithoutWorkspaceInput = {
+    where?: EnterpriseQuotaPoolWhereInput
+    data: XOR<EnterpriseQuotaPoolUpdateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type EnterpriseQuotaPoolUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    totalQuota?: IntFieldUpdateOperationsInput | number
+    usedQuota?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaPoolUncheckedUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    totalQuota?: IntFieldUpdateOperationsInput | number
+    usedQuota?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutWorkspaceInput = {
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+    update: XOR<EnterpriseQuotaConsumptionUpdateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedUpdateWithoutWorkspaceInput>
+    create: XOR<EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutWorkspaceInput = {
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+    data: XOR<EnterpriseQuotaConsumptionUpdateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutWorkspaceInput = {
+    where: EnterpriseQuotaConsumptionScalarWhereInput
+    data: XOR<EnterpriseQuotaConsumptionUpdateManyMutationInput, EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceInput>
+  }
+
   export type WorkspaceCreateWithoutMembersInput = {
     id?: string
     name: string
@@ -68132,6 +71626,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
+    quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUncheckedCreateWithoutMembersInput = {
@@ -68145,6 +71641,8 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceCreateOrConnectWithoutMembersInput = {
@@ -68182,6 +71680,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionCreateNestedOneWithoutUserInput
     orders?: OrderCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
@@ -68214,6 +71713,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUncheckedCreateNestedOneWithoutUserInput
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutWorkspaceMembershipsInput = {
@@ -68243,6 +71743,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+    quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateWithoutMembersInput = {
@@ -68256,6 +71758,8 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type UserUpsertWithoutWorkspaceMembershipsInput = {
@@ -68299,6 +71803,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUpdateOneWithoutUserNestedInput
     orders?: OrderUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
@@ -68330,6 +71835,307 @@ export namespace Prisma {
     aiCreditAccount?: AiCreditAccountUncheckedUpdateOneWithoutUserNestedInput
     membershipSubscription?: MembershipSubscriptionUncheckedUpdateOneWithoutUserNestedInput
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
+    ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type WorkspaceCreateWithoutQuotaPoolInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
+    members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUncheckedCreateWithoutQuotaPoolInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    ownerId: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceCreateOrConnectWithoutQuotaPoolInput = {
+    where: WorkspaceWhereUniqueInput
+    create: XOR<WorkspaceCreateWithoutQuotaPoolInput, WorkspaceUncheckedCreateWithoutQuotaPoolInput>
+  }
+
+  export type WorkspaceUpsertWithoutQuotaPoolInput = {
+    update: XOR<WorkspaceUpdateWithoutQuotaPoolInput, WorkspaceUncheckedUpdateWithoutQuotaPoolInput>
+    create: XOR<WorkspaceCreateWithoutQuotaPoolInput, WorkspaceUncheckedCreateWithoutQuotaPoolInput>
+    where?: WorkspaceWhereInput
+  }
+
+  export type WorkspaceUpdateToOneWithWhereWithoutQuotaPoolInput = {
+    where?: WorkspaceWhereInput
+    data: XOR<WorkspaceUpdateWithoutQuotaPoolInput, WorkspaceUncheckedUpdateWithoutQuotaPoolInput>
+  }
+
+  export type WorkspaceUpdateWithoutQuotaPoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+    members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceUncheckedUpdateWithoutQuotaPoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceCreateWithoutEnterpriseQuotaConsumptionsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
+    members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    ownerId: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
+  }
+
+  export type WorkspaceCreateOrConnectWithoutEnterpriseQuotaConsumptionsInput = {
+    where: WorkspaceWhereUniqueInput
+    create: XOR<WorkspaceCreateWithoutEnterpriseQuotaConsumptionsInput, WorkspaceUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+  }
+
+  export type UserCreateWithoutEnterpriseQuotaConsumptionsInput = {
+    id: string
+    email: string
+    passwordHash: string
+    emailVerified?: boolean
+    frozenReason?: string | null
+    frozenAt?: Date | string | null
+    usernameChanges?: number
+    role?: string
+    isSystem?: boolean
+    accountStatus?: string
+    deactivatedAt?: Date | string | null
+    deactivationReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    usernameHistory?: UsernameHistoryCreateNestedManyWithoutUserInput
+    freezeRecords?: FreezeRecordCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    resetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    verifyTokens?: EmailVerificationTokenCreateNestedManyWithoutUserInput
+    aiUsageLogs?: AiUsageLogCreateNestedManyWithoutUserInput
+    shortLinks?: ShortLinkCreateNestedManyWithoutUserInput
+    products?: ProductCreateNestedManyWithoutUserInput
+    knowledgeDocs?: KnowledgeDocCreateNestedManyWithoutUserInput
+    aiServiceConfig?: AiServiceConfigCreateNestedOneWithoutUserInput
+    aiCreditAccount?: AiCreditAccountCreateNestedOneWithoutUserInput
+    membershipSubscription?: MembershipSubscriptionCreateNestedOneWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutUserInput
+    workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
+    ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput = {
+    id: string
+    email: string
+    passwordHash: string
+    emailVerified?: boolean
+    frozenReason?: string | null
+    frozenAt?: Date | string | null
+    usernameChanges?: number
+    role?: string
+    isSystem?: boolean
+    accountStatus?: string
+    deactivatedAt?: Date | string | null
+    deactivationReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    usernameHistory?: UsernameHistoryUncheckedCreateNestedManyWithoutUserInput
+    freezeRecords?: FreezeRecordUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    resetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    verifyTokens?: EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
+    aiUsageLogs?: AiUsageLogUncheckedCreateNestedManyWithoutUserInput
+    shortLinks?: ShortLinkUncheckedCreateNestedManyWithoutUserInput
+    products?: ProductUncheckedCreateNestedManyWithoutUserInput
+    knowledgeDocs?: KnowledgeDocUncheckedCreateNestedManyWithoutUserInput
+    aiServiceConfig?: AiServiceConfigUncheckedCreateNestedOneWithoutUserInput
+    aiCreditAccount?: AiCreditAccountUncheckedCreateNestedOneWithoutUserInput
+    membershipSubscription?: MembershipSubscriptionUncheckedCreateNestedOneWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutUserInput
+    workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+    ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserCreateOrConnectWithoutEnterpriseQuotaConsumptionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutEnterpriseQuotaConsumptionsInput, UserUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+  }
+
+  export type WorkspaceUpsertWithoutEnterpriseQuotaConsumptionsInput = {
+    update: XOR<WorkspaceUpdateWithoutEnterpriseQuotaConsumptionsInput, WorkspaceUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput>
+    create: XOR<WorkspaceCreateWithoutEnterpriseQuotaConsumptionsInput, WorkspaceUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+    where?: WorkspaceWhereInput
+  }
+
+  export type WorkspaceUpdateToOneWithWhereWithoutEnterpriseQuotaConsumptionsInput = {
+    where?: WorkspaceWhereInput
+    data: XOR<WorkspaceUpdateWithoutEnterpriseQuotaConsumptionsInput, WorkspaceUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput>
+  }
+
+  export type WorkspaceUpdateWithoutEnterpriseQuotaConsumptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+    members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
+  }
+
+  export type UserUpsertWithoutEnterpriseQuotaConsumptionsInput = {
+    update: XOR<UserUpdateWithoutEnterpriseQuotaConsumptionsInput, UserUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput>
+    create: XOR<UserCreateWithoutEnterpriseQuotaConsumptionsInput, UserUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutEnterpriseQuotaConsumptionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutEnterpriseQuotaConsumptionsInput, UserUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput>
+  }
+
+  export type UserUpdateWithoutEnterpriseQuotaConsumptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    frozenReason?: NullableStringFieldUpdateOperationsInput | string | null
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    usernameChanges?: IntFieldUpdateOperationsInput | number
+    role?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    accountStatus?: StringFieldUpdateOperationsInput | string
+    deactivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deactivationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    usernameHistory?: UsernameHistoryUpdateManyWithoutUserNestedInput
+    freezeRecords?: FreezeRecordUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    resetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    verifyTokens?: EmailVerificationTokenUpdateManyWithoutUserNestedInput
+    aiUsageLogs?: AiUsageLogUpdateManyWithoutUserNestedInput
+    shortLinks?: ShortLinkUpdateManyWithoutUserNestedInput
+    products?: ProductUpdateManyWithoutUserNestedInput
+    knowledgeDocs?: KnowledgeDocUpdateManyWithoutUserNestedInput
+    aiServiceConfig?: AiServiceConfigUpdateOneWithoutUserNestedInput
+    aiCreditAccount?: AiCreditAccountUpdateOneWithoutUserNestedInput
+    membershipSubscription?: MembershipSubscriptionUpdateOneWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutUserNestedInput
+    workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
+    ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    frozenReason?: NullableStringFieldUpdateOperationsInput | string | null
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    usernameChanges?: IntFieldUpdateOperationsInput | number
+    role?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    accountStatus?: StringFieldUpdateOperationsInput | string
+    deactivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deactivationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    usernameHistory?: UsernameHistoryUncheckedUpdateManyWithoutUserNestedInput
+    freezeRecords?: FreezeRecordUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    resetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    verifyTokens?: EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+    aiUsageLogs?: AiUsageLogUncheckedUpdateManyWithoutUserNestedInput
+    shortLinks?: ShortLinkUncheckedUpdateManyWithoutUserNestedInput
+    products?: ProductUncheckedUpdateManyWithoutUserNestedInput
+    knowledgeDocs?: KnowledgeDocUncheckedUpdateManyWithoutUserNestedInput
+    aiServiceConfig?: AiServiceConfigUncheckedUpdateOneWithoutUserNestedInput
+    aiCreditAccount?: AiCreditAccountUncheckedUpdateOneWithoutUserNestedInput
+    membershipSubscription?: MembershipSubscriptionUncheckedUpdateOneWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
+    workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
@@ -68485,6 +72291,18 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionCreateManyUserInput = {
+    id?: string
+    workspaceId: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
   }
 
   export type UsernameHistoryUpdateWithoutUserInput = {
@@ -68928,6 +72746,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateWithoutOwnerInput = {
@@ -68941,6 +72761,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateManyWithoutOwnerInput = {
@@ -68953,6 +72775,42 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneRequiredWithoutEnterpriseQuotaConsumptionsNestedInput
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type LinkCreateManyProfileInput = {
@@ -69599,6 +73457,18 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type EnterpriseQuotaConsumptionCreateManyWorkspaceInput = {
+    id?: string
+    userId: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
   export type WorkspaceMemberUpdateWithoutWorkspaceInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
@@ -69639,6 +73509,42 @@ export namespace Prisma {
     removedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEnterpriseQuotaConsumptionsNestedInput
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 
