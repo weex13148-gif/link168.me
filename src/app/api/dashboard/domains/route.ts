@@ -1,19 +1,59 @@
 import { NextResponse } from "next/server";
 import { requireDashboardUser } from "@/lib/auth";
-import { bindCustomDomain, verifyDomain, unbindDomain, getUserDomains, getDomainVerificationInfo } from "@/lib/domains";
+import { assertWorkspaceMember } from "@/lib/workspace";
+import {
+  bindWorkspaceDomain,
+  verifyWorkspaceDomain,
+  unbindWorkspaceDomain,
+  getWorkspaceDomains,
+  getWorkspaceDomainVerificationInfo,
+} from "@/lib/domains";
 
 export const runtime = "nodejs";
 
-export async function GET(request: Request) {
+// 统一权限校验：要求调用者是 Workspace 的 owner 或 active admin
+async function assertDomainManager(request: Request, workspaceId: string) {
   const { user, response } = await requireDashboardUser(request);
-  if (response || !user) return response;
+  if (response || !user) return { user: null, error: response };
 
+  const access = await assertWorkspaceMember(workspaceId, user.id, {
+    minRole: "admin",
+    requireActive: true,
+  });
+  if (!access.allowed || !access.member) {
+    return {
+      user: null,
+      error: NextResponse.json(
+        {
+          success: false,
+          code: access.code,
+          message: access.message ?? "无权管理该 Workspace 的域名",
+        },
+        { status: 403 },
+      ),
+    };
+  }
+  return { user, error: null };
+}
+
+export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
+    const workspaceId = url.searchParams.get("workspaceId");
     const domainId = url.searchParams.get("domainId");
 
+    if (!workspaceId) {
+      return NextResponse.json(
+        { success: false, code: "WORKSPACE_ID_REQUIRED", message: "请提供 workspaceId" },
+        { status: 400 },
+      );
+    }
+
+    const { error } = await assertDomainManager(request, workspaceId);
+    if (error) return error;
+
     if (domainId) {
-      const domain = await getDomainVerificationInfo(domainId, user.id);
+      const domain = await getWorkspaceDomainVerificationInfo(domainId, workspaceId);
       if (!domain) {
         return NextResponse.json(
           { success: false, code: "DOMAIN_NOT_FOUND", message: "域名记录不存在" },
@@ -23,7 +63,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: true, domain });
     }
 
-    const domains = await getUserDomains(user.id);
+    const domains = await getWorkspaceDomains(workspaceId);
     return NextResponse.json({ success: true, domains });
   } catch (error) {
     console.error("[domains] 获取域名列表失败:", error);
@@ -35,23 +75,44 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const { user, response } = await requireDashboardUser(request);
-  if (response || !user) return response;
-
   try {
     const body = (await request.json()) as Record<string, unknown>;
     const action = body.action as string;
+    const workspaceId = body.workspaceId as string;
+
+    if (!workspaceId) {
+      return NextResponse.json(
+        { success: false, code: "WORKSPACE_ID_REQUIRED", message: "请提供 workspaceId" },
+        { status: 400 },
+      );
+    }
+
+    const { user, error } = await assertDomainManager(request, workspaceId);
+    if (error) return error;
+    if (!user) {
+      return NextResponse.json(
+        { success: false, code: "UNAUTHORIZED", message: "未登录" },
+        { status: 401 },
+      );
+    }
 
     switch (action) {
       case "bind": {
         const domain = body.domain as string;
+        const planCode = body.planCode as string | undefined;
         if (!domain) {
           return NextResponse.json(
             { success: false, code: "DOMAIN_REQUIRED", message: "请提供要绑定的域名" },
             { status: 400 },
           );
         }
-        const result = await bindCustomDomain(domain, user.id);
+        if (!planCode) {
+          return NextResponse.json(
+            { success: false, code: "PLAN_CODE_REQUIRED", message: "请提供当前 Workspace 套餐" },
+            { status: 400 },
+          );
+        }
+        const result = await bindWorkspaceDomain(domain, workspaceId, planCode);
         return NextResponse.json({ success: true, domain: result });
       }
 
@@ -63,7 +124,7 @@ export async function POST(request: Request) {
             { status: 400 },
           );
         }
-        const result = await verifyDomain(domainId, user.id);
+        const result = await verifyWorkspaceDomain(domainId, workspaceId);
         return NextResponse.json({ ...result });
       }
 
@@ -75,7 +136,7 @@ export async function POST(request: Request) {
             { status: 400 },
           );
         }
-        const success = await unbindDomain(domainId, user.id);
+        const success = await unbindWorkspaceDomain(domainId, workspaceId);
         if (!success) {
           return NextResponse.json(
             { success: false, code: "UNBIND_FAILED", message: "解绑失败" },

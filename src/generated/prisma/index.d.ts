@@ -44,6 +44,11 @@ export type Profile = $Result.DefaultSelection<Prisma.$ProfilePayload>
  */
 export type Domain = $Result.DefaultSelection<Prisma.$DomainPayload>
 /**
+ * Model WorkspacePublicProfile
+ * 
+ */
+export type WorkspacePublicProfile = $Result.DefaultSelection<Prisma.$WorkspacePublicProfilePayload>
+/**
  * Model Link
  * 
  */
@@ -394,6 +399,16 @@ export class PrismaClient<
     * ```
     */
   get domain(): Prisma.DomainDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.workspacePublicProfile`: Exposes CRUD operations for the **WorkspacePublicProfile** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more WorkspacePublicProfiles
+    * const workspacePublicProfiles = await prisma.workspacePublicProfile.findMany()
+    * ```
+    */
+  get workspacePublicProfile(): Prisma.WorkspacePublicProfileDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.link`: Exposes CRUD operations for the **Link** model.
@@ -1174,6 +1189,7 @@ export namespace Prisma {
     UsernameRegistry: 'UsernameRegistry',
     Profile: 'Profile',
     Domain: 'Domain',
+    WorkspacePublicProfile: 'WorkspacePublicProfile',
     Link: 'Link',
     LinkClick: 'LinkClick',
     ProfileVisit: 'ProfileVisit',
@@ -1223,7 +1239,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "freezeRecord" | "usernameHistory" | "usernameRegistry" | "profile" | "domain" | "link" | "linkClick" | "profileVisit" | "shortLink" | "shortLinkClick" | "session" | "report" | "passwordResetToken" | "emailVerificationToken" | "loginAttempt" | "appConfig" | "aiUsageLog" | "adminAuditLog" | "lead" | "leadFollowUp" | "emailSendLog" | "product" | "knowledgeDoc" | "aiServiceConfig" | "aiConversation" | "aiMessage" | "aiCreditAccount" | "aiCreditLedger" | "membershipSubscription" | "order" | "competitionFile" | "showcaseContent" | "showcaseSequence" | "showcaseAIDemoCall" | "showcaseAIDebugLog" | "showcasePromptDraft" | "contentModerationRecord" | "workspace" | "workspaceMember"
+      modelProps: "user" | "freezeRecord" | "usernameHistory" | "usernameRegistry" | "profile" | "domain" | "workspacePublicProfile" | "link" | "linkClick" | "profileVisit" | "shortLink" | "shortLinkClick" | "session" | "report" | "passwordResetToken" | "emailVerificationToken" | "loginAttempt" | "appConfig" | "aiUsageLog" | "adminAuditLog" | "lead" | "leadFollowUp" | "emailSendLog" | "product" | "knowledgeDoc" | "aiServiceConfig" | "aiConversation" | "aiMessage" | "aiCreditAccount" | "aiCreditLedger" | "membershipSubscription" | "order" | "competitionFile" | "showcaseContent" | "showcaseSequence" | "showcaseAIDemoCall" | "showcaseAIDebugLog" | "showcasePromptDraft" | "contentModerationRecord" | "workspace" | "workspaceMember"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1668,6 +1684,80 @@ export namespace Prisma {
           count: {
             args: Prisma.DomainCountArgs<ExtArgs>
             result: $Utils.Optional<DomainCountAggregateOutputType> | number
+          }
+        }
+      }
+      WorkspacePublicProfile: {
+        payload: Prisma.$WorkspacePublicProfilePayload<ExtArgs>
+        fields: Prisma.WorkspacePublicProfileFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.WorkspacePublicProfileFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePublicProfilePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.WorkspacePublicProfileFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePublicProfilePayload>
+          }
+          findFirst: {
+            args: Prisma.WorkspacePublicProfileFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePublicProfilePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.WorkspacePublicProfileFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePublicProfilePayload>
+          }
+          findMany: {
+            args: Prisma.WorkspacePublicProfileFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePublicProfilePayload>[]
+          }
+          create: {
+            args: Prisma.WorkspacePublicProfileCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePublicProfilePayload>
+          }
+          createMany: {
+            args: Prisma.WorkspacePublicProfileCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.WorkspacePublicProfileCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePublicProfilePayload>[]
+          }
+          delete: {
+            args: Prisma.WorkspacePublicProfileDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePublicProfilePayload>
+          }
+          update: {
+            args: Prisma.WorkspacePublicProfileUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePublicProfilePayload>
+          }
+          deleteMany: {
+            args: Prisma.WorkspacePublicProfileDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.WorkspacePublicProfileUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.WorkspacePublicProfileUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePublicProfilePayload>[]
+          }
+          upsert: {
+            args: Prisma.WorkspacePublicProfileUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePublicProfilePayload>
+          }
+          aggregate: {
+            args: Prisma.WorkspacePublicProfileAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWorkspacePublicProfile>
+          }
+          groupBy: {
+            args: Prisma.WorkspacePublicProfileGroupByArgs<ExtArgs>
+            result: $Utils.Optional<WorkspacePublicProfileGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.WorkspacePublicProfileCountArgs<ExtArgs>
+            result: $Utils.Optional<WorkspacePublicProfileCountAggregateOutputType> | number
           }
         }
       }
@@ -4301,6 +4391,7 @@ export namespace Prisma {
     usernameRegistry?: UsernameRegistryOmit
     profile?: ProfileOmit
     domain?: DomainOmit
+    workspacePublicProfile?: WorkspacePublicProfileOmit
     link?: LinkOmit
     linkClick?: LinkClickOmit
     profileVisit?: ProfileVisitOmit
@@ -4427,7 +4518,7 @@ export namespace Prisma {
     orders: number
     workspaceMemberships: number
     ownedWorkspaces: number
-    domains: number
+    workspacePublicProfiles: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4443,7 +4534,7 @@ export namespace Prisma {
     orders?: boolean | UserCountOutputTypeCountOrdersArgs
     workspaceMemberships?: boolean | UserCountOutputTypeCountWorkspaceMembershipsArgs
     ownedWorkspaces?: boolean | UserCountOutputTypeCountOwnedWorkspacesArgs
-    domains?: boolean | UserCountOutputTypeCountDomainsArgs
+    workspacePublicProfiles?: boolean | UserCountOutputTypeCountWorkspacePublicProfilesArgs
   }
 
   // Custom InputTypes
@@ -4544,8 +4635,8 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountDomainsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: DomainWhereInput
+  export type UserCountOutputTypeCountWorkspacePublicProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WorkspacePublicProfileWhereInput
   }
 
 
@@ -4799,10 +4890,14 @@ export namespace Prisma {
 
   export type WorkspaceCountOutputType = {
     members: number
+    domains: number
+    publicProfiles: number
   }
 
   export type WorkspaceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     members?: boolean | WorkspaceCountOutputTypeCountMembersArgs
+    domains?: boolean | WorkspaceCountOutputTypeCountDomainsArgs
+    publicProfiles?: boolean | WorkspaceCountOutputTypeCountPublicProfilesArgs
   }
 
   // Custom InputTypes
@@ -4821,6 +4916,20 @@ export namespace Prisma {
    */
   export type WorkspaceCountOutputTypeCountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WorkspaceMemberWhereInput
+  }
+
+  /**
+   * WorkspaceCountOutputType without action
+   */
+  export type WorkspaceCountOutputTypeCountDomainsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DomainWhereInput
+  }
+
+  /**
+   * WorkspaceCountOutputType without action
+   */
+  export type WorkspaceCountOutputTypeCountPublicProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WorkspacePublicProfileWhereInput
   }
 
 
@@ -5114,7 +5223,7 @@ export namespace Prisma {
     orders?: boolean | User$ordersArgs<ExtArgs>
     workspaceMemberships?: boolean | User$workspaceMembershipsArgs<ExtArgs>
     ownedWorkspaces?: boolean | User$ownedWorkspacesArgs<ExtArgs>
-    domains?: boolean | User$domainsArgs<ExtArgs>
+    workspacePublicProfiles?: boolean | User$workspacePublicProfilesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -5187,7 +5296,7 @@ export namespace Prisma {
     orders?: boolean | User$ordersArgs<ExtArgs>
     workspaceMemberships?: boolean | User$workspaceMembershipsArgs<ExtArgs>
     ownedWorkspaces?: boolean | User$ownedWorkspacesArgs<ExtArgs>
-    domains?: boolean | User$domainsArgs<ExtArgs>
+    workspacePublicProfiles?: boolean | User$workspacePublicProfilesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5212,7 +5321,7 @@ export namespace Prisma {
       orders: Prisma.$OrderPayload<ExtArgs>[]
       workspaceMemberships: Prisma.$WorkspaceMemberPayload<ExtArgs>[]
       ownedWorkspaces: Prisma.$WorkspacePayload<ExtArgs>[]
-      domains: Prisma.$DomainPayload<ExtArgs>[]
+      workspacePublicProfiles: Prisma.$WorkspacePublicProfilePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5639,7 +5748,7 @@ export namespace Prisma {
     orders<T extends User$ordersArgs<ExtArgs> = {}>(args?: Subset<T, User$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     workspaceMemberships<T extends User$workspaceMembershipsArgs<ExtArgs> = {}>(args?: Subset<T, User$workspaceMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ownedWorkspaces<T extends User$ownedWorkspacesArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedWorkspacesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    domains<T extends User$domainsArgs<ExtArgs> = {}>(args?: Subset<T, User$domainsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DomainPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    workspacePublicProfiles<T extends User$workspacePublicProfilesArgs<ExtArgs> = {}>(args?: Subset<T, User$workspacePublicProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6440,27 +6549,27 @@ export namespace Prisma {
   }
 
   /**
-   * User.domains
+   * User.workspacePublicProfiles
    */
-  export type User$domainsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$workspacePublicProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Domain
+     * Select specific fields to fetch from the WorkspacePublicProfile
      */
-    select?: DomainSelect<ExtArgs> | null
+    select?: WorkspacePublicProfileSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Domain
+     * Omit specific fields from the WorkspacePublicProfile
      */
-    omit?: DomainOmit<ExtArgs> | null
+    omit?: WorkspacePublicProfileOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: DomainInclude<ExtArgs> | null
-    where?: DomainWhereInput
-    orderBy?: DomainOrderByWithRelationInput | DomainOrderByWithRelationInput[]
-    cursor?: DomainWhereUniqueInput
+    include?: WorkspacePublicProfileInclude<ExtArgs> | null
+    where?: WorkspacePublicProfileWhereInput
+    orderBy?: WorkspacePublicProfileOrderByWithRelationInput | WorkspacePublicProfileOrderByWithRelationInput[]
+    cursor?: WorkspacePublicProfileWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: DomainScalarFieldEnum | DomainScalarFieldEnum[]
+    distinct?: WorkspacePublicProfileScalarFieldEnum | WorkspacePublicProfileScalarFieldEnum[]
   }
 
   /**
@@ -11274,7 +11383,7 @@ export namespace Prisma {
 
   export type DomainMinAggregateOutputType = {
     id: string | null
-    userId: string | null
+    workspaceId: string | null
     domain: string | null
     normalizedDomain: string | null
     domainType: string | null
@@ -11291,7 +11400,7 @@ export namespace Prisma {
 
   export type DomainMaxAggregateOutputType = {
     id: string | null
-    userId: string | null
+    workspaceId: string | null
     domain: string | null
     normalizedDomain: string | null
     domainType: string | null
@@ -11308,7 +11417,7 @@ export namespace Prisma {
 
   export type DomainCountAggregateOutputType = {
     id: number
-    userId: number
+    workspaceId: number
     domain: number
     normalizedDomain: number
     domainType: number
@@ -11327,7 +11436,7 @@ export namespace Prisma {
 
   export type DomainMinAggregateInputType = {
     id?: true
-    userId?: true
+    workspaceId?: true
     domain?: true
     normalizedDomain?: true
     domainType?: true
@@ -11344,7 +11453,7 @@ export namespace Prisma {
 
   export type DomainMaxAggregateInputType = {
     id?: true
-    userId?: true
+    workspaceId?: true
     domain?: true
     normalizedDomain?: true
     domainType?: true
@@ -11361,7 +11470,7 @@ export namespace Prisma {
 
   export type DomainCountAggregateInputType = {
     id?: true
-    userId?: true
+    workspaceId?: true
     domain?: true
     normalizedDomain?: true
     domainType?: true
@@ -11451,7 +11560,7 @@ export namespace Prisma {
 
   export type DomainGroupByOutputType = {
     id: string
-    userId: string
+    workspaceId: string
     domain: string
     normalizedDomain: string
     domainType: string
@@ -11485,7 +11594,7 @@ export namespace Prisma {
 
   export type DomainSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    userId?: boolean
+    workspaceId?: boolean
     domain?: boolean
     normalizedDomain?: boolean
     domainType?: boolean
@@ -11498,12 +11607,12 @@ export namespace Prisma {
     lastVerifiedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["domain"]>
 
   export type DomainSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    userId?: boolean
+    workspaceId?: boolean
     domain?: boolean
     normalizedDomain?: boolean
     domainType?: boolean
@@ -11516,12 +11625,12 @@ export namespace Prisma {
     lastVerifiedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["domain"]>
 
   export type DomainSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    userId?: boolean
+    workspaceId?: boolean
     domain?: boolean
     normalizedDomain?: boolean
     domainType?: boolean
@@ -11534,12 +11643,12 @@ export namespace Prisma {
     lastVerifiedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["domain"]>
 
   export type DomainSelectScalar = {
     id?: boolean
-    userId?: boolean
+    workspaceId?: boolean
     domain?: boolean
     normalizedDomain?: boolean
     domainType?: boolean
@@ -11554,25 +11663,25 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type DomainOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "domain" | "normalizedDomain" | "domainType" | "status" | "failureReason" | "verificationToken" | "cnameTarget" | "verifiedAt" | "unboundAt" | "lastVerifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["domain"]>
+  export type DomainOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "workspaceId" | "domain" | "normalizedDomain" | "domainType" | "status" | "failureReason" | "verificationToken" | "cnameTarget" | "verifiedAt" | "unboundAt" | "lastVerifiedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["domain"]>
   export type DomainInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
   }
   export type DomainIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
   }
   export type DomainIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
   }
 
   export type $DomainPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Domain"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
+      workspace: Prisma.$WorkspacePayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      userId: string
+      workspaceId: string
       domain: string
       normalizedDomain: string
       domainType: string
@@ -11979,7 +12088,7 @@ export namespace Prisma {
    */
   export interface Prisma__DomainClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    workspace<T extends WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WorkspaceDefaultArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12010,7 +12119,7 @@ export namespace Prisma {
    */
   interface DomainFieldRefs {
     readonly id: FieldRef<"Domain", 'String'>
-    readonly userId: FieldRef<"Domain", 'String'>
+    readonly workspaceId: FieldRef<"Domain", 'String'>
     readonly domain: FieldRef<"Domain", 'String'>
     readonly normalizedDomain: FieldRef<"Domain", 'String'>
     readonly domainType: FieldRef<"Domain", 'String'>
@@ -12439,6 +12548,1103 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: DomainInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model WorkspacePublicProfile
+   */
+
+  export type AggregateWorkspacePublicProfile = {
+    _count: WorkspacePublicProfileCountAggregateOutputType | null
+    _min: WorkspacePublicProfileMinAggregateOutputType | null
+    _max: WorkspacePublicProfileMaxAggregateOutputType | null
+  }
+
+  export type WorkspacePublicProfileMinAggregateOutputType = {
+    id: string | null
+    workspaceId: string | null
+    userId: string | null
+    slug: string | null
+    status: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WorkspacePublicProfileMaxAggregateOutputType = {
+    id: string | null
+    workspaceId: string | null
+    userId: string | null
+    slug: string | null
+    status: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type WorkspacePublicProfileCountAggregateOutputType = {
+    id: number
+    workspaceId: number
+    userId: number
+    slug: number
+    status: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type WorkspacePublicProfileMinAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    userId?: true
+    slug?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WorkspacePublicProfileMaxAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    userId?: true
+    slug?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type WorkspacePublicProfileCountAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    userId?: true
+    slug?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type WorkspacePublicProfileAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WorkspacePublicProfile to aggregate.
+     */
+    where?: WorkspacePublicProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WorkspacePublicProfiles to fetch.
+     */
+    orderBy?: WorkspacePublicProfileOrderByWithRelationInput | WorkspacePublicProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WorkspacePublicProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WorkspacePublicProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WorkspacePublicProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned WorkspacePublicProfiles
+    **/
+    _count?: true | WorkspacePublicProfileCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WorkspacePublicProfileMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WorkspacePublicProfileMaxAggregateInputType
+  }
+
+  export type GetWorkspacePublicProfileAggregateType<T extends WorkspacePublicProfileAggregateArgs> = {
+        [P in keyof T & keyof AggregateWorkspacePublicProfile]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWorkspacePublicProfile[P]>
+      : GetScalarType<T[P], AggregateWorkspacePublicProfile[P]>
+  }
+
+
+
+
+  export type WorkspacePublicProfileGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WorkspacePublicProfileWhereInput
+    orderBy?: WorkspacePublicProfileOrderByWithAggregationInput | WorkspacePublicProfileOrderByWithAggregationInput[]
+    by: WorkspacePublicProfileScalarFieldEnum[] | WorkspacePublicProfileScalarFieldEnum
+    having?: WorkspacePublicProfileScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WorkspacePublicProfileCountAggregateInputType | true
+    _min?: WorkspacePublicProfileMinAggregateInputType
+    _max?: WorkspacePublicProfileMaxAggregateInputType
+  }
+
+  export type WorkspacePublicProfileGroupByOutputType = {
+    id: string
+    workspaceId: string
+    userId: string
+    slug: string
+    status: string
+    createdAt: Date
+    updatedAt: Date
+    _count: WorkspacePublicProfileCountAggregateOutputType | null
+    _min: WorkspacePublicProfileMinAggregateOutputType | null
+    _max: WorkspacePublicProfileMaxAggregateOutputType | null
+  }
+
+  type GetWorkspacePublicProfileGroupByPayload<T extends WorkspacePublicProfileGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<WorkspacePublicProfileGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WorkspacePublicProfileGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WorkspacePublicProfileGroupByOutputType[P]>
+            : GetScalarType<T[P], WorkspacePublicProfileGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WorkspacePublicProfileSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    userId?: boolean
+    slug?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["workspacePublicProfile"]>
+
+  export type WorkspacePublicProfileSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    userId?: boolean
+    slug?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["workspacePublicProfile"]>
+
+  export type WorkspacePublicProfileSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    userId?: boolean
+    slug?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["workspacePublicProfile"]>
+
+  export type WorkspacePublicProfileSelectScalar = {
+    id?: boolean
+    workspaceId?: boolean
+    userId?: boolean
+    slug?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type WorkspacePublicProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "workspaceId" | "userId" | "slug" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["workspacePublicProfile"]>
+  export type WorkspacePublicProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type WorkspacePublicProfileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type WorkspacePublicProfileIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $WorkspacePublicProfilePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "WorkspacePublicProfile"
+    objects: {
+      workspace: Prisma.$WorkspacePayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      workspaceId: string
+      userId: string
+      slug: string
+      status: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["workspacePublicProfile"]>
+    composites: {}
+  }
+
+  type WorkspacePublicProfileGetPayload<S extends boolean | null | undefined | WorkspacePublicProfileDefaultArgs> = $Result.GetResult<Prisma.$WorkspacePublicProfilePayload, S>
+
+  type WorkspacePublicProfileCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<WorkspacePublicProfileFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: WorkspacePublicProfileCountAggregateInputType | true
+    }
+
+  export interface WorkspacePublicProfileDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['WorkspacePublicProfile'], meta: { name: 'WorkspacePublicProfile' } }
+    /**
+     * Find zero or one WorkspacePublicProfile that matches the filter.
+     * @param {WorkspacePublicProfileFindUniqueArgs} args - Arguments to find a WorkspacePublicProfile
+     * @example
+     * // Get one WorkspacePublicProfile
+     * const workspacePublicProfile = await prisma.workspacePublicProfile.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends WorkspacePublicProfileFindUniqueArgs>(args: SelectSubset<T, WorkspacePublicProfileFindUniqueArgs<ExtArgs>>): Prisma__WorkspacePublicProfileClient<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one WorkspacePublicProfile that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {WorkspacePublicProfileFindUniqueOrThrowArgs} args - Arguments to find a WorkspacePublicProfile
+     * @example
+     * // Get one WorkspacePublicProfile
+     * const workspacePublicProfile = await prisma.workspacePublicProfile.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends WorkspacePublicProfileFindUniqueOrThrowArgs>(args: SelectSubset<T, WorkspacePublicProfileFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WorkspacePublicProfileClient<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WorkspacePublicProfile that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkspacePublicProfileFindFirstArgs} args - Arguments to find a WorkspacePublicProfile
+     * @example
+     * // Get one WorkspacePublicProfile
+     * const workspacePublicProfile = await prisma.workspacePublicProfile.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends WorkspacePublicProfileFindFirstArgs>(args?: SelectSubset<T, WorkspacePublicProfileFindFirstArgs<ExtArgs>>): Prisma__WorkspacePublicProfileClient<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WorkspacePublicProfile that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkspacePublicProfileFindFirstOrThrowArgs} args - Arguments to find a WorkspacePublicProfile
+     * @example
+     * // Get one WorkspacePublicProfile
+     * const workspacePublicProfile = await prisma.workspacePublicProfile.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends WorkspacePublicProfileFindFirstOrThrowArgs>(args?: SelectSubset<T, WorkspacePublicProfileFindFirstOrThrowArgs<ExtArgs>>): Prisma__WorkspacePublicProfileClient<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more WorkspacePublicProfiles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkspacePublicProfileFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all WorkspacePublicProfiles
+     * const workspacePublicProfiles = await prisma.workspacePublicProfile.findMany()
+     * 
+     * // Get first 10 WorkspacePublicProfiles
+     * const workspacePublicProfiles = await prisma.workspacePublicProfile.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const workspacePublicProfileWithIdOnly = await prisma.workspacePublicProfile.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends WorkspacePublicProfileFindManyArgs>(args?: SelectSubset<T, WorkspacePublicProfileFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a WorkspacePublicProfile.
+     * @param {WorkspacePublicProfileCreateArgs} args - Arguments to create a WorkspacePublicProfile.
+     * @example
+     * // Create one WorkspacePublicProfile
+     * const WorkspacePublicProfile = await prisma.workspacePublicProfile.create({
+     *   data: {
+     *     // ... data to create a WorkspacePublicProfile
+     *   }
+     * })
+     * 
+     */
+    create<T extends WorkspacePublicProfileCreateArgs>(args: SelectSubset<T, WorkspacePublicProfileCreateArgs<ExtArgs>>): Prisma__WorkspacePublicProfileClient<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many WorkspacePublicProfiles.
+     * @param {WorkspacePublicProfileCreateManyArgs} args - Arguments to create many WorkspacePublicProfiles.
+     * @example
+     * // Create many WorkspacePublicProfiles
+     * const workspacePublicProfile = await prisma.workspacePublicProfile.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends WorkspacePublicProfileCreateManyArgs>(args?: SelectSubset<T, WorkspacePublicProfileCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many WorkspacePublicProfiles and returns the data saved in the database.
+     * @param {WorkspacePublicProfileCreateManyAndReturnArgs} args - Arguments to create many WorkspacePublicProfiles.
+     * @example
+     * // Create many WorkspacePublicProfiles
+     * const workspacePublicProfile = await prisma.workspacePublicProfile.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many WorkspacePublicProfiles and only return the `id`
+     * const workspacePublicProfileWithIdOnly = await prisma.workspacePublicProfile.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends WorkspacePublicProfileCreateManyAndReturnArgs>(args?: SelectSubset<T, WorkspacePublicProfileCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a WorkspacePublicProfile.
+     * @param {WorkspacePublicProfileDeleteArgs} args - Arguments to delete one WorkspacePublicProfile.
+     * @example
+     * // Delete one WorkspacePublicProfile
+     * const WorkspacePublicProfile = await prisma.workspacePublicProfile.delete({
+     *   where: {
+     *     // ... filter to delete one WorkspacePublicProfile
+     *   }
+     * })
+     * 
+     */
+    delete<T extends WorkspacePublicProfileDeleteArgs>(args: SelectSubset<T, WorkspacePublicProfileDeleteArgs<ExtArgs>>): Prisma__WorkspacePublicProfileClient<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one WorkspacePublicProfile.
+     * @param {WorkspacePublicProfileUpdateArgs} args - Arguments to update one WorkspacePublicProfile.
+     * @example
+     * // Update one WorkspacePublicProfile
+     * const workspacePublicProfile = await prisma.workspacePublicProfile.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends WorkspacePublicProfileUpdateArgs>(args: SelectSubset<T, WorkspacePublicProfileUpdateArgs<ExtArgs>>): Prisma__WorkspacePublicProfileClient<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more WorkspacePublicProfiles.
+     * @param {WorkspacePublicProfileDeleteManyArgs} args - Arguments to filter WorkspacePublicProfiles to delete.
+     * @example
+     * // Delete a few WorkspacePublicProfiles
+     * const { count } = await prisma.workspacePublicProfile.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends WorkspacePublicProfileDeleteManyArgs>(args?: SelectSubset<T, WorkspacePublicProfileDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WorkspacePublicProfiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkspacePublicProfileUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many WorkspacePublicProfiles
+     * const workspacePublicProfile = await prisma.workspacePublicProfile.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends WorkspacePublicProfileUpdateManyArgs>(args: SelectSubset<T, WorkspacePublicProfileUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WorkspacePublicProfiles and returns the data updated in the database.
+     * @param {WorkspacePublicProfileUpdateManyAndReturnArgs} args - Arguments to update many WorkspacePublicProfiles.
+     * @example
+     * // Update many WorkspacePublicProfiles
+     * const workspacePublicProfile = await prisma.workspacePublicProfile.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more WorkspacePublicProfiles and only return the `id`
+     * const workspacePublicProfileWithIdOnly = await prisma.workspacePublicProfile.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends WorkspacePublicProfileUpdateManyAndReturnArgs>(args: SelectSubset<T, WorkspacePublicProfileUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one WorkspacePublicProfile.
+     * @param {WorkspacePublicProfileUpsertArgs} args - Arguments to update or create a WorkspacePublicProfile.
+     * @example
+     * // Update or create a WorkspacePublicProfile
+     * const workspacePublicProfile = await prisma.workspacePublicProfile.upsert({
+     *   create: {
+     *     // ... data to create a WorkspacePublicProfile
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the WorkspacePublicProfile we want to update
+     *   }
+     * })
+     */
+    upsert<T extends WorkspacePublicProfileUpsertArgs>(args: SelectSubset<T, WorkspacePublicProfileUpsertArgs<ExtArgs>>): Prisma__WorkspacePublicProfileClient<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of WorkspacePublicProfiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkspacePublicProfileCountArgs} args - Arguments to filter WorkspacePublicProfiles to count.
+     * @example
+     * // Count the number of WorkspacePublicProfiles
+     * const count = await prisma.workspacePublicProfile.count({
+     *   where: {
+     *     // ... the filter for the WorkspacePublicProfiles we want to count
+     *   }
+     * })
+    **/
+    count<T extends WorkspacePublicProfileCountArgs>(
+      args?: Subset<T, WorkspacePublicProfileCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WorkspacePublicProfileCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a WorkspacePublicProfile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkspacePublicProfileAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WorkspacePublicProfileAggregateArgs>(args: Subset<T, WorkspacePublicProfileAggregateArgs>): Prisma.PrismaPromise<GetWorkspacePublicProfileAggregateType<T>>
+
+    /**
+     * Group by WorkspacePublicProfile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkspacePublicProfileGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WorkspacePublicProfileGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WorkspacePublicProfileGroupByArgs['orderBy'] }
+        : { orderBy?: WorkspacePublicProfileGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WorkspacePublicProfileGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWorkspacePublicProfileGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the WorkspacePublicProfile model
+   */
+  readonly fields: WorkspacePublicProfileFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for WorkspacePublicProfile.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__WorkspacePublicProfileClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    workspace<T extends WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WorkspaceDefaultArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the WorkspacePublicProfile model
+   */
+  interface WorkspacePublicProfileFieldRefs {
+    readonly id: FieldRef<"WorkspacePublicProfile", 'String'>
+    readonly workspaceId: FieldRef<"WorkspacePublicProfile", 'String'>
+    readonly userId: FieldRef<"WorkspacePublicProfile", 'String'>
+    readonly slug: FieldRef<"WorkspacePublicProfile", 'String'>
+    readonly status: FieldRef<"WorkspacePublicProfile", 'String'>
+    readonly createdAt: FieldRef<"WorkspacePublicProfile", 'DateTime'>
+    readonly updatedAt: FieldRef<"WorkspacePublicProfile", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * WorkspacePublicProfile findUnique
+   */
+  export type WorkspacePublicProfileFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WorkspacePublicProfile
+     */
+    select?: WorkspacePublicProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WorkspacePublicProfile
+     */
+    omit?: WorkspacePublicProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspacePublicProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which WorkspacePublicProfile to fetch.
+     */
+    where: WorkspacePublicProfileWhereUniqueInput
+  }
+
+  /**
+   * WorkspacePublicProfile findUniqueOrThrow
+   */
+  export type WorkspacePublicProfileFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WorkspacePublicProfile
+     */
+    select?: WorkspacePublicProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WorkspacePublicProfile
+     */
+    omit?: WorkspacePublicProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspacePublicProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which WorkspacePublicProfile to fetch.
+     */
+    where: WorkspacePublicProfileWhereUniqueInput
+  }
+
+  /**
+   * WorkspacePublicProfile findFirst
+   */
+  export type WorkspacePublicProfileFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WorkspacePublicProfile
+     */
+    select?: WorkspacePublicProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WorkspacePublicProfile
+     */
+    omit?: WorkspacePublicProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspacePublicProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which WorkspacePublicProfile to fetch.
+     */
+    where?: WorkspacePublicProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WorkspacePublicProfiles to fetch.
+     */
+    orderBy?: WorkspacePublicProfileOrderByWithRelationInput | WorkspacePublicProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WorkspacePublicProfiles.
+     */
+    cursor?: WorkspacePublicProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WorkspacePublicProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WorkspacePublicProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WorkspacePublicProfiles.
+     */
+    distinct?: WorkspacePublicProfileScalarFieldEnum | WorkspacePublicProfileScalarFieldEnum[]
+  }
+
+  /**
+   * WorkspacePublicProfile findFirstOrThrow
+   */
+  export type WorkspacePublicProfileFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WorkspacePublicProfile
+     */
+    select?: WorkspacePublicProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WorkspacePublicProfile
+     */
+    omit?: WorkspacePublicProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspacePublicProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which WorkspacePublicProfile to fetch.
+     */
+    where?: WorkspacePublicProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WorkspacePublicProfiles to fetch.
+     */
+    orderBy?: WorkspacePublicProfileOrderByWithRelationInput | WorkspacePublicProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WorkspacePublicProfiles.
+     */
+    cursor?: WorkspacePublicProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WorkspacePublicProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WorkspacePublicProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WorkspacePublicProfiles.
+     */
+    distinct?: WorkspacePublicProfileScalarFieldEnum | WorkspacePublicProfileScalarFieldEnum[]
+  }
+
+  /**
+   * WorkspacePublicProfile findMany
+   */
+  export type WorkspacePublicProfileFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WorkspacePublicProfile
+     */
+    select?: WorkspacePublicProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WorkspacePublicProfile
+     */
+    omit?: WorkspacePublicProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspacePublicProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which WorkspacePublicProfiles to fetch.
+     */
+    where?: WorkspacePublicProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WorkspacePublicProfiles to fetch.
+     */
+    orderBy?: WorkspacePublicProfileOrderByWithRelationInput | WorkspacePublicProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing WorkspacePublicProfiles.
+     */
+    cursor?: WorkspacePublicProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WorkspacePublicProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WorkspacePublicProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WorkspacePublicProfiles.
+     */
+    distinct?: WorkspacePublicProfileScalarFieldEnum | WorkspacePublicProfileScalarFieldEnum[]
+  }
+
+  /**
+   * WorkspacePublicProfile create
+   */
+  export type WorkspacePublicProfileCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WorkspacePublicProfile
+     */
+    select?: WorkspacePublicProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WorkspacePublicProfile
+     */
+    omit?: WorkspacePublicProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspacePublicProfileInclude<ExtArgs> | null
+    /**
+     * The data needed to create a WorkspacePublicProfile.
+     */
+    data: XOR<WorkspacePublicProfileCreateInput, WorkspacePublicProfileUncheckedCreateInput>
+  }
+
+  /**
+   * WorkspacePublicProfile createMany
+   */
+  export type WorkspacePublicProfileCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many WorkspacePublicProfiles.
+     */
+    data: WorkspacePublicProfileCreateManyInput | WorkspacePublicProfileCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * WorkspacePublicProfile createManyAndReturn
+   */
+  export type WorkspacePublicProfileCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WorkspacePublicProfile
+     */
+    select?: WorkspacePublicProfileSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WorkspacePublicProfile
+     */
+    omit?: WorkspacePublicProfileOmit<ExtArgs> | null
+    /**
+     * The data used to create many WorkspacePublicProfiles.
+     */
+    data: WorkspacePublicProfileCreateManyInput | WorkspacePublicProfileCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspacePublicProfileIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * WorkspacePublicProfile update
+   */
+  export type WorkspacePublicProfileUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WorkspacePublicProfile
+     */
+    select?: WorkspacePublicProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WorkspacePublicProfile
+     */
+    omit?: WorkspacePublicProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspacePublicProfileInclude<ExtArgs> | null
+    /**
+     * The data needed to update a WorkspacePublicProfile.
+     */
+    data: XOR<WorkspacePublicProfileUpdateInput, WorkspacePublicProfileUncheckedUpdateInput>
+    /**
+     * Choose, which WorkspacePublicProfile to update.
+     */
+    where: WorkspacePublicProfileWhereUniqueInput
+  }
+
+  /**
+   * WorkspacePublicProfile updateMany
+   */
+  export type WorkspacePublicProfileUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update WorkspacePublicProfiles.
+     */
+    data: XOR<WorkspacePublicProfileUpdateManyMutationInput, WorkspacePublicProfileUncheckedUpdateManyInput>
+    /**
+     * Filter which WorkspacePublicProfiles to update
+     */
+    where?: WorkspacePublicProfileWhereInput
+    /**
+     * Limit how many WorkspacePublicProfiles to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * WorkspacePublicProfile updateManyAndReturn
+   */
+  export type WorkspacePublicProfileUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WorkspacePublicProfile
+     */
+    select?: WorkspacePublicProfileSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WorkspacePublicProfile
+     */
+    omit?: WorkspacePublicProfileOmit<ExtArgs> | null
+    /**
+     * The data used to update WorkspacePublicProfiles.
+     */
+    data: XOR<WorkspacePublicProfileUpdateManyMutationInput, WorkspacePublicProfileUncheckedUpdateManyInput>
+    /**
+     * Filter which WorkspacePublicProfiles to update
+     */
+    where?: WorkspacePublicProfileWhereInput
+    /**
+     * Limit how many WorkspacePublicProfiles to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspacePublicProfileIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * WorkspacePublicProfile upsert
+   */
+  export type WorkspacePublicProfileUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WorkspacePublicProfile
+     */
+    select?: WorkspacePublicProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WorkspacePublicProfile
+     */
+    omit?: WorkspacePublicProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspacePublicProfileInclude<ExtArgs> | null
+    /**
+     * The filter to search for the WorkspacePublicProfile to update in case it exists.
+     */
+    where: WorkspacePublicProfileWhereUniqueInput
+    /**
+     * In case the WorkspacePublicProfile found by the `where` argument doesn't exist, create a new WorkspacePublicProfile with this data.
+     */
+    create: XOR<WorkspacePublicProfileCreateInput, WorkspacePublicProfileUncheckedCreateInput>
+    /**
+     * In case the WorkspacePublicProfile was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WorkspacePublicProfileUpdateInput, WorkspacePublicProfileUncheckedUpdateInput>
+  }
+
+  /**
+   * WorkspacePublicProfile delete
+   */
+  export type WorkspacePublicProfileDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WorkspacePublicProfile
+     */
+    select?: WorkspacePublicProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WorkspacePublicProfile
+     */
+    omit?: WorkspacePublicProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspacePublicProfileInclude<ExtArgs> | null
+    /**
+     * Filter which WorkspacePublicProfile to delete.
+     */
+    where: WorkspacePublicProfileWhereUniqueInput
+  }
+
+  /**
+   * WorkspacePublicProfile deleteMany
+   */
+  export type WorkspacePublicProfileDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WorkspacePublicProfiles to delete
+     */
+    where?: WorkspacePublicProfileWhereInput
+    /**
+     * Limit how many WorkspacePublicProfiles to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * WorkspacePublicProfile without action
+   */
+  export type WorkspacePublicProfileDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WorkspacePublicProfile
+     */
+    select?: WorkspacePublicProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WorkspacePublicProfile
+     */
+    omit?: WorkspacePublicProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspacePublicProfileInclude<ExtArgs> | null
   }
 
 
@@ -49234,6 +50440,8 @@ export namespace Prisma {
     updatedAt?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
     members?: boolean | Workspace$membersArgs<ExtArgs>
+    domains?: boolean | Workspace$domainsArgs<ExtArgs>
+    publicProfiles?: boolean | Workspace$publicProfilesArgs<ExtArgs>
     _count?: boolean | WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["workspace"]>
 
@@ -49282,6 +50490,8 @@ export namespace Prisma {
   export type WorkspaceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
     members?: boolean | Workspace$membersArgs<ExtArgs>
+    domains?: boolean | Workspace$domainsArgs<ExtArgs>
+    publicProfiles?: boolean | Workspace$publicProfilesArgs<ExtArgs>
     _count?: boolean | WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type WorkspaceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -49296,6 +50506,8 @@ export namespace Prisma {
     objects: {
       owner: Prisma.$UserPayload<ExtArgs>
       members: Prisma.$WorkspaceMemberPayload<ExtArgs>[]
+      domains: Prisma.$DomainPayload<ExtArgs>[]
+      publicProfiles: Prisma.$WorkspacePublicProfilePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -49704,6 +50916,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     members<T extends Workspace$membersArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    domains<T extends Workspace$domainsArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$domainsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DomainPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    publicProfiles<T extends Workspace$publicProfilesArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$publicProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -50165,6 +51379,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: WorkspaceMemberScalarFieldEnum | WorkspaceMemberScalarFieldEnum[]
+  }
+
+  /**
+   * Workspace.domains
+   */
+  export type Workspace$domainsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Domain
+     */
+    select?: DomainSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Domain
+     */
+    omit?: DomainOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DomainInclude<ExtArgs> | null
+    where?: DomainWhereInput
+    orderBy?: DomainOrderByWithRelationInput | DomainOrderByWithRelationInput[]
+    cursor?: DomainWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DomainScalarFieldEnum | DomainScalarFieldEnum[]
+  }
+
+  /**
+   * Workspace.publicProfiles
+   */
+  export type Workspace$publicProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WorkspacePublicProfile
+     */
+    select?: WorkspacePublicProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WorkspacePublicProfile
+     */
+    omit?: WorkspacePublicProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspacePublicProfileInclude<ExtArgs> | null
+    where?: WorkspacePublicProfileWhereInput
+    orderBy?: WorkspacePublicProfileOrderByWithRelationInput | WorkspacePublicProfileOrderByWithRelationInput[]
+    cursor?: WorkspacePublicProfileWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: WorkspacePublicProfileScalarFieldEnum | WorkspacePublicProfileScalarFieldEnum[]
   }
 
   /**
@@ -51465,7 +52727,7 @@ export namespace Prisma {
 
   export const DomainScalarFieldEnum: {
     id: 'id',
-    userId: 'userId',
+    workspaceId: 'workspaceId',
     domain: 'domain',
     normalizedDomain: 'normalizedDomain',
     domainType: 'domainType',
@@ -51481,6 +52743,19 @@ export namespace Prisma {
   };
 
   export type DomainScalarFieldEnum = (typeof DomainScalarFieldEnum)[keyof typeof DomainScalarFieldEnum]
+
+
+  export const WorkspacePublicProfileScalarFieldEnum: {
+    id: 'id',
+    workspaceId: 'workspaceId',
+    userId: 'userId',
+    slug: 'slug',
+    status: 'status',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type WorkspacePublicProfileScalarFieldEnum = (typeof WorkspacePublicProfileScalarFieldEnum)[keyof typeof WorkspacePublicProfileScalarFieldEnum]
 
 
   export const LinkScalarFieldEnum: {
@@ -52234,7 +53509,7 @@ export namespace Prisma {
     orders?: OrderListRelationFilter
     workspaceMemberships?: WorkspaceMemberListRelationFilter
     ownedWorkspaces?: WorkspaceListRelationFilter
-    domains?: DomainListRelationFilter
+    workspacePublicProfiles?: WorkspacePublicProfileListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -52268,7 +53543,7 @@ export namespace Prisma {
     orders?: OrderOrderByRelationAggregateInput
     workspaceMemberships?: WorkspaceMemberOrderByRelationAggregateInput
     ownedWorkspaces?: WorkspaceOrderByRelationAggregateInput
-    domains?: DomainOrderByRelationAggregateInput
+    workspacePublicProfiles?: WorkspacePublicProfileOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -52305,7 +53580,7 @@ export namespace Prisma {
     orders?: OrderListRelationFilter
     workspaceMemberships?: WorkspaceMemberListRelationFilter
     ownedWorkspaces?: WorkspaceListRelationFilter
-    domains?: DomainListRelationFilter
+    workspacePublicProfiles?: WorkspacePublicProfileListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -52769,7 +54044,7 @@ export namespace Prisma {
     OR?: DomainWhereInput[]
     NOT?: DomainWhereInput | DomainWhereInput[]
     id?: UuidFilter<"Domain"> | string
-    userId?: UuidFilter<"Domain"> | string
+    workspaceId?: UuidFilter<"Domain"> | string
     domain?: StringFilter<"Domain"> | string
     normalizedDomain?: StringFilter<"Domain"> | string
     domainType?: StringFilter<"Domain"> | string
@@ -52782,12 +54057,12 @@ export namespace Prisma {
     lastVerifiedAt?: DateTimeNullableFilter<"Domain"> | Date | string | null
     createdAt?: DateTimeFilter<"Domain"> | Date | string
     updatedAt?: DateTimeFilter<"Domain"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
   }
 
   export type DomainOrderByWithRelationInput = {
     id?: SortOrder
-    userId?: SortOrder
+    workspaceId?: SortOrder
     domain?: SortOrder
     normalizedDomain?: SortOrder
     domainType?: SortOrder
@@ -52800,7 +54075,7 @@ export namespace Prisma {
     lastVerifiedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    user?: UserOrderByWithRelationInput
+    workspace?: WorkspaceOrderByWithRelationInput
   }
 
   export type DomainWhereUniqueInput = Prisma.AtLeast<{
@@ -52811,7 +54086,7 @@ export namespace Prisma {
     AND?: DomainWhereInput | DomainWhereInput[]
     OR?: DomainWhereInput[]
     NOT?: DomainWhereInput | DomainWhereInput[]
-    userId?: UuidFilter<"Domain"> | string
+    workspaceId?: UuidFilter<"Domain"> | string
     domainType?: StringFilter<"Domain"> | string
     status?: StringFilter<"Domain"> | string
     failureReason?: StringNullableFilter<"Domain"> | string | null
@@ -52821,12 +54096,12 @@ export namespace Prisma {
     lastVerifiedAt?: DateTimeNullableFilter<"Domain"> | Date | string | null
     createdAt?: DateTimeFilter<"Domain"> | Date | string
     updatedAt?: DateTimeFilter<"Domain"> | Date | string
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
   }, "id" | "domain" | "normalizedDomain" | "verificationToken">
 
   export type DomainOrderByWithAggregationInput = {
     id?: SortOrder
-    userId?: SortOrder
+    workspaceId?: SortOrder
     domain?: SortOrder
     normalizedDomain?: SortOrder
     domainType?: SortOrder
@@ -52849,7 +54124,7 @@ export namespace Prisma {
     OR?: DomainScalarWhereWithAggregatesInput[]
     NOT?: DomainScalarWhereWithAggregatesInput | DomainScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"Domain"> | string
-    userId?: UuidWithAggregatesFilter<"Domain"> | string
+    workspaceId?: UuidWithAggregatesFilter<"Domain"> | string
     domain?: StringWithAggregatesFilter<"Domain"> | string
     normalizedDomain?: StringWithAggregatesFilter<"Domain"> | string
     domainType?: StringWithAggregatesFilter<"Domain"> | string
@@ -52862,6 +54137,76 @@ export namespace Prisma {
     lastVerifiedAt?: DateTimeNullableWithAggregatesFilter<"Domain"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Domain"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Domain"> | Date | string
+  }
+
+  export type WorkspacePublicProfileWhereInput = {
+    AND?: WorkspacePublicProfileWhereInput | WorkspacePublicProfileWhereInput[]
+    OR?: WorkspacePublicProfileWhereInput[]
+    NOT?: WorkspacePublicProfileWhereInput | WorkspacePublicProfileWhereInput[]
+    id?: UuidFilter<"WorkspacePublicProfile"> | string
+    workspaceId?: UuidFilter<"WorkspacePublicProfile"> | string
+    userId?: UuidFilter<"WorkspacePublicProfile"> | string
+    slug?: StringFilter<"WorkspacePublicProfile"> | string
+    status?: StringFilter<"WorkspacePublicProfile"> | string
+    createdAt?: DateTimeFilter<"WorkspacePublicProfile"> | Date | string
+    updatedAt?: DateTimeFilter<"WorkspacePublicProfile"> | Date | string
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type WorkspacePublicProfileOrderByWithRelationInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    userId?: SortOrder
+    slug?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    workspace?: WorkspaceOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type WorkspacePublicProfileWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    workspaceId_slug?: WorkspacePublicProfileWorkspaceIdSlugCompoundUniqueInput
+    workspaceId_userId?: WorkspacePublicProfileWorkspaceIdUserIdCompoundUniqueInput
+    AND?: WorkspacePublicProfileWhereInput | WorkspacePublicProfileWhereInput[]
+    OR?: WorkspacePublicProfileWhereInput[]
+    NOT?: WorkspacePublicProfileWhereInput | WorkspacePublicProfileWhereInput[]
+    workspaceId?: UuidFilter<"WorkspacePublicProfile"> | string
+    userId?: UuidFilter<"WorkspacePublicProfile"> | string
+    slug?: StringFilter<"WorkspacePublicProfile"> | string
+    status?: StringFilter<"WorkspacePublicProfile"> | string
+    createdAt?: DateTimeFilter<"WorkspacePublicProfile"> | Date | string
+    updatedAt?: DateTimeFilter<"WorkspacePublicProfile"> | Date | string
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "workspaceId_slug" | "workspaceId_userId">
+
+  export type WorkspacePublicProfileOrderByWithAggregationInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    userId?: SortOrder
+    slug?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: WorkspacePublicProfileCountOrderByAggregateInput
+    _max?: WorkspacePublicProfileMaxOrderByAggregateInput
+    _min?: WorkspacePublicProfileMinOrderByAggregateInput
+  }
+
+  export type WorkspacePublicProfileScalarWhereWithAggregatesInput = {
+    AND?: WorkspacePublicProfileScalarWhereWithAggregatesInput | WorkspacePublicProfileScalarWhereWithAggregatesInput[]
+    OR?: WorkspacePublicProfileScalarWhereWithAggregatesInput[]
+    NOT?: WorkspacePublicProfileScalarWhereWithAggregatesInput | WorkspacePublicProfileScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"WorkspacePublicProfile"> | string
+    workspaceId?: UuidWithAggregatesFilter<"WorkspacePublicProfile"> | string
+    userId?: UuidWithAggregatesFilter<"WorkspacePublicProfile"> | string
+    slug?: StringWithAggregatesFilter<"WorkspacePublicProfile"> | string
+    status?: StringWithAggregatesFilter<"WorkspacePublicProfile"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"WorkspacePublicProfile"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"WorkspacePublicProfile"> | Date | string
   }
 
   export type LinkWhereInput = {
@@ -55682,6 +57027,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Workspace"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     members?: WorkspaceMemberListRelationFilter
+    domains?: DomainListRelationFilter
+    publicProfiles?: WorkspacePublicProfileListRelationFilter
   }
 
   export type WorkspaceOrderByWithRelationInput = {
@@ -55697,6 +57044,8 @@ export namespace Prisma {
     updatedAt?: SortOrder
     owner?: UserOrderByWithRelationInput
     members?: WorkspaceMemberOrderByRelationAggregateInput
+    domains?: DomainOrderByRelationAggregateInput
+    publicProfiles?: WorkspacePublicProfileOrderByRelationAggregateInput
   }
 
   export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
@@ -55715,6 +57064,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Workspace"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     members?: WorkspaceMemberListRelationFilter
+    domains?: DomainListRelationFilter
+    publicProfiles?: WorkspacePublicProfileListRelationFilter
   }, "id" | "slug">
 
   export type WorkspaceOrderByWithAggregationInput = {
@@ -55874,7 +57225,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -55908,7 +57259,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -55942,7 +57293,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -55976,7 +57327,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -56540,12 +57891,12 @@ export namespace Prisma {
     lastVerifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    user: UserCreateNestedOneWithoutDomainsInput
+    workspace: WorkspaceCreateNestedOneWithoutDomainsInput
   }
 
   export type DomainUncheckedCreateInput = {
     id?: string
-    userId: string
+    workspaceId: string
     domain: string
     normalizedDomain: string
     domainType: string
@@ -56574,12 +57925,12 @@ export namespace Prisma {
     lastVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutDomainsNestedInput
+    workspace?: WorkspaceUpdateOneRequiredWithoutDomainsNestedInput
   }
 
   export type DomainUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
     domain?: StringFieldUpdateOperationsInput | string
     normalizedDomain?: StringFieldUpdateOperationsInput | string
     domainType?: StringFieldUpdateOperationsInput | string
@@ -56596,7 +57947,7 @@ export namespace Prisma {
 
   export type DomainCreateManyInput = {
     id?: string
-    userId: string
+    workspaceId: string
     domain: string
     normalizedDomain: string
     domainType: string
@@ -56629,7 +57980,7 @@ export namespace Prisma {
 
   export type DomainUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
     domain?: StringFieldUpdateOperationsInput | string
     normalizedDomain?: StringFieldUpdateOperationsInput | string
     domainType?: StringFieldUpdateOperationsInput | string
@@ -56640,6 +57991,74 @@ export namespace Prisma {
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unboundAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WorkspacePublicProfileCreateInput = {
+    id?: string
+    slug: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workspace: WorkspaceCreateNestedOneWithoutPublicProfilesInput
+    user: UserCreateNestedOneWithoutWorkspacePublicProfilesInput
+  }
+
+  export type WorkspacePublicProfileUncheckedCreateInput = {
+    id?: string
+    workspaceId: string
+    userId: string
+    slug: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WorkspacePublicProfileUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneRequiredWithoutPublicProfilesNestedInput
+    user?: UserUpdateOneRequiredWithoutWorkspacePublicProfilesNestedInput
+  }
+
+  export type WorkspacePublicProfileUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WorkspacePublicProfileCreateManyInput = {
+    id?: string
+    workspaceId: string
+    userId: string
+    slug: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WorkspacePublicProfileUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WorkspacePublicProfileUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -59889,6 +61308,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUncheckedCreateInput = {
@@ -59903,6 +61324,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUpdateInput = {
@@ -59917,6 +61340,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateInput = {
@@ -59931,6 +61356,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceCreateManyInput = {
@@ -60246,10 +61673,10 @@ export namespace Prisma {
     none?: WorkspaceWhereInput
   }
 
-  export type DomainListRelationFilter = {
-    every?: DomainWhereInput
-    some?: DomainWhereInput
-    none?: DomainWhereInput
+  export type WorkspacePublicProfileListRelationFilter = {
+    every?: WorkspacePublicProfileWhereInput
+    some?: WorkspacePublicProfileWhereInput
+    none?: WorkspacePublicProfileWhereInput
   }
 
   export type SortOrderInput = {
@@ -60305,7 +61732,7 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type DomainOrderByRelationAggregateInput = {
+  export type WorkspacePublicProfileOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -60797,9 +62224,14 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
+  export type WorkspaceScalarRelationFilter = {
+    is?: WorkspaceWhereInput
+    isNot?: WorkspaceWhereInput
+  }
+
   export type DomainCountOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
+    workspaceId?: SortOrder
     domain?: SortOrder
     normalizedDomain?: SortOrder
     domainType?: SortOrder
@@ -60816,7 +62248,7 @@ export namespace Prisma {
 
   export type DomainMaxOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
+    workspaceId?: SortOrder
     domain?: SortOrder
     normalizedDomain?: SortOrder
     domainType?: SortOrder
@@ -60833,7 +62265,7 @@ export namespace Prisma {
 
   export type DomainMinOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
+    workspaceId?: SortOrder
     domain?: SortOrder
     normalizedDomain?: SortOrder
     domainType?: SortOrder
@@ -60844,6 +62276,46 @@ export namespace Prisma {
     verifiedAt?: SortOrder
     unboundAt?: SortOrder
     lastVerifiedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WorkspacePublicProfileWorkspaceIdSlugCompoundUniqueInput = {
+    workspaceId: string
+    slug: string
+  }
+
+  export type WorkspacePublicProfileWorkspaceIdUserIdCompoundUniqueInput = {
+    workspaceId: string
+    userId: string
+  }
+
+  export type WorkspacePublicProfileCountOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    userId?: SortOrder
+    slug?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WorkspacePublicProfileMaxOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    userId?: SortOrder
+    slug?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type WorkspacePublicProfileMinOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    userId?: SortOrder
+    slug?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -62458,6 +63930,16 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type DomainListRelationFilter = {
+    every?: DomainWhereInput
+    some?: DomainWhereInput
+    none?: DomainWhereInput
+  }
+
+  export type DomainOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type WorkspaceCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -62495,11 +63977,6 @@ export namespace Prisma {
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-  }
-
-  export type WorkspaceScalarRelationFilter = {
-    is?: WorkspaceWhereInput
-    isNot?: WorkspaceWhereInput
   }
 
   export type WorkspaceMemberWorkspaceIdUserIdCompoundUniqueInput = {
@@ -62660,11 +64137,11 @@ export namespace Prisma {
     connect?: WorkspaceWhereUniqueInput | WorkspaceWhereUniqueInput[]
   }
 
-  export type DomainCreateNestedManyWithoutUserInput = {
-    create?: XOR<DomainCreateWithoutUserInput, DomainUncheckedCreateWithoutUserInput> | DomainCreateWithoutUserInput[] | DomainUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: DomainCreateOrConnectWithoutUserInput | DomainCreateOrConnectWithoutUserInput[]
-    createMany?: DomainCreateManyUserInputEnvelope
-    connect?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
+  export type WorkspacePublicProfileCreateNestedManyWithoutUserInput = {
+    create?: XOR<WorkspacePublicProfileCreateWithoutUserInput, WorkspacePublicProfileUncheckedCreateWithoutUserInput> | WorkspacePublicProfileCreateWithoutUserInput[] | WorkspacePublicProfileUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: WorkspacePublicProfileCreateOrConnectWithoutUserInput | WorkspacePublicProfileCreateOrConnectWithoutUserInput[]
+    createMany?: WorkspacePublicProfileCreateManyUserInputEnvelope
+    connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
   }
 
   export type ProfileUncheckedCreateNestedOneWithoutUserInput = {
@@ -62775,11 +64252,11 @@ export namespace Prisma {
     connect?: WorkspaceWhereUniqueInput | WorkspaceWhereUniqueInput[]
   }
 
-  export type DomainUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<DomainCreateWithoutUserInput, DomainUncheckedCreateWithoutUserInput> | DomainCreateWithoutUserInput[] | DomainUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: DomainCreateOrConnectWithoutUserInput | DomainCreateOrConnectWithoutUserInput[]
-    createMany?: DomainCreateManyUserInputEnvelope
-    connect?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
+  export type WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<WorkspacePublicProfileCreateWithoutUserInput, WorkspacePublicProfileUncheckedCreateWithoutUserInput> | WorkspacePublicProfileCreateWithoutUserInput[] | WorkspacePublicProfileUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: WorkspacePublicProfileCreateOrConnectWithoutUserInput | WorkspacePublicProfileCreateOrConnectWithoutUserInput[]
+    createMany?: WorkspacePublicProfileCreateManyUserInputEnvelope
+    connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -63018,18 +64495,18 @@ export namespace Prisma {
     deleteMany?: WorkspaceScalarWhereInput | WorkspaceScalarWhereInput[]
   }
 
-  export type DomainUpdateManyWithoutUserNestedInput = {
-    create?: XOR<DomainCreateWithoutUserInput, DomainUncheckedCreateWithoutUserInput> | DomainCreateWithoutUserInput[] | DomainUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: DomainCreateOrConnectWithoutUserInput | DomainCreateOrConnectWithoutUserInput[]
-    upsert?: DomainUpsertWithWhereUniqueWithoutUserInput | DomainUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: DomainCreateManyUserInputEnvelope
-    set?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
-    disconnect?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
-    delete?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
-    connect?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
-    update?: DomainUpdateWithWhereUniqueWithoutUserInput | DomainUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: DomainUpdateManyWithWhereWithoutUserInput | DomainUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: DomainScalarWhereInput | DomainScalarWhereInput[]
+  export type WorkspacePublicProfileUpdateManyWithoutUserNestedInput = {
+    create?: XOR<WorkspacePublicProfileCreateWithoutUserInput, WorkspacePublicProfileUncheckedCreateWithoutUserInput> | WorkspacePublicProfileCreateWithoutUserInput[] | WorkspacePublicProfileUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: WorkspacePublicProfileCreateOrConnectWithoutUserInput | WorkspacePublicProfileCreateOrConnectWithoutUserInput[]
+    upsert?: WorkspacePublicProfileUpsertWithWhereUniqueWithoutUserInput | WorkspacePublicProfileUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: WorkspacePublicProfileCreateManyUserInputEnvelope
+    set?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    disconnect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    delete?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    update?: WorkspacePublicProfileUpdateWithWhereUniqueWithoutUserInput | WorkspacePublicProfileUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: WorkspacePublicProfileUpdateManyWithWhereWithoutUserInput | WorkspacePublicProfileUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: WorkspacePublicProfileScalarWhereInput | WorkspacePublicProfileScalarWhereInput[]
   }
 
   export type ProfileUncheckedUpdateOneWithoutUserNestedInput = {
@@ -63240,18 +64717,18 @@ export namespace Prisma {
     deleteMany?: WorkspaceScalarWhereInput | WorkspaceScalarWhereInput[]
   }
 
-  export type DomainUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<DomainCreateWithoutUserInput, DomainUncheckedCreateWithoutUserInput> | DomainCreateWithoutUserInput[] | DomainUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: DomainCreateOrConnectWithoutUserInput | DomainCreateOrConnectWithoutUserInput[]
-    upsert?: DomainUpsertWithWhereUniqueWithoutUserInput | DomainUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: DomainCreateManyUserInputEnvelope
-    set?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
-    disconnect?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
-    delete?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
-    connect?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
-    update?: DomainUpdateWithWhereUniqueWithoutUserInput | DomainUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: DomainUpdateManyWithWhereWithoutUserInput | DomainUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: DomainScalarWhereInput | DomainScalarWhereInput[]
+  export type WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<WorkspacePublicProfileCreateWithoutUserInput, WorkspacePublicProfileUncheckedCreateWithoutUserInput> | WorkspacePublicProfileCreateWithoutUserInput[] | WorkspacePublicProfileUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: WorkspacePublicProfileCreateOrConnectWithoutUserInput | WorkspacePublicProfileCreateOrConnectWithoutUserInput[]
+    upsert?: WorkspacePublicProfileUpsertWithWhereUniqueWithoutUserInput | WorkspacePublicProfileUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: WorkspacePublicProfileCreateManyUserInputEnvelope
+    set?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    disconnect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    delete?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    update?: WorkspacePublicProfileUpdateWithWhereUniqueWithoutUserInput | WorkspacePublicProfileUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: WorkspacePublicProfileUpdateManyWithWhereWithoutUserInput | WorkspacePublicProfileUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: WorkspacePublicProfileScalarWhereInput | WorkspacePublicProfileScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutFreezeRecordsInput = {
@@ -63464,18 +64941,46 @@ export namespace Prisma {
     deleteMany?: ProfileVisitScalarWhereInput | ProfileVisitScalarWhereInput[]
   }
 
-  export type UserCreateNestedOneWithoutDomainsInput = {
-    create?: XOR<UserCreateWithoutDomainsInput, UserUncheckedCreateWithoutDomainsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutDomainsInput
+  export type WorkspaceCreateNestedOneWithoutDomainsInput = {
+    create?: XOR<WorkspaceCreateWithoutDomainsInput, WorkspaceUncheckedCreateWithoutDomainsInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutDomainsInput
+    connect?: WorkspaceWhereUniqueInput
+  }
+
+  export type WorkspaceUpdateOneRequiredWithoutDomainsNestedInput = {
+    create?: XOR<WorkspaceCreateWithoutDomainsInput, WorkspaceUncheckedCreateWithoutDomainsInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutDomainsInput
+    upsert?: WorkspaceUpsertWithoutDomainsInput
+    connect?: WorkspaceWhereUniqueInput
+    update?: XOR<XOR<WorkspaceUpdateToOneWithWhereWithoutDomainsInput, WorkspaceUpdateWithoutDomainsInput>, WorkspaceUncheckedUpdateWithoutDomainsInput>
+  }
+
+  export type WorkspaceCreateNestedOneWithoutPublicProfilesInput = {
+    create?: XOR<WorkspaceCreateWithoutPublicProfilesInput, WorkspaceUncheckedCreateWithoutPublicProfilesInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutPublicProfilesInput
+    connect?: WorkspaceWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutWorkspacePublicProfilesInput = {
+    create?: XOR<UserCreateWithoutWorkspacePublicProfilesInput, UserUncheckedCreateWithoutWorkspacePublicProfilesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutWorkspacePublicProfilesInput
     connect?: UserWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutDomainsNestedInput = {
-    create?: XOR<UserCreateWithoutDomainsInput, UserUncheckedCreateWithoutDomainsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutDomainsInput
-    upsert?: UserUpsertWithoutDomainsInput
+  export type WorkspaceUpdateOneRequiredWithoutPublicProfilesNestedInput = {
+    create?: XOR<WorkspaceCreateWithoutPublicProfilesInput, WorkspaceUncheckedCreateWithoutPublicProfilesInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutPublicProfilesInput
+    upsert?: WorkspaceUpsertWithoutPublicProfilesInput
+    connect?: WorkspaceWhereUniqueInput
+    update?: XOR<XOR<WorkspaceUpdateToOneWithWhereWithoutPublicProfilesInput, WorkspaceUpdateWithoutPublicProfilesInput>, WorkspaceUncheckedUpdateWithoutPublicProfilesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutWorkspacePublicProfilesNestedInput = {
+    create?: XOR<UserCreateWithoutWorkspacePublicProfilesInput, UserUncheckedCreateWithoutWorkspacePublicProfilesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutWorkspacePublicProfilesInput
+    upsert?: UserUpsertWithoutWorkspacePublicProfilesInput
     connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutDomainsInput, UserUpdateWithoutDomainsInput>, UserUncheckedUpdateWithoutDomainsInput>
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutWorkspacePublicProfilesInput, UserUpdateWithoutWorkspacePublicProfilesInput>, UserUncheckedUpdateWithoutWorkspacePublicProfilesInput>
   }
 
   export type ProfileCreateNestedOneWithoutLinksInput = {
@@ -64095,11 +65600,39 @@ export namespace Prisma {
     connect?: WorkspaceMemberWhereUniqueInput | WorkspaceMemberWhereUniqueInput[]
   }
 
+  export type DomainCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<DomainCreateWithoutWorkspaceInput, DomainUncheckedCreateWithoutWorkspaceInput> | DomainCreateWithoutWorkspaceInput[] | DomainUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: DomainCreateOrConnectWithoutWorkspaceInput | DomainCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: DomainCreateManyWorkspaceInputEnvelope
+    connect?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
+  }
+
+  export type WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<WorkspacePublicProfileCreateWithoutWorkspaceInput, WorkspacePublicProfileUncheckedCreateWithoutWorkspaceInput> | WorkspacePublicProfileCreateWithoutWorkspaceInput[] | WorkspacePublicProfileUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: WorkspacePublicProfileCreateOrConnectWithoutWorkspaceInput | WorkspacePublicProfileCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: WorkspacePublicProfileCreateManyWorkspaceInputEnvelope
+    connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+  }
+
   export type WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput = {
     create?: XOR<WorkspaceMemberCreateWithoutWorkspaceInput, WorkspaceMemberUncheckedCreateWithoutWorkspaceInput> | WorkspaceMemberCreateWithoutWorkspaceInput[] | WorkspaceMemberUncheckedCreateWithoutWorkspaceInput[]
     connectOrCreate?: WorkspaceMemberCreateOrConnectWithoutWorkspaceInput | WorkspaceMemberCreateOrConnectWithoutWorkspaceInput[]
     createMany?: WorkspaceMemberCreateManyWorkspaceInputEnvelope
     connect?: WorkspaceMemberWhereUniqueInput | WorkspaceMemberWhereUniqueInput[]
+  }
+
+  export type DomainUncheckedCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<DomainCreateWithoutWorkspaceInput, DomainUncheckedCreateWithoutWorkspaceInput> | DomainCreateWithoutWorkspaceInput[] | DomainUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: DomainCreateOrConnectWithoutWorkspaceInput | DomainCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: DomainCreateManyWorkspaceInputEnvelope
+    connect?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
+  }
+
+  export type WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<WorkspacePublicProfileCreateWithoutWorkspaceInput, WorkspacePublicProfileUncheckedCreateWithoutWorkspaceInput> | WorkspacePublicProfileCreateWithoutWorkspaceInput[] | WorkspacePublicProfileUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: WorkspacePublicProfileCreateOrConnectWithoutWorkspaceInput | WorkspacePublicProfileCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: WorkspacePublicProfileCreateManyWorkspaceInputEnvelope
+    connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
   }
 
   export type UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput = {
@@ -64124,6 +65657,34 @@ export namespace Prisma {
     deleteMany?: WorkspaceMemberScalarWhereInput | WorkspaceMemberScalarWhereInput[]
   }
 
+  export type DomainUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<DomainCreateWithoutWorkspaceInput, DomainUncheckedCreateWithoutWorkspaceInput> | DomainCreateWithoutWorkspaceInput[] | DomainUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: DomainCreateOrConnectWithoutWorkspaceInput | DomainCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: DomainUpsertWithWhereUniqueWithoutWorkspaceInput | DomainUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: DomainCreateManyWorkspaceInputEnvelope
+    set?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
+    disconnect?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
+    delete?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
+    connect?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
+    update?: DomainUpdateWithWhereUniqueWithoutWorkspaceInput | DomainUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: DomainUpdateManyWithWhereWithoutWorkspaceInput | DomainUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: DomainScalarWhereInput | DomainScalarWhereInput[]
+  }
+
+  export type WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<WorkspacePublicProfileCreateWithoutWorkspaceInput, WorkspacePublicProfileUncheckedCreateWithoutWorkspaceInput> | WorkspacePublicProfileCreateWithoutWorkspaceInput[] | WorkspacePublicProfileUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: WorkspacePublicProfileCreateOrConnectWithoutWorkspaceInput | WorkspacePublicProfileCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: WorkspacePublicProfileUpsertWithWhereUniqueWithoutWorkspaceInput | WorkspacePublicProfileUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: WorkspacePublicProfileCreateManyWorkspaceInputEnvelope
+    set?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    disconnect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    delete?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    update?: WorkspacePublicProfileUpdateWithWhereUniqueWithoutWorkspaceInput | WorkspacePublicProfileUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: WorkspacePublicProfileUpdateManyWithWhereWithoutWorkspaceInput | WorkspacePublicProfileUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: WorkspacePublicProfileScalarWhereInput | WorkspacePublicProfileScalarWhereInput[]
+  }
+
   export type WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput = {
     create?: XOR<WorkspaceMemberCreateWithoutWorkspaceInput, WorkspaceMemberUncheckedCreateWithoutWorkspaceInput> | WorkspaceMemberCreateWithoutWorkspaceInput[] | WorkspaceMemberUncheckedCreateWithoutWorkspaceInput[]
     connectOrCreate?: WorkspaceMemberCreateOrConnectWithoutWorkspaceInput | WorkspaceMemberCreateOrConnectWithoutWorkspaceInput[]
@@ -64136,6 +65697,34 @@ export namespace Prisma {
     update?: WorkspaceMemberUpdateWithWhereUniqueWithoutWorkspaceInput | WorkspaceMemberUpdateWithWhereUniqueWithoutWorkspaceInput[]
     updateMany?: WorkspaceMemberUpdateManyWithWhereWithoutWorkspaceInput | WorkspaceMemberUpdateManyWithWhereWithoutWorkspaceInput[]
     deleteMany?: WorkspaceMemberScalarWhereInput | WorkspaceMemberScalarWhereInput[]
+  }
+
+  export type DomainUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<DomainCreateWithoutWorkspaceInput, DomainUncheckedCreateWithoutWorkspaceInput> | DomainCreateWithoutWorkspaceInput[] | DomainUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: DomainCreateOrConnectWithoutWorkspaceInput | DomainCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: DomainUpsertWithWhereUniqueWithoutWorkspaceInput | DomainUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: DomainCreateManyWorkspaceInputEnvelope
+    set?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
+    disconnect?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
+    delete?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
+    connect?: DomainWhereUniqueInput | DomainWhereUniqueInput[]
+    update?: DomainUpdateWithWhereUniqueWithoutWorkspaceInput | DomainUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: DomainUpdateManyWithWhereWithoutWorkspaceInput | DomainUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: DomainScalarWhereInput | DomainScalarWhereInput[]
+  }
+
+  export type WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<WorkspacePublicProfileCreateWithoutWorkspaceInput, WorkspacePublicProfileUncheckedCreateWithoutWorkspaceInput> | WorkspacePublicProfileCreateWithoutWorkspaceInput[] | WorkspacePublicProfileUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: WorkspacePublicProfileCreateOrConnectWithoutWorkspaceInput | WorkspacePublicProfileCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: WorkspacePublicProfileUpsertWithWhereUniqueWithoutWorkspaceInput | WorkspacePublicProfileUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: WorkspacePublicProfileCreateManyWorkspaceInputEnvelope
+    set?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    disconnect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    delete?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+    update?: WorkspacePublicProfileUpdateWithWhereUniqueWithoutWorkspaceInput | WorkspacePublicProfileUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: WorkspacePublicProfileUpdateManyWithWhereWithoutWorkspaceInput | WorkspacePublicProfileUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: WorkspacePublicProfileScalarWhereInput | WorkspacePublicProfileScalarWhereInput[]
   }
 
   export type WorkspaceCreateNestedOneWithoutMembersInput = {
@@ -65005,6 +66594,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUncheckedCreateWithoutOwnerInput = {
@@ -65018,6 +66609,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceCreateOrConnectWithoutOwnerInput = {
@@ -65030,45 +66623,31 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type DomainCreateWithoutUserInput = {
+  export type WorkspacePublicProfileCreateWithoutUserInput = {
     id?: string
-    domain: string
-    normalizedDomain: string
-    domainType: string
+    slug: string
     status?: string
-    failureReason?: string | null
-    verificationToken: string
-    cnameTarget: string
-    verifiedAt?: Date | string | null
-    unboundAt?: Date | string | null
-    lastVerifiedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workspace: WorkspaceCreateNestedOneWithoutPublicProfilesInput
+  }
+
+  export type WorkspacePublicProfileUncheckedCreateWithoutUserInput = {
+    id?: string
+    workspaceId: string
+    slug: string
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
-  export type DomainUncheckedCreateWithoutUserInput = {
-    id?: string
-    domain: string
-    normalizedDomain: string
-    domainType: string
-    status?: string
-    failureReason?: string | null
-    verificationToken: string
-    cnameTarget: string
-    verifiedAt?: Date | string | null
-    unboundAt?: Date | string | null
-    lastVerifiedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
+  export type WorkspacePublicProfileCreateOrConnectWithoutUserInput = {
+    where: WorkspacePublicProfileWhereUniqueInput
+    create: XOR<WorkspacePublicProfileCreateWithoutUserInput, WorkspacePublicProfileUncheckedCreateWithoutUserInput>
   }
 
-  export type DomainCreateOrConnectWithoutUserInput = {
-    where: DomainWhereUniqueInput
-    create: XOR<DomainCreateWithoutUserInput, DomainUncheckedCreateWithoutUserInput>
-  }
-
-  export type DomainCreateManyUserInputEnvelope = {
-    data: DomainCreateManyUserInput | DomainCreateManyUserInput[]
+  export type WorkspacePublicProfileCreateManyUserInputEnvelope = {
+    data: WorkspacePublicProfileCreateManyUserInput | WorkspacePublicProfileCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -65646,40 +67225,33 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Workspace"> | Date | string
   }
 
-  export type DomainUpsertWithWhereUniqueWithoutUserInput = {
-    where: DomainWhereUniqueInput
-    update: XOR<DomainUpdateWithoutUserInput, DomainUncheckedUpdateWithoutUserInput>
-    create: XOR<DomainCreateWithoutUserInput, DomainUncheckedCreateWithoutUserInput>
+  export type WorkspacePublicProfileUpsertWithWhereUniqueWithoutUserInput = {
+    where: WorkspacePublicProfileWhereUniqueInput
+    update: XOR<WorkspacePublicProfileUpdateWithoutUserInput, WorkspacePublicProfileUncheckedUpdateWithoutUserInput>
+    create: XOR<WorkspacePublicProfileCreateWithoutUserInput, WorkspacePublicProfileUncheckedCreateWithoutUserInput>
   }
 
-  export type DomainUpdateWithWhereUniqueWithoutUserInput = {
-    where: DomainWhereUniqueInput
-    data: XOR<DomainUpdateWithoutUserInput, DomainUncheckedUpdateWithoutUserInput>
+  export type WorkspacePublicProfileUpdateWithWhereUniqueWithoutUserInput = {
+    where: WorkspacePublicProfileWhereUniqueInput
+    data: XOR<WorkspacePublicProfileUpdateWithoutUserInput, WorkspacePublicProfileUncheckedUpdateWithoutUserInput>
   }
 
-  export type DomainUpdateManyWithWhereWithoutUserInput = {
-    where: DomainScalarWhereInput
-    data: XOR<DomainUpdateManyMutationInput, DomainUncheckedUpdateManyWithoutUserInput>
+  export type WorkspacePublicProfileUpdateManyWithWhereWithoutUserInput = {
+    where: WorkspacePublicProfileScalarWhereInput
+    data: XOR<WorkspacePublicProfileUpdateManyMutationInput, WorkspacePublicProfileUncheckedUpdateManyWithoutUserInput>
   }
 
-  export type DomainScalarWhereInput = {
-    AND?: DomainScalarWhereInput | DomainScalarWhereInput[]
-    OR?: DomainScalarWhereInput[]
-    NOT?: DomainScalarWhereInput | DomainScalarWhereInput[]
-    id?: UuidFilter<"Domain"> | string
-    userId?: UuidFilter<"Domain"> | string
-    domain?: StringFilter<"Domain"> | string
-    normalizedDomain?: StringFilter<"Domain"> | string
-    domainType?: StringFilter<"Domain"> | string
-    status?: StringFilter<"Domain"> | string
-    failureReason?: StringNullableFilter<"Domain"> | string | null
-    verificationToken?: StringFilter<"Domain"> | string
-    cnameTarget?: StringFilter<"Domain"> | string
-    verifiedAt?: DateTimeNullableFilter<"Domain"> | Date | string | null
-    unboundAt?: DateTimeNullableFilter<"Domain"> | Date | string | null
-    lastVerifiedAt?: DateTimeNullableFilter<"Domain"> | Date | string | null
-    createdAt?: DateTimeFilter<"Domain"> | Date | string
-    updatedAt?: DateTimeFilter<"Domain"> | Date | string
+  export type WorkspacePublicProfileScalarWhereInput = {
+    AND?: WorkspacePublicProfileScalarWhereInput | WorkspacePublicProfileScalarWhereInput[]
+    OR?: WorkspacePublicProfileScalarWhereInput[]
+    NOT?: WorkspacePublicProfileScalarWhereInput | WorkspacePublicProfileScalarWhereInput[]
+    id?: UuidFilter<"WorkspacePublicProfile"> | string
+    workspaceId?: UuidFilter<"WorkspacePublicProfile"> | string
+    userId?: UuidFilter<"WorkspacePublicProfile"> | string
+    slug?: StringFilter<"WorkspacePublicProfile"> | string
+    status?: StringFilter<"WorkspacePublicProfile"> | string
+    createdAt?: DateTimeFilter<"WorkspacePublicProfile"> | Date | string
+    updatedAt?: DateTimeFilter<"WorkspacePublicProfile"> | Date | string
   }
 
   export type UserCreateWithoutFreezeRecordsInput = {
@@ -65712,7 +67284,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFreezeRecordsInput = {
@@ -65745,7 +67317,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFreezeRecordsInput = {
@@ -65794,7 +67366,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFreezeRecordsInput = {
@@ -65827,7 +67399,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutUsernameHistoryInput = {
@@ -65860,7 +67432,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUsernameHistoryInput = {
@@ -65893,7 +67465,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUsernameHistoryInput = {
@@ -65942,7 +67514,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUsernameHistoryInput = {
@@ -65975,7 +67547,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutProfileInput = {
@@ -66008,7 +67580,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProfileInput = {
@@ -66041,7 +67613,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProfileInput = {
@@ -66266,7 +67838,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProfileInput = {
@@ -66299,7 +67871,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LinkUpsertWithWhereUniqueWithoutProfileInput = {
@@ -66446,7 +68018,118 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"ProfileVisit"> | Date | string
   }
 
-  export type UserCreateWithoutDomainsInput = {
+  export type WorkspaceCreateWithoutDomainsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
+    members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUncheckedCreateWithoutDomainsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    ownerId: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceCreateOrConnectWithoutDomainsInput = {
+    where: WorkspaceWhereUniqueInput
+    create: XOR<WorkspaceCreateWithoutDomainsInput, WorkspaceUncheckedCreateWithoutDomainsInput>
+  }
+
+  export type WorkspaceUpsertWithoutDomainsInput = {
+    update: XOR<WorkspaceUpdateWithoutDomainsInput, WorkspaceUncheckedUpdateWithoutDomainsInput>
+    create: XOR<WorkspaceCreateWithoutDomainsInput, WorkspaceUncheckedCreateWithoutDomainsInput>
+    where?: WorkspaceWhereInput
+  }
+
+  export type WorkspaceUpdateToOneWithWhereWithoutDomainsInput = {
+    where?: WorkspaceWhereInput
+    data: XOR<WorkspaceUpdateWithoutDomainsInput, WorkspaceUncheckedUpdateWithoutDomainsInput>
+  }
+
+  export type WorkspaceUpdateWithoutDomainsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+    members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceUncheckedUpdateWithoutDomainsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceCreateWithoutPublicProfilesInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
+    members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUncheckedCreateWithoutPublicProfilesInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    ownerId: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceCreateOrConnectWithoutPublicProfilesInput = {
+    where: WorkspaceWhereUniqueInput
+    create: XOR<WorkspaceCreateWithoutPublicProfilesInput, WorkspaceUncheckedCreateWithoutPublicProfilesInput>
+  }
+
+  export type UserCreateWithoutWorkspacePublicProfilesInput = {
     id: string
     email: string
     passwordHash: string
@@ -66479,7 +68162,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
   }
 
-  export type UserUncheckedCreateWithoutDomainsInput = {
+  export type UserUncheckedCreateWithoutWorkspacePublicProfilesInput = {
     id: string
     email: string
     passwordHash: string
@@ -66512,23 +68195,64 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
   }
 
-  export type UserCreateOrConnectWithoutDomainsInput = {
+  export type UserCreateOrConnectWithoutWorkspacePublicProfilesInput = {
     where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutDomainsInput, UserUncheckedCreateWithoutDomainsInput>
+    create: XOR<UserCreateWithoutWorkspacePublicProfilesInput, UserUncheckedCreateWithoutWorkspacePublicProfilesInput>
   }
 
-  export type UserUpsertWithoutDomainsInput = {
-    update: XOR<UserUpdateWithoutDomainsInput, UserUncheckedUpdateWithoutDomainsInput>
-    create: XOR<UserCreateWithoutDomainsInput, UserUncheckedCreateWithoutDomainsInput>
+  export type WorkspaceUpsertWithoutPublicProfilesInput = {
+    update: XOR<WorkspaceUpdateWithoutPublicProfilesInput, WorkspaceUncheckedUpdateWithoutPublicProfilesInput>
+    create: XOR<WorkspaceCreateWithoutPublicProfilesInput, WorkspaceUncheckedCreateWithoutPublicProfilesInput>
+    where?: WorkspaceWhereInput
+  }
+
+  export type WorkspaceUpdateToOneWithWhereWithoutPublicProfilesInput = {
+    where?: WorkspaceWhereInput
+    data: XOR<WorkspaceUpdateWithoutPublicProfilesInput, WorkspaceUncheckedUpdateWithoutPublicProfilesInput>
+  }
+
+  export type WorkspaceUpdateWithoutPublicProfilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+    members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceUncheckedUpdateWithoutPublicProfilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type UserUpsertWithoutWorkspacePublicProfilesInput = {
+    update: XOR<UserUpdateWithoutWorkspacePublicProfilesInput, UserUncheckedUpdateWithoutWorkspacePublicProfilesInput>
+    create: XOR<UserCreateWithoutWorkspacePublicProfilesInput, UserUncheckedCreateWithoutWorkspacePublicProfilesInput>
     where?: UserWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutDomainsInput = {
+  export type UserUpdateToOneWithWhereWithoutWorkspacePublicProfilesInput = {
     where?: UserWhereInput
-    data: XOR<UserUpdateWithoutDomainsInput, UserUncheckedUpdateWithoutDomainsInput>
+    data: XOR<UserUpdateWithoutWorkspacePublicProfilesInput, UserUncheckedUpdateWithoutWorkspacePublicProfilesInput>
   }
 
-  export type UserUpdateWithoutDomainsInput = {
+  export type UserUpdateWithoutWorkspacePublicProfilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     passwordHash?: StringFieldUpdateOperationsInput | string
@@ -66561,7 +68285,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutDomainsInput = {
+  export type UserUncheckedUpdateWithoutWorkspacePublicProfilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     passwordHash?: StringFieldUpdateOperationsInput | string
@@ -67081,7 +68805,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutShortLinksInput = {
@@ -67114,7 +68838,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutShortLinksInput = {
@@ -67219,7 +68943,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutShortLinksInput = {
@@ -67252,7 +68976,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ShortLinkClickUpsertWithWhereUniqueWithoutShortLinkInput = {
@@ -67396,7 +69120,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -67429,7 +69153,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -67478,7 +69202,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -67511,7 +69235,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutResetTokensInput = {
@@ -67544,7 +69268,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutResetTokensInput = {
@@ -67577,7 +69301,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutResetTokensInput = {
@@ -67626,7 +69350,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutResetTokensInput = {
@@ -67659,7 +69383,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutVerifyTokensInput = {
@@ -67692,7 +69416,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutVerifyTokensInput = {
@@ -67725,7 +69449,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutVerifyTokensInput = {
@@ -67774,7 +69498,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVerifyTokensInput = {
@@ -67807,7 +69531,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAiUsageLogsInput = {
@@ -67840,7 +69564,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAiUsageLogsInput = {
@@ -67873,7 +69597,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAiUsageLogsInput = {
@@ -67922,7 +69646,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiUsageLogsInput = {
@@ -67955,7 +69679,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProfileCreateWithoutLeadsInput = {
@@ -68451,7 +70175,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProductsInput = {
@@ -68484,7 +70208,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProductsInput = {
@@ -68589,7 +70313,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProductsInput = {
@@ -68622,7 +70346,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LeadUpsertWithWhereUniqueWithoutInterestedProductInput = {
@@ -68671,7 +70395,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutKnowledgeDocsInput = {
@@ -68704,7 +70428,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutKnowledgeDocsInput = {
@@ -68753,7 +70477,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutKnowledgeDocsInput = {
@@ -68786,7 +70510,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAiServiceConfigInput = {
@@ -68819,7 +70543,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAiServiceConfigInput = {
@@ -68852,7 +70576,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAiServiceConfigInput = {
@@ -68901,7 +70625,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiServiceConfigInput = {
@@ -68934,7 +70658,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProfileCreateWithoutAiConversationsInput = {
@@ -69340,7 +71064,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAiCreditAccountInput = {
@@ -69373,7 +71097,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAiCreditAccountInput = {
@@ -69458,7 +71182,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiCreditAccountInput = {
@@ -69491,7 +71215,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AiCreditLedgerUpsertWithWhereUniqueWithoutAccountInput = {
@@ -69609,7 +71333,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMembershipSubscriptionInput = {
@@ -69642,7 +71366,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMembershipSubscriptionInput = {
@@ -69691,7 +71415,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMembershipSubscriptionInput = {
@@ -69724,7 +71448,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutOrdersInput = {
@@ -69757,7 +71481,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionCreateNestedOneWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrdersInput = {
@@ -69790,7 +71514,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUncheckedCreateNestedOneWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrdersInput = {
@@ -69839,7 +71563,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUpdateOneWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -69872,7 +71596,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUncheckedUpdateOneWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutOwnedWorkspacesInput = {
@@ -69905,7 +71629,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionCreateNestedOneWithoutUserInput
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOwnedWorkspacesInput = {
@@ -69938,7 +71662,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUncheckedCreateNestedOneWithoutUserInput
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOwnedWorkspacesInput = {
@@ -69984,6 +71708,76 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type DomainCreateWithoutWorkspaceInput = {
+    id?: string
+    domain: string
+    normalizedDomain: string
+    domainType: string
+    status?: string
+    failureReason?: string | null
+    verificationToken: string
+    cnameTarget: string
+    verifiedAt?: Date | string | null
+    unboundAt?: Date | string | null
+    lastVerifiedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DomainUncheckedCreateWithoutWorkspaceInput = {
+    id?: string
+    domain: string
+    normalizedDomain: string
+    domainType: string
+    status?: string
+    failureReason?: string | null
+    verificationToken: string
+    cnameTarget: string
+    verifiedAt?: Date | string | null
+    unboundAt?: Date | string | null
+    lastVerifiedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DomainCreateOrConnectWithoutWorkspaceInput = {
+    where: DomainWhereUniqueInput
+    create: XOR<DomainCreateWithoutWorkspaceInput, DomainUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type DomainCreateManyWorkspaceInputEnvelope = {
+    data: DomainCreateManyWorkspaceInput | DomainCreateManyWorkspaceInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type WorkspacePublicProfileCreateWithoutWorkspaceInput = {
+    id?: string
+    slug: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutWorkspacePublicProfilesInput
+  }
+
+  export type WorkspacePublicProfileUncheckedCreateWithoutWorkspaceInput = {
+    id?: string
+    userId: string
+    slug: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WorkspacePublicProfileCreateOrConnectWithoutWorkspaceInput = {
+    where: WorkspacePublicProfileWhereUniqueInput
+    create: XOR<WorkspacePublicProfileCreateWithoutWorkspaceInput, WorkspacePublicProfileUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type WorkspacePublicProfileCreateManyWorkspaceInputEnvelope = {
+    data: WorkspacePublicProfileCreateManyWorkspaceInput | WorkspacePublicProfileCreateManyWorkspaceInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutOwnedWorkspacesInput = {
     update: XOR<UserUpdateWithoutOwnedWorkspacesInput, UserUncheckedUpdateWithoutOwnedWorkspacesInput>
     create: XOR<UserCreateWithoutOwnedWorkspacesInput, UserUncheckedCreateWithoutOwnedWorkspacesInput>
@@ -70025,7 +71819,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUpdateOneWithoutUserNestedInput
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedWorkspacesInput = {
@@ -70058,7 +71852,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUncheckedUpdateOneWithoutUserNestedInput
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type WorkspaceMemberUpsertWithWhereUniqueWithoutWorkspaceInput = {
@@ -70077,6 +71871,58 @@ export namespace Prisma {
     data: XOR<WorkspaceMemberUpdateManyMutationInput, WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceInput>
   }
 
+  export type DomainUpsertWithWhereUniqueWithoutWorkspaceInput = {
+    where: DomainWhereUniqueInput
+    update: XOR<DomainUpdateWithoutWorkspaceInput, DomainUncheckedUpdateWithoutWorkspaceInput>
+    create: XOR<DomainCreateWithoutWorkspaceInput, DomainUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type DomainUpdateWithWhereUniqueWithoutWorkspaceInput = {
+    where: DomainWhereUniqueInput
+    data: XOR<DomainUpdateWithoutWorkspaceInput, DomainUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type DomainUpdateManyWithWhereWithoutWorkspaceInput = {
+    where: DomainScalarWhereInput
+    data: XOR<DomainUpdateManyMutationInput, DomainUncheckedUpdateManyWithoutWorkspaceInput>
+  }
+
+  export type DomainScalarWhereInput = {
+    AND?: DomainScalarWhereInput | DomainScalarWhereInput[]
+    OR?: DomainScalarWhereInput[]
+    NOT?: DomainScalarWhereInput | DomainScalarWhereInput[]
+    id?: UuidFilter<"Domain"> | string
+    workspaceId?: UuidFilter<"Domain"> | string
+    domain?: StringFilter<"Domain"> | string
+    normalizedDomain?: StringFilter<"Domain"> | string
+    domainType?: StringFilter<"Domain"> | string
+    status?: StringFilter<"Domain"> | string
+    failureReason?: StringNullableFilter<"Domain"> | string | null
+    verificationToken?: StringFilter<"Domain"> | string
+    cnameTarget?: StringFilter<"Domain"> | string
+    verifiedAt?: DateTimeNullableFilter<"Domain"> | Date | string | null
+    unboundAt?: DateTimeNullableFilter<"Domain"> | Date | string | null
+    lastVerifiedAt?: DateTimeNullableFilter<"Domain"> | Date | string | null
+    createdAt?: DateTimeFilter<"Domain"> | Date | string
+    updatedAt?: DateTimeFilter<"Domain"> | Date | string
+  }
+
+  export type WorkspacePublicProfileUpsertWithWhereUniqueWithoutWorkspaceInput = {
+    where: WorkspacePublicProfileWhereUniqueInput
+    update: XOR<WorkspacePublicProfileUpdateWithoutWorkspaceInput, WorkspacePublicProfileUncheckedUpdateWithoutWorkspaceInput>
+    create: XOR<WorkspacePublicProfileCreateWithoutWorkspaceInput, WorkspacePublicProfileUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type WorkspacePublicProfileUpdateWithWhereUniqueWithoutWorkspaceInput = {
+    where: WorkspacePublicProfileWhereUniqueInput
+    data: XOR<WorkspacePublicProfileUpdateWithoutWorkspaceInput, WorkspacePublicProfileUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type WorkspacePublicProfileUpdateManyWithWhereWithoutWorkspaceInput = {
+    where: WorkspacePublicProfileScalarWhereInput
+    data: XOR<WorkspacePublicProfileUpdateManyMutationInput, WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceInput>
+  }
+
   export type WorkspaceCreateWithoutMembersInput = {
     id?: string
     name: string
@@ -70088,6 +71934,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
+    domains?: DomainCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUncheckedCreateWithoutMembersInput = {
@@ -70101,6 +71949,8 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceCreateOrConnectWithoutMembersInput = {
@@ -70138,7 +71988,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionCreateNestedOneWithoutUserInput
     orders?: OrderCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
-    domains?: DomainCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
@@ -70171,7 +72021,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUncheckedCreateNestedOneWithoutUserInput
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
-    domains?: DomainUncheckedCreateNestedManyWithoutUserInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutWorkspaceMembershipsInput = {
@@ -70201,6 +72051,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+    domains?: DomainUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateWithoutMembersInput = {
@@ -70214,6 +72066,8 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type UserUpsertWithoutWorkspaceMembershipsInput = {
@@ -70257,7 +72111,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUpdateOneWithoutUserNestedInput
     orders?: OrderUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
@@ -70290,7 +72144,7 @@ export namespace Prisma {
     membershipSubscription?: MembershipSubscriptionUncheckedUpdateOneWithoutUserNestedInput
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
-    domains?: DomainUncheckedUpdateManyWithoutUserNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UsernameHistoryCreateManyUserInput = {
@@ -70447,18 +72301,11 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type DomainCreateManyUserInput = {
+  export type WorkspacePublicProfileCreateManyUserInput = {
     id?: string
-    domain: string
-    normalizedDomain: string
-    domainType: string
+    workspaceId: string
+    slug: string
     status?: string
-    failureReason?: string | null
-    verificationToken: string
-    cnameTarget: string
-    verifiedAt?: Date | string | null
-    unboundAt?: Date | string | null
-    lastVerifiedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -70904,6 +72751,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateWithoutOwnerInput = {
@@ -70917,6 +72766,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateManyWithoutOwnerInput = {
@@ -70931,50 +72782,29 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type DomainUpdateWithoutUserInput = {
+  export type WorkspacePublicProfileUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    domain?: StringFieldUpdateOperationsInput | string
-    normalizedDomain?: StringFieldUpdateOperationsInput | string
-    domainType?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
-    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
-    verificationToken?: StringFieldUpdateOperationsInput | string
-    cnameTarget?: StringFieldUpdateOperationsInput | string
-    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    unboundAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    lastVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneRequiredWithoutPublicProfilesNestedInput
+  }
+
+  export type WorkspacePublicProfileUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type DomainUncheckedUpdateWithoutUserInput = {
+  export type WorkspacePublicProfileUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    domain?: StringFieldUpdateOperationsInput | string
-    normalizedDomain?: StringFieldUpdateOperationsInput | string
-    domainType?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
-    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
-    verificationToken?: StringFieldUpdateOperationsInput | string
-    cnameTarget?: StringFieldUpdateOperationsInput | string
-    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    unboundAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    lastVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type DomainUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    domain?: StringFieldUpdateOperationsInput | string
-    normalizedDomain?: StringFieldUpdateOperationsInput | string
-    domainType?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
-    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
-    verificationToken?: StringFieldUpdateOperationsInput | string
-    cnameTarget?: StringFieldUpdateOperationsInput | string
-    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    unboundAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    lastVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -71623,6 +73453,31 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type DomainCreateManyWorkspaceInput = {
+    id?: string
+    domain: string
+    normalizedDomain: string
+    domainType: string
+    status?: string
+    failureReason?: string | null
+    verificationToken: string
+    cnameTarget: string
+    verifiedAt?: Date | string | null
+    unboundAt?: Date | string | null
+    lastVerifiedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type WorkspacePublicProfileCreateManyWorkspaceInput = {
+    id?: string
+    userId: string
+    slug: string
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type WorkspaceMemberUpdateWithoutWorkspaceInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
@@ -71661,6 +73516,81 @@ export namespace Prisma {
     joinedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     disabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     removedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DomainUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    domain?: StringFieldUpdateOperationsInput | string
+    normalizedDomain?: StringFieldUpdateOperationsInput | string
+    domainType?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    verificationToken?: StringFieldUpdateOperationsInput | string
+    cnameTarget?: StringFieldUpdateOperationsInput | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    unboundAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DomainUncheckedUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    domain?: StringFieldUpdateOperationsInput | string
+    normalizedDomain?: StringFieldUpdateOperationsInput | string
+    domainType?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    verificationToken?: StringFieldUpdateOperationsInput | string
+    cnameTarget?: StringFieldUpdateOperationsInput | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    unboundAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DomainUncheckedUpdateManyWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    domain?: StringFieldUpdateOperationsInput | string
+    normalizedDomain?: StringFieldUpdateOperationsInput | string
+    domainType?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    verificationToken?: StringFieldUpdateOperationsInput | string
+    cnameTarget?: StringFieldUpdateOperationsInput | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    unboundAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WorkspacePublicProfileUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutWorkspacePublicProfilesNestedInput
+  }
+
+  export type WorkspacePublicProfileUncheckedUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

@@ -208,7 +208,7 @@ exports.Prisma.ProfileScalarFieldEnum = {
 
 exports.Prisma.DomainScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
+  workspaceId: 'workspaceId',
   domain: 'domain',
   normalizedDomain: 'normalizedDomain',
   domainType: 'domainType',
@@ -219,6 +219,16 @@ exports.Prisma.DomainScalarFieldEnum = {
   verifiedAt: 'verifiedAt',
   unboundAt: 'unboundAt',
   lastVerifiedAt: 'lastVerifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WorkspacePublicProfileScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  userId: 'userId',
+  slug: 'slug',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -746,6 +756,7 @@ exports.Prisma.ModelName = {
   UsernameRegistry: 'UsernameRegistry',
   Profile: 'Profile',
   Domain: 'Domain',
+  WorkspacePublicProfile: 'WorkspacePublicProfile',
   Link: 'Link',
   LinkClick: 'LinkClick',
   ProfileVisit: 'ProfileVisit',
