@@ -37,6 +37,13 @@ export async function GET(request: Request) {
 
     if (action === "my-usage") {
       const usage = await getUserEnterpriseUsage(workspaceId, user.id);
+      if (!usage.allowed) {
+        // 非成员、disabled、removed、workspace 停用 → 403，不泄露企业额度信息
+        return NextResponse.json(
+          { success: false, code: usage.code, message: "无权查看企业额度使用量" },
+          { status: 403 },
+        );
+      }
       return NextResponse.json({ success: true, usage });
     }
 

@@ -49,9 +49,14 @@ export type MemberUsageDetail = {
   totalAmount: number;
   succeededCount: number;
   failedCount: number;
+  refundedCount: number;
   pendingCount: number;
   lastSucceededAt: Date | null;
 };
+
+export type UserEnterpriseUsageResult =
+  | { allowed: true; totalAmount: number; callCount: number }
+  | { allowed: false; code: "MEMBER_NOT_FOUND" | "MEMBER_NOT_ACTIVE" | "WORKSPACE_INACTIVE" };
 
 function validateAmount(amount: number): { valid: boolean; code?: "INVALID_AMOUNT"; message?: string } {
   if (!Number.isInteger(amount)) {
@@ -116,6 +121,11 @@ export async function getOrCreateEnterpriseQuotaPool(workspaceId: string): Promi
   };
 }
 
+/**
+ * 预占企业额度。创建 consumption 记录并原子扣减 usedQuota。
+ * 成功后 status 为 "reserved"，AI 调用成功后必须调用 confirmEnterpriseQuota 标记为 "succeeded"。
+ * AI 调用失败时调用 refundEnterpriseQuota 退还额度并标记为 "refunded"。
+ */
 export async function consumeEnterpriseQuota(params: {
   workspaceId: string;
   userId: string;
@@ -133,12 +143,14 @@ export async function consumeEnterpriseQuota(params: {
 
   try {
     return await db.$transaction(async (tx) => {
+      // 使用复合唯一键 (workspaceId, operationId) 查询，不同 Workspace 可复用同一 operationId
       const existingConsumption = await tx.enterpriseQuotaConsumption.findUnique({
-        where: { operationId },
+        where: { workspaceId_operationId: { workspaceId, operationId } },
       });
 
       if (existingConsumption) {
-        if (existingConsumption.status === "succeeded") {
+        if (existingConsumption.status === "reserved" || existingConsumption.status === "succeeded") {
+          // 幂等：同一 operationId + 相同参数 → 返回成功
           if (
             existingConsumption.workspaceId !== workspaceId ||
             existingConsumption.userId !== userId ||
@@ -166,13 +178,12 @@ export async function consumeEnterpriseQuota(params: {
             message: "操作正在处理中，请稍后重试",
           };
         }
-        if (existingConsumption.status === "failed") {
-          return {
-            success: false,
-            code: "IDEMPOTENCY_CONFLICT",
-            message: "该操作已失败，请使用新的 operationId",
-          };
-        }
+        // refunded / failed → 已终结，必须使用新 operationId
+        return {
+          success: false,
+          code: "IDEMPOTENCY_CONFLICT",
+          message: "该操作已终结，请使用新的 operationId",
+        };
       }
 
       const member = await tx.workspaceMember.findUnique({
@@ -248,6 +259,7 @@ export async function consumeEnterpriseQuota(params: {
           },
         });
       } else if (now > pool.periodEnd) {
+        // 周期重置：usedQuota 归零，totalQuota 更新为当前套餐额度
         const updateResult = await tx.enterpriseQuotaPool.updateMany({
           where: {
             id: pool.id,
@@ -280,9 +292,13 @@ export async function consumeEnterpriseQuota(params: {
           };
         }
       } else if (pool.totalQuota !== currentTotalQuota) {
+        // 安全策略：套餐降级时不能让 totalQuota < usedQuota（会违反 CHECK 约束）
+        // 保留 usedQuota，totalQuota 取 max(currentTotalQuota, usedQuota)
+        // remainingQuota 自然为 0，等下一周期重置
+        const safeTotalQuota = Math.max(currentTotalQuota, pool.usedQuota);
         await tx.enterpriseQuotaPool.updateMany({
           where: { id: pool.id, version: pool.version },
-          data: { totalQuota: currentTotalQuota, version: { increment: 1 } },
+          data: { totalQuota: safeTotalQuota, version: { increment: 1 } },
         });
         pool = await tx.enterpriseQuotaPool.findUnique({ where: { workspaceId } });
         if (!pool) {
@@ -315,6 +331,7 @@ export async function consumeEnterpriseQuota(params: {
         },
       });
 
+      // 原子预占：条件更新确保 usedQuota + amount <= totalQuota
       const updateResult = await tx.enterpriseQuotaPool.updateMany({
         where: {
           id: pool.id,
@@ -339,9 +356,11 @@ export async function consumeEnterpriseQuota(params: {
         };
       }
 
+      // 预占成功，标记为 reserved（不是 succeeded）
+      // AI 调用成功后由 confirmEnterpriseQuota 标记为 succeeded
       await tx.enterpriseQuotaConsumption.update({
         where: { id: consumption.id },
-        data: { status: "succeeded" },
+        data: { status: "reserved" },
       });
 
       const updatedPool = await tx.enterpriseQuotaPool.findUnique({ where: { workspaceId } });
@@ -363,23 +382,63 @@ export async function consumeEnterpriseQuota(params: {
   }
 }
 
-export async function refundEnterpriseQuota(operationId: string): Promise<boolean> {
+/**
+ * 确认企业额度消费（AI 调用成功后调用）。
+ * 将 consumption 从 reserved 标记为 succeeded。
+ * 幂等：已是 succeeded 时返回 true。
+ */
+export async function confirmEnterpriseQuota(workspaceId: string, operationId: string): Promise<boolean> {
+  try {
+    const consumption = await db.enterpriseQuotaConsumption.findUnique({
+      where: { workspaceId_operationId: { workspaceId, operationId } },
+    });
+
+    if (!consumption) return false;
+    if (consumption.status === "succeeded") return true;
+    if (consumption.status !== "reserved") return false;
+
+    await db.enterpriseQuotaConsumption.update({
+      where: { id: consumption.id },
+      data: { status: "succeeded" },
+    });
+    return true;
+  } catch (error) {
+    console.error("[enterprise-quota] confirmEnterpriseQuota error:", error);
+    return false;
+  }
+}
+
+/**
+ * 退还企业额度（AI 调用失败或输出被拦截后调用）。
+ * 幂等：已是 refunded 时返回 true，不重复扣减。
+ * 只有 reserved / succeeded 状态可退款。
+ * 检查 updateMany count，只有真实扣减成功才标记为 refunded。
+ */
+export async function refundEnterpriseQuota(workspaceId: string, operationId: string): Promise<boolean> {
   try {
     return await db.$transaction(async (tx) => {
       const consumption = await tx.enterpriseQuotaConsumption.findUnique({
-        where: { operationId },
+        where: { workspaceId_operationId: { workspaceId, operationId } },
       });
 
-      if (!consumption || consumption.status !== "succeeded") {
+      if (!consumption) return false;
+
+      // 幂等：已退款 → 直接返回成功，不重复扣减
+      if (consumption.status === "refunded") return true;
+
+      // 只有 reserved / succeeded 可退款
+      if (consumption.status !== "reserved" && consumption.status !== "succeeded") {
         return false;
       }
 
-      const pool = await tx.enterpriseQuotaPool.findUnique({ where: { id: consumption.workspaceId } });
-      if (!pool) {
-        return false;
-      }
+      // 修复：使用 workspaceId 查询 pool，而不是 consumption.workspaceId 当 pool.id 用
+      const pool = await tx.enterpriseQuotaPool.findUnique({
+        where: { workspaceId: consumption.workspaceId },
+      });
+      if (!pool) return false;
 
-      await tx.enterpriseQuotaPool.updateMany({
+      // 原子退款：条件更新确保 usedQuota >= amount
+      const refundResult = await tx.enterpriseQuotaPool.updateMany({
         where: {
           id: pool.id,
           version: pool.version,
@@ -391,9 +450,19 @@ export async function refundEnterpriseQuota(operationId: string): Promise<boolea
         },
       });
 
+      // 修复：只有真实扣减成功（count === 1）才标记为 refunded
+      if (refundResult.count !== 1) {
+        console.error("[enterprise-quota] refund updateMany count !== 1, quota not decremented", {
+          workspaceId,
+          operationId,
+          count: refundResult.count,
+        });
+        return false;
+      }
+
       await tx.enterpriseQuotaConsumption.update({
         where: { id: consumption.id },
-        data: { status: "failed", failureReason: "已退款" },
+        data: { status: "refunded", failureReason: "AI 调用失败，企业额度已退回" },
       });
 
       return true;
@@ -473,6 +542,7 @@ export async function getMemberUsageDetails(workspaceId: string, viewerUserId: s
         totalAmount: 0,
         succeededCount: 0,
         failedCount: 0,
+        refundedCount: 0,
         pendingCount: 0,
         lastSucceededAt: null,
       });
@@ -486,7 +556,9 @@ export async function getMemberUsageDetails(workspaceId: string, viewerUserId: s
       }
     } else if (consumption.status === "failed") {
       detail.failedCount += 1;
-    } else if (consumption.status === "pending") {
+    } else if (consumption.status === "refunded") {
+      detail.refundedCount += 1;
+    } else if (consumption.status === "pending" || consumption.status === "reserved") {
       detail.pendingCount += 1;
     }
   }
@@ -494,18 +566,31 @@ export async function getMemberUsageDetails(workspaceId: string, viewerUserId: s
   return Array.from(usageMap.values());
 }
 
-export async function getUserEnterpriseUsage(workspaceId: string, userId: string): Promise<{ totalAmount: number; callCount: number }> {
+/**
+ * 查询当前用户在某企业的额度使用量。
+ * 非成员返回 { allowed: false, code: "MEMBER_NOT_FOUND" }，不泄露企业额度信息。
+ */
+export async function getUserEnterpriseUsage(workspaceId: string, userId: string): Promise<UserEnterpriseUsageResult> {
   const member = await db.workspaceMember.findUnique({
     where: { workspaceId_userId: { workspaceId, userId } },
   });
 
-  if (!member || member.status !== "active") {
-    return { totalAmount: 0, callCount: 0 };
+  if (!member) {
+    return { allowed: false, code: "MEMBER_NOT_FOUND" };
+  }
+
+  if (member.status !== "active") {
+    return { allowed: false, code: "MEMBER_NOT_ACTIVE" };
+  }
+
+  const workspace = await db.workspace.findUnique({ where: { id: workspaceId } });
+  if (!workspace || !workspace.isActive) {
+    return { allowed: false, code: "WORKSPACE_INACTIVE" };
   }
 
   const pool = await db.enterpriseQuotaPool.findUnique({ where: { workspaceId } });
   if (!pool) {
-    return { totalAmount: 0, callCount: 0 };
+    return { allowed: true, totalAmount: 0, callCount: 0 };
   }
 
   const result = await db.enterpriseQuotaConsumption.aggregate({
@@ -520,6 +605,7 @@ export async function getUserEnterpriseUsage(workspaceId: string, userId: string
   });
 
   return {
+    allowed: true,
     totalAmount: result._sum.amount || 0,
     callCount: result._count.id || 0,
   };

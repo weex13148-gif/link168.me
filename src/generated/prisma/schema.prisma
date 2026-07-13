@@ -937,9 +937,10 @@ model EnterpriseQuotaConsumption {
   id            String   @id @default(uuid()) @db.Uuid
   workspaceId   String   @map("workspace_id") @db.Uuid
   userId        String   @map("user_id") @db.Uuid
-  operationId   String   @unique @map("operation_id")
+  operationId   String   @map("operation_id")
   amount        Int      @default(0)
   source        String   @map("source")
+  // pending → reserved → succeeded / refunded; failed = pre-allocation failed
   status        String   @default("pending")
   failureReason String?  @map("failure_reason")
   metadata      Json?    @db.JsonB
@@ -948,6 +949,7 @@ model EnterpriseQuotaConsumption {
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([workspaceId, operationId])
   @@index([workspaceId])
   @@index([userId])
   @@index([createdAt])

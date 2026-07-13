@@ -57166,12 +57166,13 @@ export namespace Prisma {
 
   export type EnterpriseQuotaConsumptionWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    operationId?: string
+    workspaceId_operationId?: EnterpriseQuotaConsumptionWorkspaceIdOperationIdCompoundUniqueInput
     AND?: EnterpriseQuotaConsumptionWhereInput | EnterpriseQuotaConsumptionWhereInput[]
     OR?: EnterpriseQuotaConsumptionWhereInput[]
     NOT?: EnterpriseQuotaConsumptionWhereInput | EnterpriseQuotaConsumptionWhereInput[]
     workspaceId?: UuidFilter<"EnterpriseQuotaConsumption"> | string
     userId?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    operationId?: StringFilter<"EnterpriseQuotaConsumption"> | string
     amount?: IntFilter<"EnterpriseQuotaConsumption"> | number
     source?: StringFilter<"EnterpriseQuotaConsumption"> | string
     status?: StringFilter<"EnterpriseQuotaConsumption"> | string
@@ -57180,7 +57181,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"EnterpriseQuotaConsumption"> | Date | string
     workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id" | "operationId">
+  }, "id" | "workspaceId_operationId">
 
   export type EnterpriseQuotaConsumptionOrderByWithAggregationInput = {
     id?: SortOrder
@@ -63987,6 +63988,11 @@ export namespace Prisma {
     totalQuota?: SortOrder
     usedQuota?: SortOrder
     version?: SortOrder
+  }
+
+  export type EnterpriseQuotaConsumptionWorkspaceIdOperationIdCompoundUniqueInput = {
+    workspaceId: string
+    operationId: string
   }
 
   export type EnterpriseQuotaConsumptionCountOrderByAggregateInput = {
