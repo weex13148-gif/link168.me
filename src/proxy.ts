@@ -46,7 +46,11 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (!normalizedHost.includes(BASE_DOMAIN) && !normalizedHost.includes(".")) {
+  if (normalizedHost === "localhost" || normalizedHost.startsWith("127.0.0.")) {
+    return NextResponse.next();
+  }
+
+  if (!(normalizedHost === BASE_DOMAIN || normalizedHost.endsWith(`.${BASE_DOMAIN}`)) && !normalizedHost.includes(".")) {
     return NextResponse.next();
   }
 

@@ -12,6 +12,9 @@ export type DomainInfo = {
   verifiedAt?: Date;
   unboundAt?: Date;
   createdAt: Date;
+  dnsVerified: boolean;
+  tlsVerified: boolean;
+  routingReady: boolean;
 };
 
 export type DomainVerificationResult = {
@@ -19,11 +22,14 @@ export type DomainVerificationResult = {
   domainId: string;
   status: "pending" | "verified" | "failed" | "unbound";
   failureReason?: string;
+  dnsVerified: boolean;
+  tlsVerified: boolean;
+  routingReady: boolean;
 };
 
 const BASE_DOMAIN = "link168.me";
 
-const RESERVED_DOMAINS = new Set([
+const RESERVED_HOSTS = new Set([
   BASE_DOMAIN,
   `www.${BASE_DOMAIN}`,
   `app.${BASE_DOMAIN}`,
@@ -32,6 +38,80 @@ const RESERVED_DOMAINS = new Set([
   `workbench.${BASE_DOMAIN}`,
   `dashboard.${BASE_DOMAIN}`,
 ]);
+
+export function validateCustomDomainInput(input: string): { valid: boolean; normalized: string; error?: string } {
+  if (!input) {
+    return { valid: false, normalized: "", error: "域名不能为空" };
+  }
+
+  const trimmed = input.trim();
+
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return { valid: false, normalized: "", error: "不允许包含协议，请直接输入域名" };
+  }
+
+  if (trimmed.includes("/")) {
+    return { valid: false, normalized: "", error: "不允许包含路径，请直接输入域名" };
+  }
+
+  if (trimmed.includes("?")) {
+    return { valid: false, normalized: "", error: "不允许包含查询参数，请直接输入域名" };
+  }
+
+  if (trimmed.includes("#")) {
+    return { valid: false, normalized: "", error: "不允许包含片段，请直接输入域名" };
+  }
+
+  if (trimmed.includes("@")) {
+    return { valid: false, normalized: "", error: "不允许包含认证信息，请直接输入域名" };
+  }
+
+  const portMatch = trimmed.match(/:\d+$/);
+  if (portMatch) {
+    return { valid: false, normalized: "", error: "不允许包含端口，请直接输入域名" };
+  }
+
+  const lower = trimmed.toLowerCase();
+
+  const noTrailingDot = lower.replace(/\.$/, "");
+
+  if (noTrailingDot === "localhost") {
+    return { valid: false, normalized: "", error: "localhost 不允许绑定" };
+  }
+
+  if (/^\d+\.\d+\.\d+\.\d+$/.test(noTrailingDot)) {
+    return { valid: false, normalized: "", error: "IP 地址不允许绑定" };
+  }
+
+  if (!isValidDomain(noTrailingDot)) {
+    return { valid: false, normalized: "", error: "域名格式无效" };
+  }
+
+  if (noTrailingDot === BASE_DOMAIN || noTrailingDot.endsWith(`.${BASE_DOMAIN}`)) {
+    return { valid: false, normalized: "", error: "不允许绑定 link168.me 域名" };
+  }
+
+  return { valid: true, normalized: noTrailingDot };
+}
+
+export function normalizeRequestHost(host: string): string | null {
+  if (!host) return null;
+
+  let result = host.toLowerCase().trim();
+
+  const portIndex = result.lastIndexOf(":");
+  if (portIndex !== -1 && portIndex > result.lastIndexOf(".")) {
+    result = result.substring(0, portIndex);
+  }
+
+  result = result.replace(/\.$/, "");
+
+  if (!isValidDomain(result)) {
+    return null;
+  }
+
+  return result;
+}
 
 export async function createUserSubdomain(username: string, userId: string): Promise<DomainInfo> {
   const domain = `${username}.${BASE_DOMAIN}`;
@@ -80,19 +160,24 @@ export async function createUserSubdomain(username: string, userId: string): Pro
     },
   });
 
-  return domainRecord as DomainInfo;
+  return {
+    ...domainRecord,
+    domainType: domainRecord.domainType as "subdomain" | "custom",
+    status: domainRecord.status as "pending" | "verified" | "failed" | "unbound",
+    verifiedAt: domainRecord.verifiedAt ?? undefined,
+    dnsVerified: true,
+    tlsVerified: false,
+    routingReady: false,
+  };
 }
 
 export async function bindCustomDomain(domain: string, userId: string): Promise<DomainInfo> {
-  const normalizedDomain = normalizeDomain(domain);
-
-  if (!normalizedDomain) {
-    throw new Error("域名格式无效");
+  const validation = validateCustomDomainInput(domain);
+  if (!validation.valid) {
+    throw new Error(validation.error);
   }
 
-  if (RESERVED_DOMAINS.has(normalizedDomain)) {
-    throw new Error("该域名不允许绑定");
-  }
+  const normalizedDomain = validation.normalized;
 
   const existing = await db.domain.findUnique({ where: { normalizedDomain } });
   if (existing) {
@@ -121,7 +206,14 @@ export async function bindCustomDomain(domain: string, userId: string): Promise<
           createdAt: true,
         },
       });
-      return updated as DomainInfo;
+      return {
+        ...updated,
+        domainType: updated.domainType as "subdomain" | "custom",
+        status: updated.status as "pending" | "verified" | "failed" | "unbound",
+        dnsVerified: false,
+        tlsVerified: false,
+        routingReady: false,
+      };
     }
     throw new Error("域名已被其他用户绑定");
   }
@@ -157,26 +249,33 @@ export async function bindCustomDomain(domain: string, userId: string): Promise<
     },
   });
 
-  return domainRecord as DomainInfo;
+  return {
+    ...domainRecord,
+    domainType: domainRecord.domainType as "subdomain" | "custom",
+    status: domainRecord.status as "pending" | "verified" | "failed" | "unbound",
+    dnsVerified: false,
+    tlsVerified: false,
+    routingReady: false,
+  };
 }
 
 export async function verifyDomain(domainId: string, userId: string): Promise<DomainVerificationResult> {
   const domainRecord = await db.domain.findUnique({ where: { id: domainId } });
   if (!domainRecord) {
-    return { success: false, domainId, status: "failed", failureReason: "域名记录不存在" };
+    return { success: false, domainId, status: "failed", failureReason: "域名记录不存在", dnsVerified: false, tlsVerified: false, routingReady: false };
   }
 
   if (domainRecord.userId !== userId) {
-    return { success: false, domainId, status: "failed", failureReason: "无权操作该域名" };
+    return { success: false, domainId, status: "failed", failureReason: "无权操作该域名", dnsVerified: false, tlsVerified: false, routingReady: false };
   }
 
   if (domainRecord.status === "unbound") {
-    return { success: false, domainId, status: "failed", failureReason: "域名已解绑" };
+    return { success: false, domainId, status: "failed", failureReason: "域名已解绑", dnsVerified: false, tlsVerified: false, routingReady: false };
   }
 
-  const isValid = await verifyDnsRecord(domainRecord.domain, domainRecord.cnameTarget);
+  const verificationResult = await verifyDnsRecord(domainRecord.domain, domainRecord.cnameTarget);
 
-  if (isValid) {
+  if (verificationResult.success) {
     const updated = await db.domain.update({
       where: { id: domainId },
       data: {
@@ -187,14 +286,21 @@ export async function verifyDomain(domainId: string, userId: string): Promise<Do
       },
       select: { id: true, status: true },
     });
-    return { success: true, domainId: updated.id, status: updated.status as "pending" | "verified" | "failed" | "unbound" };
+    return {
+      success: true,
+      domainId: updated.id,
+      status: updated.status as "pending" | "verified" | "failed" | "unbound",
+      dnsVerified: true,
+      tlsVerified: false,
+      routingReady: false,
+    };
   } else {
     const updated = await db.domain.update({
       where: { id: domainId },
       data: {
         status: "failed",
         lastVerifiedAt: new Date(),
-        failureReason: "DNS 记录未生效，请检查 CNAME 配置",
+        failureReason: verificationResult.failureReason,
       },
       select: { id: true, status: true, failureReason: true },
     });
@@ -203,6 +309,9 @@ export async function verifyDomain(domainId: string, userId: string): Promise<Do
       domainId: updated.id,
       status: updated.status as "pending" | "verified" | "failed" | "unbound",
       failureReason: updated.failureReason ?? undefined,
+      dnsVerified: false,
+      tlsVerified: false,
+      routingReady: false,
     };
   }
 }
@@ -250,16 +359,37 @@ export async function getUserDomains(userId: string): Promise<DomainInfo[]> {
     failureReason: d.failureReason ?? undefined,
     verifiedAt: d.verifiedAt ?? undefined,
     unboundAt: d.unboundAt ?? undefined,
+    dnsVerified: d.status === "verified",
+    tlsVerified: false,
+    routingReady: false,
   }));
 }
 
 export async function resolveDomain(domain: string): Promise<{ userId: string; username: string } | null> {
-  const normalizedDomain = normalizeDomain(domain);
+  const normalizedDomain = normalizeRequestHost(domain);
   if (!normalizedDomain) {
     return null;
   }
 
-  if (RESERVED_DOMAINS.has(normalizedDomain)) {
+  if (RESERVED_HOSTS.has(normalizedDomain)) {
+    return null;
+  }
+
+  if (normalizedDomain === BASE_DOMAIN || normalizedDomain.endsWith(`.${BASE_DOMAIN}`)) {
+    if (!normalizedDomain.startsWith(`${BASE_DOMAIN}.`) && normalizedDomain.split(".").length === 3) {
+      const username = normalizedDomain.slice(0, -(`.${BASE_DOMAIN}`.length));
+      if (!username.includes(".")) {
+        if (!RESERVED_HOSTS.has(normalizedDomain)) {
+          const profile = await db.profile.findUnique({
+            where: { username },
+            include: { user: true },
+          });
+          if (profile) {
+            return { userId: profile.userId, username: profile.username };
+          }
+        }
+      }
+    }
     return null;
   }
 
@@ -276,18 +406,6 @@ export async function resolveDomain(domain: string): Promise<{ userId: string; u
       return null;
     }
     return { userId: domainRecord.userId, username: domainRecord.user.profile.username };
-  }
-
-  const subdomainMatch = normalizedDomain.match(`^([^.]+)\\.${BASE_DOMAIN}$`);
-  if (subdomainMatch) {
-    const username = subdomainMatch[1];
-    const profile = await db.profile.findUnique({
-      where: { username },
-      include: { user: true },
-    });
-    if (profile) {
-      return { userId: profile.userId, username: profile.username };
-    }
   }
 
   return null;
@@ -319,41 +437,10 @@ export async function getDomainVerificationInfo(domainId: string, userId: string
     status: domain.status as "pending" | "verified" | "failed" | "unbound",
     failureReason: domain.failureReason ?? undefined,
     verifiedAt: domain.verifiedAt ?? undefined,
+    dnsVerified: domain.status === "verified",
+    tlsVerified: false,
+    routingReady: false,
   };
-}
-
-function normalizeDomain(domain: string): string | null {
-  if (!domain) return null;
-
-  let result = domain.toLowerCase().trim();
-
-  result = result.replace(/^https?:\/\//i, "");
-
-  const pathIndex = result.indexOf("/");
-  if (pathIndex !== -1) {
-    result = result.substring(0, pathIndex);
-  }
-
-  const portIndex = result.lastIndexOf(":");
-  if (portIndex !== -1 && portIndex > result.lastIndexOf(".")) {
-    result = result.substring(0, portIndex);
-  }
-
-  result = result.replace(/\.$/, "");
-
-  if (!isValidDomain(result)) {
-    return null;
-  }
-
-  if (/^\d+\.\d+\.\d+\.\d+$/.test(result)) {
-    return null;
-  }
-
-  if (result === "localhost") {
-    return null;
-  }
-
-  return result;
 }
 
 function isValidDomain(domain: string): boolean {
@@ -361,14 +448,36 @@ function isValidDomain(domain: string): boolean {
   return regex.test(domain);
 }
 
-async function verifyDnsRecord(domain: string, expectedTarget: string): Promise<boolean> {
+async function verifyDnsRecord(domain: string, expectedTarget: string): Promise<{ success: boolean; failureReason?: string }> {
   try {
     const dns = await import("dns");
-    const records = await dns.promises.resolveCname(domain).catch(() => []);
-    const normalizedRecords = records.map((r: string) => r.toLowerCase().replace(/\.$/, ""));
     const normalizedTarget = expectedTarget.toLowerCase().replace(/\.$/, "");
-    return normalizedRecords.includes(normalizedTarget);
-  } catch {
-    return false;
+
+    const records = await dns.promises.resolveCname(domain).catch((err: NodeJS.ErrnoException) => {
+      if (err.code === "ENOTFOUND") {
+        throw new Error("未查询到该域名");
+      }
+      if (err.code === "ENODATA") {
+        throw new Error("未配置 CNAME 记录");
+      }
+      if (err.code === "ETIMEOUT") {
+        throw new Error("DNS 查询超时，请稍后重试");
+      }
+      throw new Error("DNS 服务异常，请稍后重试");
+    });
+
+    const normalizedRecords = records.map((r: string) => r.toLowerCase().replace(/\.$/, ""));
+
+    if (normalizedRecords.length === 0) {
+      return { success: false, failureReason: "未配置 CNAME 记录" };
+    }
+
+    if (!normalizedRecords.includes(normalizedTarget)) {
+      return { success: false, failureReason: `CNAME 目标不匹配，当前指向: ${normalizedRecords.join(", ")}` };
+    }
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, failureReason: error instanceof Error ? error.message : "DNS 验证失败" };
   }
 }
