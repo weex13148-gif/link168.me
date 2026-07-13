@@ -1,17 +1,20 @@
-# Link168 V2 Direction Branch
+# Link168 V2 受治理工作区
 
-这是 `D:\77.me\branches\link168-v2-direction` 的分支说明。
+本工作区以产品宪法、PRD和根级Agent规则约束开发，避免多Agent自由扩散。
 
 ## 分支目标
 
 本分支只服务 Link168 V2 主产品线：经营名片、公开访问、客户线索、数据分析、会员付费和 Jeepwork 平台治理。
 
-## 必读文档
+## 唯一必读文档
 
-- `docs/DEVELOPMENT_DIRECTION_20260707.md`
-- `docs/PRD_Link168_V2_DIRECTION_20260707.md`
-- `docs/CURATED_CODE_MANIFEST.md`
-- `docs/reference-images`
+- `AGENTS.md`
+- `00_GOVERNANCE_LOCKED/PRODUCT_CONSTITUTION.md`
+- `PRD.md`
+- `PROJECT_RULES.md`
+- `DOCUMENT_INDEX.md`
+
+`docs/audits/`与`07_ARCHIVE/HISTORICAL_DIRECTION/`只作历史证据，不作为当前开发规则。
 
 ## 开发命令
 

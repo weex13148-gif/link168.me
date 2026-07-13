@@ -1,7 +1,7 @@
 # 当前轮禁止修改清单
 
 - `00_GOVERNANCE_LOCKED/**`
-- 根目录 `PRODUCT_CONSTITUTION.md` 兼容入口
+- `00_GOVERNANCE_LOCKED/PRODUCT_CONSTITUTION.md`
 - 根目录正式 `PRD.md`
 - 所有业务源代码
 - `prisma/**`、数据库迁移和生产数据

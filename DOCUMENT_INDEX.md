@@ -1,7 +1,7 @@
 # Link168 正式文档索引
 
 **文件名：** `DOCUMENT_INDEX.md`  
-**版本：** v1.0-rc7  
+**版本：** v1.0-rc8
 **更新日期：** 2026-07-11  
 **状态：** 持续生效
 
@@ -11,10 +11,10 @@
 
 | 优先级 | 文件 | 当前版本 | 负责内容 |
 |---:|---|---|---|
-| 1 | `PRODUCT_CONSTITUTION.md` | v1.6 | 定位、统一身份、五档结构、AI、企业域名、企业协作、数据与Agent治理 |
-| 2 | `PRD.md` | v2.0-rc8 | 页面、路由、微信注册、身份绑定、企业成员生命周期、首页、AI、价格、权限和验收 |
-| 3 | `PROJECT_RULES.md` | v1.0-rc3 | Git、Agent、密钥、数据库、测试、部署和删除边界 |
-| 4 | `DOCUMENT_INDEX.md` | v1.0-rc7 | 文档版本、状态、优先级和更新记录 |
+| 1 | `00_GOVERNANCE_LOCKED/PRODUCT_CONSTITUTION.md` | v1.7 | 定位、统一身份、五档结构、AI、企业域名、企业协作、平台超级管理员和Agent治理 |
+| 2 | `PRD.md` | v2.0-rc9 | 页面、路由、微信注册、身份绑定、企业成员生命周期、首页、AI、价格、权限和验收 |
+| 3 | `PROJECT_RULES.md` | v1.0-rc5 | Git、八Agent、密钥、数据库、测试、部署和删除边界 |
+| 4 | `DOCUMENT_INDEX.md` | v1.0-rc8 | 文档版本、状态、优先级和更新记录 |
 
 持续整改状态：
 
@@ -28,13 +28,21 @@ docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md
 docs/audits/REPOSITORY_INSPECTION_REPORT_20260710.md
 ```
 
+八Agent执行控制：
+
+```text
+02_EXECUTION_CONTROL/EIGHT_AGENT_OPERATING_MODEL.md
+02_EXECUTION_CONTROL/FILE_OWNERSHIP_MATRIX.md
+03_AGENT_TASKS/AGENT_01.md 至 AGENT_08.md
+```
+
 ---
 
 ## 2. 当前代码基线
 
 - 仓库：`weex13148-gif/link168.me`
-- V2主线：`codex/link168-v2-direction`
-- 本地正式工作区：`D:\77.me\branches\link168-v2-direction`
+- 当前受治理V2分支：`codex/link168-v2-governed-workspace`
+- 建议本地工作区：`D:\77.me\branches\link168-v2-governed-workspace`
 - 旧`master`、旧工作区和归档分支只读，不作为V2正式事实
 
 ---
@@ -43,7 +51,7 @@ docs/audits/REPOSITORY_INSPECTION_REPORT_20260710.md
 
 ```text
 老板最新明确决定
-→ PRODUCT_CONSTITUTION.md
+→ 00_GOVERNANCE_LOCKED/PRODUCT_CONSTITUTION.md
 → PRD.md
 → PROJECT_RULES.md
 → REMEDIATION_DEVELOPMENT_REPORT.md

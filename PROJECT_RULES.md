@@ -1,8 +1,8 @@
 # Link168 工程、Agent、安全与部署规则
 
 **文件名：** `PROJECT_RULES.md`  
-**版本：** v1.0-rc3  
-**更新日期：** 2026-07-11  
+**版本：** v1.0-rc5
+**更新日期：** 2026-07-12  
 **状态：** 持续执行  
 **适用范围：** TRAE、Codex、开发子Agent、产品文档Agent、服务器Agent、部署机器人和人工开发者
 
@@ -12,7 +12,7 @@
 
 ```text
 老板最新明确决定
-→ PRODUCT_CONSTITUTION.md
+→ 00_GOVERNANCE_LOCKED/PRODUCT_CONSTITUTION.md
 → PRD.md
 → PROJECT_RULES.md
 → 代码、数据库、页面、测试与部署结果
@@ -25,8 +25,8 @@
 ## 2. 正式仓库与工作区
 
 - GitHub：`weex13148-gif/link168.me`
-- 正式V2分支：`codex/link168-v2-direction`
-- 正式本地工作区：`D:\77.me\branches\link168-v2-direction`
+- 当前受治理V2分支：`codex/link168-v2-governed-workspace`
+- 建议本地工作区：`D:\77.me\branches\link168-v2-governed-workspace`
 - 旧 `D:\link168\link.me`、旧工作区、审计副本和归档分支只读保留。
 - 未经老板批准，不得合并独立历史、rebase、force push或从旧目录部署。
 
@@ -34,10 +34,10 @@
 
 ## 3. 正式文档
 
-仓库根目录只保留：
+正式权威文档只保留：
 
 ```text
-PRODUCT_CONSTITUTION.md
+00_GOVERNANCE_LOCKED/PRODUCT_CONSTITUTION.md
 PRD.md
 PROJECT_RULES.md
 DOCUMENT_INDEX.md
@@ -59,19 +59,32 @@ docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md
 
 ---
 
-## 4. Agent职责
+## 4. 八 Agent 固定职责
 
-### 4.1 项目总控Agent
+Link168开发固定使用以下八个正式岗位，禁止AI自行增加、拆分、合并或改名：
+
+1. 总控架构与集成 Agent
+2. 产品规则与需求治理 Agent
+3. 身份权限与企业空间 Agent
+4. 商业主页与前端体验 Agent
+5. 客户线索与访问分析 Agent
+6. AI接待与知识库 Agent
+7. 会员支付与平台治理 Agent
+8. 质量安全与发布 Agent
+
+详细职责、文件边界和并发规则以 `02_EXECUTION_CONTROL/EIGHT_AGENT_OPERATING_MODEL.md`、`02_EXECUTION_CONTROL/FILE_OWNERSHIP_MATRIX.md` 和 `03_AGENT_TASKS/AGENT_01.md` 至 `AGENT_08.md` 为准。
+
+### 4.1 总控架构与集成 Agent
 
 读取正式文档、拆分任务、分配文件边界、识别冲突、汇总结果和组织验收。
 
 不得自行改变产品方向、套餐结构、AI购买资格、企业边界或生产架构。
 
-### 4.2 产品文档Agent
+### 4.2 产品规则与需求治理 Agent
 
 维护产品宪法、PRD、文档索引和持续整改报告。未经授权不得修改业务代码、数据库和生产环境。
 
-### 4.3 开发Agent
+### 4.3 领域开发 Agent
 
 每次任务必须声明：
 
@@ -84,7 +97,7 @@ docs/audits/REMEDIATION_DEVELOPMENT_REPORT.md
 
 不得默认全仓修改，不得覆盖其他Agent未合并代码。
 
-### 4.4 构建验收Agent
+### 4.4 质量安全与发布 Agent
 
 开发过程中执行最小必要检查；阶段收口和上线前执行完整typecheck、lint、生产构建和核心验收。
 
