@@ -388,24 +388,41 @@ export async function consumeEnterpriseQuota(params: {
  * 将 consumption 从 reserved 标记为 succeeded。
  * 幂等：已是 succeeded 时返回 true。
  */
-export async function confirmEnterpriseQuota(workspaceId: string, operationId: string): Promise<boolean> {
+export type ConfirmEnterpriseQuotaResult =
+  | { success: true; code: 'CONFIRMED' | 'ALREADY_CONFIRMED' }
+  | { success: false; code: 'NOT_FOUND' | 'INVALID_STATE' | 'CONCURRENT_UPDATE' };
+
+export async function confirmEnterpriseQuota(workspaceId: string, operationId: string): Promise<ConfirmEnterpriseQuotaResult> {
   try {
+    const result = await db.enterpriseQuotaConsumption.updateMany({
+      where: {
+        workspaceId,
+        operationId,
+        status: 'reserved',
+      },
+      data: { status: 'succeeded' },
+    });
+
+    if (result.count === 1) {
+      return { success: true, code: 'CONFIRMED' };
+    }
+
     const consumption = await db.enterpriseQuotaConsumption.findUnique({
       where: { workspaceId_operationId: { workspaceId, operationId } },
     });
 
-    if (!consumption) return false;
-    if (consumption.status === "succeeded") return true;
-    if (consumption.status !== "reserved") return false;
+    if (!consumption) {
+      return { success: false, code: 'NOT_FOUND' };
+    }
 
-    await db.enterpriseQuotaConsumption.update({
-      where: { id: consumption.id },
-      data: { status: "succeeded" },
-    });
-    return true;
+    if (consumption.status === 'succeeded') {
+      return { success: true, code: 'ALREADY_CONFIRMED' };
+    }
+
+    return { success: false, code: 'INVALID_STATE' };
   } catch (error) {
     console.error("[enterprise-quota] confirmEnterpriseQuota error:", error);
-    return false;
+    return { success: false, code: 'CONCURRENT_UPDATE' };
   }
 }
 
@@ -415,30 +432,46 @@ export async function confirmEnterpriseQuota(workspaceId: string, operationId: s
  * 只有 reserved / succeeded 状态可退款。
  * 检查 updateMany count，只有真实扣减成功才标记为 refunded。
  */
-export async function refundEnterpriseQuota(workspaceId: string, operationId: string): Promise<boolean> {
+export type RefundEnterpriseQuotaResult =
+  | { success: true; refunded: true; code: 'REFUNDED' }
+  | { success: true; refunded: false; code: 'ALREADY_REFUNDED' }
+  | { success: false; refunded: false; code: 'NOT_FOUND' | 'INVALID_STATE' | 'REFUND_PENDING' | 'CONCURRENT_UPDATE' | 'POOL_NOT_FOUND' };
+
+export async function refundEnterpriseQuota(workspaceId: string, operationId: string): Promise<RefundEnterpriseQuotaResult> {
   try {
     return await db.$transaction(async (tx) => {
       const consumption = await tx.enterpriseQuotaConsumption.findUnique({
         where: { workspaceId_operationId: { workspaceId, operationId } },
       });
 
-      if (!consumption) return false;
-
-      // 幂等：已退款 → 直接返回成功，不重复扣减
-      if (consumption.status === "refunded") return true;
-
-      // 只有 reserved / succeeded 可退款
-      if (consumption.status !== "reserved" && consumption.status !== "succeeded") {
-        return false;
+      if (!consumption) {
+        return { success: false, refunded: false, code: 'NOT_FOUND' };
       }
 
-      // 修复：使用 workspaceId 查询 pool，而不是 consumption.workspaceId 当 pool.id 用
+      if (consumption.status === 'refunded') {
+        return { success: true, refunded: false, code: 'ALREADY_REFUNDED' };
+      }
+
+      if (consumption.status === 'refund_pending') {
+        return { success: false, refunded: false, code: 'REFUND_PENDING' };
+      }
+
+      if (consumption.status !== 'reserved' && consumption.status !== 'succeeded') {
+        return { success: false, refunded: false, code: 'INVALID_STATE' };
+      }
+
       const pool = await tx.enterpriseQuotaPool.findUnique({
         where: { workspaceId: consumption.workspaceId },
       });
-      if (!pool) return false;
+      if (!pool) {
+        return { success: false, refunded: false, code: 'POOL_NOT_FOUND' };
+      }
 
-      // 原子退款：条件更新确保 usedQuota >= amount
+      await tx.enterpriseQuotaConsumption.update({
+        where: { id: consumption.id },
+        data: { status: 'refund_pending' },
+      });
+
       const refundResult = await tx.enterpriseQuotaPool.updateMany({
         where: {
           id: pool.id,
@@ -451,26 +484,29 @@ export async function refundEnterpriseQuota(workspaceId: string, operationId: st
         },
       });
 
-      // 修复：只有真实扣减成功（count === 1）才标记为 refunded
       if (refundResult.count !== 1) {
         console.error("[enterprise-quota] refund updateMany count !== 1, quota not decremented", {
           workspaceId,
           operationId,
           count: refundResult.count,
         });
-        return false;
+        await tx.enterpriseQuotaConsumption.update({
+          where: { id: consumption.id },
+          data: { failureReason: '额度退款失败，请联系管理员处理' },
+        });
+        return { success: false, refunded: false, code: 'CONCURRENT_UPDATE' };
       }
 
       await tx.enterpriseQuotaConsumption.update({
         where: { id: consumption.id },
-        data: { status: "refunded", failureReason: "AI 调用失败，企业额度已退回" },
+        data: { status: 'refunded', failureReason: 'AI 调用失败，企业额度已退回' },
       });
 
-      return true;
+      return { success: true, refunded: true, code: 'REFUNDED' };
     });
   } catch (error) {
     console.error("[enterprise-quota] refundEnterpriseQuota error:", error);
-    return false;
+    return { success: false, refunded: false, code: 'CONCURRENT_UPDATE' };
   }
 }
 
@@ -545,6 +581,7 @@ export async function getMemberUsageDetails(workspaceId: string, viewerUserId: s
         failedCount: 0,
         refundedCount: 0,
         pendingCount: 0,
+          refundPendingCount: 0,
         lastSucceededAt: null,
       });
     }

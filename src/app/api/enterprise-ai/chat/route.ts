@@ -149,6 +149,20 @@ export async function POST(request: Request) {
   const userId = user.id;
   const userEmail = user.email;
 
+  let body: ChatPayload;
+  try {
+    body = (await request.json()) as ChatPayload;
+  } catch {
+    const resp = NextResponse.json(
+      { success: false, error: "请求格式不正确。", traceId: traceCtx.traceId },
+      { status: 400 },
+    );
+    setTraceIdOnNextResponse(resp, traceCtx.traceId);
+    return resp;
+  }
+
+  const workspaceId = normalizeString(body.workspaceId);
+
   // ===== 企业 AI 权益守卫：检查 Workspace 成员状态 + 企业套餐 =====
   const workspaceAiAccess = await assertEnterpriseWorkspaceAiAccess({ userId, workspaceId });
   if (!workspaceAiAccess.allowed) {
@@ -213,23 +227,10 @@ export async function POST(request: Request) {
     return resp;
   }
 
-  let body: ChatPayload;
-  try {
-    body = (await request.json()) as ChatPayload;
-  } catch {
-    const resp = NextResponse.json(
-      { success: false, error: "请求格式不正确。", traceId: traceCtx.traceId },
-      { status: 400 },
-    );
-    setTraceIdOnNextResponse(resp, traceCtx.traceId);
-    return resp;
-  }
-
   const rawAssistant = normalizeString(body.assistant);
   const message = normalizeString(body.message);
   const sessionId = normalizeString(body.sessionId);
   const history = normalizeHistory(body.history);
-  const workspaceId = normalizeString(body.workspaceId);
   const idempotencyKey = normalizeString(body.idempotencyKey);
 
   // 企业 AI 必须提供明确的 Workspace 上下文，不自动选择 workspaceMemberships[0]
@@ -370,7 +371,7 @@ export async function POST(request: Request) {
     appId: resolved.appId,
     apiKey: resolved.apiKey,
     baseUrl: resolved.baseUrl,
-    workspaceId: resolved.workspaceId,
+    workspaceId: resolved.dashscopeWorkspaceId,
     timeoutMs: resolved.timeoutMs,
   };
 
@@ -487,7 +488,7 @@ export async function POST(request: Request) {
   const latencyMs = Date.now() - callStart;
 
   if (!result.ok) {
-    await refundEnterpriseQuota(workspaceId, enterpriseQuotaOperationId);
+    const refundResult = await refundEnterpriseQuota(workspaceId, enterpriseQuotaOperationId);
     const mappedAiCode = mapProviderErrorToAiCode(statusCodeToErrorType(result.status));
     await logAiRiskEvent({
       userId,
@@ -545,7 +546,7 @@ export async function POST(request: Request) {
 
   const usageRecorded = await incrementAiUsage(userId, assistantTitle);
   if (!usageRecorded) {
-    await refundEnterpriseQuota(workspaceId, enterpriseQuotaOperationId);
+    const refundResult = await refundEnterpriseQuota(workspaceId, enterpriseQuotaOperationId);
     const resp = NextResponse.json(
       {
         success: false,
@@ -560,7 +561,7 @@ export async function POST(request: Request) {
 
   const moderated = moderateAiOutput(result.reply, result.reply);
   if (moderated.blocked) {
-    await refundEnterpriseQuota(workspaceId, enterpriseQuotaOperationId);
+    const refundResult = await refundEnterpriseQuota(workspaceId, enterpriseQuotaOperationId);
     await logAiRiskEvent({
       userId,
       eventType: "output_blocked",
@@ -613,7 +614,7 @@ export async function POST(request: Request) {
   }
 
   // 百炼调用成功且输出通过审核 → 确认企业额度消费
-  const confirmResult = const confirmResult = await confirmEnterpriseQuota(workspaceId, enterpriseQuotaOperationId);
+  const confirmResult = await confirmEnterpriseQuota(workspaceId, enterpriseQuotaOperationId);
   if (!confirmResult.success) {
     console.error("[enterprise-ai] confirmEnterpriseQuota failed:", {
       workspaceId,
@@ -652,7 +653,7 @@ export async function POST(request: Request) {
     console.error('[enterprise-ai] confirmEnterpriseQuota failed:', {
       workspaceId,
       operationId: enterpriseQuotaOperationId,
-      code: confirmResult.code,
+      code: (confirmResult as any).code,
     });
     recordAiMetrics({
       traceCtx,
