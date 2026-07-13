@@ -6,7 +6,7 @@ export async function assertWorkspacePublicHost(workspaceId: string, requestHost
   const normalizedHost = requestHost.toLowerCase().replace(/:\d+$/, "").replace(/\.$/, "");
 
   const domain = await db.domain.findUnique({
-    where: { normalizedDomain },
+    where: { domain: normalizedHost },
     select: { workspaceId: true, status: true },
   });
 

@@ -42,6 +42,14 @@ jest.mock("@/lib/db", () => {
     workspaceMember: {
       findFirst: jest.fn(),
     },
+    $transaction: jest.fn(async (callback: any) => {
+      const tx: any = {
+        $queryRaw: jest.fn(),
+        workspace: mock.workspace,
+        domain: mock.domain,
+      };
+      return callback(tx);
+    }),
     profile: {
       findUnique: jest.fn(),
     },
@@ -380,25 +388,25 @@ describe("bindWorkspaceDomain", () => {
 
   test("non-enterprise plan should be rejected", async () => {
     await expect(
-      bindWorkspaceDomain("zhangsen.com", workspaceId, "free"),
+      bindWorkspaceDomain("zhangsen.com", workspaceId),
     ).rejects.toThrow("套餐");
   });
 
   test("pro plan should be rejected", async () => {
     await expect(
-      bindWorkspaceDomain("zhangsen.com", workspaceId, "pro"),
+      bindWorkspaceDomain("zhangsen.com", workspaceId),
     ).rejects.toThrow("套餐");
   });
 
   test("invalid domain should be rejected before db query", async () => {
     await expect(
-      bindWorkspaceDomain("https://invalid.com", workspaceId, planCode),
+      bindWorkspaceDomain("https://invalid.com", workspaceId),
     ).rejects.toThrow("协议");
   });
 
   test("link168.me domain should be rejected", async () => {
     await expect(
-      bindWorkspaceDomain("link168.me", workspaceId, planCode),
+      bindWorkspaceDomain("link168.me", workspaceId),
     ).rejects.toThrow("link168.me");
   });
 
@@ -409,14 +417,14 @@ describe("bindWorkspaceDomain", () => {
       planCode,
     });
     await expect(
-      bindWorkspaceDomain("zhangsen.com", workspaceId, planCode),
+      bindWorkspaceDomain("zhangsen.com", workspaceId),
     ).rejects.toThrow("Workspace 不存在或已停用");
   });
 
   test("non-existent workspace should be rejected", async () => {
     mockDb.workspace.findUnique.mockResolvedValue(null);
     await expect(
-      bindWorkspaceDomain("zhangsen.com", workspaceId, planCode),
+      bindWorkspaceDomain("zhangsen.com", workspaceId),
     ).rejects.toThrow("Workspace 不存在或已停用");
   });
 
@@ -428,7 +436,7 @@ describe("bindWorkspaceDomain", () => {
     });
     mockDb.domain.count.mockResolvedValue(1);
     await expect(
-      bindWorkspaceDomain("second.com", workspaceId, planCode),
+      bindWorkspaceDomain("second.com", workspaceId),
     ).rejects.toThrow("最多绑定 1 个");
   });
 
@@ -453,7 +461,7 @@ describe("bindWorkspaceDomain", () => {
       unboundAt: null,
       createdAt: new Date(),
     });
-    const result = await bindWorkspaceDomain("third.com", workspaceId, "enterprise_pro_plus");
+    const result = await bindWorkspaceDomain("third.com", workspaceId);
     expect(result.workspaceId).toBe(workspaceId);
     expect(result.status).toBe("pending");
     expect(result.dnsVerified).toBe(false);
@@ -468,7 +476,7 @@ describe("bindWorkspaceDomain", () => {
     });
     mockDb.domain.count.mockResolvedValue(3);
     await expect(
-      bindWorkspaceDomain("fourth.com", workspaceId, "enterprise_pro_plus"),
+      bindWorkspaceDomain("fourth.com", workspaceId),
     ).rejects.toThrow("最多绑定 3 个");
   });
 
@@ -485,7 +493,7 @@ describe("bindWorkspaceDomain", () => {
       status: "verified",
     });
     await expect(
-      bindWorkspaceDomain("taken.com", workspaceId, planCode),
+      bindWorkspaceDomain("taken.com", workspaceId),
     ).rejects.toThrow("已被其他 Workspace 绑定");
   });
 
@@ -510,7 +518,7 @@ describe("bindWorkspaceDomain", () => {
       unboundAt: null,
       createdAt: new Date(),
     });
-    const result = await bindWorkspaceDomain("zhangsen.com", workspaceId, planCode);
+    const result = await bindWorkspaceDomain("zhangsen.com", workspaceId);
     expect(result.id).toBe("domain-new");
     expect(result.workspaceId).toBe(workspaceId);
     expect(result.status).toBe("pending");
@@ -544,7 +552,7 @@ describe("bindWorkspaceDomain", () => {
       unboundAt: null,
       createdAt: new Date(),
     });
-    const result = await bindWorkspaceDomain("zhangsen.com", workspaceId, planCode);
+    const result = await bindWorkspaceDomain("zhangsen.com", workspaceId);
     expect(result.id).toBe("old-domain");
     expect(result.status).toBe("pending");
   });

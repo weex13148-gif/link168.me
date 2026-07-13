@@ -14,6 +14,7 @@ import {
   type ActiveRestriction,
 } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { assertWorkspacePublicHost } from "@/lib/workspace-public-host";
 import { sanitizePublicUrl } from "@/lib/public-url-security";
 import { resolveWorkspacePublicProfile } from "@/lib/domains";
 
@@ -84,7 +85,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? `${profile.avatarUrl.split("?")[0]}?v=${profile.updatedAt.getTime()}`
     : null;
 
-  const hostUrl = getHostUrl(host);
+  const hostUrl = appUrl;
   const pageUrl = `${hostUrl}/${resolved.slug}`;
 
   return buildPublicProfileMetadata({
@@ -103,7 +104,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function WorkspaceEmployeeProfilePage({ params, searchParams }: Props & { searchParams?: Promise<{ template?: string }> }) {
   const { workspaceId, slug } = await params;
   const query = searchParams ? await searchParams : {};
-  const host = process.env.NEXT_PUBLIC_APP_URL ? null : (await import('next/headers')).headers().get('host');
+  const hostHeader = await import('next/headers');
+  const host = process.env.NEXT_PUBLIC_APP_URL ? null : (await hostHeader.headers()).get('host');
 
   if (host) {
     const hostVerified = await assertWorkspacePublicHost(workspaceId, host);
@@ -199,7 +201,7 @@ export default async function WorkspaceEmployeeProfilePage({ params, searchParam
     };
   });
 
-  const hostUrl = getHostUrl(host);
+  const hostUrl = appUrl;
   const pageUrl = `${hostUrl}/${resolved.slug}`;
   const reportUrl = `/report?url=${encodeURIComponent(pageUrl)}`;
   const themeName = profile.theme || "Link168 草木默认";

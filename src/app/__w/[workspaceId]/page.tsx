@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { assertWorkspacePublicHost } from "@/lib/workspace-public-host";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +46,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function EnterpriseHomePage({ params }: Props) {
   const { workspaceId } = await params;
-  const host = process.env.NEXT_PUBLIC_APP_URL ? null : (await import('next/headers')).headers().get('host');
+  const hostHeader = await import('next/headers');
+  const host = process.env.NEXT_PUBLIC_APP_URL ? null : (await hostHeader.headers()).get('host');
   const workspace = await loadWorkspace(workspaceId, host ?? undefined);
   if (!workspace) notFound();
 
