@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { PublicProfileClientWrapper } from "@/components/public-profile/PublicProfileClientWrapper";
 import {
   StatePage,
@@ -30,7 +31,22 @@ import { sanitizePublicUrl } from "@/lib/public-url-security";
 
 export const dynamic = "force-dynamic";
 
-const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://link168.me").replace(/\/$/, "");
+async function getRequestHost(): Promise<string> {
+  const hostHeaders = await headers();
+  const host = hostHeaders.get("host");
+  if (!host) return "link168.me";
+  const normalized = host.trim().toLowerCase();
+  const portIndex = normalized.lastIndexOf(":");
+  if (portIndex > normalized.lastIndexOf("]")) {
+    return normalized.slice(0, portIndex);
+  }
+  return normalized;
+}
+
+function buildPublicUrl(host: string, username: string): string {
+  const scheme = host === "localhost" || host.startsWith("127.") ? "http" : "https";
+  return `${scheme}://${host}/${username}`;
+}
 
 type PublicProfilePageProps = {
   params: Promise<{ username: string }>;
@@ -125,8 +141,11 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
   const { username } = await params;
   const result = await resolveUsername(username);
 
+  const requestHost = await getRequestHost();
+  const pageUrl = buildPublicUrl(requestHost, username);
+
   if (result.type !== "current") {
-    return buildRestrictedProfileMetadata(username, appUrl);
+    return buildRestrictedProfileMetadata(username, pageUrl);
   }
 
   const profile = result.profile;
@@ -153,8 +172,8 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
     isPublic: profile.isPublic,
     isIndexable: indexable,
     updatedAt: profile.updatedAt,
-    pageUrl: `${appUrl}/${profile.username}`,
-    appUrl,
+    pageUrl,
+    appUrl: pageUrl.replace(/\/[^/]+$/, ""),
   });
 }
 
@@ -200,6 +219,9 @@ export default async function PublicProfilePage({ params, searchParams }: Public
   const query = searchParams ? await searchParams : {};
   const result = await resolveUsername(username);
 
+  const requestHost = await getRequestHost();
+  const pageUrl = buildPublicUrl(requestHost, username);
+
   if (result.type === "missing") notFound();
   if (result.type === "reserved") {
     return (
@@ -213,7 +235,7 @@ export default async function PublicProfilePage({ params, searchParams }: Public
     return (
       <StatePage
         title="该主页地址已更新"
-        description={`新的公开主页地址是 link168.me/${result.username}`}
+        description={`新的公开主页地址是 ${requestHost}/${result.username}`}
         action={
           <Link
             href={`/${result.username}`}
@@ -296,7 +318,7 @@ export default async function PublicProfilePage({ params, searchParams }: Public
     };
   });
 
-  const reportUrl = `/report?url=${encodeURIComponent(`${appUrl}/${profile.username}`)}`;
+  const reportUrl = `/report?url=${encodeURIComponent(pageUrl)}`;
   const themeName = profile.theme || "Link168 草木默认";
   const surfaceClass = getThemeClasses(themeName).surfaceClassName;
 
@@ -312,7 +334,7 @@ export default async function PublicProfilePage({ params, searchParams }: Public
     username: profile.username,
     bio: profile.bio,
     avatarUrl: avatarUrlWithCacheBust,
-    pageUrl: `${appUrl}/${profile.username}`,
+    pageUrl,
     jobTitle: profile.jobTitle,
     company: profile.company,
     email: contactIsPublic ? profile.email : null,
@@ -325,7 +347,7 @@ export default async function PublicProfilePage({ params, searchParams }: Public
 
   const profilePageSchema = generateProfilePageSchema({
     person: personSchema,
-    pageUrl: `${appUrl}/${profile.username}`,
+    pageUrl,
     updatedAt: profile.updatedAt,
     createdAt: profile.createdAt,
   });

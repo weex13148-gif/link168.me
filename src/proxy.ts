@@ -1,13 +1,46 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-// 旧 /admin 与 /api/admin 路由统一返回 404。
-// 真实的后台入口在 /jeepwork，权限校验由各页面/路由的 Server 代码直接读取 link168_admin_session 完成。
-// 这里不做重定向，也不暴露任何提示信息，保持"路径不存在"的统一表现。
+const WORKSPACE_PUBLIC_ROUTE = /^\/__w\/[^/]+(\/.*)?$/;
+
+const PLATFORM_HOSTS = new Set([
+  "link168.me",
+  "www.link168.me",
+  "localhost",
+  "127.0.0.1",
+]);
+
+function getNormalizedHost(host: string | null | undefined): string {
+  if (!host) return "";
+  const normalized = host.trim().toLowerCase();
+  const portIndex = normalized.lastIndexOf(":");
+  if (portIndex > normalized.lastIndexOf("]")) {
+    return normalized.slice(0, portIndex);
+  }
+  return normalized;
+}
 
 export function proxy(request: NextRequest) {
-  return NextResponse.json({ success: false, error: "Not Found" }, { status: 404 });
+  const { pathname } = request.nextUrl;
+
+  if (pathname.startsWith("/admin/") || pathname.startsWith("/api/admin/")) {
+    return NextResponse.json({ success: false, error: "Not Found" }, { status: 404 });
+  }
+
+  if (WORKSPACE_PUBLIC_ROUTE.test(pathname)) {
+    const host = getNormalizedHost(request.headers.get("host"));
+
+    if (PLATFORM_HOSTS.has(host)) {
+      return NextResponse.json({ error: "Not Found" }, { status: 404 });
+    }
+
+    if (!host) {
+      return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+    }
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*", "/__w/:path*"],
 };
