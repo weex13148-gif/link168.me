@@ -50,7 +50,7 @@ export async function GET(request: Request) {
       customThemes: entitlements.features.removeBranding
         ? ["商务黑", "蓝色科技", "橙色活力", "浅绿清新"]
         : [],
-      canUpgrade: entitlements.planCode !== "enterprise_pro_plus" && entitlements.planCode !== "internal_test",
+      canUpgrade: entitlements.planCode !== "enterprise_pro" && entitlements.planCode !== "internal_test",
     },
   }, {
     headers: {

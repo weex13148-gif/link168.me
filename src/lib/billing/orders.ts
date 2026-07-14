@@ -1,6 +1,14 @@
 import crypto from "crypto";
 import { db } from "@/lib/db";
-import { PlanCode, generateOrderId, getPlanDefinition, getPlanPrice, isPriceConfirmed } from "./plans";
+import {
+  PlanCode,
+  generateOrderId,
+  getPlanDefinition,
+  getPlanPrice,
+  isPriceConfirmed,
+  normalizePlanCode,
+  isUniqueConstraintError,
+} from "./plans";
 
 // 业务层专用错误类
 export class BillingPermissionError extends Error {
@@ -479,42 +487,39 @@ export async function processPaymentSuccess(params: {
       const grantAmount = planForCredits.limits.aiCreditsGrant;
 
       if (grantAmount > 0) {
-        const creditAccount = await tx.aiCreditAccount.findUnique({
+        const creditAccount = await tx.aiCreditAccount.upsert({
           where: { userId: currentOrder.userId },
+          create: { userId: currentOrder.userId, balance: grantAmount, version: 1 },
+          update: { balance: { increment: grantAmount }, version: { increment: 1 } },
+          select: { id: true, balance: true },
         });
 
         const idempotencyKey = `grant:order:${currentOrder.id}`;
 
-        if (creditAccount) {
-          await tx.aiCreditAccount.update({
-            where: { id: creditAccount.id },
+        try {
+          await tx.aiCreditLedger.create({
             data: {
-              balance: { increment: grantAmount },
-              version: { increment: 1 },
+              id: crypto.randomUUID(),
+              accountId: creditAccount.id,
+              entryType: "grant",
+              amount: grantAmount,
+              balanceAfter: creditAccount.balance,
+              idempotencyKey,
+              referenceType: "order",
+              referenceId: currentOrder.id,
+              metadata: {
+                planCode: currentOrder.planCode,
+                planName: currentOrder.planNameSnapshot,
+                billingCycle: currentOrder.billingCycle,
+                orderNo: currentOrder.orderNo,
+              },
             },
           });
-
-          try {
-            await tx.aiCreditLedger.create({
-              data: {
-                id: crypto.randomUUID(),
-                accountId: creditAccount.id,
-                entryType: "grant",
-                amount: grantAmount,
-                balanceAfter: creditAccount.balance + grantAmount,
-                idempotencyKey,
-                referenceType: "order",
-                referenceId: currentOrder.id,
-                metadata: {
-                  planCode: currentOrder.planCode,
-                  planName: currentOrder.planNameSnapshot,
-                  billingCycle: currentOrder.billingCycle,
-                  orderNo: currentOrder.orderNo,
-                },
-              },
-            });
-          } catch (e) {
+        } catch (e) {
+          if (isUniqueConstraintError(e, "idempotency_key")) {
             // 幂等：已存在则跳过
+          } else {
+            throw e;
           }
         }
       }
@@ -527,6 +532,37 @@ export async function processPaymentSuccess(params: {
     console.error("[orders] 处理支付成功失败:", err);
     return { success: false, error: err instanceof Error ? err.message : "支付处理失败，请稍后重试" };
   }
+}
+
+async function shouldRevokeMembershipOnRefund(
+  tx: Parameters<Parameters<typeof db.$transaction>[0]>[0],
+  order: DbOrder,
+): Promise<boolean> {
+  const subscription = await tx.membershipSubscription.findUnique({
+    where: { userId: order.userId },
+  });
+
+  if (!subscription || subscription.planCode === "free") {
+    return false;
+  }
+
+  // 如果当前订阅的套餐与被退款订单的套餐不一致（标准化后），不撤销
+  if (normalizePlanCode(subscription.planCode) !== normalizePlanCode(order.planCode)) {
+    return false;
+  }
+
+  // 如果存在更新的已支付订单，说明会员可能由后续订单产生/续期，不撤销
+  const newerPaidOrder = await tx.order.findFirst({
+    where: {
+      userId: order.userId,
+      id: { not: order.id },
+      status: { in: [ORDER_STATUS.PAID, ORDER_STATUS.PARTIALLY_REFUNDED] },
+      createdAt: { gt: order.createdAt },
+    },
+  });
+  if (newerPaidOrder) return false;
+
+  return true;
 }
 
 export async function processRefund(params: {
@@ -593,11 +629,8 @@ export async function processRefund(params: {
       });
 
       if (isFullRefund) {
-        const subscription = await tx.membershipSubscription.findUnique({
-          where: { userId: order.userId },
-        });
-
-        if (subscription && subscription.planCode !== "free") {
+        const revoke = await shouldRevokeMembershipOnRefund(tx, order);
+        if (revoke) {
           await tx.membershipSubscription.update({
             where: { userId: order.userId },
             data: {

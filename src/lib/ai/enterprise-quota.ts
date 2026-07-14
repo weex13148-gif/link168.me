@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { getUserEntitlements } from "@/lib/billing/entitlements";
 
-const ENTERPRISE_PLAN_CODES = new Set(["enterprise", "enterprise_pro_plus"]);
+const ENTERPRISE_PLAN_CODES = new Set(["enterprise", "enterprise_pro"]);
 
 const MAX_AMOUNT_PER_CALL = 100;
 

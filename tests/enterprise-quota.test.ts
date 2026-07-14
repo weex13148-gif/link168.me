@@ -235,8 +235,8 @@ describe("consumeEnterpriseQuota - plan checks", () => {
     expect(result.success).toBe(true);
   });
 
-  test("enterprise_pro_plus 可以使用企业额度", async () => {
-    mockGetUserEntitlements.mockResolvedValue(makeEntitlements("enterprise_pro_plus", 1000));
+  test("enterprise_pro 可以使用企业额度", async () => {
+    mockGetUserEntitlements.mockResolvedValue(makeEntitlements("enterprise_pro", 1000));
     const result = await consumeEnterpriseQuota({
       workspaceId, userId, amount: 1, operationId: "op-epp", reason: "test",
     });

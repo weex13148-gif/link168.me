@@ -9,10 +9,10 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const MANUAL_PLAN_CODES = [
-  "member_plus",
+  "plus",
   "pro",
   "enterprise",
-  "enterprise_pro_plus",
+  "enterprise_pro",
 ] as const satisfies readonly PlanCode[];
 
 type ManualPlanCode = (typeof MANUAL_PLAN_CODES)[number];

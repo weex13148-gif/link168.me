@@ -6,6 +6,7 @@ import {
   PUBLIC_PLAN_ORDER,
   formatPriceDisplay,
   getPlanPriceCents,
+  normalizePlanCode,
 } from "@/lib/billing/plans";
 import { getPaymentAvailability } from "@/lib/billing/payments";
 
@@ -59,7 +60,7 @@ export async function GET(request: Request) {
     subscription: data.subscription.subscriptionId
       ? {
           id: data.subscription.subscriptionId,
-          plan_code: data.subscription.planCode === "member_basic" ? "member_plus" : data.subscription.planCode,
+          plan_code: normalizePlanCode(data.subscription.planCode),
           status: data.subscription.status,
           current_period_start: data.subscription.currentPeriodStart?.toISOString() ?? null,
           current_period_end: data.subscription.currentPeriodEnd?.toISOString() ?? null,

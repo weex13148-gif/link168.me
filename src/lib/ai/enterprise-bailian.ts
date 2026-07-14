@@ -4,11 +4,10 @@ import { getUserEntitlements } from "@/lib/billing/entitlements";
 import { DEFAULT_CONFIG, type AiProvider, type AppConfigValues } from "@/lib/app-config-values";
 
 export const ENTERPRISE_BAILIAN_ALLOWED_PLANS = new Set([
-  "member_basic",
-  "member_plus",
+  "plus",
   "pro",
   "enterprise",
-  "enterprise_pro_plus",
+  "enterprise_pro",
   "internal_test",
 ]);
 
