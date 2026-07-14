@@ -40,6 +40,8 @@ export type ProfileLink = {
 };
 
 // V2-006: 客户线索
+// 统一新状态：new, viewed, following_up, won, closed
+// 历史状态保留兼容：contacted, following, converted, qualified, lost
 export type ProfileLead = {
   id: string;
   profile_id: string;
@@ -49,7 +51,7 @@ export type ProfileLead = {
   message: string | null;
   source_component: string | null;
   source_page: string | null;
-  status: "new" | "contacted" | "closed" | "converted" | string;
+  status: "new" | "viewed" | "following_up" | "won" | "closed" | "contacted" | "following" | "converted" | "qualified" | "lost" | string;
   handler_note: string | null;
   handled_at: string | null;
   created_at: string;
