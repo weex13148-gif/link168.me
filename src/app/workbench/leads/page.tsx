@@ -7,6 +7,11 @@ import { db } from "@/lib/db";
 import WorkbenchShell from "@/components/workbench/WorkbenchShell";
 import LeadsClient from "@/components/workbench/LeadsClient";
 
+const HISTORICAL_STATUSES = ["contacted", "following", "converted", "qualified", "lost"] as const;
+function isHistoricalStatus(status: string): boolean {
+  return HISTORICAL_STATUSES.includes(status as typeof HISTORICAL_STATUSES[number]);
+}
+
 export default async function WorkbenchLeadsPage() {
   const user = await getCurrentUserFromCookies();
   if (!user) redirect("/login");
@@ -38,17 +43,30 @@ export default async function WorkbenchLeadsPage() {
     Promise.all([
       db.lead.count({ where: { profileId: profile.id } }),
       db.lead.count({ where: { profileId: profile.id, status: "new" } }),
+      db.lead.count({ where: { profileId: profile.id, status: "viewed" } }),
+      db.lead.count({ where: { profileId: profile.id, status: "following_up" } }),
+      db.lead.count({ where: { profileId: profile.id, status: "won" } }),
+      db.lead.count({ where: { profileId: profile.id, status: "closed" } }),
+      // 历史状态兼容统计
       db.lead.count({ where: { profileId: profile.id, status: "contacted" } }),
       db.lead.count({ where: { profileId: profile.id, status: "following" } }),
       db.lead.count({ where: { profileId: profile.id, status: "converted" } }),
-      db.lead.count({ where: { profileId: profile.id, status: "closed" } }),
-    ]).then(([total, newCount, contacted, following, converted, closed]) => ({
+      db.lead.count({ where: { profileId: profile.id, status: "qualified" } }),
+      db.lead.count({ where: { profileId: profile.id, status: "lost" } }),
+    ]).then(([total, newCount, viewed, followingUp, won, closed, contacted, following, converted, qualified, lost]) => ({
       total,
       new: newCount,
-      contacted,
-      following,
-      converted,
+      viewed,
+      following_up: followingUp,
+      won,
       closed,
+      historical: {
+        contacted,
+        following,
+        converted,
+        qualified,
+        lost,
+      },
     })),
   ]);
 
@@ -63,6 +81,7 @@ export default async function WorkbenchLeadsPage() {
     source_component: lead.sourceComponent,
     source_page: lead.sourcePage,
     status: lead.status,
+    is_historical_status: isHistoricalStatus(lead.status),
     status_is_legacy: false,
     handler_note: lead.handlerNote,
     handled_at: lead.handledAt ? lead.handledAt.toISOString() : null,

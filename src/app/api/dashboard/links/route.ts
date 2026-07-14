@@ -19,6 +19,8 @@ const COMPONENT_TYPES = [
   "qr",
   "wechat",
   "phone",
+  "email",
+  "address",
   "shop",
   "booking",
   "product-card",

@@ -12,11 +12,13 @@
  * - 重复提交检测（基于联系方式哈希）
  * - 内容安全检查
  * - 不存储敏感个人信息
+ * - Lead 创建前复用公开访问状态守卫
  */
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { hasSensitiveContent } from "@/lib/content-safety";
 import { newId } from "@/lib/dashboard-data";
+import { canShowPublicProfile, getActiveRestrictions } from "@/lib/auth";
 import crypto from "crypto";
 
 export const runtime = "nodejs";
@@ -27,6 +29,8 @@ const MAX_MESSAGE_LENGTH = 500;
 const VALID_SOURCE_COMPONENTS = new Set([
   "contact_form",
   "product_card",
+  "service_card",
+  "offer",
   "booking",
   "quote",
   "ai-chat",
@@ -148,6 +152,14 @@ function buildMessage(body: Record<string, unknown>, baseMessage: string, source
     return `产品咨询：${productName}`.slice(0, MAX_MESSAGE_LENGTH);
   }
 
+  if (sourceComponent === "service_card" && serviceName && !baseMessage) {
+    return `服务咨询：${serviceName}`.slice(0, MAX_MESSAGE_LENGTH);
+  }
+
+  if (sourceComponent === "offer" && offerTitle && !baseMessage) {
+    return `优惠咨询：${offerTitle}`.slice(0, MAX_MESSAGE_LENGTH);
+  }
+
   return baseMessage;
 }
 
@@ -266,6 +278,31 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { success: false, error: "用户不存在。" },
       { status: 404 }
+    );
+  }
+
+  // ===== 公开访问状态守卫 =====
+  // 未公开或受限主页不得继续接收公开 Lead
+  if (!profile.isPublic) {
+    return NextResponse.json(
+      { success: false, error: "该主页未公开，无法提交联系信息。" },
+      { status: 403 }
+    );
+  }
+
+  try {
+    const restrictions = await getActiveRestrictions(profile.userId);
+    const visibility = canShowPublicProfile(restrictions);
+    if (!visibility.ok) {
+      return NextResponse.json(
+        { success: false, error: "该主页暂时无法接收联系信息。" },
+        { status: 403 }
+      );
+    }
+  } catch {
+    return NextResponse.json(
+      { success: false, error: "系统错误，请稍后重试。" },
+      { status: 503 }
     );
   }
 

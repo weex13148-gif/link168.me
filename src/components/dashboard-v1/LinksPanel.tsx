@@ -517,7 +517,7 @@ function DynamicFields({ draft, onChange, isNew }: { draft: LinkDraft; onChange:
         </label>
       ) : null}
 
-      {ct === "link" || ct === "shop" || ct === "booking" || ct === "map" ? (
+      {ct === "link" || ct === "shop" || ct === "booking" || ct === "map" || ct === "email" || ct === "address" ? (
         <label className="grid gap-2 lg:col-span-2">
           <span className={labelClass}>描述（选填）</span>
           <input
@@ -593,6 +593,19 @@ function DynamicFields({ draft, onChange, isNew }: { draft: LinkDraft; onChange:
             className="ui-input"
           />
           <span className="text-xs ui-muted">访客点击将直接拨打。</span>
+        </label>
+      ) : null}
+
+      {ct === "email" ? (
+        <label className="grid gap-2">
+          <span className={labelClass}>邮箱地址</span>
+          <input
+            value={draft.url}
+            onChange={(event) => onChange({ url: event.target.value })}
+            placeholder="例如：hello@example.com"
+            className="ui-input"
+          />
+          <span className="text-xs ui-muted">访客点击将唤起邮件客户端。</span>
         </label>
       ) : null}
 
@@ -1235,6 +1248,12 @@ function isDraftValid(draft: LinkDraft): boolean {
     if (!draft.url.trim()) return false;
   }
   if (ct === "phone") {
+    if (!draft.url.trim()) return false;
+  }
+  if (ct === "email") {
+    if (!draft.url.trim()) return false;
+  }
+  if (ct === "address") {
     if (!draft.url.trim()) return false;
   }
   if (ct === "shop") {

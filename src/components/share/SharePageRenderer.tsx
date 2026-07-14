@@ -166,6 +166,21 @@ function sanitizeHref(componentType: string, itemUrl: string | null | undefined,
       ? { href: cleaned.url, displayFallback: null as string | null }
       : { href: null, displayFallback: "地图链接被系统判定为不安全" };
   }
+  if (componentType === "email") {
+    const raw = typeof payload?.email === "string" ? payload.email : itemUrl || "";
+    const email = raw.trim().slice(0, 254);
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    return valid
+      ? { href: `mailto:${email}`, displayFallback: null as string | null }
+      : { href: null, displayFallback: "邮箱格式不正确" };
+  }
+  if (componentType === "address") {
+    const raw = typeof payload?.address === "string" ? payload.address : itemUrl || "";
+    const address = raw.trim();
+    return address.length >= 2 && address.length <= 300
+      ? { href: `https://maps.google.com/maps?q=${encodeURIComponent(address)}`, displayFallback: null as string | null }
+      : { href: null, displayFallback: "地址格式不正确" };
+  }
   if (["wechat", "text", "group-title"].includes(componentType)) {
     return { href: null, displayFallback: null as string | null };
   }
@@ -330,9 +345,10 @@ function renderLegacyItem(item: SharePageLink, componentType: string, payload: R
   const body = (
     <span className="flex min-w-0 flex-1 items-center gap-3">
       {componentType === "phone" ? <span className="grid size-9 place-items-center rounded-xl bg-[#F3E7D1]"><Phone className="size-4 text-[#8A6A2E]" /></span> : null}
-      {componentType === "map" ? <span className="grid size-9 place-items-center rounded-xl bg-[#F3E7D1]"><MapPin className="size-4 text-[#8A6A2E]" /></span> : null}
+      {componentType === "email" ? <span className="grid size-9 place-items-center rounded-xl bg-[#F3E7D1]"><Mail className="size-4 text-[#8A6A2E]" /></span> : null}
+      {componentType === "map" || componentType === "address" ? <span className="grid size-9 place-items-center rounded-xl bg-[#F3E7D1]"><MapPin className="size-4 text-[#8A6A2E]" /></span> : null}
       {componentType === "shop" || componentType === "booking" ? <span className="grid size-9 place-items-center rounded-xl bg-[#DDE8CD]">{componentType === "booking" ? <CalendarClock className="size-4 text-[#3F5F31]" /> : <ShoppingBag className="size-4 text-[#8A6A2E]" />}</span> : null}
-      {!["phone", "map", "shop", "booking"].includes(componentType) ? renderLinkIcon(item.icon, classes.avatarClassName) : null}
+      {!["phone", "email", "map", "address", "shop", "booking"].includes(componentType) ? renderLinkIcon(item.icon, classes.avatarClassName) : null}
       <span className="min-w-0 text-left">
         <span className="block truncate font-black">{title}</span>
         {description || !safe.href ? <span className={`mt-0.5 block line-clamp-2 text-xs leading-5 ${safe.href ? classes.subClassName : "text-red-600"}`}>{safe.href ? description : safe.displayFallback}</span> : null}

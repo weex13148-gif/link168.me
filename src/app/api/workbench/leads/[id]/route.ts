@@ -13,29 +13,19 @@ import { hasSensitiveContent, sanitizePublicText } from "@/lib/content-safety";
 
 export const runtime = "nodejs";
 
-// 统一状态枚举
-const VALID_STATUSES = ["new", "contacted", "following", "converted", "closed"] as const;
+// 统一新状态枚举
+const VALID_STATUSES = ["new", "viewed", "following_up", "won", "closed"] as const;
 type LeadStatus = typeof VALID_STATUSES[number];
 
-// 旧状态映射
-const OLD_STATUS_MAP: Record<string, LeadStatus> = {
-  qualified: "following",
-  lost: "closed",
-};
+// 历史状态保留，不破坏性映射
+const HISTORICAL_STATUSES = ["contacted", "following", "converted", "qualified", "lost"] as const;
 
-function normalizeStatus(status: string): LeadStatus | "unknown" {
-  const lower = status.toLowerCase();
-  if (VALID_STATUSES.includes(lower as LeadStatus)) {
-    return lower as LeadStatus;
-  }
-  if (OLD_STATUS_MAP[lower]) {
-    return OLD_STATUS_MAP[lower];
-  }
-  return "unknown";
+function isValidNewStatus(status: string): status is LeadStatus {
+  return VALID_STATUSES.includes(status as LeadStatus);
 }
 
-function isValidStatus(status: string): status is LeadStatus {
-  return VALID_STATUSES.includes(status as LeadStatus);
+function isHistoricalStatus(status: string): boolean {
+  return HISTORICAL_STATUSES.includes(status as typeof HISTORICAL_STATUSES[number]);
 }
 
 function sanitizeNote(raw: unknown): string | null {
@@ -94,9 +84,8 @@ export async function GET(request: Request, context: RouteContext) {
     );
   }
 
-  // 检查状态是否为未知状态
-  const normalizedStatus = normalizeStatus(lead.status);
-  const isLegacyStatus = normalizedStatus === "unknown";
+  // 检查状态是否为历史状态
+  const isLegacyStatus = isHistoricalStatus(lead.status);
 
   return NextResponse.json({
     success: true,
@@ -110,8 +99,7 @@ export async function GET(request: Request, context: RouteContext) {
       source_component: lead.sourceComponent,
       source_page: lead.sourcePage,
       status: lead.status,
-      status_is_legacy: isLegacyStatus,
-      status_display: isLegacyStatus ? "未知状态" : null,
+      is_historical_status: isLegacyStatus,
       handler_note: lead.handlerNote,
       handled_at: lead.handledAt ? lead.handledAt.toISOString() : null,
       wechat: lead.wechat,
@@ -149,6 +137,7 @@ export async function GET(request: Request, context: RouteContext) {
       follow_ups_count: lead.followUps.length,
     },
     valid_statuses: VALID_STATUSES,
+    historical_statuses: HISTORICAL_STATUSES,
   });
 }
 
@@ -186,16 +175,21 @@ export async function PATCH(request: Request, context: RouteContext) {
     );
   }
 
-  // 处理状态更新
+  // 处理状态更新：只允许统一新状态
   const rawStatus = normalizeNullableString(body.status);
   let newStatus: string = existing.status;
   let statusChanged = false;
 
   if (rawStatus) {
-    const normalized = normalizeStatus(rawStatus);
-    if (normalized !== "unknown" && isValidStatus(normalized)) {
-      newStatus = normalized;
+    if (isValidNewStatus(rawStatus)) {
+      newStatus = rawStatus;
       statusChanged = newStatus !== existing.status;
+    } else {
+      // 拒绝写入历史状态或非法状态
+      return NextResponse.json(
+        { success: false, error: `状态 "${rawStatus}" 不是有效的统一新状态。` },
+        { status: 400 }
+      );
     }
   }
 
@@ -312,6 +306,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     source_component: updated!.sourceComponent,
     source_page: updated!.sourcePage,
     status: updated!.status,
+    is_historical_status: isHistoricalStatus(updated!.status),
     handler_note: updated!.handlerNote,
     handled_at: updated!.handledAt ? updated!.handledAt.toISOString() : null,
     wechat: updated!.wechat,
@@ -353,5 +348,6 @@ export async function PATCH(request: Request, context: RouteContext) {
     success: true,
     lead: leadDto,
     valid_statuses: VALID_STATUSES,
+    historical_statuses: HISTORICAL_STATUSES,
   });
 }

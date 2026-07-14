@@ -116,6 +116,8 @@ export type LinkComponentType =
   | "qr"
   | "wechat"
   | "phone"
+  | "email"
+  | "address"
   | "map"
   | "shop"
   | "booking"

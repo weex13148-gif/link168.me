@@ -158,7 +158,7 @@ export async function getAnalyticsStats(params: {
       where: { profileId, createdAt: { gte: start } },
     }),
 
-    // 线索状态分布
+    // 线索状态分布（按原始状态分组，前端自行映射）
     db.lead.groupBy({
       by: ["status"],
       where: { profileId, createdAt: { gte: start } },
@@ -289,8 +289,8 @@ export async function calculateConversionFunnel(params: {
     linkClicks,     // 链接点击
     contactClicks,  // 联系方式点击（通过 sourceComponent 推断）
     leadCreates,    // 线索创建
-    contactedLeads,  // 已联系
-    convertedLeads, // 已成交
+    viewedLeads,    // 已查看
+    wonLeads,       // 已成交
   ] = await Promise.all([
     // 主页访问：统计该用户在 start 时间后的所有点击
     db.linkClick.count({
@@ -308,13 +308,13 @@ export async function calculateConversionFunnel(params: {
     db.lead.count({
       where: { profileId, createdAt: { gte: start } },
     }),
-    // 已联系
+    // 已查看（新统一状态）
     db.lead.count({
-      where: { profileId, status: "contacted", createdAt: { gte: start } },
+      where: { profileId, status: "viewed", createdAt: { gte: start } },
     }),
-    // 已成交
+    // 已成交（新统一状态）
     db.lead.count({
-      where: { profileId, status: "converted", createdAt: { gte: start } },
+      where: { profileId, status: "won", createdAt: { gte: start } },
     }),
   ]);
 
@@ -345,21 +345,21 @@ export async function calculateConversionFunnel(params: {
       conversionRate: contactClicks > 0 ? (leadCreates / contactClicks) * 100 : 0,
     },
     {
-      name: "已联系",
+      name: "已查看",
       eventType: "lead_create",
-      count: contactedLeads,
-      conversionRate: leadCreates > 0 ? (contactedLeads / leadCreates) * 100 : 0,
+      count: viewedLeads,
+      conversionRate: leadCreates > 0 ? (viewedLeads / leadCreates) * 100 : 0,
     },
     {
       name: "已成交",
       eventType: "lead_create",
-      count: convertedLeads,
-      conversionRate: contactedLeads > 0 ? (convertedLeads / contactedLeads) * 100 : 0,
+      count: wonLeads,
+      conversionRate: viewedLeads > 0 ? (wonLeads / viewedLeads) * 100 : 0,
     },
   ];
 
   // 计算整体转化率
-  const overallConversionRate = pageViews > 0 ? (convertedLeads / pageViews) * 100 : 0;
+  const overallConversionRate = pageViews > 0 ? (wonLeads / pageViews) * 100 : 0;
 
   return {
     steps: funnelSteps,

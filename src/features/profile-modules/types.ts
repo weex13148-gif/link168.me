@@ -5,6 +5,8 @@ export type ProfileModuleType =
   | "qr"
   | "wechat"
   | "phone"
+  | "email"
+  | "address"
   | "shop"
   | "booking"
   | "map"
