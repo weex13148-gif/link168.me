@@ -2,17 +2,18 @@ import { readFile } from "fs/promises";
 import path from "path";
 import { NextResponse } from "next/server";
 import {
-  getMediaUploadDir,
+  getUploadDirForMediaType,
+  isValidMediaType,
   getAvatarContentType,
   isSafeMediaFileName,
   buildContentRef,
 } from "@/lib/upload-storage";
 import { db } from "@/lib/db";
+import type { MediaType } from "@/lib/upload-storage";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const ALLOWED_MEDIA_TYPES = new Set(["cover", "popup", "carousel", "background"]);
 const ALLOWED_MODERATION_STATUSES = new Set(["approved"]);
 
 type RouteContext = { params: Promise<{ type: string; path: string[] }> };
@@ -50,17 +51,18 @@ async function checkMediaModerationStatus(mediaType: string, relativePath: strin
 export async function GET(request: Request, context: RouteContext) {
   const { type, path: pathSegments } = await context.params;
 
-  if (!type || !ALLOWED_MEDIA_TYPES.has(type)) {
+  if (!type || !isValidMediaType(type)) {
     return NextResponse.json({ success: false, error: "无效的媒体类型。" }, { status: 400 });
   }
+
+  const mediaType = type as MediaType;
 
   const relativePath = sanitizePathSegments(pathSegments || []);
   if (!relativePath) {
     return NextResponse.json({ success: false, error: "无效的文件路径。" }, { status: 400 });
   }
 
-  const mediaType = type as "cover" | "popup" | "carousel" | "background";
-  const uploadDir = getMediaUploadDir(mediaType);
+  const uploadDir = getUploadDirForMediaType(mediaType);
   const filePath = path.join(uploadDir, relativePath);
 
   const resolvedPath = path.resolve(filePath);

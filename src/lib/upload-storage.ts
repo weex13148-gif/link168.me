@@ -55,8 +55,44 @@ export function getLinkIconUploadDir() {
   return path.join(getUploadRoot(), "links", "icons");
 }
 
+export type MediaType =
+  | "avatar"
+  | "background"
+  | "cover"
+  | "carousel"
+  | "popup"
+  | "product_cover"
+  | "service_cover"
+  | "enterprise_logo"
+  | "enterprise_public_image"
+  | "custom_link_icon";
+
 export function getMediaUploadDir(mediaType: "cover" | "popup" | "carousel" | "background") {
   return path.join(getUploadRoot(), "media", mediaType);
+}
+
+export function getUploadDirForMediaType(mediaType: MediaType): string {
+  switch (mediaType) {
+    case "avatar":
+      return getAvatarUploadDir();
+    case "custom_link_icon":
+      return getLinkIconUploadDir();
+    case "cover":
+    case "popup":
+    case "carousel":
+    case "background":
+      return getMediaUploadDir(mediaType);
+    case "product_cover":
+      return path.join(getUploadRoot(), "media", "product_cover");
+    case "service_cover":
+      return path.join(getUploadRoot(), "media", "service_cover");
+    case "enterprise_logo":
+      return path.join(getUploadRoot(), "media", "enterprise_logo");
+    case "enterprise_public_image":
+      return path.join(getUploadRoot(), "media", "enterprise_public_image");
+    default:
+      return path.join(getUploadRoot(), "media", mediaType);
+  }
 }
 
 export function isSafeAvatarFileName(fileName: string) {
@@ -202,6 +238,18 @@ export function getPublicUrlForLinkIcon(fileName: string): string {
   return `/api/dashboard/links/icon/${fileName}`;
 }
 
+export function getPublicUrlForMediaType(mediaType: MediaType, relativePath: string): string {
+  const normalized = relativePath.replace(/\\/g, "/");
+  switch (mediaType) {
+    case "avatar":
+      return `/api/avatar/${normalized}`;
+    case "custom_link_icon":
+      return `/api/dashboard/links/icon/${normalized}`;
+    default:
+      return `/api/dashboard/media/${mediaType}/${normalized}`;
+  }
+}
+
 export function isTrustedImageUrl(url: string): boolean {
   if (!url || typeof url !== "string") return false;
 
@@ -216,6 +264,22 @@ export function isTrustedImageUrl(url: string): boolean {
   return false;
 }
 
+export function isValidMediaType(type: string): type is MediaType {
+  const validTypes: MediaType[] = [
+    "avatar",
+    "background",
+    "cover",
+    "carousel",
+    "popup",
+    "product_cover",
+    "service_cover",
+    "enterprise_logo",
+    "enterprise_public_image",
+    "custom_link_icon",
+  ];
+  return validTypes.includes(type as MediaType);
+}
+
 export type MediaUploadConfig = {
   maxSize: number;
   allowedMimeTypes: string[];
@@ -223,23 +287,22 @@ export type MediaUploadConfig = {
   formField: string;
 };
 
-export const UPLOAD_CONFIGS = {
+export const UPLOAD_CONFIGS: Record<MediaType, {
+  maxSize: number;
+  allowedMimeTypes: string[];
+  formField: string;
+}> = {
   avatar: {
     maxSize: 2 * 1024 * 1024,
     allowedMimeTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
     formField: "avatar",
   },
-  linkIcon: {
-    maxSize: 500 * 1024,
-    allowedMimeTypes: ["image/jpeg", "image/png", "image/webp"],
-    formField: "icon",
-  },
-  cover: {
+  background: {
     maxSize: 5 * 1024 * 1024,
     allowedMimeTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
     formField: "image",
   },
-  popup: {
+  cover: {
     maxSize: 5 * 1024 * 1024,
     allowedMimeTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
     formField: "image",
@@ -249,12 +312,37 @@ export const UPLOAD_CONFIGS = {
     allowedMimeTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
     formField: "image",
   },
-  background: {
+  popup: {
     maxSize: 5 * 1024 * 1024,
     allowedMimeTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
     formField: "image",
   },
-} as const;
+  product_cover: {
+    maxSize: 5 * 1024 * 1024,
+    allowedMimeTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
+    formField: "image",
+  },
+  service_cover: {
+    maxSize: 5 * 1024 * 1024,
+    allowedMimeTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
+    formField: "image",
+  },
+  enterprise_logo: {
+    maxSize: 2 * 1024 * 1024,
+    allowedMimeTypes: ["image/jpeg", "image/png", "image/webp"],
+    formField: "image",
+  },
+  enterprise_public_image: {
+    maxSize: 5 * 1024 * 1024,
+    allowedMimeTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
+    formField: "image",
+  },
+  custom_link_icon: {
+    maxSize: 500 * 1024,
+    allowedMimeTypes: ["image/jpeg", "image/png", "image/webp"],
+    formField: "icon",
+  },
+};
 
 /**
  * 统一生成 ContentModerationRecord 的 contentRef。

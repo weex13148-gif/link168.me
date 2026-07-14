@@ -33,7 +33,7 @@ export async function POST(request: Request) {
   const file = formData.get("icon");
   if (!(file instanceof File)) return NextResponse.json({ success: false, error: "请选择图标图片。" }, { status: 400 });
 
-  const config = UPLOAD_CONFIGS.linkIcon;
+  const config = UPLOAD_CONFIGS.custom_link_icon;
 
   if (!file.size || file.size > config.maxSize) {
     return NextResponse.json({ success: false, error: `图标图片不能超过 ${config.maxSize / 1024}KB。` }, { status: 400 });
