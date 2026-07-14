@@ -100,9 +100,10 @@ export async function assertAiEntitlement(
 
   // 3. 套餐权益检查（单一权威来源：entitlements → plans.ts）
   const entitlements = await getUserEntitlements(userId);
+  const isFreePlan = entitlements.planCode === "free";
 
-  // 免费用户拒绝真实 AI 调用
-  if (entitlements.planCode === "free") {
+  // 免费用户检查：免费用户禁止任何真实 AI 调用，不允许通过加油包绕过
+  if (isFreePlan) {
     return {
       ok: false,
       userId,
@@ -113,8 +114,8 @@ export async function assertAiEntitlement(
     };
   }
 
-  // aiEnabled 为 false（套餐未知或额度为 0）拒绝
-  if (!entitlements.features.aiEnabled) {
+  // aiEnabled 为 false（套餐未知或额度为 0）拒绝（免费用户有 credit 不走这里）
+  if (!isFreePlan && !entitlements.features.aiEnabled) {
     return {
       ok: false,
       userId,
@@ -126,7 +127,7 @@ export async function assertAiEntitlement(
   }
 
   // 4. 会员有效期检查（非有效会员且不在宽限期内拒绝）
-  const isActive = entitlements.hasActiveMembership || entitlements.isLegacyActive || entitlements.isGracePeriod;
+  const isActive = isFreePlan || entitlements.hasActiveMembership || entitlements.isLegacyActive || entitlements.isGracePeriod;
   if (!isActive) {
     return {
       ok: false,
@@ -138,10 +139,9 @@ export async function assertAiEntitlement(
     };
   }
 
-  // 5. 额度检查（套餐月度额度耗尽拒绝）
+  // 5. 额度检查
   const aiLimit = entitlements.limits.aiChatsPerMonth.max;
   const aiRemaining = entitlements.limits.aiChatsPerMonth.remaining;
-  // aiLimit === -1 表示无限额度（enterprise / enterprise_pro_plus / internal_test），不拦截
   if (aiLimit !== -1 && aiRemaining <= 0) {
     return {
       ok: false,

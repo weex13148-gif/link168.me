@@ -28,7 +28,7 @@ export type EnterpriseBailianConfig = {
   appId: string;
   apiKey: string;
   baseUrl: string;
-  workspaceId: string;
+  dashscopeWorkspaceId: string;
   timeoutMs: number;
   configured: boolean;
 };
@@ -105,7 +105,7 @@ export function resolveEnterpriseBailianConfig(config: AppConfigValues): Enterpr
     || "https://dashscope.aliyuncs.com/api/v1";
   const workspaceId = config.aiBailianWorkspaceId?.trim() || envValue("DASHSCOPE_WORKSPACE_ID");
   const timeoutMs = Math.max(10, Number(config.aiRequestTimeout || 45)) * 1000;
-  return { appId, apiKey, baseUrl, workspaceId, timeoutMs, configured: Boolean(appId && apiKey && baseUrl) };
+  return { appId, apiKey, baseUrl, dashscopeWorkspaceId: workspaceId, timeoutMs, configured: Boolean(appId && apiKey && baseUrl) };
 }
 
 async function getContext(user: EnterpriseBailianUser | null) {
@@ -170,7 +170,7 @@ export function maskEnterpriseBailianConfig(config: AppConfigValues) {
     appId: resolved.appId,
     apiKey: resolved.apiKey ? `${resolved.apiKey.slice(0, 4)}****${resolved.apiKey.slice(-4)}` : "",
     baseUrl: resolved.baseUrl,
-    workspaceId: resolved.workspaceId,
+    dashscopeWorkspaceId: resolved.dashscopeWorkspaceId,
     configured: resolved.configured,
   };
 }

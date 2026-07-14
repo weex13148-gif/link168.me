@@ -218,6 +218,16 @@ export type Workspace = $Result.DefaultSelection<Prisma.$WorkspacePayload>
  * 
  */
 export type WorkspaceMember = $Result.DefaultSelection<Prisma.$WorkspaceMemberPayload>
+/**
+ * Model EnterpriseQuotaPool
+ * 
+ */
+export type EnterpriseQuotaPool = $Result.DefaultSelection<Prisma.$EnterpriseQuotaPoolPayload>
+/**
+ * Model EnterpriseQuotaConsumption
+ * 
+ */
+export type EnterpriseQuotaConsumption = $Result.DefaultSelection<Prisma.$EnterpriseQuotaConsumptionPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -749,6 +759,26 @@ export class PrismaClient<
     * ```
     */
   get workspaceMember(): Prisma.WorkspaceMemberDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.enterpriseQuotaPool`: Exposes CRUD operations for the **EnterpriseQuotaPool** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more EnterpriseQuotaPools
+    * const enterpriseQuotaPools = await prisma.enterpriseQuotaPool.findMany()
+    * ```
+    */
+  get enterpriseQuotaPool(): Prisma.EnterpriseQuotaPoolDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.enterpriseQuotaConsumption`: Exposes CRUD operations for the **EnterpriseQuotaConsumption** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more EnterpriseQuotaConsumptions
+    * const enterpriseQuotaConsumptions = await prisma.enterpriseQuotaConsumption.findMany()
+    * ```
+    */
+  get enterpriseQuotaConsumption(): Prisma.EnterpriseQuotaConsumptionDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1223,7 +1253,9 @@ export namespace Prisma {
     ShowcasePromptDraft: 'ShowcasePromptDraft',
     ContentModerationRecord: 'ContentModerationRecord',
     Workspace: 'Workspace',
-    WorkspaceMember: 'WorkspaceMember'
+    WorkspaceMember: 'WorkspaceMember',
+    EnterpriseQuotaPool: 'EnterpriseQuotaPool',
+    EnterpriseQuotaConsumption: 'EnterpriseQuotaConsumption'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1239,7 +1271,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "freezeRecord" | "usernameHistory" | "usernameRegistry" | "profile" | "domain" | "workspacePublicProfile" | "link" | "linkClick" | "profileVisit" | "shortLink" | "shortLinkClick" | "session" | "report" | "passwordResetToken" | "emailVerificationToken" | "loginAttempt" | "appConfig" | "aiUsageLog" | "adminAuditLog" | "lead" | "leadFollowUp" | "emailSendLog" | "product" | "knowledgeDoc" | "aiServiceConfig" | "aiConversation" | "aiMessage" | "aiCreditAccount" | "aiCreditLedger" | "membershipSubscription" | "order" | "competitionFile" | "showcaseContent" | "showcaseSequence" | "showcaseAIDemoCall" | "showcaseAIDebugLog" | "showcasePromptDraft" | "contentModerationRecord" | "workspace" | "workspaceMember"
+      modelProps: "user" | "freezeRecord" | "usernameHistory" | "usernameRegistry" | "profile" | "domain" | "workspacePublicProfile" | "link" | "linkClick" | "profileVisit" | "shortLink" | "shortLinkClick" | "session" | "report" | "passwordResetToken" | "emailVerificationToken" | "loginAttempt" | "appConfig" | "aiUsageLog" | "adminAuditLog" | "lead" | "leadFollowUp" | "emailSendLog" | "product" | "knowledgeDoc" | "aiServiceConfig" | "aiConversation" | "aiMessage" | "aiCreditAccount" | "aiCreditLedger" | "membershipSubscription" | "order" | "competitionFile" | "showcaseContent" | "showcaseSequence" | "showcaseAIDemoCall" | "showcaseAIDebugLog" | "showcasePromptDraft" | "contentModerationRecord" | "workspace" | "workspaceMember" | "enterpriseQuotaPool" | "enterpriseQuotaConsumption"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4277,6 +4309,154 @@ export namespace Prisma {
           }
         }
       }
+      EnterpriseQuotaPool: {
+        payload: Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>
+        fields: Prisma.EnterpriseQuotaPoolFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.EnterpriseQuotaPoolFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.EnterpriseQuotaPoolFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>
+          }
+          findFirst: {
+            args: Prisma.EnterpriseQuotaPoolFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.EnterpriseQuotaPoolFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>
+          }
+          findMany: {
+            args: Prisma.EnterpriseQuotaPoolFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>[]
+          }
+          create: {
+            args: Prisma.EnterpriseQuotaPoolCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>
+          }
+          createMany: {
+            args: Prisma.EnterpriseQuotaPoolCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.EnterpriseQuotaPoolCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>[]
+          }
+          delete: {
+            args: Prisma.EnterpriseQuotaPoolDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>
+          }
+          update: {
+            args: Prisma.EnterpriseQuotaPoolUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>
+          }
+          deleteMany: {
+            args: Prisma.EnterpriseQuotaPoolDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.EnterpriseQuotaPoolUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.EnterpriseQuotaPoolUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>[]
+          }
+          upsert: {
+            args: Prisma.EnterpriseQuotaPoolUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaPoolPayload>
+          }
+          aggregate: {
+            args: Prisma.EnterpriseQuotaPoolAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateEnterpriseQuotaPool>
+          }
+          groupBy: {
+            args: Prisma.EnterpriseQuotaPoolGroupByArgs<ExtArgs>
+            result: $Utils.Optional<EnterpriseQuotaPoolGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.EnterpriseQuotaPoolCountArgs<ExtArgs>
+            result: $Utils.Optional<EnterpriseQuotaPoolCountAggregateOutputType> | number
+          }
+        }
+      }
+      EnterpriseQuotaConsumption: {
+        payload: Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>
+        fields: Prisma.EnterpriseQuotaConsumptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.EnterpriseQuotaConsumptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.EnterpriseQuotaConsumptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>
+          }
+          findFirst: {
+            args: Prisma.EnterpriseQuotaConsumptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.EnterpriseQuotaConsumptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>
+          }
+          findMany: {
+            args: Prisma.EnterpriseQuotaConsumptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>[]
+          }
+          create: {
+            args: Prisma.EnterpriseQuotaConsumptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>
+          }
+          createMany: {
+            args: Prisma.EnterpriseQuotaConsumptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.EnterpriseQuotaConsumptionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>[]
+          }
+          delete: {
+            args: Prisma.EnterpriseQuotaConsumptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>
+          }
+          update: {
+            args: Prisma.EnterpriseQuotaConsumptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.EnterpriseQuotaConsumptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.EnterpriseQuotaConsumptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.EnterpriseQuotaConsumptionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>[]
+          }
+          upsert: {
+            args: Prisma.EnterpriseQuotaConsumptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EnterpriseQuotaConsumptionPayload>
+          }
+          aggregate: {
+            args: Prisma.EnterpriseQuotaConsumptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateEnterpriseQuotaConsumption>
+          }
+          groupBy: {
+            args: Prisma.EnterpriseQuotaConsumptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<EnterpriseQuotaConsumptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.EnterpriseQuotaConsumptionCountArgs<ExtArgs>
+            result: $Utils.Optional<EnterpriseQuotaConsumptionCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -4426,6 +4606,8 @@ export namespace Prisma {
     contentModerationRecord?: ContentModerationRecordOmit
     workspace?: WorkspaceOmit
     workspaceMember?: WorkspaceMemberOmit
+    enterpriseQuotaPool?: EnterpriseQuotaPoolOmit
+    enterpriseQuotaConsumption?: EnterpriseQuotaConsumptionOmit
   }
 
   /* Types for Logging */
@@ -4519,6 +4701,7 @@ export namespace Prisma {
     workspaceMemberships: number
     ownedWorkspaces: number
     workspacePublicProfiles: number
+    enterpriseQuotaConsumptions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4535,6 +4718,7 @@ export namespace Prisma {
     workspaceMemberships?: boolean | UserCountOutputTypeCountWorkspaceMembershipsArgs
     ownedWorkspaces?: boolean | UserCountOutputTypeCountOwnedWorkspacesArgs
     workspacePublicProfiles?: boolean | UserCountOutputTypeCountWorkspacePublicProfilesArgs
+    enterpriseQuotaConsumptions?: boolean | UserCountOutputTypeCountEnterpriseQuotaConsumptionsArgs
   }
 
   // Custom InputTypes
@@ -4637,6 +4821,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountWorkspacePublicProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WorkspacePublicProfileWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountEnterpriseQuotaConsumptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EnterpriseQuotaConsumptionWhereInput
   }
 
 
@@ -4892,12 +5083,14 @@ export namespace Prisma {
     members: number
     domains: number
     publicProfiles: number
+    enterpriseQuotaConsumptions: number
   }
 
   export type WorkspaceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     members?: boolean | WorkspaceCountOutputTypeCountMembersArgs
     domains?: boolean | WorkspaceCountOutputTypeCountDomainsArgs
     publicProfiles?: boolean | WorkspaceCountOutputTypeCountPublicProfilesArgs
+    enterpriseQuotaConsumptions?: boolean | WorkspaceCountOutputTypeCountEnterpriseQuotaConsumptionsArgs
   }
 
   // Custom InputTypes
@@ -4930,6 +5123,13 @@ export namespace Prisma {
    */
   export type WorkspaceCountOutputTypeCountPublicProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WorkspacePublicProfileWhereInput
+  }
+
+  /**
+   * WorkspaceCountOutputType without action
+   */
+  export type WorkspaceCountOutputTypeCountEnterpriseQuotaConsumptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EnterpriseQuotaConsumptionWhereInput
   }
 
 
@@ -5224,6 +5424,7 @@ export namespace Prisma {
     workspaceMemberships?: boolean | User$workspaceMembershipsArgs<ExtArgs>
     ownedWorkspaces?: boolean | User$ownedWorkspacesArgs<ExtArgs>
     workspacePublicProfiles?: boolean | User$workspacePublicProfilesArgs<ExtArgs>
+    enterpriseQuotaConsumptions?: boolean | User$enterpriseQuotaConsumptionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -5297,6 +5498,7 @@ export namespace Prisma {
     workspaceMemberships?: boolean | User$workspaceMembershipsArgs<ExtArgs>
     ownedWorkspaces?: boolean | User$ownedWorkspacesArgs<ExtArgs>
     workspacePublicProfiles?: boolean | User$workspacePublicProfilesArgs<ExtArgs>
+    enterpriseQuotaConsumptions?: boolean | User$enterpriseQuotaConsumptionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5322,6 +5524,7 @@ export namespace Prisma {
       workspaceMemberships: Prisma.$WorkspaceMemberPayload<ExtArgs>[]
       ownedWorkspaces: Prisma.$WorkspacePayload<ExtArgs>[]
       workspacePublicProfiles: Prisma.$WorkspacePublicProfilePayload<ExtArgs>[]
+      enterpriseQuotaConsumptions: Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5749,6 +5952,7 @@ export namespace Prisma {
     workspaceMemberships<T extends User$workspaceMembershipsArgs<ExtArgs> = {}>(args?: Subset<T, User$workspaceMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ownedWorkspaces<T extends User$ownedWorkspacesArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedWorkspacesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     workspacePublicProfiles<T extends User$workspacePublicProfilesArgs<ExtArgs> = {}>(args?: Subset<T, User$workspacePublicProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    enterpriseQuotaConsumptions<T extends User$enterpriseQuotaConsumptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$enterpriseQuotaConsumptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6570,6 +6774,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: WorkspacePublicProfileScalarFieldEnum | WorkspacePublicProfileScalarFieldEnum[]
+  }
+
+  /**
+   * User.enterpriseQuotaConsumptions
+   */
+  export type User$enterpriseQuotaConsumptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    where?: EnterpriseQuotaConsumptionWhereInput
+    orderBy?: EnterpriseQuotaConsumptionOrderByWithRelationInput | EnterpriseQuotaConsumptionOrderByWithRelationInput[]
+    cursor?: EnterpriseQuotaConsumptionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EnterpriseQuotaConsumptionScalarFieldEnum | EnterpriseQuotaConsumptionScalarFieldEnum[]
   }
 
   /**
@@ -50442,6 +50670,8 @@ export namespace Prisma {
     members?: boolean | Workspace$membersArgs<ExtArgs>
     domains?: boolean | Workspace$domainsArgs<ExtArgs>
     publicProfiles?: boolean | Workspace$publicProfilesArgs<ExtArgs>
+    quotaPool?: boolean | Workspace$quotaPoolArgs<ExtArgs>
+    enterpriseQuotaConsumptions?: boolean | Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs>
     _count?: boolean | WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["workspace"]>
 
@@ -50492,6 +50722,8 @@ export namespace Prisma {
     members?: boolean | Workspace$membersArgs<ExtArgs>
     domains?: boolean | Workspace$domainsArgs<ExtArgs>
     publicProfiles?: boolean | Workspace$publicProfilesArgs<ExtArgs>
+    quotaPool?: boolean | Workspace$quotaPoolArgs<ExtArgs>
+    enterpriseQuotaConsumptions?: boolean | Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs>
     _count?: boolean | WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type WorkspaceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -50508,6 +50740,8 @@ export namespace Prisma {
       members: Prisma.$WorkspaceMemberPayload<ExtArgs>[]
       domains: Prisma.$DomainPayload<ExtArgs>[]
       publicProfiles: Prisma.$WorkspacePublicProfilePayload<ExtArgs>[]
+      quotaPool: Prisma.$EnterpriseQuotaPoolPayload<ExtArgs> | null
+      enterpriseQuotaConsumptions: Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -50918,6 +51152,8 @@ export namespace Prisma {
     members<T extends Workspace$membersArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     domains<T extends Workspace$domainsArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$domainsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DomainPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     publicProfiles<T extends Workspace$publicProfilesArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$publicProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    quotaPool<T extends Workspace$quotaPoolArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$quotaPoolArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    enterpriseQuotaConsumptions<T extends Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -51427,6 +51663,49 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: WorkspacePublicProfileScalarFieldEnum | WorkspacePublicProfileScalarFieldEnum[]
+  }
+
+  /**
+   * Workspace.quotaPool
+   */
+  export type Workspace$quotaPoolArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    where?: EnterpriseQuotaPoolWhereInput
+  }
+
+  /**
+   * Workspace.enterpriseQuotaConsumptions
+   */
+  export type Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    where?: EnterpriseQuotaConsumptionWhereInput
+    orderBy?: EnterpriseQuotaConsumptionOrderByWithRelationInput | EnterpriseQuotaConsumptionOrderByWithRelationInput[]
+    cursor?: EnterpriseQuotaConsumptionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EnterpriseQuotaConsumptionScalarFieldEnum | EnterpriseQuotaConsumptionScalarFieldEnum[]
   }
 
   /**
@@ -52611,6 +52890,2329 @@ export namespace Prisma {
 
 
   /**
+   * Model EnterpriseQuotaPool
+   */
+
+  export type AggregateEnterpriseQuotaPool = {
+    _count: EnterpriseQuotaPoolCountAggregateOutputType | null
+    _avg: EnterpriseQuotaPoolAvgAggregateOutputType | null
+    _sum: EnterpriseQuotaPoolSumAggregateOutputType | null
+    _min: EnterpriseQuotaPoolMinAggregateOutputType | null
+    _max: EnterpriseQuotaPoolMaxAggregateOutputType | null
+  }
+
+  export type EnterpriseQuotaPoolAvgAggregateOutputType = {
+    totalQuota: number | null
+    usedQuota: number | null
+    version: number | null
+  }
+
+  export type EnterpriseQuotaPoolSumAggregateOutputType = {
+    totalQuota: number | null
+    usedQuota: number | null
+    version: number | null
+  }
+
+  export type EnterpriseQuotaPoolMinAggregateOutputType = {
+    id: string | null
+    workspaceId: string | null
+    totalQuota: number | null
+    usedQuota: number | null
+    periodStart: Date | null
+    periodEnd: Date | null
+    version: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EnterpriseQuotaPoolMaxAggregateOutputType = {
+    id: string | null
+    workspaceId: string | null
+    totalQuota: number | null
+    usedQuota: number | null
+    periodStart: Date | null
+    periodEnd: Date | null
+    version: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EnterpriseQuotaPoolCountAggregateOutputType = {
+    id: number
+    workspaceId: number
+    totalQuota: number
+    usedQuota: number
+    periodStart: number
+    periodEnd: number
+    version: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type EnterpriseQuotaPoolAvgAggregateInputType = {
+    totalQuota?: true
+    usedQuota?: true
+    version?: true
+  }
+
+  export type EnterpriseQuotaPoolSumAggregateInputType = {
+    totalQuota?: true
+    usedQuota?: true
+    version?: true
+  }
+
+  export type EnterpriseQuotaPoolMinAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    totalQuota?: true
+    usedQuota?: true
+    periodStart?: true
+    periodEnd?: true
+    version?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EnterpriseQuotaPoolMaxAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    totalQuota?: true
+    usedQuota?: true
+    periodStart?: true
+    periodEnd?: true
+    version?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EnterpriseQuotaPoolCountAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    totalQuota?: true
+    usedQuota?: true
+    periodStart?: true
+    periodEnd?: true
+    version?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type EnterpriseQuotaPoolAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EnterpriseQuotaPool to aggregate.
+     */
+    where?: EnterpriseQuotaPoolWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaPools to fetch.
+     */
+    orderBy?: EnterpriseQuotaPoolOrderByWithRelationInput | EnterpriseQuotaPoolOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: EnterpriseQuotaPoolWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaPools from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaPools.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned EnterpriseQuotaPools
+    **/
+    _count?: true | EnterpriseQuotaPoolCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: EnterpriseQuotaPoolAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: EnterpriseQuotaPoolSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: EnterpriseQuotaPoolMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: EnterpriseQuotaPoolMaxAggregateInputType
+  }
+
+  export type GetEnterpriseQuotaPoolAggregateType<T extends EnterpriseQuotaPoolAggregateArgs> = {
+        [P in keyof T & keyof AggregateEnterpriseQuotaPool]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateEnterpriseQuotaPool[P]>
+      : GetScalarType<T[P], AggregateEnterpriseQuotaPool[P]>
+  }
+
+
+
+
+  export type EnterpriseQuotaPoolGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EnterpriseQuotaPoolWhereInput
+    orderBy?: EnterpriseQuotaPoolOrderByWithAggregationInput | EnterpriseQuotaPoolOrderByWithAggregationInput[]
+    by: EnterpriseQuotaPoolScalarFieldEnum[] | EnterpriseQuotaPoolScalarFieldEnum
+    having?: EnterpriseQuotaPoolScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: EnterpriseQuotaPoolCountAggregateInputType | true
+    _avg?: EnterpriseQuotaPoolAvgAggregateInputType
+    _sum?: EnterpriseQuotaPoolSumAggregateInputType
+    _min?: EnterpriseQuotaPoolMinAggregateInputType
+    _max?: EnterpriseQuotaPoolMaxAggregateInputType
+  }
+
+  export type EnterpriseQuotaPoolGroupByOutputType = {
+    id: string
+    workspaceId: string
+    totalQuota: number
+    usedQuota: number
+    periodStart: Date
+    periodEnd: Date
+    version: number
+    createdAt: Date
+    updatedAt: Date
+    _count: EnterpriseQuotaPoolCountAggregateOutputType | null
+    _avg: EnterpriseQuotaPoolAvgAggregateOutputType | null
+    _sum: EnterpriseQuotaPoolSumAggregateOutputType | null
+    _min: EnterpriseQuotaPoolMinAggregateOutputType | null
+    _max: EnterpriseQuotaPoolMaxAggregateOutputType | null
+  }
+
+  type GetEnterpriseQuotaPoolGroupByPayload<T extends EnterpriseQuotaPoolGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<EnterpriseQuotaPoolGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof EnterpriseQuotaPoolGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], EnterpriseQuotaPoolGroupByOutputType[P]>
+            : GetScalarType<T[P], EnterpriseQuotaPoolGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type EnterpriseQuotaPoolSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    totalQuota?: boolean
+    usedQuota?: boolean
+    periodStart?: boolean
+    periodEnd?: boolean
+    version?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["enterpriseQuotaPool"]>
+
+  export type EnterpriseQuotaPoolSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    totalQuota?: boolean
+    usedQuota?: boolean
+    periodStart?: boolean
+    periodEnd?: boolean
+    version?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["enterpriseQuotaPool"]>
+
+  export type EnterpriseQuotaPoolSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    totalQuota?: boolean
+    usedQuota?: boolean
+    periodStart?: boolean
+    periodEnd?: boolean
+    version?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["enterpriseQuotaPool"]>
+
+  export type EnterpriseQuotaPoolSelectScalar = {
+    id?: boolean
+    workspaceId?: boolean
+    totalQuota?: boolean
+    usedQuota?: boolean
+    periodStart?: boolean
+    periodEnd?: boolean
+    version?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type EnterpriseQuotaPoolOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "workspaceId" | "totalQuota" | "usedQuota" | "periodStart" | "periodEnd" | "version" | "createdAt" | "updatedAt", ExtArgs["result"]["enterpriseQuotaPool"]>
+  export type EnterpriseQuotaPoolInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+  }
+  export type EnterpriseQuotaPoolIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+  }
+  export type EnterpriseQuotaPoolIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+  }
+
+  export type $EnterpriseQuotaPoolPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "EnterpriseQuotaPool"
+    objects: {
+      workspace: Prisma.$WorkspacePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      workspaceId: string
+      totalQuota: number
+      usedQuota: number
+      periodStart: Date
+      periodEnd: Date
+      version: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["enterpriseQuotaPool"]>
+    composites: {}
+  }
+
+  type EnterpriseQuotaPoolGetPayload<S extends boolean | null | undefined | EnterpriseQuotaPoolDefaultArgs> = $Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload, S>
+
+  type EnterpriseQuotaPoolCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<EnterpriseQuotaPoolFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: EnterpriseQuotaPoolCountAggregateInputType | true
+    }
+
+  export interface EnterpriseQuotaPoolDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['EnterpriseQuotaPool'], meta: { name: 'EnterpriseQuotaPool' } }
+    /**
+     * Find zero or one EnterpriseQuotaPool that matches the filter.
+     * @param {EnterpriseQuotaPoolFindUniqueArgs} args - Arguments to find a EnterpriseQuotaPool
+     * @example
+     * // Get one EnterpriseQuotaPool
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends EnterpriseQuotaPoolFindUniqueArgs>(args: SelectSubset<T, EnterpriseQuotaPoolFindUniqueArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one EnterpriseQuotaPool that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {EnterpriseQuotaPoolFindUniqueOrThrowArgs} args - Arguments to find a EnterpriseQuotaPool
+     * @example
+     * // Get one EnterpriseQuotaPool
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends EnterpriseQuotaPoolFindUniqueOrThrowArgs>(args: SelectSubset<T, EnterpriseQuotaPoolFindUniqueOrThrowArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EnterpriseQuotaPool that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaPoolFindFirstArgs} args - Arguments to find a EnterpriseQuotaPool
+     * @example
+     * // Get one EnterpriseQuotaPool
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends EnterpriseQuotaPoolFindFirstArgs>(args?: SelectSubset<T, EnterpriseQuotaPoolFindFirstArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EnterpriseQuotaPool that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaPoolFindFirstOrThrowArgs} args - Arguments to find a EnterpriseQuotaPool
+     * @example
+     * // Get one EnterpriseQuotaPool
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends EnterpriseQuotaPoolFindFirstOrThrowArgs>(args?: SelectSubset<T, EnterpriseQuotaPoolFindFirstOrThrowArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more EnterpriseQuotaPools that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaPoolFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all EnterpriseQuotaPools
+     * const enterpriseQuotaPools = await prisma.enterpriseQuotaPool.findMany()
+     * 
+     * // Get first 10 EnterpriseQuotaPools
+     * const enterpriseQuotaPools = await prisma.enterpriseQuotaPool.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const enterpriseQuotaPoolWithIdOnly = await prisma.enterpriseQuotaPool.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends EnterpriseQuotaPoolFindManyArgs>(args?: SelectSubset<T, EnterpriseQuotaPoolFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a EnterpriseQuotaPool.
+     * @param {EnterpriseQuotaPoolCreateArgs} args - Arguments to create a EnterpriseQuotaPool.
+     * @example
+     * // Create one EnterpriseQuotaPool
+     * const EnterpriseQuotaPool = await prisma.enterpriseQuotaPool.create({
+     *   data: {
+     *     // ... data to create a EnterpriseQuotaPool
+     *   }
+     * })
+     * 
+     */
+    create<T extends EnterpriseQuotaPoolCreateArgs>(args: SelectSubset<T, EnterpriseQuotaPoolCreateArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many EnterpriseQuotaPools.
+     * @param {EnterpriseQuotaPoolCreateManyArgs} args - Arguments to create many EnterpriseQuotaPools.
+     * @example
+     * // Create many EnterpriseQuotaPools
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends EnterpriseQuotaPoolCreateManyArgs>(args?: SelectSubset<T, EnterpriseQuotaPoolCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many EnterpriseQuotaPools and returns the data saved in the database.
+     * @param {EnterpriseQuotaPoolCreateManyAndReturnArgs} args - Arguments to create many EnterpriseQuotaPools.
+     * @example
+     * // Create many EnterpriseQuotaPools
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many EnterpriseQuotaPools and only return the `id`
+     * const enterpriseQuotaPoolWithIdOnly = await prisma.enterpriseQuotaPool.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends EnterpriseQuotaPoolCreateManyAndReturnArgs>(args?: SelectSubset<T, EnterpriseQuotaPoolCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a EnterpriseQuotaPool.
+     * @param {EnterpriseQuotaPoolDeleteArgs} args - Arguments to delete one EnterpriseQuotaPool.
+     * @example
+     * // Delete one EnterpriseQuotaPool
+     * const EnterpriseQuotaPool = await prisma.enterpriseQuotaPool.delete({
+     *   where: {
+     *     // ... filter to delete one EnterpriseQuotaPool
+     *   }
+     * })
+     * 
+     */
+    delete<T extends EnterpriseQuotaPoolDeleteArgs>(args: SelectSubset<T, EnterpriseQuotaPoolDeleteArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one EnterpriseQuotaPool.
+     * @param {EnterpriseQuotaPoolUpdateArgs} args - Arguments to update one EnterpriseQuotaPool.
+     * @example
+     * // Update one EnterpriseQuotaPool
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends EnterpriseQuotaPoolUpdateArgs>(args: SelectSubset<T, EnterpriseQuotaPoolUpdateArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more EnterpriseQuotaPools.
+     * @param {EnterpriseQuotaPoolDeleteManyArgs} args - Arguments to filter EnterpriseQuotaPools to delete.
+     * @example
+     * // Delete a few EnterpriseQuotaPools
+     * const { count } = await prisma.enterpriseQuotaPool.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends EnterpriseQuotaPoolDeleteManyArgs>(args?: SelectSubset<T, EnterpriseQuotaPoolDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EnterpriseQuotaPools.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaPoolUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many EnterpriseQuotaPools
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends EnterpriseQuotaPoolUpdateManyArgs>(args: SelectSubset<T, EnterpriseQuotaPoolUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EnterpriseQuotaPools and returns the data updated in the database.
+     * @param {EnterpriseQuotaPoolUpdateManyAndReturnArgs} args - Arguments to update many EnterpriseQuotaPools.
+     * @example
+     * // Update many EnterpriseQuotaPools
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more EnterpriseQuotaPools and only return the `id`
+     * const enterpriseQuotaPoolWithIdOnly = await prisma.enterpriseQuotaPool.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends EnterpriseQuotaPoolUpdateManyAndReturnArgs>(args: SelectSubset<T, EnterpriseQuotaPoolUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one EnterpriseQuotaPool.
+     * @param {EnterpriseQuotaPoolUpsertArgs} args - Arguments to update or create a EnterpriseQuotaPool.
+     * @example
+     * // Update or create a EnterpriseQuotaPool
+     * const enterpriseQuotaPool = await prisma.enterpriseQuotaPool.upsert({
+     *   create: {
+     *     // ... data to create a EnterpriseQuotaPool
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the EnterpriseQuotaPool we want to update
+     *   }
+     * })
+     */
+    upsert<T extends EnterpriseQuotaPoolUpsertArgs>(args: SelectSubset<T, EnterpriseQuotaPoolUpsertArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of EnterpriseQuotaPools.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaPoolCountArgs} args - Arguments to filter EnterpriseQuotaPools to count.
+     * @example
+     * // Count the number of EnterpriseQuotaPools
+     * const count = await prisma.enterpriseQuotaPool.count({
+     *   where: {
+     *     // ... the filter for the EnterpriseQuotaPools we want to count
+     *   }
+     * })
+    **/
+    count<T extends EnterpriseQuotaPoolCountArgs>(
+      args?: Subset<T, EnterpriseQuotaPoolCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], EnterpriseQuotaPoolCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a EnterpriseQuotaPool.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaPoolAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends EnterpriseQuotaPoolAggregateArgs>(args: Subset<T, EnterpriseQuotaPoolAggregateArgs>): Prisma.PrismaPromise<GetEnterpriseQuotaPoolAggregateType<T>>
+
+    /**
+     * Group by EnterpriseQuotaPool.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaPoolGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends EnterpriseQuotaPoolGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: EnterpriseQuotaPoolGroupByArgs['orderBy'] }
+        : { orderBy?: EnterpriseQuotaPoolGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, EnterpriseQuotaPoolGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEnterpriseQuotaPoolGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the EnterpriseQuotaPool model
+   */
+  readonly fields: EnterpriseQuotaPoolFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for EnterpriseQuotaPool.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__EnterpriseQuotaPoolClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    workspace<T extends WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WorkspaceDefaultArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the EnterpriseQuotaPool model
+   */
+  interface EnterpriseQuotaPoolFieldRefs {
+    readonly id: FieldRef<"EnterpriseQuotaPool", 'String'>
+    readonly workspaceId: FieldRef<"EnterpriseQuotaPool", 'String'>
+    readonly totalQuota: FieldRef<"EnterpriseQuotaPool", 'Int'>
+    readonly usedQuota: FieldRef<"EnterpriseQuotaPool", 'Int'>
+    readonly periodStart: FieldRef<"EnterpriseQuotaPool", 'DateTime'>
+    readonly periodEnd: FieldRef<"EnterpriseQuotaPool", 'DateTime'>
+    readonly version: FieldRef<"EnterpriseQuotaPool", 'Int'>
+    readonly createdAt: FieldRef<"EnterpriseQuotaPool", 'DateTime'>
+    readonly updatedAt: FieldRef<"EnterpriseQuotaPool", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * EnterpriseQuotaPool findUnique
+   */
+  export type EnterpriseQuotaPoolFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaPool to fetch.
+     */
+    where: EnterpriseQuotaPoolWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaPool findUniqueOrThrow
+   */
+  export type EnterpriseQuotaPoolFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaPool to fetch.
+     */
+    where: EnterpriseQuotaPoolWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaPool findFirst
+   */
+  export type EnterpriseQuotaPoolFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaPool to fetch.
+     */
+    where?: EnterpriseQuotaPoolWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaPools to fetch.
+     */
+    orderBy?: EnterpriseQuotaPoolOrderByWithRelationInput | EnterpriseQuotaPoolOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EnterpriseQuotaPools.
+     */
+    cursor?: EnterpriseQuotaPoolWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaPools from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaPools.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EnterpriseQuotaPools.
+     */
+    distinct?: EnterpriseQuotaPoolScalarFieldEnum | EnterpriseQuotaPoolScalarFieldEnum[]
+  }
+
+  /**
+   * EnterpriseQuotaPool findFirstOrThrow
+   */
+  export type EnterpriseQuotaPoolFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaPool to fetch.
+     */
+    where?: EnterpriseQuotaPoolWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaPools to fetch.
+     */
+    orderBy?: EnterpriseQuotaPoolOrderByWithRelationInput | EnterpriseQuotaPoolOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EnterpriseQuotaPools.
+     */
+    cursor?: EnterpriseQuotaPoolWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaPools from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaPools.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EnterpriseQuotaPools.
+     */
+    distinct?: EnterpriseQuotaPoolScalarFieldEnum | EnterpriseQuotaPoolScalarFieldEnum[]
+  }
+
+  /**
+   * EnterpriseQuotaPool findMany
+   */
+  export type EnterpriseQuotaPoolFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaPools to fetch.
+     */
+    where?: EnterpriseQuotaPoolWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaPools to fetch.
+     */
+    orderBy?: EnterpriseQuotaPoolOrderByWithRelationInput | EnterpriseQuotaPoolOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing EnterpriseQuotaPools.
+     */
+    cursor?: EnterpriseQuotaPoolWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaPools from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaPools.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EnterpriseQuotaPools.
+     */
+    distinct?: EnterpriseQuotaPoolScalarFieldEnum | EnterpriseQuotaPoolScalarFieldEnum[]
+  }
+
+  /**
+   * EnterpriseQuotaPool create
+   */
+  export type EnterpriseQuotaPoolCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * The data needed to create a EnterpriseQuotaPool.
+     */
+    data: XOR<EnterpriseQuotaPoolCreateInput, EnterpriseQuotaPoolUncheckedCreateInput>
+  }
+
+  /**
+   * EnterpriseQuotaPool createMany
+   */
+  export type EnterpriseQuotaPoolCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many EnterpriseQuotaPools.
+     */
+    data: EnterpriseQuotaPoolCreateManyInput | EnterpriseQuotaPoolCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * EnterpriseQuotaPool createManyAndReturn
+   */
+  export type EnterpriseQuotaPoolCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * The data used to create many EnterpriseQuotaPools.
+     */
+    data: EnterpriseQuotaPoolCreateManyInput | EnterpriseQuotaPoolCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * EnterpriseQuotaPool update
+   */
+  export type EnterpriseQuotaPoolUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * The data needed to update a EnterpriseQuotaPool.
+     */
+    data: XOR<EnterpriseQuotaPoolUpdateInput, EnterpriseQuotaPoolUncheckedUpdateInput>
+    /**
+     * Choose, which EnterpriseQuotaPool to update.
+     */
+    where: EnterpriseQuotaPoolWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaPool updateMany
+   */
+  export type EnterpriseQuotaPoolUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update EnterpriseQuotaPools.
+     */
+    data: XOR<EnterpriseQuotaPoolUpdateManyMutationInput, EnterpriseQuotaPoolUncheckedUpdateManyInput>
+    /**
+     * Filter which EnterpriseQuotaPools to update
+     */
+    where?: EnterpriseQuotaPoolWhereInput
+    /**
+     * Limit how many EnterpriseQuotaPools to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * EnterpriseQuotaPool updateManyAndReturn
+   */
+  export type EnterpriseQuotaPoolUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * The data used to update EnterpriseQuotaPools.
+     */
+    data: XOR<EnterpriseQuotaPoolUpdateManyMutationInput, EnterpriseQuotaPoolUncheckedUpdateManyInput>
+    /**
+     * Filter which EnterpriseQuotaPools to update
+     */
+    where?: EnterpriseQuotaPoolWhereInput
+    /**
+     * Limit how many EnterpriseQuotaPools to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * EnterpriseQuotaPool upsert
+   */
+  export type EnterpriseQuotaPoolUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * The filter to search for the EnterpriseQuotaPool to update in case it exists.
+     */
+    where: EnterpriseQuotaPoolWhereUniqueInput
+    /**
+     * In case the EnterpriseQuotaPool found by the `where` argument doesn't exist, create a new EnterpriseQuotaPool with this data.
+     */
+    create: XOR<EnterpriseQuotaPoolCreateInput, EnterpriseQuotaPoolUncheckedCreateInput>
+    /**
+     * In case the EnterpriseQuotaPool was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<EnterpriseQuotaPoolUpdateInput, EnterpriseQuotaPoolUncheckedUpdateInput>
+  }
+
+  /**
+   * EnterpriseQuotaPool delete
+   */
+  export type EnterpriseQuotaPoolDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+    /**
+     * Filter which EnterpriseQuotaPool to delete.
+     */
+    where: EnterpriseQuotaPoolWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaPool deleteMany
+   */
+  export type EnterpriseQuotaPoolDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EnterpriseQuotaPools to delete
+     */
+    where?: EnterpriseQuotaPoolWhereInput
+    /**
+     * Limit how many EnterpriseQuotaPools to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * EnterpriseQuotaPool without action
+   */
+  export type EnterpriseQuotaPoolDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaPool
+     */
+    select?: EnterpriseQuotaPoolSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaPool
+     */
+    omit?: EnterpriseQuotaPoolOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaPoolInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model EnterpriseQuotaConsumption
+   */
+
+  export type AggregateEnterpriseQuotaConsumption = {
+    _count: EnterpriseQuotaConsumptionCountAggregateOutputType | null
+    _avg: EnterpriseQuotaConsumptionAvgAggregateOutputType | null
+    _sum: EnterpriseQuotaConsumptionSumAggregateOutputType | null
+    _min: EnterpriseQuotaConsumptionMinAggregateOutputType | null
+    _max: EnterpriseQuotaConsumptionMaxAggregateOutputType | null
+  }
+
+  export type EnterpriseQuotaConsumptionAvgAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type EnterpriseQuotaConsumptionSumAggregateOutputType = {
+    amount: number | null
+  }
+
+  export type EnterpriseQuotaConsumptionMinAggregateOutputType = {
+    id: string | null
+    workspaceId: string | null
+    userId: string | null
+    operationId: string | null
+    amount: number | null
+    source: string | null
+    status: string | null
+    failureReason: string | null
+    createdAt: Date | null
+  }
+
+  export type EnterpriseQuotaConsumptionMaxAggregateOutputType = {
+    id: string | null
+    workspaceId: string | null
+    userId: string | null
+    operationId: string | null
+    amount: number | null
+    source: string | null
+    status: string | null
+    failureReason: string | null
+    createdAt: Date | null
+  }
+
+  export type EnterpriseQuotaConsumptionCountAggregateOutputType = {
+    id: number
+    workspaceId: number
+    userId: number
+    operationId: number
+    amount: number
+    source: number
+    status: number
+    failureReason: number
+    metadata: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type EnterpriseQuotaConsumptionAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type EnterpriseQuotaConsumptionSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type EnterpriseQuotaConsumptionMinAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    userId?: true
+    operationId?: true
+    amount?: true
+    source?: true
+    status?: true
+    failureReason?: true
+    createdAt?: true
+  }
+
+  export type EnterpriseQuotaConsumptionMaxAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    userId?: true
+    operationId?: true
+    amount?: true
+    source?: true
+    status?: true
+    failureReason?: true
+    createdAt?: true
+  }
+
+  export type EnterpriseQuotaConsumptionCountAggregateInputType = {
+    id?: true
+    workspaceId?: true
+    userId?: true
+    operationId?: true
+    amount?: true
+    source?: true
+    status?: true
+    failureReason?: true
+    metadata?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type EnterpriseQuotaConsumptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EnterpriseQuotaConsumption to aggregate.
+     */
+    where?: EnterpriseQuotaConsumptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaConsumptions to fetch.
+     */
+    orderBy?: EnterpriseQuotaConsumptionOrderByWithRelationInput | EnterpriseQuotaConsumptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: EnterpriseQuotaConsumptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaConsumptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaConsumptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned EnterpriseQuotaConsumptions
+    **/
+    _count?: true | EnterpriseQuotaConsumptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: EnterpriseQuotaConsumptionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: EnterpriseQuotaConsumptionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: EnterpriseQuotaConsumptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: EnterpriseQuotaConsumptionMaxAggregateInputType
+  }
+
+  export type GetEnterpriseQuotaConsumptionAggregateType<T extends EnterpriseQuotaConsumptionAggregateArgs> = {
+        [P in keyof T & keyof AggregateEnterpriseQuotaConsumption]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateEnterpriseQuotaConsumption[P]>
+      : GetScalarType<T[P], AggregateEnterpriseQuotaConsumption[P]>
+  }
+
+
+
+
+  export type EnterpriseQuotaConsumptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EnterpriseQuotaConsumptionWhereInput
+    orderBy?: EnterpriseQuotaConsumptionOrderByWithAggregationInput | EnterpriseQuotaConsumptionOrderByWithAggregationInput[]
+    by: EnterpriseQuotaConsumptionScalarFieldEnum[] | EnterpriseQuotaConsumptionScalarFieldEnum
+    having?: EnterpriseQuotaConsumptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: EnterpriseQuotaConsumptionCountAggregateInputType | true
+    _avg?: EnterpriseQuotaConsumptionAvgAggregateInputType
+    _sum?: EnterpriseQuotaConsumptionSumAggregateInputType
+    _min?: EnterpriseQuotaConsumptionMinAggregateInputType
+    _max?: EnterpriseQuotaConsumptionMaxAggregateInputType
+  }
+
+  export type EnterpriseQuotaConsumptionGroupByOutputType = {
+    id: string
+    workspaceId: string
+    userId: string
+    operationId: string
+    amount: number
+    source: string
+    status: string
+    failureReason: string | null
+    metadata: JsonValue | null
+    createdAt: Date
+    _count: EnterpriseQuotaConsumptionCountAggregateOutputType | null
+    _avg: EnterpriseQuotaConsumptionAvgAggregateOutputType | null
+    _sum: EnterpriseQuotaConsumptionSumAggregateOutputType | null
+    _min: EnterpriseQuotaConsumptionMinAggregateOutputType | null
+    _max: EnterpriseQuotaConsumptionMaxAggregateOutputType | null
+  }
+
+  type GetEnterpriseQuotaConsumptionGroupByPayload<T extends EnterpriseQuotaConsumptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<EnterpriseQuotaConsumptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof EnterpriseQuotaConsumptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], EnterpriseQuotaConsumptionGroupByOutputType[P]>
+            : GetScalarType<T[P], EnterpriseQuotaConsumptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type EnterpriseQuotaConsumptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    userId?: boolean
+    operationId?: boolean
+    amount?: boolean
+    source?: boolean
+    status?: boolean
+    failureReason?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["enterpriseQuotaConsumption"]>
+
+  export type EnterpriseQuotaConsumptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    userId?: boolean
+    operationId?: boolean
+    amount?: boolean
+    source?: boolean
+    status?: boolean
+    failureReason?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["enterpriseQuotaConsumption"]>
+
+  export type EnterpriseQuotaConsumptionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    workspaceId?: boolean
+    userId?: boolean
+    operationId?: boolean
+    amount?: boolean
+    source?: boolean
+    status?: boolean
+    failureReason?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["enterpriseQuotaConsumption"]>
+
+  export type EnterpriseQuotaConsumptionSelectScalar = {
+    id?: boolean
+    workspaceId?: boolean
+    userId?: boolean
+    operationId?: boolean
+    amount?: boolean
+    source?: boolean
+    status?: boolean
+    failureReason?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+  }
+
+  export type EnterpriseQuotaConsumptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "workspaceId" | "userId" | "operationId" | "amount" | "source" | "status" | "failureReason" | "metadata" | "createdAt", ExtArgs["result"]["enterpriseQuotaConsumption"]>
+  export type EnterpriseQuotaConsumptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type EnterpriseQuotaConsumptionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type EnterpriseQuotaConsumptionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $EnterpriseQuotaConsumptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "EnterpriseQuotaConsumption"
+    objects: {
+      workspace: Prisma.$WorkspacePayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      workspaceId: string
+      userId: string
+      operationId: string
+      amount: number
+      source: string
+      status: string
+      failureReason: string | null
+      metadata: Prisma.JsonValue | null
+      createdAt: Date
+    }, ExtArgs["result"]["enterpriseQuotaConsumption"]>
+    composites: {}
+  }
+
+  type EnterpriseQuotaConsumptionGetPayload<S extends boolean | null | undefined | EnterpriseQuotaConsumptionDefaultArgs> = $Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload, S>
+
+  type EnterpriseQuotaConsumptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<EnterpriseQuotaConsumptionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: EnterpriseQuotaConsumptionCountAggregateInputType | true
+    }
+
+  export interface EnterpriseQuotaConsumptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['EnterpriseQuotaConsumption'], meta: { name: 'EnterpriseQuotaConsumption' } }
+    /**
+     * Find zero or one EnterpriseQuotaConsumption that matches the filter.
+     * @param {EnterpriseQuotaConsumptionFindUniqueArgs} args - Arguments to find a EnterpriseQuotaConsumption
+     * @example
+     * // Get one EnterpriseQuotaConsumption
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends EnterpriseQuotaConsumptionFindUniqueArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionFindUniqueArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one EnterpriseQuotaConsumption that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {EnterpriseQuotaConsumptionFindUniqueOrThrowArgs} args - Arguments to find a EnterpriseQuotaConsumption
+     * @example
+     * // Get one EnterpriseQuotaConsumption
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends EnterpriseQuotaConsumptionFindUniqueOrThrowArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EnterpriseQuotaConsumption that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaConsumptionFindFirstArgs} args - Arguments to find a EnterpriseQuotaConsumption
+     * @example
+     * // Get one EnterpriseQuotaConsumption
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends EnterpriseQuotaConsumptionFindFirstArgs>(args?: SelectSubset<T, EnterpriseQuotaConsumptionFindFirstArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EnterpriseQuotaConsumption that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaConsumptionFindFirstOrThrowArgs} args - Arguments to find a EnterpriseQuotaConsumption
+     * @example
+     * // Get one EnterpriseQuotaConsumption
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends EnterpriseQuotaConsumptionFindFirstOrThrowArgs>(args?: SelectSubset<T, EnterpriseQuotaConsumptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more EnterpriseQuotaConsumptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaConsumptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all EnterpriseQuotaConsumptions
+     * const enterpriseQuotaConsumptions = await prisma.enterpriseQuotaConsumption.findMany()
+     * 
+     * // Get first 10 EnterpriseQuotaConsumptions
+     * const enterpriseQuotaConsumptions = await prisma.enterpriseQuotaConsumption.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const enterpriseQuotaConsumptionWithIdOnly = await prisma.enterpriseQuotaConsumption.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends EnterpriseQuotaConsumptionFindManyArgs>(args?: SelectSubset<T, EnterpriseQuotaConsumptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a EnterpriseQuotaConsumption.
+     * @param {EnterpriseQuotaConsumptionCreateArgs} args - Arguments to create a EnterpriseQuotaConsumption.
+     * @example
+     * // Create one EnterpriseQuotaConsumption
+     * const EnterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.create({
+     *   data: {
+     *     // ... data to create a EnterpriseQuotaConsumption
+     *   }
+     * })
+     * 
+     */
+    create<T extends EnterpriseQuotaConsumptionCreateArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionCreateArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many EnterpriseQuotaConsumptions.
+     * @param {EnterpriseQuotaConsumptionCreateManyArgs} args - Arguments to create many EnterpriseQuotaConsumptions.
+     * @example
+     * // Create many EnterpriseQuotaConsumptions
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends EnterpriseQuotaConsumptionCreateManyArgs>(args?: SelectSubset<T, EnterpriseQuotaConsumptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many EnterpriseQuotaConsumptions and returns the data saved in the database.
+     * @param {EnterpriseQuotaConsumptionCreateManyAndReturnArgs} args - Arguments to create many EnterpriseQuotaConsumptions.
+     * @example
+     * // Create many EnterpriseQuotaConsumptions
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many EnterpriseQuotaConsumptions and only return the `id`
+     * const enterpriseQuotaConsumptionWithIdOnly = await prisma.enterpriseQuotaConsumption.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends EnterpriseQuotaConsumptionCreateManyAndReturnArgs>(args?: SelectSubset<T, EnterpriseQuotaConsumptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a EnterpriseQuotaConsumption.
+     * @param {EnterpriseQuotaConsumptionDeleteArgs} args - Arguments to delete one EnterpriseQuotaConsumption.
+     * @example
+     * // Delete one EnterpriseQuotaConsumption
+     * const EnterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.delete({
+     *   where: {
+     *     // ... filter to delete one EnterpriseQuotaConsumption
+     *   }
+     * })
+     * 
+     */
+    delete<T extends EnterpriseQuotaConsumptionDeleteArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionDeleteArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one EnterpriseQuotaConsumption.
+     * @param {EnterpriseQuotaConsumptionUpdateArgs} args - Arguments to update one EnterpriseQuotaConsumption.
+     * @example
+     * // Update one EnterpriseQuotaConsumption
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends EnterpriseQuotaConsumptionUpdateArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionUpdateArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more EnterpriseQuotaConsumptions.
+     * @param {EnterpriseQuotaConsumptionDeleteManyArgs} args - Arguments to filter EnterpriseQuotaConsumptions to delete.
+     * @example
+     * // Delete a few EnterpriseQuotaConsumptions
+     * const { count } = await prisma.enterpriseQuotaConsumption.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends EnterpriseQuotaConsumptionDeleteManyArgs>(args?: SelectSubset<T, EnterpriseQuotaConsumptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EnterpriseQuotaConsumptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaConsumptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many EnterpriseQuotaConsumptions
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends EnterpriseQuotaConsumptionUpdateManyArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EnterpriseQuotaConsumptions and returns the data updated in the database.
+     * @param {EnterpriseQuotaConsumptionUpdateManyAndReturnArgs} args - Arguments to update many EnterpriseQuotaConsumptions.
+     * @example
+     * // Update many EnterpriseQuotaConsumptions
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more EnterpriseQuotaConsumptions and only return the `id`
+     * const enterpriseQuotaConsumptionWithIdOnly = await prisma.enterpriseQuotaConsumption.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends EnterpriseQuotaConsumptionUpdateManyAndReturnArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one EnterpriseQuotaConsumption.
+     * @param {EnterpriseQuotaConsumptionUpsertArgs} args - Arguments to update or create a EnterpriseQuotaConsumption.
+     * @example
+     * // Update or create a EnterpriseQuotaConsumption
+     * const enterpriseQuotaConsumption = await prisma.enterpriseQuotaConsumption.upsert({
+     *   create: {
+     *     // ... data to create a EnterpriseQuotaConsumption
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the EnterpriseQuotaConsumption we want to update
+     *   }
+     * })
+     */
+    upsert<T extends EnterpriseQuotaConsumptionUpsertArgs>(args: SelectSubset<T, EnterpriseQuotaConsumptionUpsertArgs<ExtArgs>>): Prisma__EnterpriseQuotaConsumptionClient<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of EnterpriseQuotaConsumptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaConsumptionCountArgs} args - Arguments to filter EnterpriseQuotaConsumptions to count.
+     * @example
+     * // Count the number of EnterpriseQuotaConsumptions
+     * const count = await prisma.enterpriseQuotaConsumption.count({
+     *   where: {
+     *     // ... the filter for the EnterpriseQuotaConsumptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends EnterpriseQuotaConsumptionCountArgs>(
+      args?: Subset<T, EnterpriseQuotaConsumptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], EnterpriseQuotaConsumptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a EnterpriseQuotaConsumption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaConsumptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends EnterpriseQuotaConsumptionAggregateArgs>(args: Subset<T, EnterpriseQuotaConsumptionAggregateArgs>): Prisma.PrismaPromise<GetEnterpriseQuotaConsumptionAggregateType<T>>
+
+    /**
+     * Group by EnterpriseQuotaConsumption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EnterpriseQuotaConsumptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends EnterpriseQuotaConsumptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: EnterpriseQuotaConsumptionGroupByArgs['orderBy'] }
+        : { orderBy?: EnterpriseQuotaConsumptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, EnterpriseQuotaConsumptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEnterpriseQuotaConsumptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the EnterpriseQuotaConsumption model
+   */
+  readonly fields: EnterpriseQuotaConsumptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for EnterpriseQuotaConsumption.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__EnterpriseQuotaConsumptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    workspace<T extends WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WorkspaceDefaultArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the EnterpriseQuotaConsumption model
+   */
+  interface EnterpriseQuotaConsumptionFieldRefs {
+    readonly id: FieldRef<"EnterpriseQuotaConsumption", 'String'>
+    readonly workspaceId: FieldRef<"EnterpriseQuotaConsumption", 'String'>
+    readonly userId: FieldRef<"EnterpriseQuotaConsumption", 'String'>
+    readonly operationId: FieldRef<"EnterpriseQuotaConsumption", 'String'>
+    readonly amount: FieldRef<"EnterpriseQuotaConsumption", 'Int'>
+    readonly source: FieldRef<"EnterpriseQuotaConsumption", 'String'>
+    readonly status: FieldRef<"EnterpriseQuotaConsumption", 'String'>
+    readonly failureReason: FieldRef<"EnterpriseQuotaConsumption", 'String'>
+    readonly metadata: FieldRef<"EnterpriseQuotaConsumption", 'Json'>
+    readonly createdAt: FieldRef<"EnterpriseQuotaConsumption", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * EnterpriseQuotaConsumption findUnique
+   */
+  export type EnterpriseQuotaConsumptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaConsumption to fetch.
+     */
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaConsumption findUniqueOrThrow
+   */
+  export type EnterpriseQuotaConsumptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaConsumption to fetch.
+     */
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaConsumption findFirst
+   */
+  export type EnterpriseQuotaConsumptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaConsumption to fetch.
+     */
+    where?: EnterpriseQuotaConsumptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaConsumptions to fetch.
+     */
+    orderBy?: EnterpriseQuotaConsumptionOrderByWithRelationInput | EnterpriseQuotaConsumptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EnterpriseQuotaConsumptions.
+     */
+    cursor?: EnterpriseQuotaConsumptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaConsumptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaConsumptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EnterpriseQuotaConsumptions.
+     */
+    distinct?: EnterpriseQuotaConsumptionScalarFieldEnum | EnterpriseQuotaConsumptionScalarFieldEnum[]
+  }
+
+  /**
+   * EnterpriseQuotaConsumption findFirstOrThrow
+   */
+  export type EnterpriseQuotaConsumptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaConsumption to fetch.
+     */
+    where?: EnterpriseQuotaConsumptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaConsumptions to fetch.
+     */
+    orderBy?: EnterpriseQuotaConsumptionOrderByWithRelationInput | EnterpriseQuotaConsumptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EnterpriseQuotaConsumptions.
+     */
+    cursor?: EnterpriseQuotaConsumptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaConsumptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaConsumptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EnterpriseQuotaConsumptions.
+     */
+    distinct?: EnterpriseQuotaConsumptionScalarFieldEnum | EnterpriseQuotaConsumptionScalarFieldEnum[]
+  }
+
+  /**
+   * EnterpriseQuotaConsumption findMany
+   */
+  export type EnterpriseQuotaConsumptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * Filter, which EnterpriseQuotaConsumptions to fetch.
+     */
+    where?: EnterpriseQuotaConsumptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EnterpriseQuotaConsumptions to fetch.
+     */
+    orderBy?: EnterpriseQuotaConsumptionOrderByWithRelationInput | EnterpriseQuotaConsumptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing EnterpriseQuotaConsumptions.
+     */
+    cursor?: EnterpriseQuotaConsumptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EnterpriseQuotaConsumptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EnterpriseQuotaConsumptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EnterpriseQuotaConsumptions.
+     */
+    distinct?: EnterpriseQuotaConsumptionScalarFieldEnum | EnterpriseQuotaConsumptionScalarFieldEnum[]
+  }
+
+  /**
+   * EnterpriseQuotaConsumption create
+   */
+  export type EnterpriseQuotaConsumptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a EnterpriseQuotaConsumption.
+     */
+    data: XOR<EnterpriseQuotaConsumptionCreateInput, EnterpriseQuotaConsumptionUncheckedCreateInput>
+  }
+
+  /**
+   * EnterpriseQuotaConsumption createMany
+   */
+  export type EnterpriseQuotaConsumptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many EnterpriseQuotaConsumptions.
+     */
+    data: EnterpriseQuotaConsumptionCreateManyInput | EnterpriseQuotaConsumptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * EnterpriseQuotaConsumption createManyAndReturn
+   */
+  export type EnterpriseQuotaConsumptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * The data used to create many EnterpriseQuotaConsumptions.
+     */
+    data: EnterpriseQuotaConsumptionCreateManyInput | EnterpriseQuotaConsumptionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * EnterpriseQuotaConsumption update
+   */
+  export type EnterpriseQuotaConsumptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a EnterpriseQuotaConsumption.
+     */
+    data: XOR<EnterpriseQuotaConsumptionUpdateInput, EnterpriseQuotaConsumptionUncheckedUpdateInput>
+    /**
+     * Choose, which EnterpriseQuotaConsumption to update.
+     */
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaConsumption updateMany
+   */
+  export type EnterpriseQuotaConsumptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update EnterpriseQuotaConsumptions.
+     */
+    data: XOR<EnterpriseQuotaConsumptionUpdateManyMutationInput, EnterpriseQuotaConsumptionUncheckedUpdateManyInput>
+    /**
+     * Filter which EnterpriseQuotaConsumptions to update
+     */
+    where?: EnterpriseQuotaConsumptionWhereInput
+    /**
+     * Limit how many EnterpriseQuotaConsumptions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * EnterpriseQuotaConsumption updateManyAndReturn
+   */
+  export type EnterpriseQuotaConsumptionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * The data used to update EnterpriseQuotaConsumptions.
+     */
+    data: XOR<EnterpriseQuotaConsumptionUpdateManyMutationInput, EnterpriseQuotaConsumptionUncheckedUpdateManyInput>
+    /**
+     * Filter which EnterpriseQuotaConsumptions to update
+     */
+    where?: EnterpriseQuotaConsumptionWhereInput
+    /**
+     * Limit how many EnterpriseQuotaConsumptions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * EnterpriseQuotaConsumption upsert
+   */
+  export type EnterpriseQuotaConsumptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the EnterpriseQuotaConsumption to update in case it exists.
+     */
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+    /**
+     * In case the EnterpriseQuotaConsumption found by the `where` argument doesn't exist, create a new EnterpriseQuotaConsumption with this data.
+     */
+    create: XOR<EnterpriseQuotaConsumptionCreateInput, EnterpriseQuotaConsumptionUncheckedCreateInput>
+    /**
+     * In case the EnterpriseQuotaConsumption was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<EnterpriseQuotaConsumptionUpdateInput, EnterpriseQuotaConsumptionUncheckedUpdateInput>
+  }
+
+  /**
+   * EnterpriseQuotaConsumption delete
+   */
+  export type EnterpriseQuotaConsumptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+    /**
+     * Filter which EnterpriseQuotaConsumption to delete.
+     */
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+  }
+
+  /**
+   * EnterpriseQuotaConsumption deleteMany
+   */
+  export type EnterpriseQuotaConsumptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EnterpriseQuotaConsumptions to delete
+     */
+    where?: EnterpriseQuotaConsumptionWhereInput
+    /**
+     * Limit how many EnterpriseQuotaConsumptions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * EnterpriseQuotaConsumption without action
+   */
+  export type EnterpriseQuotaConsumptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EnterpriseQuotaConsumption
+     */
+    select?: EnterpriseQuotaConsumptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EnterpriseQuotaConsumption
+     */
+    omit?: EnterpriseQuotaConsumptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EnterpriseQuotaConsumptionInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -53349,6 +55951,37 @@ export namespace Prisma {
   export type WorkspaceMemberScalarFieldEnum = (typeof WorkspaceMemberScalarFieldEnum)[keyof typeof WorkspaceMemberScalarFieldEnum]
 
 
+  export const EnterpriseQuotaPoolScalarFieldEnum: {
+    id: 'id',
+    workspaceId: 'workspaceId',
+    totalQuota: 'totalQuota',
+    usedQuota: 'usedQuota',
+    periodStart: 'periodStart',
+    periodEnd: 'periodEnd',
+    version: 'version',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type EnterpriseQuotaPoolScalarFieldEnum = (typeof EnterpriseQuotaPoolScalarFieldEnum)[keyof typeof EnterpriseQuotaPoolScalarFieldEnum]
+
+
+  export const EnterpriseQuotaConsumptionScalarFieldEnum: {
+    id: 'id',
+    workspaceId: 'workspaceId',
+    userId: 'userId',
+    operationId: 'operationId',
+    amount: 'amount',
+    source: 'source',
+    status: 'status',
+    failureReason: 'failureReason',
+    metadata: 'metadata',
+    createdAt: 'createdAt'
+  };
+
+  export type EnterpriseQuotaConsumptionScalarFieldEnum = (typeof EnterpriseQuotaConsumptionScalarFieldEnum)[keyof typeof EnterpriseQuotaConsumptionScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -53510,6 +56143,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberListRelationFilter
     ownedWorkspaces?: WorkspaceListRelationFilter
     workspacePublicProfiles?: WorkspacePublicProfileListRelationFilter
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -53544,6 +56178,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberOrderByRelationAggregateInput
     ownedWorkspaces?: WorkspaceOrderByRelationAggregateInput
     workspacePublicProfiles?: WorkspacePublicProfileOrderByRelationAggregateInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -53581,6 +56216,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberListRelationFilter
     ownedWorkspaces?: WorkspaceListRelationFilter
     workspacePublicProfiles?: WorkspacePublicProfileListRelationFilter
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -57029,6 +59665,8 @@ export namespace Prisma {
     members?: WorkspaceMemberListRelationFilter
     domains?: DomainListRelationFilter
     publicProfiles?: WorkspacePublicProfileListRelationFilter
+    quotaPool?: XOR<EnterpriseQuotaPoolNullableScalarRelationFilter, EnterpriseQuotaPoolWhereInput> | null
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
   }
 
   export type WorkspaceOrderByWithRelationInput = {
@@ -57046,6 +59684,8 @@ export namespace Prisma {
     members?: WorkspaceMemberOrderByRelationAggregateInput
     domains?: DomainOrderByRelationAggregateInput
     publicProfiles?: WorkspacePublicProfileOrderByRelationAggregateInput
+    quotaPool?: EnterpriseQuotaPoolOrderByWithRelationInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionOrderByRelationAggregateInput
   }
 
   export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
@@ -57066,6 +59706,8 @@ export namespace Prisma {
     members?: WorkspaceMemberListRelationFilter
     domains?: DomainListRelationFilter
     publicProfiles?: WorkspacePublicProfileListRelationFilter
+    quotaPool?: XOR<EnterpriseQuotaPoolNullableScalarRelationFilter, EnterpriseQuotaPoolWhereInput> | null
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
   }, "id" | "slug">
 
   export type WorkspaceOrderByWithAggregationInput = {
@@ -57194,6 +59836,169 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"WorkspaceMember"> | Date | string
   }
 
+  export type EnterpriseQuotaPoolWhereInput = {
+    AND?: EnterpriseQuotaPoolWhereInput | EnterpriseQuotaPoolWhereInput[]
+    OR?: EnterpriseQuotaPoolWhereInput[]
+    NOT?: EnterpriseQuotaPoolWhereInput | EnterpriseQuotaPoolWhereInput[]
+    id?: UuidFilter<"EnterpriseQuotaPool"> | string
+    workspaceId?: UuidFilter<"EnterpriseQuotaPool"> | string
+    totalQuota?: IntFilter<"EnterpriseQuotaPool"> | number
+    usedQuota?: IntFilter<"EnterpriseQuotaPool"> | number
+    periodStart?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    periodEnd?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    version?: IntFilter<"EnterpriseQuotaPool"> | number
+    createdAt?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    updatedAt?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+  }
+
+  export type EnterpriseQuotaPoolOrderByWithRelationInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    totalQuota?: SortOrder
+    usedQuota?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    version?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    workspace?: WorkspaceOrderByWithRelationInput
+  }
+
+  export type EnterpriseQuotaPoolWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    workspaceId?: string
+    AND?: EnterpriseQuotaPoolWhereInput | EnterpriseQuotaPoolWhereInput[]
+    OR?: EnterpriseQuotaPoolWhereInput[]
+    NOT?: EnterpriseQuotaPoolWhereInput | EnterpriseQuotaPoolWhereInput[]
+    totalQuota?: IntFilter<"EnterpriseQuotaPool"> | number
+    usedQuota?: IntFilter<"EnterpriseQuotaPool"> | number
+    periodStart?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    periodEnd?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    version?: IntFilter<"EnterpriseQuotaPool"> | number
+    createdAt?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    updatedAt?: DateTimeFilter<"EnterpriseQuotaPool"> | Date | string
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+  }, "id" | "workspaceId">
+
+  export type EnterpriseQuotaPoolOrderByWithAggregationInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    totalQuota?: SortOrder
+    usedQuota?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    version?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: EnterpriseQuotaPoolCountOrderByAggregateInput
+    _avg?: EnterpriseQuotaPoolAvgOrderByAggregateInput
+    _max?: EnterpriseQuotaPoolMaxOrderByAggregateInput
+    _min?: EnterpriseQuotaPoolMinOrderByAggregateInput
+    _sum?: EnterpriseQuotaPoolSumOrderByAggregateInput
+  }
+
+  export type EnterpriseQuotaPoolScalarWhereWithAggregatesInput = {
+    AND?: EnterpriseQuotaPoolScalarWhereWithAggregatesInput | EnterpriseQuotaPoolScalarWhereWithAggregatesInput[]
+    OR?: EnterpriseQuotaPoolScalarWhereWithAggregatesInput[]
+    NOT?: EnterpriseQuotaPoolScalarWhereWithAggregatesInput | EnterpriseQuotaPoolScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"EnterpriseQuotaPool"> | string
+    workspaceId?: UuidWithAggregatesFilter<"EnterpriseQuotaPool"> | string
+    totalQuota?: IntWithAggregatesFilter<"EnterpriseQuotaPool"> | number
+    usedQuota?: IntWithAggregatesFilter<"EnterpriseQuotaPool"> | number
+    periodStart?: DateTimeWithAggregatesFilter<"EnterpriseQuotaPool"> | Date | string
+    periodEnd?: DateTimeWithAggregatesFilter<"EnterpriseQuotaPool"> | Date | string
+    version?: IntWithAggregatesFilter<"EnterpriseQuotaPool"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"EnterpriseQuotaPool"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"EnterpriseQuotaPool"> | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionWhereInput = {
+    AND?: EnterpriseQuotaConsumptionWhereInput | EnterpriseQuotaConsumptionWhereInput[]
+    OR?: EnterpriseQuotaConsumptionWhereInput[]
+    NOT?: EnterpriseQuotaConsumptionWhereInput | EnterpriseQuotaConsumptionWhereInput[]
+    id?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    workspaceId?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    userId?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    operationId?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    amount?: IntFilter<"EnterpriseQuotaConsumption"> | number
+    source?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    status?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    failureReason?: StringNullableFilter<"EnterpriseQuotaConsumption"> | string | null
+    metadata?: JsonNullableFilter<"EnterpriseQuotaConsumption">
+    createdAt?: DateTimeFilter<"EnterpriseQuotaConsumption"> | Date | string
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type EnterpriseQuotaConsumptionOrderByWithRelationInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    userId?: SortOrder
+    operationId?: SortOrder
+    amount?: SortOrder
+    source?: SortOrder
+    status?: SortOrder
+    failureReason?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    workspace?: WorkspaceOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type EnterpriseQuotaConsumptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    workspaceId_operationId?: EnterpriseQuotaConsumptionWorkspaceIdOperationIdCompoundUniqueInput
+    AND?: EnterpriseQuotaConsumptionWhereInput | EnterpriseQuotaConsumptionWhereInput[]
+    OR?: EnterpriseQuotaConsumptionWhereInput[]
+    NOT?: EnterpriseQuotaConsumptionWhereInput | EnterpriseQuotaConsumptionWhereInput[]
+    workspaceId?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    userId?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    operationId?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    amount?: IntFilter<"EnterpriseQuotaConsumption"> | number
+    source?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    status?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    failureReason?: StringNullableFilter<"EnterpriseQuotaConsumption"> | string | null
+    metadata?: JsonNullableFilter<"EnterpriseQuotaConsumption">
+    createdAt?: DateTimeFilter<"EnterpriseQuotaConsumption"> | Date | string
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "workspaceId_operationId">
+
+  export type EnterpriseQuotaConsumptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    userId?: SortOrder
+    operationId?: SortOrder
+    amount?: SortOrder
+    source?: SortOrder
+    status?: SortOrder
+    failureReason?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: EnterpriseQuotaConsumptionCountOrderByAggregateInput
+    _avg?: EnterpriseQuotaConsumptionAvgOrderByAggregateInput
+    _max?: EnterpriseQuotaConsumptionMaxOrderByAggregateInput
+    _min?: EnterpriseQuotaConsumptionMinOrderByAggregateInput
+    _sum?: EnterpriseQuotaConsumptionSumOrderByAggregateInput
+  }
+
+  export type EnterpriseQuotaConsumptionScalarWhereWithAggregatesInput = {
+    AND?: EnterpriseQuotaConsumptionScalarWhereWithAggregatesInput | EnterpriseQuotaConsumptionScalarWhereWithAggregatesInput[]
+    OR?: EnterpriseQuotaConsumptionScalarWhereWithAggregatesInput[]
+    NOT?: EnterpriseQuotaConsumptionScalarWhereWithAggregatesInput | EnterpriseQuotaConsumptionScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"EnterpriseQuotaConsumption"> | string
+    workspaceId?: UuidWithAggregatesFilter<"EnterpriseQuotaConsumption"> | string
+    userId?: UuidWithAggregatesFilter<"EnterpriseQuotaConsumption"> | string
+    operationId?: StringWithAggregatesFilter<"EnterpriseQuotaConsumption"> | string
+    amount?: IntWithAggregatesFilter<"EnterpriseQuotaConsumption"> | number
+    source?: StringWithAggregatesFilter<"EnterpriseQuotaConsumption"> | string
+    status?: StringWithAggregatesFilter<"EnterpriseQuotaConsumption"> | string
+    failureReason?: StringNullableWithAggregatesFilter<"EnterpriseQuotaConsumption"> | string | null
+    metadata?: JsonNullableWithAggregatesFilter<"EnterpriseQuotaConsumption">
+    createdAt?: DateTimeWithAggregatesFilter<"EnterpriseQuotaConsumption"> | Date | string
+  }
+
   export type UserCreateInput = {
     id: string
     email: string
@@ -57226,6 +60031,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -57260,6 +60066,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -57294,6 +60101,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -57328,6 +60136,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -61310,6 +64119,8 @@ export namespace Prisma {
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUncheckedCreateInput = {
@@ -61326,6 +64137,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUpdateInput = {
@@ -61342,6 +64155,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateInput = {
@@ -61358,6 +64173,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceCreateManyInput = {
@@ -61499,6 +64316,178 @@ export namespace Prisma {
     removedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaPoolCreateInput = {
+    id?: string
+    totalQuota?: number
+    usedQuota?: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    version?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workspace: WorkspaceCreateNestedOneWithoutQuotaPoolInput
+  }
+
+  export type EnterpriseQuotaPoolUncheckedCreateInput = {
+    id?: string
+    workspaceId: string
+    totalQuota?: number
+    usedQuota?: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    version?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EnterpriseQuotaPoolUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    totalQuota?: IntFieldUpdateOperationsInput | number
+    usedQuota?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneRequiredWithoutQuotaPoolNestedInput
+  }
+
+  export type EnterpriseQuotaPoolUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    totalQuota?: IntFieldUpdateOperationsInput | number
+    usedQuota?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaPoolCreateManyInput = {
+    id?: string
+    workspaceId: string
+    totalQuota?: number
+    usedQuota?: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    version?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EnterpriseQuotaPoolUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    totalQuota?: IntFieldUpdateOperationsInput | number
+    usedQuota?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaPoolUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    totalQuota?: IntFieldUpdateOperationsInput | number
+    usedQuota?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionCreateInput = {
+    id?: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    workspace: WorkspaceCreateNestedOneWithoutEnterpriseQuotaConsumptionsInput
+    user: UserCreateNestedOneWithoutEnterpriseQuotaConsumptionsInput
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedCreateInput = {
+    id?: string
+    workspaceId: string
+    userId: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneRequiredWithoutEnterpriseQuotaConsumptionsNestedInput
+    user?: UserUpdateOneRequiredWithoutEnterpriseQuotaConsumptionsNestedInput
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionCreateManyInput = {
+    id?: string
+    workspaceId: string
+    userId: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UuidFilter<$PrismaModel = never> = {
@@ -61679,6 +64668,12 @@ export namespace Prisma {
     none?: WorkspacePublicProfileWhereInput
   }
 
+  export type EnterpriseQuotaConsumptionListRelationFilter = {
+    every?: EnterpriseQuotaConsumptionWhereInput
+    some?: EnterpriseQuotaConsumptionWhereInput
+    none?: EnterpriseQuotaConsumptionWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -61733,6 +64728,10 @@ export namespace Prisma {
   }
 
   export type WorkspacePublicProfileOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type EnterpriseQuotaConsumptionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -63936,6 +66935,11 @@ export namespace Prisma {
     none?: DomainWhereInput
   }
 
+  export type EnterpriseQuotaPoolNullableScalarRelationFilter = {
+    is?: EnterpriseQuotaPoolWhereInput | null
+    isNot?: EnterpriseQuotaPoolWhereInput | null
+  }
+
   export type DomainOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -64027,6 +67031,104 @@ export namespace Prisma {
     removedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type EnterpriseQuotaPoolCountOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    totalQuota?: SortOrder
+    usedQuota?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    version?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnterpriseQuotaPoolAvgOrderByAggregateInput = {
+    totalQuota?: SortOrder
+    usedQuota?: SortOrder
+    version?: SortOrder
+  }
+
+  export type EnterpriseQuotaPoolMaxOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    totalQuota?: SortOrder
+    usedQuota?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    version?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnterpriseQuotaPoolMinOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    totalQuota?: SortOrder
+    usedQuota?: SortOrder
+    periodStart?: SortOrder
+    periodEnd?: SortOrder
+    version?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnterpriseQuotaPoolSumOrderByAggregateInput = {
+    totalQuota?: SortOrder
+    usedQuota?: SortOrder
+    version?: SortOrder
+  }
+
+  export type EnterpriseQuotaConsumptionWorkspaceIdOperationIdCompoundUniqueInput = {
+    workspaceId: string
+    operationId: string
+  }
+
+  export type EnterpriseQuotaConsumptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    userId?: SortOrder
+    operationId?: SortOrder
+    amount?: SortOrder
+    source?: SortOrder
+    status?: SortOrder
+    failureReason?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnterpriseQuotaConsumptionAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type EnterpriseQuotaConsumptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    userId?: SortOrder
+    operationId?: SortOrder
+    amount?: SortOrder
+    source?: SortOrder
+    status?: SortOrder
+    failureReason?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnterpriseQuotaConsumptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    workspaceId?: SortOrder
+    userId?: SortOrder
+    operationId?: SortOrder
+    amount?: SortOrder
+    source?: SortOrder
+    status?: SortOrder
+    failureReason?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnterpriseQuotaConsumptionSumOrderByAggregateInput = {
+    amount?: SortOrder
   }
 
   export type ProfileCreateNestedOneWithoutUserInput = {
@@ -64144,6 +67246,13 @@ export namespace Prisma {
     connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
   }
 
+  export type EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput> | EnterpriseQuotaConsumptionCreateWithoutUserInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyUserInputEnvelope
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+  }
+
   export type ProfileUncheckedCreateNestedOneWithoutUserInput = {
     create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
@@ -64257,6 +67366,13 @@ export namespace Prisma {
     connectOrCreate?: WorkspacePublicProfileCreateOrConnectWithoutUserInput | WorkspacePublicProfileCreateOrConnectWithoutUserInput[]
     createMany?: WorkspacePublicProfileCreateManyUserInputEnvelope
     connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput> | EnterpriseQuotaConsumptionCreateWithoutUserInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyUserInputEnvelope
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -64509,6 +67625,20 @@ export namespace Prisma {
     deleteMany?: WorkspacePublicProfileScalarWhereInput | WorkspacePublicProfileScalarWhereInput[]
   }
 
+  export type EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput> | EnterpriseQuotaConsumptionCreateWithoutUserInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput[]
+    upsert?: EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutUserInput | EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyUserInputEnvelope
+    set?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    disconnect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    delete?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    update?: EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutUserInput | EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutUserInput | EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
+  }
+
   export type ProfileUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
@@ -64729,6 +67859,20 @@ export namespace Prisma {
     update?: WorkspacePublicProfileUpdateWithWhereUniqueWithoutUserInput | WorkspacePublicProfileUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: WorkspacePublicProfileUpdateManyWithWhereWithoutUserInput | WorkspacePublicProfileUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: WorkspacePublicProfileScalarWhereInput | WorkspacePublicProfileScalarWhereInput[]
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput> | EnterpriseQuotaConsumptionCreateWithoutUserInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput[]
+    upsert?: EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutUserInput | EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyUserInputEnvelope
+    set?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    disconnect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    delete?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    update?: EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutUserInput | EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutUserInput | EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutFreezeRecordsInput = {
@@ -65614,6 +68758,19 @@ export namespace Prisma {
     connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
   }
 
+  export type EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput = {
+    create?: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
+    connectOrCreate?: EnterpriseQuotaPoolCreateOrConnectWithoutWorkspaceInput
+    connect?: EnterpriseQuotaPoolWhereUniqueInput
+  }
+
+  export type EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput> | EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyWorkspaceInputEnvelope
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+  }
+
   export type WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput = {
     create?: XOR<WorkspaceMemberCreateWithoutWorkspaceInput, WorkspaceMemberUncheckedCreateWithoutWorkspaceInput> | WorkspaceMemberCreateWithoutWorkspaceInput[] | WorkspaceMemberUncheckedCreateWithoutWorkspaceInput[]
     connectOrCreate?: WorkspaceMemberCreateOrConnectWithoutWorkspaceInput | WorkspaceMemberCreateOrConnectWithoutWorkspaceInput[]
@@ -65633,6 +68790,19 @@ export namespace Prisma {
     connectOrCreate?: WorkspacePublicProfileCreateOrConnectWithoutWorkspaceInput | WorkspacePublicProfileCreateOrConnectWithoutWorkspaceInput[]
     createMany?: WorkspacePublicProfileCreateManyWorkspaceInputEnvelope
     connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+  }
+
+  export type EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput = {
+    create?: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
+    connectOrCreate?: EnterpriseQuotaPoolCreateOrConnectWithoutWorkspaceInput
+    connect?: EnterpriseQuotaPoolWhereUniqueInput
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput> | EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyWorkspaceInputEnvelope
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
   }
 
   export type UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput = {
@@ -65685,6 +68855,30 @@ export namespace Prisma {
     deleteMany?: WorkspacePublicProfileScalarWhereInput | WorkspacePublicProfileScalarWhereInput[]
   }
 
+  export type EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput = {
+    create?: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
+    connectOrCreate?: EnterpriseQuotaPoolCreateOrConnectWithoutWorkspaceInput
+    upsert?: EnterpriseQuotaPoolUpsertWithoutWorkspaceInput
+    disconnect?: EnterpriseQuotaPoolWhereInput | boolean
+    delete?: EnterpriseQuotaPoolWhereInput | boolean
+    connect?: EnterpriseQuotaPoolWhereUniqueInput
+    update?: XOR<XOR<EnterpriseQuotaPoolUpdateToOneWithWhereWithoutWorkspaceInput, EnterpriseQuotaPoolUpdateWithoutWorkspaceInput>, EnterpriseQuotaPoolUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput> | EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutWorkspaceInput | EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyWorkspaceInputEnvelope
+    set?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    disconnect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    delete?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    update?: EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutWorkspaceInput | EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutWorkspaceInput | EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
+  }
+
   export type WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput = {
     create?: XOR<WorkspaceMemberCreateWithoutWorkspaceInput, WorkspaceMemberUncheckedCreateWithoutWorkspaceInput> | WorkspaceMemberCreateWithoutWorkspaceInput[] | WorkspaceMemberUncheckedCreateWithoutWorkspaceInput[]
     connectOrCreate?: WorkspaceMemberCreateOrConnectWithoutWorkspaceInput | WorkspaceMemberCreateOrConnectWithoutWorkspaceInput[]
@@ -65727,6 +68921,30 @@ export namespace Prisma {
     deleteMany?: WorkspacePublicProfileScalarWhereInput | WorkspacePublicProfileScalarWhereInput[]
   }
 
+  export type EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput = {
+    create?: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
+    connectOrCreate?: EnterpriseQuotaPoolCreateOrConnectWithoutWorkspaceInput
+    upsert?: EnterpriseQuotaPoolUpsertWithoutWorkspaceInput
+    disconnect?: EnterpriseQuotaPoolWhereInput | boolean
+    delete?: EnterpriseQuotaPoolWhereInput | boolean
+    connect?: EnterpriseQuotaPoolWhereUniqueInput
+    update?: XOR<XOR<EnterpriseQuotaPoolUpdateToOneWithWhereWithoutWorkspaceInput, EnterpriseQuotaPoolUpdateWithoutWorkspaceInput>, EnterpriseQuotaPoolUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput> | EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput[] | EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutWorkspaceInput | EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: EnterpriseQuotaConsumptionCreateManyWorkspaceInputEnvelope
+    set?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    disconnect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    delete?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+    update?: EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutWorkspaceInput | EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutWorkspaceInput | EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
+  }
+
   export type WorkspaceCreateNestedOneWithoutMembersInput = {
     create?: XOR<WorkspaceCreateWithoutMembersInput, WorkspaceUncheckedCreateWithoutMembersInput>
     connectOrCreate?: WorkspaceCreateOrConnectWithoutMembersInput
@@ -65753,6 +68971,48 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutWorkspaceMembershipsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutWorkspaceMembershipsInput, UserUpdateWithoutWorkspaceMembershipsInput>, UserUncheckedUpdateWithoutWorkspaceMembershipsInput>
+  }
+
+  export type WorkspaceCreateNestedOneWithoutQuotaPoolInput = {
+    create?: XOR<WorkspaceCreateWithoutQuotaPoolInput, WorkspaceUncheckedCreateWithoutQuotaPoolInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutQuotaPoolInput
+    connect?: WorkspaceWhereUniqueInput
+  }
+
+  export type WorkspaceUpdateOneRequiredWithoutQuotaPoolNestedInput = {
+    create?: XOR<WorkspaceCreateWithoutQuotaPoolInput, WorkspaceUncheckedCreateWithoutQuotaPoolInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutQuotaPoolInput
+    upsert?: WorkspaceUpsertWithoutQuotaPoolInput
+    connect?: WorkspaceWhereUniqueInput
+    update?: XOR<XOR<WorkspaceUpdateToOneWithWhereWithoutQuotaPoolInput, WorkspaceUpdateWithoutQuotaPoolInput>, WorkspaceUncheckedUpdateWithoutQuotaPoolInput>
+  }
+
+  export type WorkspaceCreateNestedOneWithoutEnterpriseQuotaConsumptionsInput = {
+    create?: XOR<WorkspaceCreateWithoutEnterpriseQuotaConsumptionsInput, WorkspaceUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutEnterpriseQuotaConsumptionsInput
+    connect?: WorkspaceWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutEnterpriseQuotaConsumptionsInput = {
+    create?: XOR<UserCreateWithoutEnterpriseQuotaConsumptionsInput, UserUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutEnterpriseQuotaConsumptionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type WorkspaceUpdateOneRequiredWithoutEnterpriseQuotaConsumptionsNestedInput = {
+    create?: XOR<WorkspaceCreateWithoutEnterpriseQuotaConsumptionsInput, WorkspaceUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutEnterpriseQuotaConsumptionsInput
+    upsert?: WorkspaceUpsertWithoutEnterpriseQuotaConsumptionsInput
+    connect?: WorkspaceWhereUniqueInput
+    update?: XOR<XOR<WorkspaceUpdateToOneWithWhereWithoutEnterpriseQuotaConsumptionsInput, WorkspaceUpdateWithoutEnterpriseQuotaConsumptionsInput>, WorkspaceUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutEnterpriseQuotaConsumptionsNestedInput = {
+    create?: XOR<UserCreateWithoutEnterpriseQuotaConsumptionsInput, UserUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutEnterpriseQuotaConsumptionsInput
+    upsert?: UserUpsertWithoutEnterpriseQuotaConsumptionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutEnterpriseQuotaConsumptionsInput, UserUpdateWithoutEnterpriseQuotaConsumptionsInput>, UserUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput>
   }
 
   export type NestedUuidFilter<$PrismaModel = never> = {
@@ -66596,6 +69856,8 @@ export namespace Prisma {
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUncheckedCreateWithoutOwnerInput = {
@@ -66611,6 +69873,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceCreateOrConnectWithoutOwnerInput = {
@@ -66648,6 +69912,40 @@ export namespace Prisma {
 
   export type WorkspacePublicProfileCreateManyUserInputEnvelope = {
     data: WorkspacePublicProfileCreateManyUserInput | WorkspacePublicProfileCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type EnterpriseQuotaConsumptionCreateWithoutUserInput = {
+    id?: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    workspace: WorkspaceCreateNestedOneWithoutEnterpriseQuotaConsumptionsInput
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput = {
+    id?: string
+    workspaceId: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput = {
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+    create: XOR<EnterpriseQuotaConsumptionCreateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput>
+  }
+
+  export type EnterpriseQuotaConsumptionCreateManyUserInputEnvelope = {
+    data: EnterpriseQuotaConsumptionCreateManyUserInput | EnterpriseQuotaConsumptionCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -67254,6 +70552,38 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"WorkspacePublicProfile"> | Date | string
   }
 
+  export type EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutUserInput = {
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+    update: XOR<EnterpriseQuotaConsumptionUpdateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedUpdateWithoutUserInput>
+    create: XOR<EnterpriseQuotaConsumptionCreateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutUserInput>
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutUserInput = {
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+    data: XOR<EnterpriseQuotaConsumptionUpdateWithoutUserInput, EnterpriseQuotaConsumptionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutUserInput = {
+    where: EnterpriseQuotaConsumptionScalarWhereInput
+    data: XOR<EnterpriseQuotaConsumptionUpdateManyMutationInput, EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type EnterpriseQuotaConsumptionScalarWhereInput = {
+    AND?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
+    OR?: EnterpriseQuotaConsumptionScalarWhereInput[]
+    NOT?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
+    id?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    workspaceId?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    userId?: UuidFilter<"EnterpriseQuotaConsumption"> | string
+    operationId?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    amount?: IntFilter<"EnterpriseQuotaConsumption"> | number
+    source?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    status?: StringFilter<"EnterpriseQuotaConsumption"> | string
+    failureReason?: StringNullableFilter<"EnterpriseQuotaConsumption"> | string | null
+    metadata?: JsonNullableFilter<"EnterpriseQuotaConsumption">
+    createdAt?: DateTimeFilter<"EnterpriseQuotaConsumption"> | Date | string
+  }
+
   export type UserCreateWithoutFreezeRecordsInput = {
     id: string
     email: string
@@ -67285,6 +70615,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFreezeRecordsInput = {
@@ -67318,6 +70649,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFreezeRecordsInput = {
@@ -67367,6 +70699,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFreezeRecordsInput = {
@@ -67400,6 +70733,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutUsernameHistoryInput = {
@@ -67433,6 +70767,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUsernameHistoryInput = {
@@ -67466,6 +70801,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUsernameHistoryInput = {
@@ -67515,6 +70851,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUsernameHistoryInput = {
@@ -67548,6 +70885,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutProfileInput = {
@@ -67581,6 +70919,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProfileInput = {
@@ -67614,6 +70953,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProfileInput = {
@@ -67839,6 +71179,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProfileInput = {
@@ -67872,6 +71213,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LinkUpsertWithWhereUniqueWithoutProfileInput = {
@@ -68031,6 +71373,8 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUncheckedCreateWithoutDomainsInput = {
@@ -68046,6 +71390,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceCreateOrConnectWithoutDomainsInput = {
@@ -68077,6 +71423,8 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateWithoutDomainsInput = {
@@ -68092,6 +71440,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceCreateWithoutPublicProfilesInput = {
@@ -68107,6 +71457,8 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUncheckedCreateWithoutPublicProfilesInput = {
@@ -68122,6 +71474,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceCreateOrConnectWithoutPublicProfilesInput = {
@@ -68160,6 +71514,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutWorkspacePublicProfilesInput = {
@@ -68193,6 +71548,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutWorkspacePublicProfilesInput = {
@@ -68224,6 +71580,8 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateWithoutPublicProfilesInput = {
@@ -68239,6 +71597,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type UserUpsertWithoutWorkspacePublicProfilesInput = {
@@ -68283,6 +71643,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWorkspacePublicProfilesInput = {
@@ -68316,6 +71677,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProfileCreateWithoutLinksInput = {
@@ -68806,6 +72168,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutShortLinksInput = {
@@ -68839,6 +72202,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutShortLinksInput = {
@@ -68944,6 +72308,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutShortLinksInput = {
@@ -68977,6 +72342,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ShortLinkClickUpsertWithWhereUniqueWithoutShortLinkInput = {
@@ -69121,6 +72487,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -69154,6 +72521,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -69203,6 +72571,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -69236,6 +72605,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutResetTokensInput = {
@@ -69269,6 +72639,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutResetTokensInput = {
@@ -69302,6 +72673,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutResetTokensInput = {
@@ -69351,6 +72723,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutResetTokensInput = {
@@ -69384,6 +72757,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutVerifyTokensInput = {
@@ -69417,6 +72791,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutVerifyTokensInput = {
@@ -69450,6 +72825,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutVerifyTokensInput = {
@@ -69499,6 +72875,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVerifyTokensInput = {
@@ -69532,6 +72909,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAiUsageLogsInput = {
@@ -69565,6 +72943,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAiUsageLogsInput = {
@@ -69598,6 +72977,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAiUsageLogsInput = {
@@ -69647,6 +73027,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiUsageLogsInput = {
@@ -69680,6 +73061,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProfileCreateWithoutLeadsInput = {
@@ -70176,6 +73558,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProductsInput = {
@@ -70209,6 +73592,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProductsInput = {
@@ -70314,6 +73698,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProductsInput = {
@@ -70347,6 +73732,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LeadUpsertWithWhereUniqueWithoutInterestedProductInput = {
@@ -70396,6 +73782,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutKnowledgeDocsInput = {
@@ -70429,6 +73816,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutKnowledgeDocsInput = {
@@ -70478,6 +73866,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutKnowledgeDocsInput = {
@@ -70511,6 +73900,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAiServiceConfigInput = {
@@ -70544,6 +73934,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAiServiceConfigInput = {
@@ -70577,6 +73968,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAiServiceConfigInput = {
@@ -70626,6 +74018,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiServiceConfigInput = {
@@ -70659,6 +74052,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProfileCreateWithoutAiConversationsInput = {
@@ -71065,6 +74459,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAiCreditAccountInput = {
@@ -71098,6 +74493,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAiCreditAccountInput = {
@@ -71183,6 +74579,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiCreditAccountInput = {
@@ -71216,6 +74613,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AiCreditLedgerUpsertWithWhereUniqueWithoutAccountInput = {
@@ -71334,6 +74732,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMembershipSubscriptionInput = {
@@ -71367,6 +74766,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMembershipSubscriptionInput = {
@@ -71416,6 +74816,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMembershipSubscriptionInput = {
@@ -71449,6 +74850,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutOrdersInput = {
@@ -71482,6 +74884,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrdersInput = {
@@ -71515,6 +74918,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrdersInput = {
@@ -71564,6 +74968,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -71597,6 +75002,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutOwnedWorkspacesInput = {
@@ -71630,6 +75036,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOwnedWorkspacesInput = {
@@ -71663,6 +75070,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOwnedWorkspacesInput = {
@@ -71778,6 +75186,67 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type EnterpriseQuotaPoolCreateWithoutWorkspaceInput = {
+    id?: string
+    totalQuota?: number
+    usedQuota?: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    version?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput = {
+    id?: string
+    totalQuota?: number
+    usedQuota?: number
+    periodStart: Date | string
+    periodEnd: Date | string
+    version?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EnterpriseQuotaPoolCreateOrConnectWithoutWorkspaceInput = {
+    where: EnterpriseQuotaPoolWhereUniqueInput
+    create: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput = {
+    id?: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutEnterpriseQuotaConsumptionsInput
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput = {
+    id?: string
+    userId: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionCreateOrConnectWithoutWorkspaceInput = {
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+    create: XOR<EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type EnterpriseQuotaConsumptionCreateManyWorkspaceInputEnvelope = {
+    data: EnterpriseQuotaConsumptionCreateManyWorkspaceInput | EnterpriseQuotaConsumptionCreateManyWorkspaceInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutOwnedWorkspacesInput = {
     update: XOR<UserUpdateWithoutOwnedWorkspacesInput, UserUncheckedUpdateWithoutOwnedWorkspacesInput>
     create: XOR<UserCreateWithoutOwnedWorkspacesInput, UserUncheckedCreateWithoutOwnedWorkspacesInput>
@@ -71820,6 +75289,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedWorkspacesInput = {
@@ -71853,6 +75323,7 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type WorkspaceMemberUpsertWithWhereUniqueWithoutWorkspaceInput = {
@@ -71923,6 +75394,55 @@ export namespace Prisma {
     data: XOR<WorkspacePublicProfileUpdateManyMutationInput, WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceInput>
   }
 
+  export type EnterpriseQuotaPoolUpsertWithoutWorkspaceInput = {
+    update: XOR<EnterpriseQuotaPoolUpdateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedUpdateWithoutWorkspaceInput>
+    create: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
+    where?: EnterpriseQuotaPoolWhereInput
+  }
+
+  export type EnterpriseQuotaPoolUpdateToOneWithWhereWithoutWorkspaceInput = {
+    where?: EnterpriseQuotaPoolWhereInput
+    data: XOR<EnterpriseQuotaPoolUpdateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type EnterpriseQuotaPoolUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    totalQuota?: IntFieldUpdateOperationsInput | number
+    usedQuota?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaPoolUncheckedUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    totalQuota?: IntFieldUpdateOperationsInput | number
+    usedQuota?: IntFieldUpdateOperationsInput | number
+    periodStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    periodEnd?: DateTimeFieldUpdateOperationsInput | Date | string
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUpsertWithWhereUniqueWithoutWorkspaceInput = {
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+    update: XOR<EnterpriseQuotaConsumptionUpdateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedUpdateWithoutWorkspaceInput>
+    create: XOR<EnterpriseQuotaConsumptionCreateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutWorkspaceInput = {
+    where: EnterpriseQuotaConsumptionWhereUniqueInput
+    data: XOR<EnterpriseQuotaConsumptionUpdateWithoutWorkspaceInput, EnterpriseQuotaConsumptionUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutWorkspaceInput = {
+    where: EnterpriseQuotaConsumptionScalarWhereInput
+    data: XOR<EnterpriseQuotaConsumptionUpdateManyMutationInput, EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceInput>
+  }
+
   export type WorkspaceCreateWithoutMembersInput = {
     id?: string
     name: string
@@ -71936,6 +75456,8 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceUncheckedCreateWithoutMembersInput = {
@@ -71951,6 +75473,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
   export type WorkspaceCreateOrConnectWithoutMembersInput = {
@@ -71989,6 +75513,7 @@ export namespace Prisma {
     orders?: OrderCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
@@ -72022,6 +75547,7 @@ export namespace Prisma {
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutWorkspaceMembershipsInput = {
@@ -72053,6 +75579,8 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateWithoutMembersInput = {
@@ -72068,6 +75596,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type UserUpsertWithoutWorkspaceMembershipsInput = {
@@ -72112,6 +75642,7 @@ export namespace Prisma {
     orders?: OrderUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
@@ -72143,6 +75674,327 @@ export namespace Prisma {
     aiCreditAccount?: AiCreditAccountUncheckedUpdateOneWithoutUserNestedInput
     membershipSubscription?: MembershipSubscriptionUncheckedUpdateOneWithoutUserNestedInput
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
+    ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type WorkspaceCreateWithoutQuotaPoolInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
+    members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUncheckedCreateWithoutQuotaPoolInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    ownerId: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceCreateOrConnectWithoutQuotaPoolInput = {
+    where: WorkspaceWhereUniqueInput
+    create: XOR<WorkspaceCreateWithoutQuotaPoolInput, WorkspaceUncheckedCreateWithoutQuotaPoolInput>
+  }
+
+  export type WorkspaceUpsertWithoutQuotaPoolInput = {
+    update: XOR<WorkspaceUpdateWithoutQuotaPoolInput, WorkspaceUncheckedUpdateWithoutQuotaPoolInput>
+    create: XOR<WorkspaceCreateWithoutQuotaPoolInput, WorkspaceUncheckedCreateWithoutQuotaPoolInput>
+    where?: WorkspaceWhereInput
+  }
+
+  export type WorkspaceUpdateToOneWithWhereWithoutQuotaPoolInput = {
+    where?: WorkspaceWhereInput
+    data: XOR<WorkspaceUpdateWithoutQuotaPoolInput, WorkspaceUncheckedUpdateWithoutQuotaPoolInput>
+  }
+
+  export type WorkspaceUpdateWithoutQuotaPoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+    members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceUncheckedUpdateWithoutQuotaPoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceCreateWithoutEnterpriseQuotaConsumptionsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
+    members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    ownerId: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
+  }
+
+  export type WorkspaceCreateOrConnectWithoutEnterpriseQuotaConsumptionsInput = {
+    where: WorkspaceWhereUniqueInput
+    create: XOR<WorkspaceCreateWithoutEnterpriseQuotaConsumptionsInput, WorkspaceUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+  }
+
+  export type UserCreateWithoutEnterpriseQuotaConsumptionsInput = {
+    id: string
+    email: string
+    passwordHash: string
+    emailVerified?: boolean
+    frozenReason?: string | null
+    frozenAt?: Date | string | null
+    usernameChanges?: number
+    role?: string
+    isSystem?: boolean
+    accountStatus?: string
+    deactivatedAt?: Date | string | null
+    deactivationReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    usernameHistory?: UsernameHistoryCreateNestedManyWithoutUserInput
+    freezeRecords?: FreezeRecordCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    resetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    verifyTokens?: EmailVerificationTokenCreateNestedManyWithoutUserInput
+    aiUsageLogs?: AiUsageLogCreateNestedManyWithoutUserInput
+    shortLinks?: ShortLinkCreateNestedManyWithoutUserInput
+    products?: ProductCreateNestedManyWithoutUserInput
+    knowledgeDocs?: KnowledgeDocCreateNestedManyWithoutUserInput
+    aiServiceConfig?: AiServiceConfigCreateNestedOneWithoutUserInput
+    aiCreditAccount?: AiCreditAccountCreateNestedOneWithoutUserInput
+    membershipSubscription?: MembershipSubscriptionCreateNestedOneWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutUserInput
+    workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
+    ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput = {
+    id: string
+    email: string
+    passwordHash: string
+    emailVerified?: boolean
+    frozenReason?: string | null
+    frozenAt?: Date | string | null
+    usernameChanges?: number
+    role?: string
+    isSystem?: boolean
+    accountStatus?: string
+    deactivatedAt?: Date | string | null
+    deactivationReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    usernameHistory?: UsernameHistoryUncheckedCreateNestedManyWithoutUserInput
+    freezeRecords?: FreezeRecordUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    resetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    verifyTokens?: EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
+    aiUsageLogs?: AiUsageLogUncheckedCreateNestedManyWithoutUserInput
+    shortLinks?: ShortLinkUncheckedCreateNestedManyWithoutUserInput
+    products?: ProductUncheckedCreateNestedManyWithoutUserInput
+    knowledgeDocs?: KnowledgeDocUncheckedCreateNestedManyWithoutUserInput
+    aiServiceConfig?: AiServiceConfigUncheckedCreateNestedOneWithoutUserInput
+    aiCreditAccount?: AiCreditAccountUncheckedCreateNestedOneWithoutUserInput
+    membershipSubscription?: MembershipSubscriptionUncheckedCreateNestedOneWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutUserInput
+    workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+    ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutEnterpriseQuotaConsumptionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutEnterpriseQuotaConsumptionsInput, UserUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+  }
+
+  export type WorkspaceUpsertWithoutEnterpriseQuotaConsumptionsInput = {
+    update: XOR<WorkspaceUpdateWithoutEnterpriseQuotaConsumptionsInput, WorkspaceUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput>
+    create: XOR<WorkspaceCreateWithoutEnterpriseQuotaConsumptionsInput, WorkspaceUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+    where?: WorkspaceWhereInput
+  }
+
+  export type WorkspaceUpdateToOneWithWhereWithoutEnterpriseQuotaConsumptionsInput = {
+    where?: WorkspaceWhereInput
+    data: XOR<WorkspaceUpdateWithoutEnterpriseQuotaConsumptionsInput, WorkspaceUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput>
+  }
+
+  export type WorkspaceUpdateWithoutEnterpriseQuotaConsumptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+    members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
+  }
+
+  export type UserUpsertWithoutEnterpriseQuotaConsumptionsInput = {
+    update: XOR<UserUpdateWithoutEnterpriseQuotaConsumptionsInput, UserUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput>
+    create: XOR<UserCreateWithoutEnterpriseQuotaConsumptionsInput, UserUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutEnterpriseQuotaConsumptionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutEnterpriseQuotaConsumptionsInput, UserUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput>
+  }
+
+  export type UserUpdateWithoutEnterpriseQuotaConsumptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    frozenReason?: NullableStringFieldUpdateOperationsInput | string | null
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    usernameChanges?: IntFieldUpdateOperationsInput | number
+    role?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    accountStatus?: StringFieldUpdateOperationsInput | string
+    deactivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deactivationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    usernameHistory?: UsernameHistoryUpdateManyWithoutUserNestedInput
+    freezeRecords?: FreezeRecordUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    resetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    verifyTokens?: EmailVerificationTokenUpdateManyWithoutUserNestedInput
+    aiUsageLogs?: AiUsageLogUpdateManyWithoutUserNestedInput
+    shortLinks?: ShortLinkUpdateManyWithoutUserNestedInput
+    products?: ProductUpdateManyWithoutUserNestedInput
+    knowledgeDocs?: KnowledgeDocUpdateManyWithoutUserNestedInput
+    aiServiceConfig?: AiServiceConfigUpdateOneWithoutUserNestedInput
+    aiCreditAccount?: AiCreditAccountUpdateOneWithoutUserNestedInput
+    membershipSubscription?: MembershipSubscriptionUpdateOneWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutUserNestedInput
+    workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
+    ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    frozenReason?: NullableStringFieldUpdateOperationsInput | string | null
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    usernameChanges?: IntFieldUpdateOperationsInput | number
+    role?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    accountStatus?: StringFieldUpdateOperationsInput | string
+    deactivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deactivationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    usernameHistory?: UsernameHistoryUncheckedUpdateManyWithoutUserNestedInput
+    freezeRecords?: FreezeRecordUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    resetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    verifyTokens?: EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+    aiUsageLogs?: AiUsageLogUncheckedUpdateManyWithoutUserNestedInput
+    shortLinks?: ShortLinkUncheckedUpdateManyWithoutUserNestedInput
+    products?: ProductUncheckedUpdateManyWithoutUserNestedInput
+    knowledgeDocs?: KnowledgeDocUncheckedUpdateManyWithoutUserNestedInput
+    aiServiceConfig?: AiServiceConfigUncheckedUpdateOneWithoutUserNestedInput
+    aiCreditAccount?: AiCreditAccountUncheckedUpdateOneWithoutUserNestedInput
+    membershipSubscription?: MembershipSubscriptionUncheckedUpdateOneWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
+    workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -72308,6 +76160,18 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionCreateManyUserInput = {
+    id?: string
+    workspaceId: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
   }
 
   export type UsernameHistoryUpdateWithoutUserInput = {
@@ -72753,6 +76617,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateWithoutOwnerInput = {
@@ -72768,6 +76634,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type WorkspaceUncheckedUpdateManyWithoutOwnerInput = {
@@ -72807,6 +76675,42 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneRequiredWithoutEnterpriseQuotaConsumptionsNestedInput
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type LinkCreateManyProfileInput = {
@@ -73478,6 +77382,18 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type EnterpriseQuotaConsumptionCreateManyWorkspaceInput = {
+    id?: string
+    userId: string
+    operationId: string
+    amount?: number
+    source: string
+    status?: string
+    failureReason?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
   export type WorkspaceMemberUpdateWithoutWorkspaceInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
@@ -73593,6 +77509,42 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEnterpriseQuotaConsumptionsNestedInput
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    operationId?: StringFieldUpdateOperationsInput | string
+    amount?: IntFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    failureReason?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

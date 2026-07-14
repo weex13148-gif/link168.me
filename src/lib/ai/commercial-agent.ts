@@ -522,7 +522,7 @@ export async function runCommercialAgent(
     appId: resolved.appId,
     apiKey: resolved.apiKey,
     baseUrl: resolved.baseUrl,
-    workspaceId: resolved.workspaceId,
+    workspaceId: resolved.dashscopeWorkspaceId,
     timeoutMs: resolved.timeoutMs,
   }, prompt);
 
