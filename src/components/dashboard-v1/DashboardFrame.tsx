@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import type { DashboardTab, SaveState } from "@/components/dashboard-v1/types";
-import { SHARED_NAV_ITEMS } from "@/components/layout/console-navigation";
+import { PRIMARY_NAV_ITEMS } from "@/components/layout/console-navigation";
 
 // 装修器内部 tab（保留不变，不属于顶层路由导航）
 const primaryItems: Array<{ key: DashboardTab; label: string; icon: typeof Home }> = [
@@ -37,8 +37,8 @@ const primaryItems: Array<{ key: DashboardTab; label: string; icon: typeof Home 
   { key: "account", label: "账户与安全", icon: ShieldCheck },
 ];
 
-// D11: 引用共享导航配置，与 Console/Workbench 一致
-const MODULE_NAV_ITEMS = SHARED_NAV_ITEMS.filter(
+// D11: 引用共享导航配置，与 Console/Workbench 一致（仅一级入口）
+const MODULE_NAV_ITEMS = PRIMARY_NAV_ITEMS.filter(
   (item) => item.status === "live" || item.status === "beta",
 );
 
