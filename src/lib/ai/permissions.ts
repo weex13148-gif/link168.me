@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import crypto from "crypto";
 import { getUserEntitlements } from "@/lib/billing/entitlements";
 import type { PlanCode } from "@/lib/billing/plans";
+import { bindIdempotencyKey } from "@/lib/ai/credits";
 
 // ============================================================================
 // AI 权限与额度服务（单一权威来源：src/lib/billing/plans.ts + entitlements）
@@ -169,12 +170,14 @@ export async function getAiQuota(userId: string): Promise<{
 
 // 消耗额度（使用顺序：套餐月度额度 → Credit）
 // 幂等键防止重复扣减
+// 外部传入 idempotencyKey 时，会绑定到 userId 上下文，防止跨用户复用
 export async function consumeCredit(
   userId: string,
   amount: number,
   referenceType: string,
   referenceId: string,
   metadata?: Record<string, unknown>,
+  idempotencyKey?: string,
 ): Promise<{ success: boolean; reason?: string; balanceAfter?: number; source?: "plan" | "credit" }> {
   const quota = await getAiQuota(userId);
 
@@ -183,7 +186,9 @@ export async function consumeCredit(
   }
 
   const account = await getOrCreateCreditAccount(userId);
-  const idempotencyKey = `${referenceType}:${referenceId}`;
+  const boundKey = idempotencyKey
+    ? bindIdempotencyKey(userId, idempotencyKey, { profileId: metadata?.profileId as string | undefined, conversationId: metadata?.conversationId as string | undefined })
+    : `${referenceType}:${referenceId}`;
 
   // 确定扣减来源：优先套餐额度，其次 Credit
   let source: "plan" | "credit" = "plan";
@@ -203,6 +208,18 @@ export async function consumeCredit(
 
       if (!current) {
         return { success: false, reason: "账户不存在" };
+      }
+
+      // 幂等检查：已存在相同 idempotencyKey 的 consume 记录则视为成功
+      const existing = await tx.aiCreditLedger.findUnique({
+        where: { idempotencyKey: boundKey },
+        select: { id: true, balanceAfter: true, entryType: true },
+      });
+      if (existing) {
+        if (existing.entryType === "consume") {
+          return { success: true, balanceAfter: existing.balanceAfter, source };
+        }
+        return { success: false, reason: "幂等键冲突" };
       }
 
       // 扣减 Credit 余额（如果是 credit 来源）
@@ -225,7 +242,7 @@ export async function consumeCredit(
           entryType: "consume",
           amount: -amount,
           balanceAfter: newBalance,
-          idempotencyKey,
+          idempotencyKey: boundKey,
           referenceType,
           referenceId,
           metadata: metadata as Record<string, never> | undefined,
@@ -246,52 +263,83 @@ export async function consumeCredit(
 }
 
 // 回补额度（调用失败时）
+// 外部传入 idempotencyKey 时，会绑定到 userId 上下文
 export async function refundCredit(
   userId: string,
   amount: number,
   referenceType: string,
   referenceId: string,
   reason?: string,
-): Promise<{ success: boolean; balanceAfter?: number }> {
+  idempotencyKey?: string,
+  metadata?: Record<string, unknown>,
+): Promise<{ success: boolean; balanceAfter?: number; alreadyApplied?: boolean }> {
   const account = await getOrCreateCreditAccount(userId);
-  const idempotencyKey = `refund:${referenceType}:${referenceId}`;
+  const boundKey = idempotencyKey
+    ? bindIdempotencyKey(userId, idempotencyKey, { profileId: metadata?.profileId as string | undefined, conversationId: metadata?.conversationId as string | undefined })
+    : `refund:${referenceType}:${referenceId}`;
 
-  const result = await db.$transaction(async (tx) => {
-    const current = await tx.aiCreditAccount.findUnique({
-      where: { id: account.id },
+  try {
+    const result = await db.$transaction(async (tx) => {
+      const current = await tx.aiCreditAccount.findUnique({
+        where: { id: account.id },
+      });
+
+      if (!current) {
+        return { success: false };
+      }
+
+      // 幂等检查：已存在相同 idempotencyKey 的 refund 记录则视为成功
+      const existing = await tx.aiCreditLedger.findUnique({
+        where: { idempotencyKey: boundKey },
+        select: { id: true, balanceAfter: true, entryType: true },
+      });
+      if (existing) {
+        if (existing.entryType === "refund") {
+          return { success: true, balanceAfter: existing.balanceAfter, alreadyApplied: true };
+        }
+        return { success: false };
+      }
+
+      // 回补 Credit 余额（仅当原消耗来自 credit 时）
+      // 这里简化处理：直接回补到 balance，并记录 refund
+      const newBalance = current.balance + amount;
+
+      await tx.aiCreditAccount.update({
+        where: { id: account.id, version: current.version },
+        data: { balance: newBalance, version: { increment: 1 } },
+      });
+
+      await tx.aiCreditLedger.create({
+        data: {
+          id: crypto.randomUUID(),
+          accountId: account.id,
+          entryType: "refund",
+          amount,
+          balanceAfter: newBalance,
+          idempotencyKey: boundKey,
+          referenceType,
+          referenceId,
+          reason,
+        },
+      });
+
+      return { success: true, balanceAfter: newBalance };
     });
 
-    if (!current) {
-      return { success: false };
+    return result;
+  } catch (e: any) {
+    // 幂等：重复请求视为成功
+    if (e?.code === "P2002" && e?.meta?.target?.includes("idempotencyKey")) {
+      const existing = await db.aiCreditLedger.findUnique({
+        where: { idempotencyKey: boundKey },
+        select: { id: true, balanceAfter: true, entryType: true },
+      });
+      if (existing && existing.entryType === "refund") {
+        return { success: true, balanceAfter: existing.balanceAfter, alreadyApplied: true };
+      }
     }
-
-    // 回补 Credit 余额（仅当原消耗来自 credit 时）
-    // 这里简化处理：直接回补到 balance，并记录 refund
-    const newBalance = current.balance + amount;
-
-    await tx.aiCreditAccount.update({
-      where: { id: account.id, version: current.version },
-      data: { balance: newBalance, version: { increment: 1 } },
-    });
-
-    await tx.aiCreditLedger.create({
-      data: {
-        id: crypto.randomUUID(),
-        accountId: account.id,
-        entryType: "refund",
-        amount,
-        balanceAfter: newBalance,
-        idempotencyKey,
-        referenceType,
-        referenceId,
-        reason,
-      },
-    });
-
-    return { success: true, balanceAfter: newBalance };
-  });
-
-  return result;
+    return { success: false };
+  }
 }
 
 export async function grantCredit(

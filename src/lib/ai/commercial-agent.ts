@@ -3,12 +3,11 @@ import { db } from "@/lib/db";
 import { getConfig } from "@/lib/app-config";
 import { canShowPublicProfile, getActiveRestrictions } from "@/lib/auth";
 import { getUserEntitlements } from "@/lib/billing/entitlements";
+import { AI_CHAT_CREDIT_COST, validateIdempotencyKey, bindIdempotencyKey } from "@/lib/ai/credits";
 import {
-  AI_CHAT_CREDIT_COST,
-  consumeAiCredits,
-  createAiCreditOperationId,
-  refundAiCredits,
-} from "@/lib/ai/credits";
+  consumeCredit,
+  refundCredit,
+} from "@/lib/ai/permissions";
 import {
   detectPromptInjection,
   hasSensitiveContent,
@@ -25,6 +24,7 @@ import { assertAiEntitlement, buildAiUsageMetadata } from "@/lib/ai/entitlement-
 import { createAiTraceContext, logAiTraceInfo, type AiTraceContext } from "@/lib/observability/ai-trace";
 import { recordAiMetrics, recordSafetyRejection } from "@/lib/observability/ai-metrics";
 import { mapProviderErrorToAiCode, type AiErrorCode } from "@/lib/ai/provider-error";
+import { logAiRiskEvent } from "@/lib/ai/risk-log";
 
 export type CommercialAgentKind = "sales" | "customer-service" | "conversion";
 
@@ -53,6 +53,7 @@ type CommercialAgentInput = {
   conversationId?: unknown;
   lead?: LeadInput;
   event?: ConversionEvent;
+  requestId?: unknown;
 };
 
 type AgentAction = {
@@ -326,6 +327,12 @@ export async function runCommercialAgent(
     return { success: false, status: 400, error: "请输入问题。", code: "EMPTY_MESSAGE", traceId: traceCtx.traceId };
   }
 
+  // ===== 幂等键校验 =====
+  const clientIdempotencyKey = validateIdempotencyKey(rawInput.requestId);
+  if (!clientIdempotencyKey) {
+    return { success: false, status: 400, error: "缺少有效的 requestId（幂等键）。", code: "MISSING_IDEMPOTENCY_KEY", traceId: traceCtx.traceId };
+  }
+
   const profile = await db.profile.findUnique({
     where: { username },
     include: {
@@ -335,6 +342,8 @@ export async function runCommercialAgent(
           id: true,
           emailVerified: true,
           aiServiceConfig: true,
+          // 个人 AI 只能读取用户个人归属的产品和知识库。
+          // 通过 profile.user 关系查询已自动限定为当前用户，禁止读取 Workspace 企业数据。
           products: {
             where: { isActive: true, allowAiRecommendation: true },
             orderBy: { sortOrder: "asc" },
@@ -465,15 +474,18 @@ export async function runCommercialAgent(
   }));
   const action = kind === "conversion" ? resolveConversionAction(rawInput.event, products) : { type: "reply" as const };
 
-  const operationId = createAiCreditOperationId();
-  const consumed = await consumeAiCredits({
-    userId: profile.user.id,
-    amount: AI_CHAT_CREDIT_COST,
-    idempotencyKey: `commercial-agent:${operationId}:consume`,
-    referenceType: "commercial_agent",
-    referenceId: conversation.id,
-    reason: `${kind} 访客对话消费`,
-    metadata: buildAiUsageMetadata({
+  // ===== 统一 Credits 消耗（个人 AI 单一模型） =====
+  // 使用 consumeCredit 替代 consumeAiCredits，确保个人 AI 只使用一套额度模型
+  const consumeIdempotencyKey = bindIdempotencyKey(profile.user.id, clientIdempotencyKey, {
+    profileId: profile.id,
+    conversationId: conversation.id,
+  });
+  const consumed = await consumeCredit(
+    profile.user.id,
+    AI_CHAT_CREDIT_COST,
+    "commercial_agent",
+    conversation.id,
+    buildAiUsageMetadata({
       usageType: "visitor_reception",
       assistant: kind,
       provider: "bailian-app",
@@ -481,7 +493,8 @@ export async function runCommercialAgent(
       visitorSessionId,
       extra: { kind, username: profile.username },
     }),
-  });
+    consumeIdempotencyKey,
+  );
   if (!consumed.success) {
     recordAiMetrics({
       traceCtx,
@@ -492,18 +505,47 @@ export async function runCommercialAgent(
       httpStatus: 402,
       assistant: kind,
     });
-    return { success: false, status: 402, error: consumed.error || "主页 AI 额度不足。", code: "AI_CREDITS_EXHAUSTED", traceId: traceCtx.traceId };
+    return { success: false, status: 402, error: consumed.reason || "主页 AI 额度不足。", code: "AI_CREDITS_EXHAUSTED", traceId: traceCtx.traceId };
   }
 
-  await db.aiMessage.create({
-    data: {
-      conversationId: conversation.id,
-      role: "user",
-      content: message,
-      sourceRefs: { kind, event: normalizedEvent(rawInput.event) },
-      creditCost: 0,
-    },
-  });
+  // 保存用户消息（失败需要退款补偿）
+  try {
+    await db.aiMessage.create({
+      data: {
+        conversationId: conversation.id,
+        role: "user",
+        content: message,
+        sourceRefs: { kind, event: normalizedEvent(rawInput.event) },
+        creditCost: 0,
+      },
+    });
+  } catch (dbError) {
+    const refundResult = await refundCredit(
+      profile.user.id,
+      AI_CHAT_CREDIT_COST,
+      "commercial_agent",
+      conversation.id,
+      "写库失败自动退回（用户消息）",
+      consumeIdempotencyKey.replace(":consume", ":refund"),
+      { profileId: profile.id, conversationId: conversation.id },
+    );
+    if (!refundResult.success) {
+      await logAiRiskEvent({
+        userId: profile.user.id,
+        eventType: "refund_failed",
+        assistant: kind,
+        riskLevel: "high",
+        metadata: {
+          reason: "写库失败退款失败（用户消息）",
+          conversationId: conversation.id,
+          traceId: traceCtx.traceId,
+          error: String(dbError),
+        },
+      });
+      return { success: false, status: 500, error: "服务异常且退款处理中，请联系客服。", code: "REFUND_PENDING", traceId: traceCtx.traceId };
+    }
+    return { success: false, status: 500, error: "服务异常，已自动退回额度。", code: "DB_WRITE_FAILED", traceId: traceCtx.traceId };
+  }
 
   const prompt = buildPrompt({
     kind,
@@ -527,15 +569,30 @@ export async function runCommercialAgent(
   }, prompt);
 
   if (!result.ok) {
-    await refundAiCredits({
-      userId: profile.user.id,
-      amount: AI_CHAT_CREDIT_COST,
-      idempotencyKey: `commercial-agent:${operationId}:refund`,
-      referenceType: "commercial_agent",
-      referenceId: conversation.id,
-      reason: "商业 Agent 调用失败自动退回",
-      metadata: { kind, username: profile.username, traceId: traceCtx.traceId },
-    });
+    const refundResult = await refundCredit(
+      profile.user.id,
+      AI_CHAT_CREDIT_COST,
+      "commercial_agent",
+      conversation.id,
+      "商业 Agent 调用失败自动退回",
+      consumeIdempotencyKey.replace(":consume", ":refund"),
+      { profileId: profile.id, conversationId: conversation.id },
+    );
+    if (!refundResult.success) {
+      await logAiRiskEvent({
+        userId: profile.user.id,
+        eventType: "refund_failed",
+        assistant: kind,
+        riskLevel: "high",
+        metadata: {
+          reason: "Provider 失败退款失败",
+          conversationId: conversation.id,
+          traceId: traceCtx.traceId,
+          providerStatus: result.status,
+        },
+      });
+      return { success: false, status: 502, error: "AI 调用失败且退款处理中，请联系客服。", code: "REFUND_PENDING", traceId: traceCtx.traceId };
+    }
     const aiErrorCode: AiErrorCode = mapProviderErrorToAiCode(result.status === 504 ? "TIMEOUT" : "SERVER_ERROR");
     recordAiMetrics({
       traceCtx,
@@ -547,38 +604,121 @@ export async function runCommercialAgent(
       httpStatus: result.status >= 400 ? result.status : 502,
       assistant: kind,
     });
-    return { success: false, status: result.status >= 400 ? result.status : 502, error: "AI 接待暂时不可用，请稍后再试。", code: "AI_PROVIDER_FAILED", traceId: traceCtx.traceId };
+    return { success: false, status: result.status >= 400 ? result.status : 502, error: "AI 接待暂时不可用，已自动退回额度。", code: "AI_PROVIDER_FAILED", traceId: traceCtx.traceId };
   }
 
   const moderated = moderateAiOutput("", result.reply);
   const rawReply = sanitizePublicText(moderated.content) || "抱歉，暂时无法回答这个问题，请联系人工咨询。";
   const reply = addAiDisclaimer(rawReply);
-  await db.aiMessage.create({
-    data: {
-      conversationId: conversation.id,
-      role: "assistant",
-      content: reply,
-      sourceRefs: {
-        kind,
-        productIds: products.map((item) => item.id),
-        knowledgeDocIds: profile.user.knowledgeDocs.map((item) => item.id),
-        requestId: result.requestId || null,
-        traceId: traceCtx.traceId,
-        action,
-      },
-      creditCost: AI_CHAT_CREDIT_COST,
-    },
-  });
 
-  const leadCaptured = serviceConfig.collectLead
-    ? await captureLead({
-        profileId: profile.id,
+  // 输出审核失败时退款
+  if (moderated.blocked) {
+    const refundResult = await refundCredit(
+      profile.user.id,
+      AI_CHAT_CREDIT_COST,
+      "commercial_agent",
+      conversation.id,
+      "输出审核拦截自动退回",
+      consumeIdempotencyKey.replace(":consume", ":refund"),
+      { profileId: profile.id, conversationId: conversation.id },
+    );
+    if (!refundResult.success) {
+      await logAiRiskEvent({
+        userId: profile.user.id,
+        eventType: "refund_failed",
+        assistant: kind,
+        riskLevel: "high",
+        metadata: {
+          reason: "输出审核失败退款失败",
+          conversationId: conversation.id,
+          traceId: traceCtx.traceId,
+        },
+      });
+      return { success: false, status: 400, error: "内容审核未通过且退款处理中，请联系客服。", code: "REFUND_PENDING", traceId: traceCtx.traceId };
+    }
+    recordSafetyRejection({
+      traceCtx,
+      userId: profile.user.id,
+      usageType: "visitor_reception",
+      stage: "output",
+      reason: "moderation_blocked",
+      requestSource: `commercial-agent:${kind}`,
+    });
+    return { success: false, status: 400, error: "内容审核未通过，已自动退回额度。", code: "AI_SAFETY_REJECTED", traceId: traceCtx.traceId };
+  }
+
+  // 保存助手回复（失败需要退款补偿）
+  try {
+    await db.aiMessage.create({
+      data: {
         conversationId: conversation.id,
-        input: rawInput.lead,
-        defaultMessage: message,
-        products,
-      })
-    : false;
+        role: "assistant",
+        content: reply,
+        sourceRefs: {
+          kind,
+          productIds: products.map((item) => item.id),
+          knowledgeDocIds: profile.user.knowledgeDocs.map((item) => item.id),
+          requestId: result.requestId || null,
+          traceId: traceCtx.traceId,
+          action,
+        },
+        creditCost: AI_CHAT_CREDIT_COST,
+      },
+    });
+  } catch (dbError) {
+    const refundResult = await refundCredit(
+      profile.user.id,
+      AI_CHAT_CREDIT_COST,
+      "commercial_agent",
+      conversation.id,
+      "写库失败自动退回（助手回复）",
+      consumeIdempotencyKey.replace(":consume", ":refund"),
+      { profileId: profile.id, conversationId: conversation.id },
+    );
+    if (!refundResult.success) {
+      await logAiRiskEvent({
+        userId: profile.user.id,
+        eventType: "refund_failed",
+        assistant: kind,
+        riskLevel: "high",
+        metadata: {
+          reason: "写库失败退款失败（助手回复）",
+          conversationId: conversation.id,
+          traceId: traceCtx.traceId,
+          error: String(dbError),
+        },
+      });
+      return { success: false, status: 500, error: "服务异常且退款处理中，请联系客服。", code: "REFUND_PENDING", traceId: traceCtx.traceId };
+    }
+    return { success: false, status: 500, error: "服务异常，已自动退回额度。", code: "DB_WRITE_FAILED", traceId: traceCtx.traceId };
+  }
+
+  // 保存线索（失败不阻断成功响应，但记录风险日志）
+  let leadCaptured = false;
+  try {
+    leadCaptured = serviceConfig.collectLead
+      ? await captureLead({
+          profileId: profile.id,
+          conversationId: conversation.id,
+          input: rawInput.lead,
+          defaultMessage: message,
+          products,
+        })
+      : false;
+  } catch (leadError) {
+    await logAiRiskEvent({
+      userId: profile.user.id,
+      eventType: "model_error",
+      assistant: kind,
+      riskLevel: "medium",
+      metadata: {
+        reason: "线索保存失败",
+        conversationId: conversation.id,
+        traceId: traceCtx.traceId,
+        error: String(leadError),
+      },
+    });
+  }
 
   let finalAction: AgentAction = action;
   if (finalAction.type === "reply" && kind === "sales") {
@@ -624,7 +764,7 @@ export async function runCommercialAgent(
       visitorSessionId,
       action: finalAction,
       leadCaptured,
-      creditBalance: consumed.balance,
+      creditBalance: consumed.balanceAfter ?? 0,
       privacyNotice,
       collectLeadEnabled: serviceConfig.collectLead ?? false,
       transferToHumanEnabled: serviceConfig.allowTransferToHuman ?? false,
