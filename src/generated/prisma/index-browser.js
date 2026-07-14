@@ -695,6 +695,34 @@ exports.Prisma.WorkspaceMemberScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.EnterpriseCreditAccountScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  balance: 'balance',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.EnterpriseQuotaScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  userId: 'userId',
+  amount: 'amount',
+  status: 'status',
+  balanceAfter: 'balanceAfter',
+  idempotencyKey: 'idempotencyKey',
+  referenceType: 'referenceType',
+  referenceId: 'referenceId',
+  metadata: 'metadata',
+  reason: 'reason',
+  refundReason: 'refundReason',
+  confirmedAt: 'confirmedAt',
+  refundedAt: 'refundedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -761,7 +789,9 @@ exports.Prisma.ModelName = {
   ShowcasePromptDraft: 'ShowcasePromptDraft',
   ContentModerationRecord: 'ContentModerationRecord',
   Workspace: 'Workspace',
-  WorkspaceMember: 'WorkspaceMember'
+  WorkspaceMember: 'WorkspaceMember',
+  EnterpriseCreditAccount: 'EnterpriseCreditAccount',
+  EnterpriseQuota: 'EnterpriseQuota'
 };
 
 /**
