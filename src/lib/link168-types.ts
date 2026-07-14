@@ -22,9 +22,7 @@ export type Profile = {
 export type ProfileLink = {
   id: string;
   profile_id: string;
-  // link / text / group-title / qr / wechat / shop / booking / map / phone
   type: string;
-  // 组件扩展数据（微信账号、商品价格、预约时间段等）
   payload_json: string | null;
   title: string;
   url: string;
@@ -49,7 +47,7 @@ export type ProfileLead = {
   message: string | null;
   source_component: string | null;
   source_page: string | null;
-  status: "new" | "contacted" | "closed" | "converted" | string;
+  status: "new" | "viewed" | "following_up" | "won" | "closed" | string;
   handler_note: string | null;
   handled_at: string | null;
   created_at: string;

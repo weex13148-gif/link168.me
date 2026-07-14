@@ -63,7 +63,7 @@ const MODULES: ProfileModuleDefinition[] = [
     description: "展示产品信息并收集咨询线索",
     iconName: "Package",
     category: "commerce",
-    free: false,
+    free: true,
   },
   {
     type: "service-card",
@@ -71,7 +71,7 @@ const MODULES: ProfileModuleDefinition[] = [
     description: "展示服务信息并支持咨询或预约",
     iconName: "ConciergeBell",
     category: "commerce",
-    free: false,
+    free: true,
   },
   {
     type: "offer",
@@ -79,7 +79,7 @@ const MODULES: ProfileModuleDefinition[] = [
     description: "展示优惠或报价咨询入口",
     iconName: "Gift",
     category: "commerce",
-    free: false,
+    free: true,
   },
   {
     type: "booking",
@@ -87,7 +87,23 @@ const MODULES: ProfileModuleDefinition[] = [
     description: "接受预约咨询",
     iconName: "Calendar",
     category: "commerce",
-    free: false,
+    free: true,
+  },
+  {
+    type: "quote",
+    label: "报价咨询",
+    description: "接受报价咨询并生成线索",
+    iconName: "ClipboardList",
+    category: "commerce",
+    free: true,
+  },
+  {
+    type: "contact-form",
+    label: "联系表单",
+    description: "收集客户联系信息",
+    iconName: "FileEdit",
+    category: "contact",
+    free: true,
   },
   {
     type: "map",

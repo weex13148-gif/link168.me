@@ -595,6 +595,10 @@ const VALIDATORS: Record<ProfileModuleType, (raw: unknown) => ValidationResult> 
   "product-card": validateProductCardPayload,
   "service-card": validateServiceCardPayload,
   "offer": validateOfferPayload,
+  email: validatePassthrough,
+  address: validatePassthrough,
+  quote: validatePassthrough,
+  "contact-form": validatePassthrough,
 };
 
 export function validateModulePayload(
