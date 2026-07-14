@@ -19,16 +19,9 @@ export async function requireSuperAdmin(request: Request) {
   return null;
 }
 
+// 兼容别名：行为与 requireSuperAdmin 完全一致
 export async function requireAdmin(request: Request) {
-  const user = await getJeepworkSessionUser(request);
-  if (!user) {
-    return NextResponse.json(UNAUTHORIZED, { status: 401 });
-  }
-  // 检查是否为管理员（admin 或 super_admin）
-  if (user.role !== "admin" && user.role !== "super_admin") {
-    return NextResponse.json(FORBIDDEN, { status: 403 });
-  }
-  return null;
+  return requireSuperAdmin(request);
 }
 
 export async function getCurrentAdmin(request: Request) {

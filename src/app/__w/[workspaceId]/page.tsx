@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function EnterpriseHomePage({ params }: Props) {
   const { workspaceId } = await params;
   const hostHeader = await import('next/headers');
-  const host = process.env.NEXT_PUBLIC_APP_URL ? null : (await hostHeader.headers()).get('host');
+  const host = (await hostHeader.headers()).get('host');
   const workspace = await loadWorkspace(workspaceId, host ?? undefined);
   if (!workspace) notFound();
 

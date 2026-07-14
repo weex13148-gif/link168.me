@@ -7,7 +7,7 @@ import { shouldBypassRateLimit } from "@/lib/rate-limit";
 
 export const JEEPWORK_COOKIE_NAME = "link168_admin_session";
 const JEEPWORK_MAX_AGE_SECONDS = 8 * 60 * 60;
-const JEEPWORK_COOKIE_SECURE = process.env.COOKIE_SECURE === "true";
+const JEEPWORK_COOKIE_SECURE = process.env.NODE_ENV === "production" ? true : process.env.COOKIE_SECURE === "true";
 
 const IP_RATE_LIMIT_MAX = 5;
 const IP_RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
@@ -63,7 +63,7 @@ async function getJeepworkUserByToken(token: string | undefined): Promise<{ id: 
     include: { user: { select: { id: true, email: true, role: true } } },
   });
   if (!session?.user) return null;
-  if (session.user.role !== "admin" && session.user.role !== "super_admin") return null;
+  if (session.user.role !== "super_admin") return null;
   return { id: session.user.id, email: session.user.email, role: session.user.role };
 }
 
@@ -82,16 +82,9 @@ async function getUserFromCookiesDirect() {
   return getJeepworkUserByToken(cookieStore.get(JEEPWORK_COOKIE_NAME)?.value);
 }
 
+// 兼容别名：行为与 requireJeepworkSuperAdmin 完全一致
 export async function requireJeepworkAdmin(request: Request): Promise<NextResponse | null> {
-  const user = await getUserFromRequest(request);
-  if (!user) {
-    return adminError("UNAUTHORIZED", "未授权", 401);
-  }
-  // 检查是否为管理员（admin 或 super_admin）
-  if (user.role !== "admin" && user.role !== "super_admin") {
-    return adminError("FORBIDDEN", "权限不足", 403);
-  }
-  return null;
+  return requireJeepworkSuperAdmin(request);
 }
 
 export async function requireJeepworkSuperAdmin(request: Request): Promise<NextResponse | null> {
@@ -117,7 +110,7 @@ export async function getJeepworkPageUser() {
 
 export async function jeepworkPageAdminOnly() {
   const user = await getUserFromCookiesDirect();
-  if (!user) return null;
+  if (!user || user.role !== "super_admin") return null;
   return user;
 }
 
@@ -189,7 +182,7 @@ export async function jeepworkLoginHandler(request: Request, emailRaw: string, p
 
   if (!user) return adminError("BAD_CREDENTIALS", "账号或密码错误", 401);
 
-  const isAdmin = user.role === "admin" || user.role === "super_admin";
+  const isAdmin = user.role === "super_admin";
   const passwordOk = Boolean(user.passwordHash) && (await bcrypt.compare(password, user.passwordHash));
   if (!isAdmin || !passwordOk) return adminError("BAD_CREDENTIALS", "账号或密码错误", 401);
 
