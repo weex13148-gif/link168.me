@@ -195,6 +195,9 @@ export default function AiChatClient({
       .slice(-20)
       .map((m) => ({ role: m.role, content: m.content }));
 
+    // 生成稳定的 requestId 用于幂等
+    const requestId = crypto.randomUUID();
+
     try {
       const res = await fetch("/api/workbench/ai/chat", {
         method: "POST",
@@ -204,6 +207,7 @@ export default function AiChatClient({
           message: text,
           conversationId: conversationId || undefined,
           history,
+          requestId,
         }),
       });
 

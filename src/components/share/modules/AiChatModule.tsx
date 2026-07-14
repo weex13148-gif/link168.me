@@ -3,15 +3,15 @@
 import { useRef, useState } from "react";
 import { Bot, Send, UserRound, Loader2, MessageCircle, Flag, ShieldAlert, X, UserCheck } from "lucide-react";
 
+function makeId() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 type ChatMessage = {
   id: string;
   role: "assistant" | "user" | "system";
   content: string;
 };
-
-function makeId() {
-  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-}
 
 type Props = {
   assistantName?: string;
@@ -53,6 +53,9 @@ export function AiChatModule({
 
     setTimeout(scrollToBottom, 0);
 
+    // 生成稳定的 requestId 用于幂等
+    const requestId = crypto.randomUUID();
+
     try {
       const response = await fetch(`/api/ai/${mode}`, {
         method: "POST",
@@ -61,6 +64,7 @@ export function AiChatModule({
         body: JSON.stringify({
           username,
           message,
+          requestId,
         }),
       });
       const result = await response.json() as { success?: boolean; error?: string; code?: string; data?: { reply?: string } };
