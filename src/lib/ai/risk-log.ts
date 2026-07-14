@@ -7,14 +7,15 @@ import crypto from "crypto";
 
 // ---------- 类型定义 ----------
 export type AiRiskEventType =
-  | "input_blocked"       // 输入审核拦截
-  | "output_blocked"      // 输出审核拦截
-  | "user_ai_restricted"   // 用户AI权限被冻结
-  | "model_error"          // 模型调用异常
-  | "report_received"      // 收到用户举报
-  | "report_confirmed"     // 举报经审核确认
-  | "report_dismissed"     // 举报经审核驳回
-  | "manual_review";       // 管理员主动标记
+  | "input_blocked"          // 输入审核拦截
+  | "output_blocked"         // 输出审核拦截
+  | "user_ai_restricted"      // 用户AI权限被冻结
+  | "model_error"             // 模型调用异常
+  | "report_received"         // 收到用户举报
+  | "report_confirmed"        // 举报经审核确认
+  | "report_dismissed"        // 举报经审核驳回
+  | "manual_review"           // 管理员主动标记
+  | "quota_confirm_error";    // 额度确认失败
 
 export type AiRiskLevel = "low" | "medium" | "high" | "critical";
 

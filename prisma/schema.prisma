@@ -12,10 +12,8 @@ model User {
   email                  String                   @unique
   passwordHash           String                   @map("password_hash")
   emailVerified          Boolean                  @default(false) @map("email_verified")
-  // V2-002: 兼容旧字段（只读，主要冻结依据切换到 FreezeRecord）
   frozenReason           String?                  @map("frozen_reason")
   frozenAt               DateTime?                @map("frozen_at") @db.Timestamptz(6)
-  // V2-003: 允许 Username 主动修改次数（默认1次可用，首次设置不消耗）
   usernameChanges        Int                      @default(1) @map("username_changes")
   role                   String                   @default("user")
   isSystem               Boolean                  @default(false) @map("is_system")
@@ -26,15 +24,12 @@ model User {
   updatedAt              DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
   profile                Profile?
   usernameHistory        UsernameHistory[]
-  // V2-002: 独立冻结记录
   freezeRecords          FreezeRecord[]
   sessions               Session[]
   resetTokens            PasswordResetToken[]
   verifyTokens           EmailVerificationToken[]
   aiUsageLogs            AiUsageLog[]
   shortLinks             ShortLink[]
-  // 客户工作台业务数据（均通过 userId 做租户隔离
-  // AiCreditLedger 通过 AiCreditAccount → User，不单独直连 User
   products               Product[]
   knowledgeDocs          KnowledgeDoc[]
   aiServiceConfig        AiServiceConfig?
@@ -43,6 +38,7 @@ model User {
   orders                 Order[]
   workspaceMemberships   WorkspaceMember[]
   ownedWorkspaces        Workspace[]              @relation("WorkspaceOwner")
+  enterpriseQuotaLogs    EnterpriseQuota[]
 
   @@map("users")
 }
@@ -864,21 +860,21 @@ model ContentModerationRecord {
 // ============================================
 
 model Workspace {
-  id            String   @id @default(uuid()) @db.Uuid
+  id            String                   @id @default(uuid()) @db.Uuid
   name          String
-  slug          String   @unique
+  slug          String                   @unique
   description   String?
-  // personal / team / enterprise
-  workspaceType String   @default("team") @map("workspace_type")
-  planCode      String   @default("free") @map("plan_code")
-  // 拥有者 User ID（不设 unique：一个用户可拥有多个 Workspace）
-  ownerId       String   @map("owner_id") @db.Uuid
-  isActive      Boolean  @default(true) @map("is_active")
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  workspaceType String                   @default("team") @map("workspace_type")
+  planCode      String                   @default("free") @map("plan_code")
+  ownerId       String                   @map("owner_id") @db.Uuid
+  isActive      Boolean                  @default(true) @map("is_active")
+  createdAt     DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  owner   User              @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Restrict)
-  members WorkspaceMember[]
+  owner                User                   @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  members              WorkspaceMember[]
+  creditAccount        EnterpriseCreditAccount?
+  enterpriseQuotaLogs  EnterpriseQuota[]
 
   @@index([isActive, createdAt])
   @@map("workspaces")
@@ -907,4 +903,46 @@ model WorkspaceMember {
   @@index([workspaceId, status])
   @@index([userId, status])
   @@map("workspace_members")
+}
+
+model EnterpriseCreditAccount {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @unique @map("workspace_id") @db.Uuid
+  balance     Int       @default(0)
+  version     Int       @default(0)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  workspace    Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  quotaRecords EnterpriseQuota[]
+
+  @@map("enterprise_credit_accounts")
+}
+
+model EnterpriseQuota {
+  id             String    @id @default(uuid()) @db.Uuid
+  workspaceId    String    @map("workspace_id") @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  amount         Int
+  status         String    @default("pending")
+  balanceAfter   Int       @map("balance_after")
+  idempotencyKey String    @unique @map("idempotency_key")
+  referenceType  String?   @map("reference_type")
+  referenceId    String?   @map("reference_id")
+  metadata       Json?     @db.JsonB
+  reason         String?
+  refundReason   String?   @map("refund_reason")
+  confirmedAt    DateTime? @map("confirmed_at") @db.Timestamptz(6)
+  refundedAt     DateTime? @map("refunded_at") @db.Timestamptz(6)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  account   EnterpriseCreditAccount @relation(fields: [workspaceId], references: [workspaceId], onDelete: Cascade, map: "enterprise_quota_account_fkey")
+  workspace Workspace                @relation(fields: [workspaceId], references: [id], onDelete: Cascade, map: "enterprise_quota_workspace_fkey")
+  user      User                     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "enterprise_quota_user_fkey")
+
+  @@index([workspaceId, createdAt])
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+  @@map("enterprise_quota_records")
 }

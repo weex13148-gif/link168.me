@@ -1,4 +1,5 @@
 import net from "node:net";
+import { db } from "@/lib/db";
 import { getConfig, isAiTester } from "@/lib/app-config";
 import { getUserEntitlements } from "@/lib/billing/entitlements";
 import { DEFAULT_CONFIG, type AiProvider, type AppConfigValues } from "@/lib/app-config-values";
@@ -39,6 +40,9 @@ export type EnterpriseBailianAccess = {
   reason: string | null;
   isTester: boolean;
   isConfigured: boolean;
+  workspaceId?: string;
+  workspaceName?: string;
+  memberRole?: string;
 };
 
 type EnterpriseBailianUser = { id: string; email: string };
@@ -127,32 +131,83 @@ async function getContext(user: EnterpriseBailianUser | null) {
     };
   }
 
-  const [entitlements, tester] = await Promise.all([
+  const [entitlements, tester, workspaceMembership] = await Promise.all([
     getUserEntitlements(user.id),
     isAiTester(user.email),
+    getEnterpriseWorkspaceForUser(user.id),
   ]);
+
   const membershipUsable = entitlements.hasActiveMembership || entitlements.isGracePeriod;
-  const allowed = membershipUsable
+
+  let allowed = membershipUsable
     && entitlements.features.aiEnabled
     && ENTERPRISE_BAILIAN_ALLOWED_PLANS.has(entitlements.planCode);
+
+  let reason: string | null = allowed
+    ? null
+    : entitlements.isGracePeriod
+      ? "当前会员宽限期内 AI 权限不可用，请完成续费后重试。"
+      : `AI 服务需要有效的 Plus、Pro 或企业会员。当前套餐：${entitlements.plan.name}`;
+
+  if (workspaceMembership) {
+    const workspaceAllowed = workspaceMembership.isActive && workspaceMembership.planCode !== "free";
+    if (workspaceAllowed) {
+      allowed = true;
+      reason = null;
+    }
+  }
+
   return {
     user,
     config,
     resolved,
     isTester: tester,
     entitlements,
+    workspace: workspaceMembership || null,
     access: {
       allowed,
-      planCode: entitlements.planCode,
-      reason: allowed
-        ? null
-        : entitlements.isGracePeriod
-          ? "当前会员宽限期内 AI 权限不可用，请完成续费后重试。"
-          : `AI 服务需要有效的 Plus、Pro 或企业会员。当前套餐：${entitlements.plan.name}`,
+      planCode: workspaceMembership?.planCode ?? entitlements.planCode,
+      reason,
       isTester: tester,
       isConfigured: resolved.configured,
+      workspaceId: workspaceMembership?.id,
+      workspaceName: workspaceMembership?.name,
+      memberRole: workspaceMembership?.role,
     } satisfies EnterpriseBailianAccess,
   };
+}
+
+async function getEnterpriseWorkspaceForUser(userId: string): Promise<{
+  id: string;
+  name: string;
+  planCode: string;
+  isActive: boolean;
+  role: string;
+} | null> {
+  try {
+    const member = await db.workspaceMember.findFirst({
+      where: { userId, status: "active" },
+      include: {
+        workspace: {
+          select: { id: true, name: true, planCode: true, isActive: true },
+        },
+      },
+    });
+
+    if (!member || !member.workspace) {
+      return null;
+    }
+
+    return {
+      id: member.workspace.id,
+      name: member.workspace.name,
+      planCode: member.workspace.planCode,
+      isActive: member.workspace.isActive,
+      role: member.role,
+    };
+  } catch {
+    return null;
+  }
 }
 
 export async function getEnterpriseBailianAccess(userId: string, email: string) {
