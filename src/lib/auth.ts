@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 
 export const SESSION_COOKIE_NAME = "link168_session";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
-const SESSION_COOKIE_SECURE = process.env.COOKIE_SECURE === "true";
+const SESSION_COOKIE_SECURE = process.env.NODE_ENV === "production" ? true : process.env.COOKIE_SECURE === "true";
 
 export const ROLE_SUPER_ADMIN = "super_admin";
 export const ROLE_ADMIN = "admin";

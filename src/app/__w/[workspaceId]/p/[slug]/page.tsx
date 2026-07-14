@@ -105,7 +105,7 @@ export default async function WorkspaceEmployeeProfilePage({ params, searchParam
   const { workspaceId, slug } = await params;
   const query = searchParams ? await searchParams : {};
   const hostHeader = await import('next/headers');
-  const host = process.env.NEXT_PUBLIC_APP_URL ? null : (await hostHeader.headers()).get('host');
+  const host = (await hostHeader.headers()).get('host');
 
   if (host) {
     const hostVerified = await assertWorkspacePublicHost(workspaceId, host);
