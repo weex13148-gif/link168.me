@@ -35,6 +35,7 @@ import { DividerModule } from "@/components/share/modules/DividerModule";
 import { CopyTextModule } from "@/components/share/modules/CopyTextModule";
 import { AiChatModule } from "@/components/share/modules/AiChatModule";
 import { ModuleFallback } from "@/components/share/modules/ModuleFallback";
+import { UnifiedLinkIcon } from "@/components/share/UnifiedLinkIcon";
 import BookingModule from "@/components/share/modules/BookingModule";
 import ProductCardModule from "@/components/share/modules/ProductCardModule";
 import ServiceCardModule from "@/components/share/modules/ServiceCardModule";
@@ -68,6 +69,9 @@ export type SharePageLink = {
   description?: string | null;
   url?: string | null;
   icon?: string | null;
+  iconType?: string | null;
+  iconValue?: string | null;
+  iconUrl?: string | null;
   type?: string | null;
   componentType?: string | null;
   payload?: string | null;
@@ -192,20 +196,8 @@ function SafeAvatar({ src, alt, fallbackInitial, className, avatarClassName }: {
   );
 }
 
-function renderLinkIcon(iconValue: string | null | undefined, defaultClass: string): ReactNode {
-  const value = (iconValue || "").trim();
-  if (value.startsWith("http://") || value.startsWith("https://")) {
-    return (
-      <span className={`grid size-9 shrink-0 place-items-center overflow-hidden rounded-xl border border-black/5 ${defaultClass}`}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={value} alt="" className="size-full object-cover" />
-      </span>
-    );
-  }
-  if (value) {
-    return <span className={`grid size-9 shrink-0 place-items-center rounded-xl text-xl ${defaultClass}`}>{value}</span>;
-  }
-  return <span className={`grid size-9 shrink-0 place-items-center rounded-xl ${defaultClass}`}><Globe aria-hidden className="size-5" /></span>;
+function renderLinkIcon(iconType: string | null | undefined, iconValue: string | null | undefined, iconUrl: string | null | undefined, defaultClass: string): ReactNode {
+  return <UnifiedLinkIcon iconType={iconType} iconValue={iconValue} iconUrl={iconUrl} defaultClass={defaultClass} />;
 }
 
 function BrandFoot({ classes }: { classes: ShareThemeClassSet }) {
@@ -332,7 +324,7 @@ function renderLegacyItem(item: SharePageLink, componentType: string, payload: R
       {componentType === "phone" ? <span className="grid size-9 place-items-center rounded-xl bg-[#F3E7D1]"><Phone className="size-4 text-[#8A6A2E]" /></span> : null}
       {componentType === "map" ? <span className="grid size-9 place-items-center rounded-xl bg-[#F3E7D1]"><MapPin className="size-4 text-[#8A6A2E]" /></span> : null}
       {componentType === "shop" || componentType === "booking" ? <span className="grid size-9 place-items-center rounded-xl bg-[#DDE8CD]">{componentType === "booking" ? <CalendarClock className="size-4 text-[#3F5F31]" /> : <ShoppingBag className="size-4 text-[#8A6A2E]" />}</span> : null}
-      {!["phone", "map", "shop", "booking"].includes(componentType) ? renderLinkIcon(item.icon, classes.avatarClassName) : null}
+      {!["phone", "map", "shop", "booking"].includes(componentType) ? renderLinkIcon(item.iconType, item.iconValue, item.iconUrl, classes.avatarClassName) : null}
       <span className="min-w-0 text-left">
         <span className="block truncate font-black">{title}</span>
         {description || !safe.href ? <span className={`mt-0.5 block line-clamp-2 text-xs leading-5 ${safe.href ? classes.subClassName : "text-red-600"}`}>{safe.href ? description : safe.displayFallback}</span> : null}

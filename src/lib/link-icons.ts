@@ -1,144 +1,102 @@
+export type PlatformDefinition = {
+  key: string;
+  name: string;
+  aliases: string[];
+  domains: string[];
+  iconPath: string;
+  enabled: boolean;
+  sortOrder: number;
+};
+
 export type PlatformIcon = {
-  iconType: "emoji";
+  iconType: "emoji" | "platform";
   iconValue: string;
   label: string;
 };
 
-const PLATFORM_ICONS: Array<{ patterns: RegExp[]; icon: PlatformIcon }> = [
-  {
-    patterns: [/weixin\.qq\.com/i, /mp\.weixin\.qq\.com/i, /wechat/i, /微信/i],
-    icon: { iconType: "emoji", iconValue: "💬", label: "微信" },
-  },
-  {
-    patterns: [/weibo\.com/i, /weibo\.cn/i, /微博/i],
-    icon: { iconType: "emoji", iconValue: "📢", label: "微博" },
-  },
-  {
-    patterns: [/douyin\.com/i, /iesdouyin\.com/i, /抖音/i],
-    icon: { iconType: "emoji", iconValue: "🎵", label: "抖音" },
-  },
-  {
-    patterns: [/xiaohongshu\.com/i, /xhslink\.com/i, /小红书/i],
-    icon: { iconType: "emoji", iconValue: "📕", label: "小红书" },
-  },
-  {
-    patterns: [/bilibili\.com/i, /b23\.tv/i, /B站/i, /哔哩哔哩/i],
-    icon: { iconType: "emoji", iconValue: "📺", label: "B站" },
-  },
-  {
-    patterns: [/zhihu\.com/i, /知乎/i],
-    icon: { iconType: "emoji", iconValue: "❓", label: "知乎" },
-  },
-  {
-    patterns: [/github\.com/i, /github\.io/i],
-    icon: { iconType: "emoji", iconValue: "💻", label: "GitHub" },
-  },
-  {
-    patterns: [/taobao\.com/i, /tmall\.com/i, /淘宝/i, /天猫/i],
-    icon: { iconType: "emoji", iconValue: "🛒", label: "淘宝/天猫" },
-  },
-  {
-    patterns: [/jd\.com/i, /京东/i],
-    icon: { iconType: "emoji", iconValue: "📦", label: "京东" },
-  },
-  {
-    patterns: [/pinduoduo\.com/i, /yangkeduo\.com/i, /拼多多/i],
-    icon: { iconType: "emoji", iconValue: "🏪", label: "拼多多" },
-  },
-  {
-    patterns: [/meituan\.com/i, /美团/i],
-    icon: { iconType: "emoji", iconValue: "🍜", label: "美团" },
-  },
-  {
-    patterns: [/dianping\.com/i, /大众点评/i],
-    icon: { iconType: "emoji", iconValue: "⭐", label: "大众点评" },
-  },
-  {
-    patterns: [/baidu\.com/i, /百度/i],
-    icon: { iconType: "emoji", iconValue: "🔍", label: "百度" },
-  },
-  {
-    patterns: [/amap\.com/i, /gaode\.com/i, /高德/i],
-    icon: { iconType: "emoji", iconValue: "📍", label: "高德地图" },
-  },
-  {
-    patterns: [/v\.qq\.com/i, /腾讯视频/i],
-    icon: { iconType: "emoji", iconValue: "🎬", label: "腾讯视频" },
-  },
-  {
-    patterns: [/iqiyi\.com/i, /爱奇艺/i],
-    icon: { iconType: "emoji", iconValue: "🎞️", label: "爱奇艺" },
-  },
-  {
-    patterns: [/youku\.com/i, /优酷/i],
-    icon: { iconType: "emoji", iconValue: "🎥", label: "优酷" },
-  },
-  {
-    patterns: [/mp\.weixin\.qq\.com/i, /公众号/i],
-    icon: { iconType: "emoji", iconValue: "📰", label: "公众号" },
-  },
-  {
-    patterns: [/channels\.weixin\.qq\.com/i, /视频号/i],
-    icon: { iconType: "emoji", iconValue: "📹", label: "视频号" },
-  },
-  {
-    patterns: [/miniprogram/i, /小程序/i],
-    icon: { iconType: "emoji", iconValue: "🧩", label: "小程序" },
-  },
-  {
-    patterns: [/work\.weixin\.qq\.com/i, /企业微信/i, /wework/i],
-    icon: { iconType: "emoji", iconValue: "🏢", label: "企业微信" },
-  },
-  {
-    patterns: [/dingtalk\.com/i, /钉钉/i],
-    icon: { iconType: "emoji", iconValue: "🔔", label: "钉钉" },
-  },
-  {
-    patterns: [/feishu\.cn/i, /larksuite\.com/i, /飞书/i, /lark/i],
-    icon: { iconType: "emoji", iconValue: "🐦", label: "飞书" },
-  },
-  {
-    patterns: [/slack\.com/i],
-    icon: { iconType: "emoji", iconValue: "💼", label: "Slack" },
-  },
-  {
-    patterns: [/twitter\.com/i, /x\.com/i, /t\.co/i],
-    icon: { iconType: "emoji", iconValue: "🐦", label: "Twitter/X" },
-  },
-  {
-    patterns: [/facebook\.com/i, /fb\.com/i],
-    icon: { iconType: "emoji", iconValue: "👤", label: "Facebook" },
-  },
-  {
-    patterns: [/instagram\.com/i, /instagr\.am/i],
-    icon: { iconType: "emoji", iconValue: "📷", label: "Instagram" },
-  },
-  {
-    patterns: [/linkedin\.com/i],
-    icon: { iconType: "emoji", iconValue: "💼", label: "LinkedIn" },
-  },
-  {
-    patterns: [/youtube\.com/i, /youtu\.be/i],
-    icon: { iconType: "emoji", iconValue: "▶️", label: "YouTube" },
-  },
-  {
-    patterns: [/whatsapp\.com/i, /wa\.me/i],
-    icon: { iconType: "emoji", iconValue: "💚", label: "WhatsApp" },
-  },
-  {
-    patterns: [/telegram\.org/i, /t\.me/i],
-    icon: { iconType: "emoji", iconValue: "✈️", label: "Telegram" },
-  },
+export const PLATFORMS: PlatformDefinition[] = [
+  { key: "wechat", name: "微信", aliases: ["微信", "wechat"], domains: ["weixin.qq.com", "mp.weixin.qq.com"], iconPath: "/platform-icons/wechat.svg", enabled: true, sortOrder: 1 },
+  { key: "wechat-work", name: "企业微信", aliases: ["企业微信", "wework"], domains: ["work.weixin.qq.com"], iconPath: "/platform-icons/wechat-work.svg", enabled: true, sortOrder: 2 },
+  { key: "qq", name: "QQ", aliases: ["qq"], domains: ["qq.com", "qzone.qq.com"], iconPath: "/platform-icons/qq.svg", enabled: true, sortOrder: 3 },
+  { key: "wechat-id", name: "微信号", aliases: ["微信号"], domains: [], iconPath: "/platform-icons/wechat-id.svg", enabled: true, sortOrder: 4 },
+  { key: "douyin", name: "抖音", aliases: ["抖音", "douyin"], domains: ["douyin.com", "v.douyin.com", "iesdouyin.com"], iconPath: "/platform-icons/douyin.svg", enabled: true, sortOrder: 5 },
+  { key: "xiaohongshu", name: "小红书", aliases: ["小红书", "xiaohongshu"], domains: ["xiaohongshu.com", "xhslink.com"], iconPath: "/platform-icons/xiaohongshu.svg", enabled: true, sortOrder: 6 },
+  { key: "kuaishou", name: "快手", aliases: ["快手", "kuaishou"], domains: ["kuaishou.com", "gifshow.com"], iconPath: "/platform-icons/kuaishou.svg", enabled: true, sortOrder: 7 },
+  { key: "weibo", name: "微博", aliases: ["微博", "weibo"], domains: ["weibo.com", "weibo.cn"], iconPath: "/platform-icons/weibo.svg", enabled: true, sortOrder: 8 },
+  { key: "bilibili", name: "哔哩哔哩", aliases: ["哔哩哔哩", "bilibili", "B站"], domains: ["bilibili.com", "b23.tv"], iconPath: "/platform-icons/bilibili.svg", enabled: true, sortOrder: 9 },
+  { key: "zhihu", name: "知乎", aliases: ["知乎", "zhihu"], domains: ["zhihu.com"], iconPath: "/platform-icons/zhihu.svg", enabled: true, sortOrder: 10 },
+  { key: "taobao", name: "淘宝", aliases: ["淘宝", "taobao"], domains: ["taobao.com", "2.taobao.com"], iconPath: "/platform-icons/taobao.svg", enabled: true, sortOrder: 11 },
+  { key: "tmall", name: "天猫", aliases: ["天猫", "tmall"], domains: ["tmall.com"], iconPath: "/platform-icons/tmall.svg", enabled: true, sortOrder: 12 },
+  { key: "jd", name: "京东", aliases: ["京东", "jd"], domains: ["jd.com"], iconPath: "/platform-icons/jd.svg", enabled: true, sortOrder: 13 },
+  { key: "pinduoduo", name: "拼多多", aliases: ["拼多多", "pinduoduo"], domains: ["pinduoduo.com", "yangkeduo.com"], iconPath: "/platform-icons/pinduoduo.svg", enabled: true, sortOrder: 14 },
+  { key: "xianyu", name: "闲鱼", aliases: ["闲鱼", "xianyu"], domains: ["2.taobao.com", "goofish.com"], iconPath: "/platform-icons/xianyu.svg", enabled: true, sortOrder: 15 },
+  { key: "meituan", name: "美团", aliases: ["美团", "meituan"], domains: ["meituan.com"], iconPath: "/platform-icons/meituan.svg", enabled: true, sortOrder: 16 },
+  { key: "dianping", name: "大众点评", aliases: ["大众点评", "dianping"], domains: ["dianping.com"], iconPath: "/platform-icons/dianping.svg", enabled: true, sortOrder: 17 },
+  { key: "alipay", name: "支付宝", aliases: ["支付宝", "alipay"], domains: ["alipay.com"], iconPath: "/platform-icons/alipay.svg", enabled: true, sortOrder: 18 },
+  { key: "amap", name: "高德地图", aliases: ["高德地图", "amap", "gaode"], domains: ["amap.com", "gaode.com"], iconPath: "/platform-icons/amap.svg", enabled: true, sortOrder: 19 },
+  { key: "baidu-map", name: "百度地图", aliases: ["百度地图", "baidu map"], domains: ["map.baidu.com"], iconPath: "/platform-icons/baidu-map.svg", enabled: true, sortOrder: 20 },
+  { key: "dingtalk", name: "钉钉", aliases: ["钉钉", "dingtalk"], domains: ["dingtalk.com"], iconPath: "/platform-icons/dingtalk.svg", enabled: true, sortOrder: 21 },
+  { key: "feishu", name: "飞书", aliases: ["飞书", "feishu", "lark"], domains: ["feishu.cn", "larksuite.com"], iconPath: "/platform-icons/feishu.svg", enabled: true, sortOrder: 22 },
+  { key: "github", name: "GitHub", aliases: ["github"], domains: ["github.com", "github.io"], iconPath: "/platform-icons/github.svg", enabled: true, sortOrder: 23 },
+  { key: "gitee", name: "Gitee", aliases: ["gitee", "码云"], domains: ["gitee.com"], iconPath: "/platform-icons/gitee.svg", enabled: true, sortOrder: 24 },
+  { key: "phone", name: "电话", aliases: ["电话", "phone"], domains: [], iconPath: "/platform-icons/phone.svg", enabled: true, sortOrder: 25 },
+  { key: "email", name: "邮箱", aliases: ["邮箱", "email", "mail"], domains: [], iconPath: "/platform-icons/email.svg", enabled: true, sortOrder: 26 },
+  { key: "address", name: "地址", aliases: ["地址", "address"], domains: [], iconPath: "/platform-icons/address.svg", enabled: true, sortOrder: 27 },
+  { key: "website", name: "通用网站", aliases: ["网站", "website"], domains: [], iconPath: "/platform-icons/website.svg", enabled: true, sortOrder: 99 },
 ];
 
+const PLATFORM_EMOJI_FALLBACK: Record<string, string> = {
+  wechat: "💬",
+  "wechat-work": "🏢",
+  qq: "🐧",
+  "wechat-id": "💬",
+  douyin: "🎵",
+  xiaohongshu: "📕",
+  kuaishou: "🎬",
+  weibo: "📢",
+  bilibili: "📺",
+  zhihu: "❓",
+  taobao: "🛒",
+  tmall: "🛍️",
+  jd: "📦",
+  pinduoduo: "🏪",
+  xianyu: "♻️",
+  meituan: "🍜",
+  dianping: "⭐",
+  alipay: "💳",
+  amap: "📍",
+  "baidu-map": "🗺️",
+  dingtalk: "🔔",
+  feishu: "🐦",
+  github: "💻",
+  gitee: "🇨🇳",
+  phone: "☎️",
+  email: "📧",
+  address: "🏠",
+  website: "🔗",
+};
+
 export const DEFAULT_LINK_ICON: PlatformIcon = {
-  iconType: "emoji",
-  iconValue: "🔗",
+  iconType: "platform",
+  iconValue: "website",
   label: "默认链接",
 };
 
-export function getDefaultIconForUrl(url: string): PlatformIcon {
-  if (!url) return DEFAULT_LINK_ICON;
+export function getPlatformByKey(key: string): PlatformDefinition | undefined {
+  return PLATFORMS.find((p) => p.key === key);
+}
+
+export function getPlatformIconUrl(key: string): string {
+  const platform = getPlatformByKey(key);
+  return platform?.iconPath || "/platform-icons/website.svg";
+}
+
+export function getPlatformEmoji(key: string): string {
+  return PLATFORM_EMOJI_FALLBACK[key] || "🔗";
+}
+
+export function detectPlatformFromUrl(url: string): PlatformDefinition | undefined {
+  if (!url) return undefined;
 
   let hostname = "";
   try {
@@ -148,17 +106,52 @@ export function getDefaultIconForUrl(url: string): PlatformIcon {
     hostname = url.toLowerCase();
   }
 
-  for (const platform of PLATFORM_ICONS) {
-    for (const pattern of platform.patterns) {
-      if (pattern.test(hostname) || pattern.test(url)) {
-        return platform.icon;
+  for (const platform of PLATFORMS) {
+    if (!platform.enabled) continue;
+
+    for (const domain of platform.domains) {
+      if (hostname === domain || hostname.endsWith("." + domain)) {
+        return platform;
+      }
+    }
+
+    for (const alias of platform.aliases) {
+      if (url.toLowerCase().includes(alias.toLowerCase())) {
+        return platform;
       }
     }
   }
 
+  return undefined;
+}
+
+export function getDefaultIconForUrl(url: string): PlatformIcon {
+  const platform = detectPlatformFromUrl(url);
+  if (platform) {
+    return { iconType: "platform", iconValue: platform.key, label: platform.name };
+  }
   return DEFAULT_LINK_ICON;
 }
 
+export function searchPlatforms(query: string): PlatformDefinition[] {
+  const q = query.toLowerCase().trim();
+  if (!q) return PLATFORMS.filter((p) => p.enabled).sort((a, b) => a.sortOrder - b.sortOrder);
+
+  return PLATFORMS.filter((p) => {
+    if (!p.enabled) return false;
+    return (
+      p.key.toLowerCase().includes(q) ||
+      p.name.toLowerCase().includes(q) ||
+      p.aliases.some((a) => a.toLowerCase().includes(q)) ||
+      p.domains.some((d) => d.toLowerCase().includes(q))
+    );
+  }).sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
 export function getAllPlatformIcons(): PlatformIcon[] {
-  return PLATFORM_ICONS.map((p) => p.icon);
+  return PLATFORMS.filter((p) => p.enabled).map((p) => ({
+    iconType: "platform" as const,
+    iconValue: p.key,
+    label: p.name,
+  }));
 }

@@ -11,7 +11,7 @@ import { getModuleDefinition } from "@/features/profile-modules/registry";
 
 export const runtime = "nodejs";
 
-const ICON_TYPES = ["default", "emoji", "custom"] as const;
+const ICON_TYPES = ["default", "emoji", "custom", "platform"] as const;
 const COMPONENT_TYPES = [
   "link",
   "text",
@@ -259,7 +259,7 @@ export async function POST(request: Request) {
 
   const iconTypeRaw = typeof body.iconType === "string" ? body.iconType.trim().toLowerCase() : "default";
   const iconType = ICON_TYPES.includes(iconTypeRaw as (typeof ICON_TYPES)[number]) ? iconTypeRaw : "default";
-  const iconValue = iconType === "emoji" ? normalizeNullableString(body.iconValue) : null;
+  const iconValue = (iconType === "emoji" || iconType === "platform") ? normalizeNullableString(body.iconValue) : null;
   const iconUrlRaw = typeof body.iconUrl === "string" ? body.iconUrl.trim() : "";
   const iconUrl = iconType === "custom" ? sanitizePublicUrl(iconUrlRaw).url : null;
 

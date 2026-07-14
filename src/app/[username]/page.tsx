@@ -251,8 +251,6 @@ export default async function PublicProfilePage({ params, searchParams }: Public
   }
 
   const links = profile.links.map((item) => {
-    // D7 读取侧：图标 moderationStatus !== "approved" 时显示占位（不显示原图）
-    // 历史兼容：null / "legacy_approved" 视为 approved
     const iconModerationApproved =
       !item.iconModerationStatus ||
       item.iconModerationStatus === "approved" ||
@@ -265,6 +263,9 @@ export default async function PublicProfilePage({ params, searchParams }: Public
       icon: iconModerationApproved
         ? item.iconUrl || item.iconValue || null
         : item.iconValue || null,
+      iconType: item.iconType || null,
+      iconValue: item.iconValue || null,
+      iconUrl: iconModerationApproved ? item.iconUrl || null : null,
       type: item.iconType || null,
       componentType: item.type || null,
       payload: item.payloadJson || null,

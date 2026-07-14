@@ -12,7 +12,7 @@ export const runtime = "nodejs";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
-const ICON_TYPES = ["default", "emoji", "custom"] as const;
+const ICON_TYPES = ["default", "emoji", "custom", "platform"] as const;
 const COMPONENT_TYPES = [
   "link",
   "text",
@@ -174,7 +174,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   const iconTypeRaw = typeof body.iconType === "string" ? body.iconType.trim().toLowerCase() : existing.iconType;
   const iconType = ICON_TYPES.includes(iconTypeRaw as (typeof ICON_TYPES)[number]) ? iconTypeRaw : "default";
-  const iconValue = iconType === "emoji"
+  const iconValue = (iconType === "emoji" || iconType === "platform")
     ? (body.iconValue !== undefined ? normalizeNullableString(body.iconValue) : existing.iconValue)
     : null;
   const iconUrlRaw = typeof body.iconUrl === "string" ? body.iconUrl.trim() : existing.iconUrl || "";

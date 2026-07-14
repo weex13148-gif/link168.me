@@ -4,8 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ChevronUp, Copy, Eye, EyeOff, Link2, Loader2, Pencil, Plus, Save, Trash2, Upload, X, RefreshCw, PlusCircle, MinusCircle } from "lucide-react";
 import type { DashboardLink, LinkComponentType, LinkDraft } from "@/components/dashboard-v1/types";
 import { emptyLinkDraft, isValidHttpUrl } from "@/components/dashboard-v1/types";
-import { getDefaultIconForUrl } from "@/lib/link-icons";
+import { getDefaultIconForUrl, detectPlatformFromUrl, getPlatformByKey, getPlatformIconUrl, getPlatformEmoji } from "@/lib/link-icons";
 import { AddModuleDrawer } from "@/components/dashboard-v1/AddModuleDrawer";
+import { PlatformIconPicker } from "@/components/dashboard-v1/PlatformIconPicker";
 import { getModuleDefinition, listAllModules } from "@/features/profile-modules";
 import type { ProfileModuleType, CarouselImageItem } from "@/features/profile-modules";
 
@@ -57,6 +58,7 @@ type IconMode = "default" | "emoji" | "custom" | "platform" | "favicon";
 function iconTypeToMode(iconType: string): IconMode {
   if (iconType === "emoji") return "emoji";
   if (iconType === "custom") return "custom";
+  if (iconType === "platform") return "platform";
   return "default";
 }
 
@@ -100,6 +102,10 @@ function LinkIconPreview({ draft, index }: { draft: LinkDraft; index?: number })
   if (draft.iconType === "custom" && draft.iconUrl) {
     return <img src={draft.iconUrl} alt="" className="size-full rounded-xl object-cover" />;
   }
+  if (draft.iconType === "platform" && draft.iconValue) {
+    const platformIconUrl = getPlatformIconUrl(draft.iconValue);
+    return <img src={platformIconUrl} alt="" className="size-full rounded-xl object-contain" />;
+  }
   if (draft.iconType === "emoji" && draft.iconValue) {
     return <span className="text-lg">{draft.iconValue}</span>;
   }
@@ -123,8 +129,12 @@ function IconEditor({ draft, onChange, url, isNew }: { draft: LinkDraft; onChang
 
   useEffect(() => {
     if (mode === "platform" && url) {
-      const icon = getDefaultIconForUrl(url);
-      onChange({ iconType: "emoji", iconValue: icon.iconValue, iconUrl: "" });
+      const platform = detectPlatformFromUrl(url);
+      if (platform) {
+        onChange({ iconType: "platform", iconValue: platform.key, iconUrl: "" });
+      } else {
+        onChange({ iconType: "platform", iconValue: "website", iconUrl: "" });
+      }
     }
   }, [mode, url, onChange]);
 
@@ -195,12 +205,34 @@ function IconEditor({ draft, onChange, url, isNew }: { draft: LinkDraft; onChang
     } else if (newMode === "emoji") {
       onChange({ iconType: "emoji", iconValue: draft.iconValue || "🔗", iconUrl: "" });
     } else if (newMode === "platform") {
-      const icon = getDefaultIconForUrl(url);
-      onChange({ iconType: "emoji", iconValue: icon.iconValue, iconUrl: "" });
+      const platform = detectPlatformFromUrl(url);
+      if (platform) {
+        onChange({ iconType: "platform", iconValue: platform.key, iconUrl: "" });
+      } else {
+        onChange({ iconType: "platform", iconValue: "website", iconUrl: "" });
+      }
     } else if (newMode === "favicon") {
       void handleFaviconFetch();
     } else if (newMode === "custom") {
       fileInputRef.current?.click();
+    }
+  }
+
+  function handlePlatformSelect(platformKey: string) {
+    onChange({ iconType: "platform", iconValue: platformKey, iconUrl: "" });
+  }
+
+  function handlePlatformClear() {
+    onChange({ iconType: "default", iconValue: "", iconUrl: "" });
+    setMode("default");
+  }
+
+  function handlePlatformAutoDetect() {
+    const platform = detectPlatformFromUrl(url);
+    if (platform) {
+      onChange({ iconType: "platform", iconValue: platform.key, iconUrl: "" });
+    } else {
+      onChange({ iconType: "platform", iconValue: "website", iconUrl: "" });
     }
   }
 
@@ -239,14 +271,17 @@ function IconEditor({ draft, onChange, url, isNew }: { draft: LinkDraft; onChang
 
       {mode === "platform" ? (
         <div className="grid gap-2 lg:col-span-2">
-          <span className={labelClass}>平台识别</span>
-          <div className="rounded-xl border border-[var(--ui-line)] bg-white p-3 text-sm ui-muted">
-            {url ? (
-              <span>根据网址自动识别为：<strong className="text-base">{getDefaultIconForUrl(url).iconValue} {getDefaultIconForUrl(url).label}</strong></span>
-            ) : (
-              <span>请先填写网址，系统将自动匹配平台图标。</span>
-            )}
-          </div>
+          <span className={labelClass}>平台图标</span>
+          <PlatformIconPicker
+            value={draft.iconType === "platform" ? draft.iconValue : null}
+            onSelect={handlePlatformSelect}
+            onClear={handlePlatformClear}
+            onAutoDetect={handlePlatformAutoDetect}
+            url={url}
+          />
+          <span className="text-xs ui-muted">
+            {url ? "提示：选择「自动识别」后，修改网址将自动更新平台图标；手动选择平台后将保持选择不变。" : "请先填写网址以启用自动识别功能"}
+          </span>
         </div>
       ) : null}
 
