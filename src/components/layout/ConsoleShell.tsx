@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X, type LucideIcon } from "lucide-react";
 import {
-  SHARED_NAV_ITEMS,
+  PRIMARY_NAV_ITEMS,
+  SECONDARY_NAV_ITEMS,
   SHARED_MOBILE_NAV,
   type SharedNavItem,
 } from "@/components/layout/console-navigation";
@@ -32,8 +33,13 @@ function toNavItem(item: SharedNavItem): NavItem {
   };
 }
 
-// 从共享导航配置派生（仅展示 status=live 或 beta 的项目）
-export const DESKTOP_NAV: NavItem[] = SHARED_NAV_ITEMS.filter(
+// 桌面端一级入口（严格 5 个）
+export const DESKTOP_PRIMARY_NAV: NavItem[] = PRIMARY_NAV_ITEMS.filter(
+  (item) => item.status === "live" || item.status === "beta",
+).map(toNavItem);
+
+// 桌面端二级入口
+export const DESKTOP_SECONDARY_NAV: NavItem[] = SECONDARY_NAV_ITEMS.filter(
   (item) => item.status === "live" || item.status === "beta",
 ).map(toNavItem);
 
@@ -66,7 +72,21 @@ export default function ConsoleShell({
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const groupedNav = DESKTOP_NAV.reduce<Record<string, NavItem[]>>((acc, item) => {
+  const groupedPrimary = DESKTOP_PRIMARY_NAV.reduce<Record<string, NavItem[]>>((acc, item) => {
+    const group = item.group || "core";
+    if (!acc[group]) acc[group] = [];
+    acc[group].push(item);
+    return acc;
+  }, {});
+
+const groupedSecondary = DESKTOP_SECONDARY_NAV.reduce<Record<string, NavItem[]>>((acc, item) => {
+    const group = item.group || "core";
+    if (!acc[group]) acc[group] = [];
+    acc[group].push(item);
+    return acc;
+  }, {});
+
+  const groupedAllNav = [...DESKTOP_PRIMARY_NAV, ...DESKTOP_SECONDARY_NAV].reduce<Record<string, NavItem[]>>((acc, item) => {
     const group = item.group || "core";
     if (!acc[group]) acc[group] = [];
     acc[group].push(item);
@@ -88,48 +108,88 @@ export default function ConsoleShell({
             </Link>
 
             <div className="mt-5 flex-1 overflow-y-auto pr-1">
-              {Object.entries(groupedNav).map(([group, items]) => (
-                <div key={group} className="mb-4 last:mb-0">
-                  <p className="mb-2 px-3 text-[10px] font-black uppercase tracking-[0.18em] text-[#7A6D5E]">
-                    {GROUP_LABELS[group] || group}
-                  </p>
-                  <nav aria-label={`${GROUP_LABELS[group] || group}导航`} className="grid gap-1">
-                    {items.map((item) => {
-                      const Icon = item.icon;
-                      const active = isItemActive(pathname, item.href);
-                      return (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-bold transition ${
-                            active
-                              ? "bg-[#2B241E] text-white shadow-sm"
-                              : "text-[#3F5F31] hover:bg-[#F7F1E7]"
+              {/* 一级入口（5 个） */}
+              <nav aria-label="一级导航" className="grid gap-1">
+                {DESKTOP_PRIMARY_NAV.map((item) => {
+                  const Icon = item.icon;
+                  const active = isItemActive(pathname, item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-bold transition ${
+                        active
+                          ? "bg-[#2B241E] text-white shadow-sm"
+                          : "text-[#3F5F31] hover:bg-[#F7F1E7]"
+                      }`}
+                    >
+                      <span
+                        className={`grid size-8 place-items-center rounded-xl ${
+                          active ? "bg-white/15 text-white" : item.tone
+                        }`}
+                      >
+                        <Icon aria-hidden className="size-4" />
+                      </span>
+                      <span className="truncate">{item.label}</span>
+                      {item.badge ? (
+                        <span
+                          className={`ml-auto rounded-full px-1.5 py-0.5 text-[9px] font-black ${
+                            item.badgeTone || "bg-[#E8DCCB] text-[#7A6D5E]"
                           }`}
                         >
-                          <span
-                            className={`grid size-8 place-items-center rounded-xl ${
-                              active ? "bg-white/15 text-white" : item.tone
+                          {item.badge}
+                        </span>
+                      ) : null}
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              {/* 二级入口 */}
+              <div className="mt-4 border-t border-[#E8DCCB] pt-4">
+                {Object.entries(groupedSecondary).map(([group, items]) => (
+                  <div key={group} className="mb-4 last:mb-0">
+                    <p className="mb-2 px-3 text-[10px] font-black uppercase tracking-[0.18em] text-[#7A6D5E]">
+                      {GROUP_LABELS[group] || group}
+                    </p>
+                    <nav aria-label={`${GROUP_LABELS[group] || group}导航`} className="grid gap-1">
+                      {items.map((item) => {
+                        const Icon = item.icon;
+                        const active = isItemActive(pathname, item.href);
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-bold transition ${
+                              active
+                                ? "bg-[#2B241E] text-white shadow-sm"
+                                : "text-[#3F5F31] hover:bg-[#F7F1E7]"
                             }`}
                           >
-                            <Icon aria-hidden className="size-4" />
-                          </span>
-                          <span className="truncate">{item.label}</span>
-                          {item.badge ? (
                             <span
-                              className={`ml-auto rounded-full px-1.5 py-0.5 text-[9px] font-black ${
-                                item.badgeTone || "bg-[#E8DCCB] text-[#7A6D5E]"
+                              className={`grid size-8 place-items-center rounded-xl ${
+                                active ? "bg-white/15 text-white" : item.tone
                               }`}
                             >
-                              {item.badge}
+                              <Icon aria-hidden className="size-4" />
                             </span>
-                          ) : null}
-                        </Link>
-                      );
-                    })}
-                  </nav>
-                </div>
-              ))}
+                            <span className="truncate">{item.label}</span>
+                            {item.badge ? (
+                              <span
+                                className={`ml-auto rounded-full px-1.5 py-0.5 text-[9px] font-black ${
+                                  item.badgeTone || "bg-[#E8DCCB] text-[#7A6D5E]"
+                                }`}
+                              >
+                                {item.badge}
+                              </span>
+                            ) : null}
+                          </Link>
+                        );
+                      })}
+                    </nav>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="mt-4 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] p-4">
@@ -230,7 +290,7 @@ export default function ConsoleShell({
               </button>
             </div>
 
-            {Object.entries(groupedNav).map(([group, items]) => (
+            {Object.entries(groupedAllNav).map(([group, items]) => (
               <div key={group} className="mb-5 last:mb-0">
                 <p className="mb-2 px-1 text-[11px] font-black uppercase tracking-[0.15em] text-[#7A6D5E]">
                   {GROUP_LABELS[group] || group}
