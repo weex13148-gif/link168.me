@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { db } from "@/lib/db";
-import { getPlanDefinition, PlanCode, PLAN_DEFINITIONS } from "./plans";
+import { getPlanDefinition, PlanCode, PLAN_DEFINITIONS, normalizePlanCode, isUniqueConstraintError } from "./plans";
 import type { BillingOrder } from "./orders";
 import { ORDER_STATUS } from "./orders";
 
@@ -127,7 +127,7 @@ export async function activateMembershipFromOrder(order: BillingOrder): Promise<
             },
           });
         } catch (e) {
-          if (e instanceof Error && e.message.includes("Unique constraint") && e.message.includes("idempotency_key")) {
+          if (isUniqueConstraintError(e, "idempotency_key")) {
             // 幂等：已存在则跳过
           } else {
             throw e;
@@ -165,7 +165,7 @@ export async function getCurrentSubscription(userId: string) {
   const now = new Date();
   const isExpired = subscription.currentPeriodEnd && subscription.currentPeriodEnd < now;
   const effectiveStatus = isExpired ? "expired" : subscription.status;
-  const effectivePlanCode = isExpired ? "free" : (subscription.planCode as PlanCode);
+  const effectivePlanCode = isExpired ? "free" : normalizePlanCode(subscription.planCode);
   const plan = getPlanDefinition(effectivePlanCode);
 
   return {

@@ -22,7 +22,7 @@ export const SUPPORT_EMAIL: string | null = null;
 
 export const PUBLIC_PLANS = [
   { code: "free", name: "免费版", priceYearlyCents: 0, aiChatsPerMonth: 0 },
-  { code: "member_plus", name: "Plus 会员", priceYearlyCents: 18800, aiChatsPerMonth: 300 },
+  { code: "plus", name: "Plus 会员", priceYearlyCents: 18800, aiChatsPerMonth: 300 },
   { code: "pro", name: "Pro 年付", priceYearlyCents: 38800, aiChatsPerMonth: 2000 },
   { code: "enterprise", name: "企业版", priceYearlyCents: null, aiChatsPerMonth: 10000, contactSales: true },
 ];

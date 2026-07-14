@@ -137,9 +137,10 @@ const STATUS_TONE_MAP: Record<string, { label: string; tone: StatusTone }> = {
   appealed: { label: "申诉中", tone: "info" },
   // 会员
   free: { label: "免费版", tone: "neutral" },
-  member_plus: { label: "Pro", tone: "info" },
+  plus: { label: "Plus", tone: "info" },
   pro: { label: "Pro", tone: "info" },
   enterprise: { label: "企业版", tone: "info" },
+  enterprise_pro: { label: "企业专业版", tone: "info" },
   // 角色
   super_admin: { label: "超级管理员", tone: "critical" },
   admin: { label: "管理员", tone: "info" },

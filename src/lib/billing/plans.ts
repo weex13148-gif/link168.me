@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { Prisma } from "@/generated/prisma/client";
 
 const PRICES: Record<string, { monthly: number | null; yearly: number | null }> = {
   free: { monthly: 0, yearly: 0 },
@@ -7,6 +8,7 @@ const PRICES: Record<string, { monthly: number | null; yearly: number | null }> 
   member_plus: { monthly: null, yearly: 18800 },
   pro: { monthly: null, yearly: 38800 },
   enterprise: { monthly: null, yearly: 128000 },
+  enterprise_pro: { monthly: null, yearly: 268000 },
   enterprise_pro_plus: { monthly: null, yearly: 268000 },
   internal_test: { monthly: 1, yearly: 1 },
 };
@@ -18,6 +20,7 @@ export const PLAN_CODES = {
   MEMBER_PLUS: "member_plus",
   PRO: "pro",
   ENTERPRISE: "enterprise",
+  ENTERPRISE_PRO: "enterprise_pro",
   ENTERPRISE_PRO_PLUS: "enterprise_pro_plus",
   INTERNAL_TEST: "internal_test",
 } as const;
@@ -207,9 +210,35 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
       prioritySupport: true,
     },
   },
+  enterprise_pro: {
+    code: "enterprise_pro",
+    name: "企业专业版",
+    description: "多产品、多成员和企业级 AI 工作空间",
+    priceMonthly: PRICES.enterprise_pro.monthly,
+    priceYearly: PRICES.enterprise_pro.yearly,
+    currency: "CNY",
+    features: [
+      "包含企业会员全部功能",
+      "最多 10 名企业成员",
+      "最多 3 个独立域名名额",
+      "多产品与多知识空间",
+      "高级客服顾问与操作日志",
+      "企业初始化与优先服务",
+    ],
+    limits: {
+      products: 1000,
+      knowledgeDocs: 500,
+      aiChatsPerMonth: 50000,
+      aiCreditsGrant: 50000,
+      teamSeats: 10,
+      customDomain: true,
+      removeBranding: true,
+      prioritySupport: true,
+    },
+  },
   enterprise_pro_plus: {
     code: "enterprise_pro_plus",
-    name: "企业专业 Plus",
+    name: "企业专业 Plus（旧版兼容）",
     description: "多产品、多成员和企业级 AI 工作空间",
     priceMonthly: PRICES.enterprise_pro_plus.monthly,
     priceYearly: PRICES.enterprise_pro_plus.yearly,
@@ -259,10 +288,9 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
 export const PLAN_ORDER: PlanCode[] = [
   "free",
   "plus",
-  "member_plus",
   "pro",
   "enterprise",
-  "enterprise_pro_plus",
+  "enterprise_pro",
 ];
 
 export const PUBLIC_PLAN_ORDER: PlanCode[] = [
@@ -270,7 +298,26 @@ export const PUBLIC_PLAN_ORDER: PlanCode[] = [
   "plus",
   "pro",
   "enterprise",
+  "enterprise_pro",
 ];
+
+/**
+ * 历史套餐别名 → 正式套餐代码的集中转换表。
+ * 禁止在业务代码中自行判断别名，一律通过此函数转换。
+ */
+const LEGACY_PLAN_CODE_MAP: Record<string, PlanCode> = {
+  member_basic: "plus",
+  member_plus: "plus",
+  enterprise_pro_plus: "enterprise_pro",
+};
+
+export function normalizePlanCode(value: string | null | undefined): PlanCode {
+  if (!value) return "free";
+  const mapped = LEGACY_PLAN_CODE_MAP[value];
+  if (mapped) return mapped;
+  if (value in PLAN_DEFINITIONS) return value as PlanCode;
+  return "free";
+}
 
 export function isPriceConfirmed(planCode: PlanCode, billingCycle: "monthly" | "yearly"): boolean {
   const plan = getPlanDefinition(planCode);
@@ -324,3 +371,17 @@ export const AI_RECEPTION_ADDON = {
   unit: "session",
   validityDays: 90,
 } as const;
+
+/**
+ * 判断 Prisma 错误是否为唯一键冲突。
+ * 用于 Credits 流水等场景的幂等判断：仅明确识别为重复的唯一键冲突才能被当作幂等成功。
+ */
+export function isUniqueConstraintError(error: unknown, fieldName?: string): boolean {
+  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+    if (!fieldName) return true;
+    const target = error.meta?.target;
+    if (Array.isArray(target) && target.includes(fieldName)) return true;
+    if (typeof target === "string" && target.includes(fieldName)) return true;
+  }
+  return false;
+}

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireSuperAdmin, getCurrentAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { writeAdminAuditLog, AUDIT_ACTION } from "@/lib/admin-audit-log";
-import { getPlanDefinition, PlanCode } from "@/lib/billing/plans";
+import { getPlanDefinition, PlanCode, isUniqueConstraintError } from "@/lib/billing/plans";
 import { getMembershipWithUsage } from "@/lib/billing/membership";
 
 export const runtime = "nodejs";
@@ -104,7 +104,7 @@ async function handleGrantMembership(
     );
   }
 
-  const validPlanCodes = ["free", "member_basic", "member_plus", "enterprise"];
+  const validPlanCodes = ["free", "plus", "pro", "enterprise", "enterprise_pro"];
   if (!planCode || typeof planCode !== "string" || !validPlanCodes.includes(planCode)) {
     return NextResponse.json(
       { success: false, error: "无效的 planCode" },
@@ -166,37 +166,23 @@ async function handleGrantMembership(
       });
 
       if (plan.limits.aiCreditsGrant > 0) {
-        const creditAccount = await tx.aiCreditAccount.findUnique({
+        const creditAccount = await tx.aiCreditAccount.upsert({
           where: { userId: targetUserId },
+          create: { userId: targetUserId, balance: plan.limits.aiCreditsGrant, version: 1 },
+          update: { balance: { increment: plan.limits.aiCreditsGrant }, version: { increment: 1 } },
+          select: { id: true, balance: true },
         });
 
-        const idempotencyKey = `grant:manual:${targetUserId}:${planCode}:${Date.now()}`;
-
-        if (creditAccount) {
-          await tx.aiCreditAccount.update({
-            where: { id: creditAccount.id },
-            data: {
-              balance: { increment: plan.limits.aiCreditsGrant },
-              version: { increment: 1 },
-            },
-          });
-        } else {
-          await tx.aiCreditAccount.create({
-            data: {
-              userId: targetUserId,
-              balance: plan.limits.aiCreditsGrant,
-              version: 1,
-            },
-          });
-        }
+        const idempotencyKey = `grant:manual:${targetUserId}:${planCode}:${subscription.id}`;
 
         try {
           await tx.aiCreditLedger.create({
             data: {
-              accountId: creditAccount?.id ?? (await tx.aiCreditAccount.findUnique({ where: { userId: targetUserId } }))!.id,
+              id: crypto.randomUUID(),
+              accountId: creditAccount.id,
               entryType: "grant",
               amount: plan.limits.aiCreditsGrant,
-              balanceAfter: creditAccount ? creditAccount.balance + plan.limits.aiCreditsGrant : plan.limits.aiCreditsGrant,
+              balanceAfter: creditAccount.balance,
               idempotencyKey,
               referenceType: "manual",
               referenceId: subscription.id,
@@ -208,8 +194,12 @@ async function handleGrantMembership(
               },
             },
           });
-        } catch {
-          // 幂等：已存在则跳过
+        } catch (e) {
+          if (isUniqueConstraintError(e, "idempotency_key")) {
+            // 幂等：已存在则跳过
+          } else {
+            throw e;
+          }
         }
       }
 

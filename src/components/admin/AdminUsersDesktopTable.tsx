@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 const PLAN_OPTIONS = [
-  { value: "member_plus", label: "Plus 会员", credits: 300 },
+  { value: "plus", label: "Plus 会员", credits: 300 },
   { value: "pro", label: "Pro 会员", credits: 2000 },
   { value: "enterprise", label: "企业会员", credits: 10000 },
-  { value: "enterprise_pro_plus", label: "企业专业 Plus", credits: 50000 },
+  { value: "enterprise_pro", label: "企业专业版", credits: 50000 },
 ] as const;
 
 type UserSummary = {
@@ -67,11 +67,10 @@ function roleLabel(role: string) {
 }
 
 function planLabel(planCode: string) {
-  if (planCode === "member_basic") return "Plus 会员（旧版）";
-  if (planCode === "member_plus") return "Plus 会员";
+  if (planCode === "plus" || planCode === "member_basic" || planCode === "member_plus") return "Plus 会员";
   if (planCode === "pro") return "Pro 会员";
   if (planCode === "enterprise") return "企业会员";
-  if (planCode === "enterprise_pro_plus") return "企业专业 Plus";
+  if (planCode === "enterprise_pro" || planCode === "enterprise_pro_plus") return "企业专业版";
   if (planCode === "internal_test") return "内部测试";
   return "免费版";
 }
@@ -105,7 +104,7 @@ export default function AdminUsersDesktopTable({ currentUserRole }: { currentUse
 
   const [membershipUser, setMembershipUser] = useState<UserSummary | null>(null);
   const [membershipAction, setMembershipAction] = useState<"grant" | "revoke" | null>(null);
-  const [planCode, setPlanCode] = useState("member_plus");
+  const [planCode, setPlanCode] = useState("plus");
   const [durationDays, setDurationDays] = useState(365);
   const [grantMode, setGrantMode] = useState<"replace" | "extend">("replace");
   const [grantCredits, setGrantCredits] = useState(true);
@@ -149,7 +148,7 @@ export default function AdminUsersDesktopTable({ currentUserRole }: { currentUse
     const active = hasActiveMembership(user);
     setMembershipUser(user);
     setMembershipAction("grant");
-    setPlanCode(active && user.membership.planCode !== "member_basic" ? user.membership.planCode : "member_plus");
+    setPlanCode(active && user.membership.planCode !== "free" ? user.membership.planCode : "plus");
     setDurationDays(365);
     setGrantMode(active ? "extend" : "replace");
     setGrantCredits(true);
