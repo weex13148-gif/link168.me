@@ -23,6 +23,7 @@ type MockDb = {
     findUnique: jest.Mock;
     create: jest.Mock;
     update: jest.Mock;
+    updateMany: jest.Mock;
     aggregate: jest.Mock;
   };
   $transaction: jest.Mock;
@@ -41,6 +42,7 @@ jest.mock("@/lib/db", () => {
       findUnique: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
+      updateMany: jest.fn(),
       aggregate: jest.fn(),
     },
     $transaction: jest.fn(async (fn: (tx: MockDb) => Promise<unknown>) => fn(mock)),
@@ -623,9 +625,15 @@ describe("refundEnterpriseQuota", () => {
     mockDb.enterpriseQuotaPool.updateMany.mockResolvedValue({ count: 0 });
 
     const result = await refundEnterpriseQuota(workspaceId, operationId);
-    expect(result).toBe(false);
-    // consumption should NOT be marked as refunded
-    expect(mockDb.enterpriseQuotaConsumption.update).not.toHaveBeenCalled();
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.code).toBe("CONCURRENT_UPDATE");
+    }
+    // consumption.update IS called (refund_pending then failureReason),
+    // but should NOT be called with status "refunded"
+    const updateCalls = mockDb.enterpriseQuotaConsumption.update.mock.calls;
+    const refundedCall = updateCalls.find((c: any[]) => c[0]?.data?.status === "refunded");
+    expect(refundedCall).toBeUndefined();
   });
 
   test("重复退款不重复增加余额 (已退款状态幂等)", async () => {
@@ -640,7 +648,10 @@ describe("refundEnterpriseQuota", () => {
     });
 
     const result = await refundEnterpriseQuota(workspaceId, operationId);
-    expect(result).toBe(true);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.code).toBe("ALREADY_REFUNDED");
+    }
     // Should NOT call updateMany (no re-refund)
     expect(mockDb.enterpriseQuotaPool.updateMany).not.toHaveBeenCalled();
     expect(mockDb.enterpriseQuotaConsumption.update).not.toHaveBeenCalled();
@@ -669,7 +680,11 @@ describe("refundEnterpriseQuota", () => {
     mockDb.enterpriseQuotaConsumption.update.mockResolvedValue({});
 
     const result = await refundEnterpriseQuota(workspaceId, operationId);
-    expect(result).toBe(true);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.code).toBe("REFUNDED");
+      expect(result.refunded).toBe(true);
+    }
     // Verify consumption was marked as "refunded"
     expect(mockDb.enterpriseQuotaConsumption.update).toHaveBeenCalledWith({
       where: { id: "c-1" },
@@ -700,7 +715,11 @@ describe("refundEnterpriseQuota", () => {
     mockDb.enterpriseQuotaConsumption.update.mockResolvedValue({});
 
     const result = await refundEnterpriseQuota(workspaceId, operationId);
-    expect(result).toBe(true);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.code).toBe("REFUNDED");
+      expect(result.refunded).toBe(true);
+    }
   });
 
   test("pending 状态不能退款", async () => {
@@ -715,7 +734,10 @@ describe("refundEnterpriseQuota", () => {
     });
 
     const result = await refundEnterpriseQuota(workspaceId, operationId);
-    expect(result).toBe(false);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.code).toBe("INVALID_STATE");
+    }
     expect(mockDb.enterpriseQuotaPool.updateMany).not.toHaveBeenCalled();
   });
 
@@ -731,7 +753,10 @@ describe("refundEnterpriseQuota", () => {
     });
 
     const result = await refundEnterpriseQuota(workspaceId, operationId);
-    expect(result).toBe(false);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.code).toBe("INVALID_STATE");
+    }
     expect(mockDb.enterpriseQuotaPool.updateMany).not.toHaveBeenCalled();
   });
 
@@ -739,7 +764,10 @@ describe("refundEnterpriseQuota", () => {
     mockDb.enterpriseQuotaConsumption.findUnique.mockResolvedValue(null);
 
     const result = await refundEnterpriseQuota(workspaceId, operationId);
-    expect(result).toBe(false);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.code).toBe("NOT_FOUND");
+    }
   });
 
   test("退款使用复合键 (workspaceId, operationId) 查询", async () => {
@@ -782,23 +810,28 @@ describe("confirmEnterpriseQuota", () => {
   const operationId = "op-confirm";
 
   test("确认 reserved → succeeded", async () => {
-    mockDb.enterpriseQuotaConsumption.findUnique.mockResolvedValue({
-      id: "c-1",
-      workspaceId,
-      operationId,
-      status: "reserved",
-    });
-    mockDb.enterpriseQuotaConsumption.update.mockResolvedValue({});
+    // confirmEnterpriseQuota uses enterpriseQuotaConsumption.updateMany internally
+    mockDb.enterpriseQuotaConsumption.updateMany.mockResolvedValue({ count: 1 });
 
     const result = await confirmEnterpriseQuota(workspaceId, operationId);
-    expect(result).toBe(true);
-    expect(mockDb.enterpriseQuotaConsumption.update).toHaveBeenCalledWith({
-      where: { id: "c-1" },
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.code).toBe("CONFIRMED");
+    }
+    // Verify updateMany was called to transition reserved → succeeded
+    expect(mockDb.enterpriseQuotaConsumption.updateMany).toHaveBeenCalledWith({
+      where: {
+        workspaceId,
+        operationId,
+        status: "reserved",
+      },
       data: { status: "succeeded" },
     });
   });
 
   test("确认已 succeeded → 幂等成功", async () => {
+    // updateMany returns count = 0 (nothing to update), then findUnique shows succeeded
+    mockDb.enterpriseQuotaConsumption.updateMany.mockResolvedValue({ count: 0 });
     mockDb.enterpriseQuotaConsumption.findUnique.mockResolvedValue({
       id: "c-1",
       workspaceId,
@@ -807,11 +840,17 @@ describe("confirmEnterpriseQuota", () => {
     });
 
     const result = await confirmEnterpriseQuota(workspaceId, operationId);
-    expect(result).toBe(true);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.code).toBe("ALREADY_CONFIRMED");
+    }
+    // Should NOT call update (the old API) — updateMany was called but found 0 rows
     expect(mockDb.enterpriseQuotaConsumption.update).not.toHaveBeenCalled();
   });
 
   test("确认 refunded → 失败", async () => {
+    // updateMany returns count = 0, then findUnique shows refunded
+    mockDb.enterpriseQuotaConsumption.updateMany.mockResolvedValue({ count: 0 });
     mockDb.enterpriseQuotaConsumption.findUnique.mockResolvedValue({
       id: "c-1",
       workspaceId,
@@ -820,11 +859,16 @@ describe("confirmEnterpriseQuota", () => {
     });
 
     const result = await confirmEnterpriseQuota(workspaceId, operationId);
-    expect(result).toBe(false);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.code).toBe("INVALID_STATE");
+    }
     expect(mockDb.enterpriseQuotaConsumption.update).not.toHaveBeenCalled();
   });
 
   test("确认 pending → 失败", async () => {
+    // updateMany returns count = 0, then findUnique shows pending
+    mockDb.enterpriseQuotaConsumption.updateMany.mockResolvedValue({ count: 0 });
     mockDb.enterpriseQuotaConsumption.findUnique.mockResolvedValue({
       id: "c-1",
       workspaceId,
@@ -833,24 +877,33 @@ describe("confirmEnterpriseQuota", () => {
     });
 
     const result = await confirmEnterpriseQuota(workspaceId, operationId);
-    expect(result).toBe(false);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.code).toBe("INVALID_STATE");
+    }
   });
 
   test("确认不存在的 consumption → false", async () => {
+    // updateMany returns count = 0, then findUnique returns null
+    mockDb.enterpriseQuotaConsumption.updateMany.mockResolvedValue({ count: 0 });
     mockDb.enterpriseQuotaConsumption.findUnique.mockResolvedValue(null);
 
     const result = await confirmEnterpriseQuota(workspaceId, operationId);
-    expect(result).toBe(false);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.code).toBe("NOT_FOUND");
+    }
   });
 
   test("确认使用复合键查询", async () => {
+    // updateMany returns count = 0, then findUnique is called with composite key
+    mockDb.enterpriseQuotaConsumption.updateMany.mockResolvedValue({ count: 0 });
     mockDb.enterpriseQuotaConsumption.findUnique.mockResolvedValue({
       id: "c-1",
       workspaceId,
       operationId,
-      status: "reserved",
+      status: "succeeded",
     });
-    mockDb.enterpriseQuotaConsumption.update.mockResolvedValue({});
 
     await confirmEnterpriseQuota(workspaceId, operationId);
 

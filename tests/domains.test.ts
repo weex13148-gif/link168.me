@@ -387,12 +387,22 @@ describe("bindWorkspaceDomain", () => {
   const planCode = "enterprise";
 
   test("non-enterprise plan should be rejected", async () => {
+    mockDb.workspace.findUnique.mockResolvedValue({
+      id: workspaceId,
+      isActive: true,
+      planCode: "free",
+    });
     await expect(
       bindWorkspaceDomain("zhangsen.com", workspaceId),
     ).rejects.toThrow("套餐");
   });
 
   test("pro plan should be rejected", async () => {
+    mockDb.workspace.findUnique.mockResolvedValue({
+      id: workspaceId,
+      isActive: true,
+      planCode: "pro",
+    });
     await expect(
       bindWorkspaceDomain("zhangsen.com", workspaceId),
     ).rejects.toThrow("套餐");
