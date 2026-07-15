@@ -4,6 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { X, Menu } from "lucide-react";
+import {
+  JEEPWORK_NAV_GROUPS,
+  type JeepworkNavTone,
+} from "@/lib/jeepwork-navigation";
 
 /**
  * AdminShell — /jeepwork 平台控制平面统一外壳
@@ -18,99 +22,7 @@ import { X, Menu } from "lucide-react";
  * 路由不删除、不新增，仅调整分组与展示层级。
  */
 
-type NavTone = "brand" | "danger" | "accent" | "info";
-
-type NavItem = {
-  href: string;
-  label: string;
-  icon: string;
-  tone?: NavTone;
-  superAdminOnly?: boolean;
-};
-
-type NavGroup = {
-  id: string;
-  label: string;
-  tone: NavTone;
-  items: NavItem[];
-};
-
-const ALL_NAV_GROUPS: NavGroup[] = [
-  {
-    id: "overview",
-    label: "总览",
-    tone: "brand",
-    items: [{ href: "/jeepwork", label: "后台首页", icon: "◎" }],
-  },
-  {
-    id: "users-enterprise",
-    label: "用户与企业",
-    tone: "info",
-    items: [
-      { href: "/jeepwork/users", label: "用户管理", icon: "◇", tone: "info" },
-      { href: "/jeepwork/profiles", label: "主页管理", icon: "◇" },
-      { href: "/jeepwork/roles", label: "角色权限", icon: "⬢", tone: "accent", superAdminOnly: true },
-    ],
-  },
-  {
-    id: "content-governance",
-    label: "内容与治理",
-    tone: "danger",
-    items: [
-      { href: "/jeepwork/reports", label: "举报管理", icon: "!", tone: "danger" },
-      { href: "/jeepwork/governance", label: "平台治理", icon: "⬡", tone: "info", superAdminOnly: true },
-    ],
-  },
-  {
-    id: "ai-governance",
-    label: "AI 治理",
-    tone: "accent",
-    items: [
-      { href: "/jeepwork/ai-usage", label: "AI 用量", icon: "△", tone: "accent" },
-      { href: "/jeepwork/ai-cost", label: "AI 成本", icon: "￥", tone: "accent", superAdminOnly: true },
-      { href: "/jeepwork/ai-safety", label: "AI 安全测试", icon: "盾", tone: "accent", superAdminOnly: true },
-      { href: "/jeepwork/settings/ai", label: "AI 配置", icon: "⚙", tone: "accent", superAdminOnly: true },
-      { href: "/jeepwork/competition-ai-debug", label: "AI 调试台", icon: "⌥", tone: "accent", superAdminOnly: true },
-    ],
-  },
-  {
-    id: "payment-commerce",
-    label: "支付与商业化",
-    tone: "info",
-    items: [
-      { href: "/jeepwork/settings/payment", label: "支付宝与收费", icon: "支", tone: "info", superAdminOnly: true },
-    ],
-  },
-  {
-    id: "external-showcase",
-    label: "外部展示",
-    tone: "brand",
-    items: [
-      { href: "/jeepwork/showcase", label: "Showcase 设置", icon: "◆", tone: "brand", superAdminOnly: true },
-      { href: "/jeepwork/competition-center", label: "比赛中心", icon: "赛", tone: "brand", superAdminOnly: true },
-    ],
-  },
-  {
-    id: "security-audit",
-    label: "安全与审计",
-    tone: "danger",
-    items: [
-      { href: "/jeepwork/audit", label: "审计日志", icon: "▣", tone: "danger", superAdminOnly: true },
-      { href: "/jeepwork/logs", label: "访问日志", icon: "☰", tone: "info", superAdminOnly: true },
-    ],
-  },
-  {
-    id: "system-ops",
-    label: "系统与运维",
-    tone: "brand",
-    items: [
-      { href: "/jeepwork/system-health", label: "运维健康", icon: "◈", superAdminOnly: true },
-      { href: "/jeepwork/settings/api", label: "邮箱与系统配置", icon: "⚙", tone: "info", superAdminOnly: true },
-    ],
-  },
-];
-
-function toneColor(tone: NavTone) {
+function toneColor(tone: JeepworkNavTone) {
   if (tone === "danger") return "var(--ui-danger)";
   if (tone === "accent") return "var(--ui-accent)";
   if (tone === "info") return "var(--ui-info)";
@@ -157,13 +69,9 @@ export default function AdminShell({
     return pathname === href || pathname?.startsWith(`${href}/`);
   }
 
-  // 按角色过滤分组与项目
-  const visibleGroups = ALL_NAV_GROUPS
-    .map((group) => ({
-      ...group,
-      items: group.items.filter((item) => !item.superAdminOnly || isSuperAdmin),
-    }))
-    .filter((group) => group.items.length > 0);
+  const visibleGroups = isSuperAdmin ? JEEPWORK_NAV_GROUPS : [];
+
+  if (currentUserRole !== "super_admin") return null;
 
   const sidebar = (
     <aside className="ui-surface flex h-full flex-col overflow-hidden">
@@ -232,7 +140,7 @@ export default function AdminShell({
           </p>
         ) : null}
         <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-[var(--ui-faint)]">
-          {isSuperAdmin ? "超级管理员" : currentUserRole === "admin" ? "管理员" : "已登录"}
+          超级管理员
         </p>
         {onLogout ? (
           <button

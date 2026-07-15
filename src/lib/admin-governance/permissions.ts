@@ -3,8 +3,8 @@
  *
  * 角色层级：
  *   super_admin  — 超级管理员，拥有全部后台权限
- *   admin        — 管理员，拥有大部分运营权限，但不能管理用户角色、查看审计日志原始IP、修改系统配置
- *   user         — 普通用户，不可登录后台
+ *   admin        — 历史角色，不可登录平台后台
+ *   user         — 普通用户，不可登录平台后台
  *
  * 权限矩阵：
  *                  super_admin    admin
@@ -15,9 +15,9 @@
  * 封禁/解封用户       ✓             ✗
  * 批量冻结普通用户     ✓             ✗
  * 批量导出           ✓             ✗
- * 主页管理           ✓             ✓
- * 举报管理           ✓             ✓
- * AI 用量查看        ✓             ✓
+ * 主页管理           ✓             ✗
+ * 举报管理           ✓             ✗
+ * AI 用量查看        ✓             ✗
  * 访问日志查看        ✓             ✗
  * 审计日志查看        ✓（原始IP需原因） ✗
  * 系统配置           ✓             ✗
@@ -59,12 +59,7 @@ export const ROLE_ROUTE_ACCESS: Record<Role, string[]> = {
     "/jeepwork/roles",
     "/jeepwork/audit",
   ],
-  admin: [
-    "/jeepwork",
-    "/jeepwork/profiles",
-    "/jeepwork/reports",
-    "/jeepwork/ai-usage",
-  ],
+  admin: [],
   user: [],
 };
 
