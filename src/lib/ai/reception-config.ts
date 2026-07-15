@@ -35,7 +35,8 @@ export type AiReceptionConfigPatch = {
   quickActionsJson: string;
 };
 
-export type AiReceptionConfigRecord = AiReceptionConfigPatch & {
+export type AiReceptionConfigRecord = Partial<Omit<AiReceptionConfigPatch, "quickActionsJson">> & {
+  quickActionsJson?: string | null;
   providerMode?: string | null;
 };
 
