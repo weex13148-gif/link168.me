@@ -4,14 +4,32 @@ import {
   buildShowcaseLogMetadata,
   createShowcaseCookieValue,
   getShowcaseConfig,
+  hasValidShowcaseCookie,
   recordShowcaseAccess,
   verifyShowcasePassword,
 } from "@/lib/showcase";
 
 export const runtime = "nodejs";
 
+// A successful shared-password verification persists on the current device.
+// The cookie value is derived from the current passwordHash, so rotating the
+// password immediately invalidates every previously issued cookie.
+export const SHOWCASE_COOKIE_MAX_AGE = 10 * 365 * 24 * 60 * 60;
+
 function apiError(code: string, message: string, status = 400) {
   return NextResponse.json({ success: false, data: null, error: { code, message } }, { status });
+}
+
+export async function GET(request: NextRequest) {
+  const config = await getShowcaseConfig();
+  const cookieValue = request.cookies.get(SHOWCASE_COOKIE_NAME)?.value;
+  const success = config.enabled && hasValidShowcaseCookie(cookieValue, config);
+
+  return NextResponse.json({
+    success,
+    data: { authenticated: success },
+    error: null,
+  });
 }
 
 export async function POST(request: NextRequest) {
@@ -48,7 +66,7 @@ export async function POST(request: NextRequest) {
     secure: process.env.COOKIE_SECURE === "true",
     sameSite: "strict",
     path: "/showcase",
-    maxAge: 8 * 60 * 60,
+    maxAge: SHOWCASE_COOKIE_MAX_AGE,
   });
   return response;
 }
