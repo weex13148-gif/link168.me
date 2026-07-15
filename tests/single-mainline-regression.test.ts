@@ -53,14 +53,16 @@ describe("single-mainline closeout guardrails", () => {
   });
 
   test("enterprise pages cannot bypass Host validation", () => {
-    const home = read("src/app/__w/[workspaceId]/page.tsx");
-    const member = read("src/app/__w/[workspaceId]/p/[slug]/page.tsx");
-    expect(home).toContain("validateWorkspacePublicRequestHost");
-    expect(member).toContain("validateWorkspacePublicRequestHost");
-    expect(home).not.toMatch(/if\s*\(host\)/);
-    expect(member).not.toMatch(/if\s*\(host\)/);
-    expect(home).not.toContain("NEXT_PUBLIC_APP_URL ? null");
-    expect(member).not.toContain("NEXT_PUBLIC_APP_URL ? null");
+    const home = read("src/app/%5F_w/[workspaceId]/page.tsx");
+    const member = read("src/app/%5F_w/[workspaceId]/p/[slug]/page.tsx");
+    const guard = read("src/lib/workspace-public-request.ts");
+    expect(home).toContain("requireWorkspacePublicRequestHost");
+    expect(member).toContain("requireWorkspacePublicRequestHost");
+    expect(guard).toContain("validateWorkspacePublicRequestHost");
+    expect(`${home}\n${member}\n${guard}`).not.toMatch(/if\s*\(host\)/);
+    expect(`${home}\n${member}\n${guard}`).not.toContain(
+      "NEXT_PUBLIC_APP_URL ? null",
+    );
   });
 
   test("AI callers use source-aware compensation", () => {
