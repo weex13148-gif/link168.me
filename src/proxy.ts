@@ -1,5 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { resolveDomain, WORKSPACE_RESERVED_SLUGS } from "@/lib/domains";
+import {
+  WORKSPACE_ROUTING_HOST_HEADER,
+  WORKSPACE_ROUTING_PROOF_HEADER,
+  createWorkspaceRoutingProof,
+  verifyWorkspaceRoutingProof,
+} from "@/lib/workspace-routing-proof";
 
 // proxy.ts 在 Next.js 16 中始终运行于 Node.js runtime，可安全使用 Prisma Node Client
 const BASE_DOMAIN = "link168.me";
@@ -34,6 +40,53 @@ const ENTERPRISE_ROUTE_MAP: Record<string, string> = {
   ai: "ai",
 };
 
+function sanitizedRequestHeaders(
+  request: NextRequest,
+  normalizedHost?: string,
+  workspaceId?: string,
+) {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.delete("x-forwarded-host");
+  requestHeaders.delete(WORKSPACE_ROUTING_HOST_HEADER);
+  requestHeaders.delete(WORKSPACE_ROUTING_PROOF_HEADER);
+  if (normalizedHost) {
+    requestHeaders.set("x-forwarded-host", normalizedHost);
+  }
+  if (normalizedHost && workspaceId) {
+    const proof = createWorkspaceRoutingProof(workspaceId, normalizedHost);
+    if (proof) {
+      requestHeaders.set(WORKSPACE_ROUTING_HOST_HEADER, normalizedHost);
+      requestHeaders.set(WORKSPACE_ROUTING_PROOF_HEADER, proof);
+    }
+  }
+  return requestHeaders;
+}
+
+function continueRequest(
+  request: NextRequest,
+  normalizedHost?: string,
+  workspaceId?: string,
+) {
+  return NextResponse.next({
+    request: {
+      headers: sanitizedRequestHeaders(request, normalizedHost, workspaceId),
+    },
+  });
+}
+
+function rewriteRequest(
+  request: NextRequest,
+  targetPath: string,
+  normalizedHost?: string,
+  workspaceId?: string,
+) {
+  return NextResponse.rewrite(new URL(targetPath, request.url), {
+    request: {
+      headers: sanitizedRequestHeaders(request, normalizedHost, workspaceId),
+    },
+  });
+}
+
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
@@ -50,26 +103,36 @@ export async function proxy(request: NextRequest) {
     return NextResponse.json({ success: false, error: "Not Found" }, { status: 404 });
   }
 
+  const internalWorkspaceId = pathname.match(/^\/__w\/([^/]+)(?:\/|$)/)?.[1];
+  const routedHost = request.headers.get(WORKSPACE_ROUTING_HOST_HEADER);
+  const routingProof = request.headers.get(WORKSPACE_ROUTING_PROOF_HEADER);
+  if (
+    internalWorkspaceId &&
+    verifyWorkspaceRoutingProof(internalWorkspaceId, routedHost, routingProof)
+  ) {
+    return continueRequest(request, routedHost || undefined, internalWorkspaceId);
+  }
+
   const host = request.headers.get("host");
   if (!host) {
-    return NextResponse.next();
+    return continueRequest(request);
   }
 
   const normalizedHost = host.toLowerCase().replace(/:\d+$/, "").replace(/\.$/, "");
 
   // 系统保留主机：主站、www、app、api、admin 等
   if (RESERVED_HOSTS.has(normalizedHost)) {
-    return NextResponse.next();
+    return continueRequest(request, normalizedHost);
   }
 
   // 本地开发环境
   if (normalizedHost === "localhost" || normalizedHost.startsWith("127.0.0.")) {
-    return NextResponse.next();
+    return continueRequest(request, normalizedHost);
   }
 
   // 非域名主机（如局域网主机名）直接放行
   if (!normalizedHost.includes(".")) {
-    return NextResponse.next();
+    return continueRequest(request, normalizedHost);
   }
 
   // 解析域名
@@ -82,10 +145,10 @@ export async function proxy(request: NextRequest) {
     // username.link168.me 个人主页
     // 根路径 rewrite 到 /[username]，保持原有个人主页行为
     if (pathname === "/") {
-      return NextResponse.rewrite(new URL(`/${resolved.username}`, request.url));
+      return rewriteRequest(request, `/${resolved.username}`, normalizedHost);
     }
     // 个人子域名下的其他路径不强制 rewrite（保持 NextResponse.next）
-    return NextResponse.next();
+    return continueRequest(request, normalizedHost);
   }
 
   // 企业自定义域名
@@ -94,13 +157,13 @@ export async function proxy(request: NextRequest) {
 
     // 根路径 → 企业官网首页
     if (pathname === "/") {
-      return NextResponse.rewrite(new URL(`/__w/${workspaceId}`, request.url));
+      return rewriteRequest(request, `/__w/${workspaceId}`, normalizedHost, workspaceId);
     }
 
     // 拆分路径第一段
     const segments = pathname.split("/").filter(Boolean);
     if (segments.length === 0) {
-      return NextResponse.rewrite(new URL(`/__w/${workspaceId}`, request.url));
+      return rewriteRequest(request, `/__w/${workspaceId}`, normalizedHost, workspaceId);
     }
 
     const firstSegment = segments[0];
@@ -114,25 +177,28 @@ export async function proxy(request: NextRequest) {
         const targetPath = restPath
           ? `/__w/${workspaceId}/${enterpriseRoute}/${restPath}`
           : `/__w/${workspaceId}/${enterpriseRoute}`;
-        return NextResponse.rewrite(new URL(targetPath, request.url));
+        return rewriteRequest(request, targetPath, normalizedHost, workspaceId);
       }
       // 其他系统保留路径（admin/api/login 等）不 rewrite，保持原样
-      return NextResponse.next();
+      return continueRequest(request, normalizedHost, workspaceId);
     }
 
     // 非保留路径第一段 → 视为员工名片 slug
     // 由 /__w/[workspaceId]/p/[slug] 页面解析，不存在则 404
     if (segments.length === 1) {
-      return NextResponse.rewrite(
-        new URL(`/__w/${workspaceId}/p/${firstSegment}`, request.url),
+      return rewriteRequest(
+        request,
+        `/__w/${workspaceId}/p/${firstSegment}`,
+        normalizedHost,
+        workspaceId,
       );
     }
 
     // 多段路径暂不支持 rewrite（避免误伤），保持原样
-    return NextResponse.next();
+    return continueRequest(request, normalizedHost, workspaceId);
   }
 
-  return NextResponse.next();
+  return continueRequest(request, normalizedHost);
 }
 
 export const config = {

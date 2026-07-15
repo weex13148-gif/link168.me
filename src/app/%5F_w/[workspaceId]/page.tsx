@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { validateWorkspacePublicRequestHost } from "@/lib/workspace-public-host";
+import { requireWorkspacePublicRequestHost } from "@/lib/workspace-public-request";
 
 export const dynamic = "force-dynamic";
 
@@ -10,16 +10,7 @@ type Props = {
   params: Promise<{ workspaceId: string }>;
 };
 
-async function loadWorkspace(
-  workspaceId: string,
-  rawHost: string | null | undefined,
-) {
-  const verifiedHost = await validateWorkspacePublicRequestHost(
-    workspaceId,
-    rawHost,
-  );
-  if (!verifiedHost) return null;
-
+async function loadWorkspace(workspaceId: string) {
   const workspace = await db.workspace.findUnique({
     where: { id: workspaceId },
     select: {
@@ -36,19 +27,11 @@ async function loadWorkspace(
   return workspace;
 }
 
-async function requireWorkspaceForRequest(workspaceId: string) {
-  const { headers } = await import("next/headers");
-  const workspace = await loadWorkspace(
-    workspaceId,
-    (await headers()).get("host"),
-  );
-  if (!workspace) notFound();
-  return workspace;
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { workspaceId } = await params;
-  const workspace = await requireWorkspaceForRequest(workspaceId);
+  await requireWorkspacePublicRequestHost(workspaceId);
+  const workspace = await loadWorkspace(workspaceId);
+  if (!workspace) notFound();
   return {
     title: `${workspace.name} | 企业官网`,
     description: workspace.description || `${workspace.name} 的企业官网`,
@@ -57,7 +40,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function EnterpriseHomePage({ params }: Props) {
   const { workspaceId } = await params;
-  const workspace = await requireWorkspaceForRequest(workspaceId);
+  await requireWorkspacePublicRequestHost(workspaceId);
+  const workspace = await loadWorkspace(workspaceId);
+  if (!workspace) notFound();
 
   // 读取企业主（owner）的 Profile 作为联系方式回退
   const ownerProfile = await db.profile

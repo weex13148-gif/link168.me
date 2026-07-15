@@ -290,14 +290,51 @@ describe("Cookie secure flag", () => {
 // ============================================
 
 describe("Enterprise host validation", () => {
+  test("the internal /__w route uses Next.js encoded underscore registration", () => {
+    const fs = require("fs");
+    expect(fs.existsSync("src/app/%5F_w/[workspaceId]/page.tsx")).toBe(true);
+    expect(fs.existsSync("src/app/__w")).toBe(false);
+  });
+
+  test.each([
+    "page.tsx",
+    "about/page.tsx",
+    "ai/page.tsx",
+    "contact/page.tsx",
+    "employees/page.tsx",
+    "products/page.tsx",
+    "p/[slug]/page.tsx",
+  ])("enterprise route %s gates metadata and body before loading data", (route) => {
+    const fs = require("fs");
+    const content = fs.readFileSync(
+      `src/app/%5F_w/[workspaceId]/${route}`,
+      "utf8",
+    );
+    expect(
+      (content.match(/await requireWorkspacePublicRequestHost\(workspaceId\)/g) ?? []).length,
+    ).toBeGreaterThanOrEqual(2);
+  });
+
+  test("the shared request guard requires a signed workspace routing proof", () => {
+    const fs = require("fs");
+    const content = fs.readFileSync(
+      "src/lib/workspace-public-request.ts",
+      "utf8",
+    );
+    expect(content).toContain("verifyWorkspaceRoutingProof");
+    expect(content).toContain("WORKSPACE_ROUTING_HOST_HEADER");
+    expect(content).toContain("WORKSPACE_ROUTING_PROOF_HEADER");
+    expect(content).not.toContain('requestHeaders.get("x-forwarded-host")');
+  });
+
   test("enterprise home page and metadata share a fail-closed Host gate", () => {
     const fs = require("fs");
     const content = fs.readFileSync(
-      "src/app/__w/[workspaceId]/page.tsx",
+      "src/app/%5F_w/[workspaceId]/page.tsx",
       "utf8",
     );
-    expect(content).toContain("validateWorkspacePublicRequestHost");
-    expect((content.match(/await requireWorkspaceForRequest\(workspaceId\)/g) ?? []).length).toBe(2);
+    expect(content).toContain("requireWorkspacePublicRequestHost");
+    expect((content.match(/await requireWorkspacePublicRequestHost\(workspaceId\)/g) ?? []).length).toBe(2);
     expect(content).not.toMatch(/if\s*\(host\)/);
     expect(content).not.toContain("NEXT_PUBLIC_APP_URL ? null");
   });
@@ -305,11 +342,11 @@ describe("Enterprise host validation", () => {
   test("enterprise employee page and metadata share a fail-closed Host gate", () => {
     const fs = require("fs");
     const content = fs.readFileSync(
-      "src/app/__w/[workspaceId]/p/[slug]/page.tsx",
+      "src/app/%5F_w/[workspaceId]/p/[slug]/page.tsx",
       "utf8",
     );
-    expect(content).toContain("validateWorkspacePublicRequestHost");
-    expect((content.match(/await requireVerifiedHost\(workspaceId\)/g) ?? []).length).toBe(2);
+    expect(content).toContain("requireWorkspacePublicRequestHost");
+    expect((content.match(/await requireWorkspacePublicRequestHost\(workspaceId\)/g) ?? []).length).toBe(2);
     expect(content).not.toMatch(/if\s*\(host\)/);
     expect(content).not.toContain("NEXT_PUBLIC_APP_URL ? null");
   });

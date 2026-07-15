@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { requireWorkspacePublicRequestHost } from "@/lib/workspace-public-request";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { workspaceId } = await params;
+  await requireWorkspacePublicRequestHost(workspaceId);
   const workspace = await db.workspace.findUnique({
     where: { id: workspaceId },
     select: { name: true, isActive: true },
@@ -23,6 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function EnterpriseEmployeesPage({ params }: Props) {
   const { workspaceId } = await params;
+  await requireWorkspacePublicRequestHost(workspaceId);
   const workspace = await db.workspace.findUnique({
     where: { id: workspaceId },
     select: { id: true, name: true, isActive: true },

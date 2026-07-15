@@ -14,7 +14,7 @@ import {
   type ActiveRestriction,
 } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { validateWorkspacePublicRequestHost } from "@/lib/workspace-public-host";
+import { requireWorkspacePublicRequestHost } from "@/lib/workspace-public-request";
 import { sanitizePublicUrl } from "@/lib/public-url-security";
 import { resolveWorkspacePublicProfile } from "@/lib/domains";
 
@@ -23,16 +23,6 @@ export const dynamic = "force-dynamic";
 type Props = {
   params: Promise<{ workspaceId: string; slug: string }>;
 };
-
-async function requireVerifiedHost(workspaceId: string): Promise<string> {
-  const { headers } = await import("next/headers");
-  const verifiedHost = await validateWorkspacePublicRequestHost(
-    workspaceId,
-    (await headers()).get("host"),
-  );
-  if (!verifiedHost) notFound();
-  return verifiedHost;
-}
 
 function resolveTemplate(profile: { template: string | null }, requested?: string): SharePageTemplate {
   if (requested === "business" || requested === "creator" || requested === "conversion") return requested;
@@ -65,7 +55,7 @@ function restrictionPage(restrictions: ActiveRestriction[]) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { workspaceId, slug } = await params;
-  const host = await requireVerifiedHost(workspaceId);
+  const host = await requireWorkspacePublicRequestHost(workspaceId);
   const hostUrl = `https://${host}`;
   const resolved = await resolveWorkspacePublicProfile(workspaceId, slug);
   if (!resolved) {
@@ -113,7 +103,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function WorkspaceEmployeeProfilePage({ params, searchParams }: Props & { searchParams?: Promise<{ template?: string }> }) {
   const { workspaceId, slug } = await params;
   const query = searchParams ? await searchParams : {};
-  const host = await requireVerifiedHost(workspaceId);
+  const host = await requireWorkspacePublicRequestHost(workspaceId);
 
   const resolved = await resolveWorkspacePublicProfile(workspaceId, slug);
   if (!resolved) notFound();
