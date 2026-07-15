@@ -6,7 +6,7 @@ on:
       - integration/mvp-closeout-r1
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   snapshot:
@@ -17,6 +17,108 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Apply exact AI reception closeout patches
+        id: patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          changed = False
+
+          def replace_exact(relative_path: str, old: str, new: str, marker: str) -> None:
+              global changed
+              path = Path(relative_path)
+              text = path.read_text()
+              if old in text:
+                  path.write_text(text.replace(old, new, 1))
+                  changed = True
+                  return
+              if marker in text:
+                  print(f"Already patched: {relative_path}")
+                  return
+              raise SystemExit(f"Expected AI reception block not found in {relative_path}")
+
+          renderer = "src/components/share/SharePageRenderer.tsx"
+          text = Path(renderer).read_text()
+          if '  type AiChatPayload,\n' in text:
+              Path(renderer).write_text(text.replace('  type AiChatPayload,\n', '', 1))
+              changed = True
+          elif 'AiChatPayload' in text:
+              raise SystemExit("Unexpected AiChatPayload usage remains")
+
+          replace_exact(
+              renderer,
+              '''    case "ai-chat": {\n      const aiPayload = payload as AiChatPayload;\n      return <div key={item.id}><AiChatModule assistantName={aiPayload.assistantName || "AI 接待"} welcomeText={aiPayload.greeting || "你好，有什么可以帮你？"} username={username} mode="customer-service" /></div>;\n    }''',
+              '''    case "ai-chat": return <div key={item.id}><AiChatModule username={username} mode="customer-service" /></div>;''',
+              '<AiChatModule username={username} mode="customer-service" />',
+          )
+
+          replace_exact(
+              "src/components/dashboard-v1/LinksPanel.tsx",
+              '''      {ct === "ai-chat" ? (\n        <>\n          <label className="grid gap-2">\n            <span className={labelClass}>助手名称（选填）</span>\n            <input\n              value={payloadField(draft.payloadJson, "assistantName")}\n              onChange={(event) => updatePayload("assistantName", event.target.value)}\n              maxLength={30}\n              placeholder="例如：小智助手"\n              className="ui-input"\n            />\n          </label>\n          <label className="grid gap-2 lg:col-span-2">\n            <span className={labelClass}>欢迎语（选填）</span>\n            <textarea\n              value={payloadField(draft.payloadJson, "greeting")}\n              onChange={(event) => updatePayload("greeting", event.target.value)}\n              maxLength={200}\n              rows={2}\n              placeholder="例如：你好！我是AI助手，有什么可以帮你的？"\n              className="ui-input min-h-[60px] resize-y"\n            />\n          </label>\n          <label className="grid gap-2">\n            <span className={labelClass}>语气风格（选填）</span>\n            <select\n              value={payloadField(draft.payloadJson, "tone")}\n              onChange={(event) => updatePayload("tone", event.target.value)}\n              className="ui-input"\n            >\n              <option value="">默认</option>\n              <option value="friendly">友好亲切</option>\n              <option value="professional">专业正式</option>\n              <option value="humorous">幽默风趣</option>\n              <option value="concise">简洁高效</option>\n            </select>\n          </label>\n        </>\n      ) : null}\n''',
+              '''      {ct === "ai-chat" ? (\n        <div className="rounded-2xl border border-[var(--ui-line)] bg-[var(--ui-surface-muted)] p-4 lg:col-span-2">\n          <p className="text-sm font-black text-[var(--ui-ink)]">AI 接待统一配置</p>\n          <p className="mt-1 text-xs leading-5 ui-muted">\n            助手名称、欢迎语、业务资料和快捷回复请在“访客 AI 接待”中统一配置。\n            当前组件只负责公开页中的位置、排序和显示状态。\n          </p>\n          <a\n            href="/workbench/ai/reception"\n            className="mt-3 inline-flex min-h-10 items-center rounded-xl bg-[var(--ui-ink)] px-4 text-xs font-black text-white"\n          >\n            前往访客 AI 接待配置\n          </a>\n        </div>\n      ) : null}\n''',
+              '助手名称、欢迎语、业务资料和快捷回复',
+          )
+
+          agent = "src/lib/ai/commercial-agent.ts"
+          replace_exact(
+              agent,
+              'return { success: false, status: 503, error: "AI 服务尚未完成配置。", code: "AI_NOT_CONFIGURED", traceId: traceCtx.traceId };',
+              'return { success: false, status: 503, error: "AI 服务暂不可用，请稍后再试。", code: "AI_NOT_CONFIGURED", traceId: traceCtx.traceId };',
+              'error: "AI 服务暂不可用，请稍后再试。", code: "AI_NOT_CONFIGURED"',
+          )
+          replace_exact(
+              agent,
+              '''  const products: ProductContext[] = profile.user.products.map((item) => ({\n    id: item.id,\n    name: item.name,\n    category: item.category,\n    description: item.description,\n    priceText: item.priceText,\n    ctaLabel: item.ctaLabel,\n    ctaUrl: item.ctaUrl,\n  }));''',
+              '''  const products: ProductContext[] = serviceConfig.allowProductRecommendation\n    ? profile.user.products.map((item) => ({\n        id: item.id,\n        name: item.name,\n        category: item.category,\n        description: item.description,\n        priceText: item.priceText,\n        ctaLabel: item.ctaLabel,\n        ctaUrl: item.ctaUrl,\n      }))\n    : [];''',
+              'const products: ProductContext[] = serviceConfig.allowProductRecommendation',
+          )
+          replace_exact(
+              agent,
+              'return { success: false, status: 402, error: consumed.reason || "主页 AI 额度不足。", code: "AI_CREDITS_EXHAUSTED", traceId: traceCtx.traceId };',
+              'return { success: false, status: 402, error: "当前主页的 AI 服务额度已用完。", code: "AI_CREDITS_EXHAUSTED", traceId: traceCtx.traceId };',
+              'error: "当前主页的 AI 服务额度已用完。", code: "AI_CREDITS_EXHAUSTED"',
+          )
+          replace_exact(
+              agent,
+              'return { success: false, status: result.status >= 400 ? result.status : 502, error: "AI 接待暂时不可用，已自动退回额度。", code: "AI_PROVIDER_FAILED", traceId: traceCtx.traceId };',
+              'return { success: false, status: result.status >= 400 ? result.status : 502, error: "AI 接待暂时不可用，本次未消耗额度。", code: "AI_PROVIDER_FAILED", traceId: traceCtx.traceId };',
+              'AI 接待暂时不可用，本次未消耗额度。',
+          )
+          replace_exact(
+              agent,
+              'const rawReply = sanitizePublicText(moderated.content) || "抱歉，暂时无法回答这个问题，请联系人工咨询。";',
+              'const rawReply = sanitizePublicText(moderated.content) || "抱歉，暂时无法回答这个问题，请使用页面中的快捷按钮或其他联系方式。";',
+              '请使用页面中的快捷按钮或其他联系方式',
+          )
+          replace_exact(
+              agent,
+              '    allowTransferToHuman: serviceConfig.allowTransferToHuman,',
+              '    allowTransferToHuman: false,',
+              '    allowTransferToHuman: false,',
+          )
+          replace_exact(
+              agent,
+              '      transferToHumanEnabled: serviceConfig.allowTransferToHuman ?? false,',
+              '      transferToHumanEnabled: false,',
+              '      transferToHumanEnabled: false,',
+          )
+
+          Path("/tmp/ai_patch_changed").write_text("true" if changed else "false")
+          PY
+          echo "changed=$(cat /tmp/ai_patch_changed)" >> "$GITHUB_OUTPUT"
+
+      - name: Commit exact AI reception patches
+        if: steps.patch.outputs.changed == 'true'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/components/share/SharePageRenderer.tsx src/components/dashboard-v1/LinksPanel.tsx src/lib/ai/commercial-agent.ts
+          git commit -m "fix: unify AI reception customer configuration"
+          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
 
       - name: Upload AI reception source snapshot
         uses: actions/upload-artifact@v4
