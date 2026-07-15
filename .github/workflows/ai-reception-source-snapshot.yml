@@ -1,0 +1,35 @@
+name: AI Reception Source Snapshot
+
+on:
+  pull_request:
+    branches:
+      - integration/mvp-closeout-r1
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload AI reception source snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-reception-source-${{ github.event.pull_request.head.sha }}
+          if-no-files-found: error
+          retention-days: 1
+          path: |
+            prisma/schema.prisma
+            src/components/ai/ReceptionConfigClient.tsx
+            src/components/dashboard/LinksPanel.tsx
+            src/components/share/modules/AiChatModule.tsx
+            src/components/share/SharePageRenderer.tsx
+            src/lib/ai/commercial-agent.ts
+            src/lib/app-config.ts
+            src/app/[username]/page.tsx
+            src/features/profile-modules/**
+            tests/profile-module-closeout.test.ts
