@@ -124,6 +124,8 @@ export type LinkComponentType =
   | "product-card"
   | "service-card"
   | "offer"
+  | "quote"
+  | "contact-form"
   | "copy-text"
   | "divider"
   | "cover-image"

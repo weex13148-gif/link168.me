@@ -22,6 +22,9 @@ export type {
   ProductCardPayload,
   ServiceCardPayload,
   OfferPayload,
+  LeadFormPayload,
+  QuotePayload,
+  ContactFormPayload,
   BookingPayload,
 } from "./validators";
 

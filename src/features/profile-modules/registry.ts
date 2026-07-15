@@ -98,6 +98,22 @@ const MODULES: ProfileModuleDefinition[] = [
     free: true,
   },
   {
+    type: "quote",
+    label: "报价咨询",
+    description: "收集客户需求并创建报价线索",
+    iconName: "ReceiptText",
+    category: "commerce",
+    free: true,
+  },
+  {
+    type: "contact-form",
+    label: "联系表单",
+    description: "收集访客联系方式和留言",
+    iconName: "MessageSquareText",
+    category: "contact",
+    free: true,
+  },
+  {
     type: "booking",
     label: "在线预约",
     description: "接受预约咨询",

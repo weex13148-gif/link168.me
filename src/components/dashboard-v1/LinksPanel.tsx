@@ -522,7 +522,14 @@ function DynamicFields({ draft, onChange, isNew }: { draft: LinkDraft; onChange:
           </span>
           <input
             value={draft.title}
-            onChange={(event) => onChange({ title: event.target.value })}
+            onChange={(event) => {
+              const title = event.target.value;
+              if (ct === "quote" || ct === "contact-form") {
+                onChange({ title, payloadJson: setPayloadField(draft.payloadJson, "title", title) });
+              } else {
+                onChange({ title });
+              }
+            }}
             maxLength={60}
             placeholder={ct === "group-title" ? "例如：社交媒体" : "例如：我的官方网站"}
             className="ui-input"
@@ -958,6 +965,47 @@ function DynamicFields({ draft, onChange, isNew }: { draft: LinkDraft; onChange:
           <label className="grid gap-2">
             <span className={labelClass}>优惠码</span>
             <input value={payloadField(draft.payloadJson, "couponCode")} onChange={(event) => updatePayload("couponCode", event.target.value)} maxLength={80} placeholder="例如：LINK168" className="ui-input" />
+          </label>
+        </>
+      ) : null}
+
+      {ct === "quote" || ct === "contact-form" ? (
+        <>
+          <label className="grid gap-2 lg:col-span-2">
+            <span className={labelClass}>说明（选填）</span>
+            <textarea
+              value={payloadField(draft.payloadJson, "description")}
+              onChange={(event) => {
+                onChange({
+                  description: event.target.value,
+                  payloadJson: setPayloadField(draft.payloadJson, "description", event.target.value),
+                });
+              }}
+              maxLength={500}
+              rows={3}
+              placeholder={ct === "quote" ? "说明报价所需的信息" : "说明提交后如何联系"}
+              className="ui-input min-h-[72px] resize-y"
+            />
+          </label>
+          <label className="grid gap-2">
+            <span className={labelClass}>按钮文字</span>
+            <input
+              value={payloadField(draft.payloadJson, "buttonText")}
+              onChange={(event) => updatePayload("buttonText", event.target.value)}
+              maxLength={50}
+              placeholder={ct === "quote" ? "提交报价需求" : "提交联系信息"}
+              className="ui-input"
+            />
+          </label>
+          <label className="grid gap-2">
+            <span className={labelClass}>需求提示（选填）</span>
+            <input
+              value={payloadField(draft.payloadJson, "messagePlaceholder")}
+              onChange={(event) => updatePayload("messagePlaceholder", event.target.value)}
+              maxLength={120}
+              placeholder={ct === "quote" ? "项目范围、预算、时间要求" : "想咨询的内容"}
+              className="ui-input"
+            />
           </label>
         </>
       ) : null}
@@ -1398,12 +1446,18 @@ export function LinksPanel({ links, isPaid, planLabel, creating, busyLinkId, onC
       draft.payloadJson = JSON.stringify({ name: mod.label, allowBooking: true });
     } else if (type === "offer") {
       draft.payloadJson = JSON.stringify({ title: mod.label });
+    } else if (type === "quote" || type === "contact-form") {
+      draft.payloadJson = JSON.stringify({
+        title: mod.label,
+        buttonText: type === "quote" ? "提交报价需求" : "提交联系信息",
+      });
     }
 
     if (type === "text" || type === "group-title" || type === "divider" ||
         type === "cover-image" || type === "popup-image" || type === "carousel" ||
         type === "bilibili-video" || type === "youtube-video" || type === "video-link" ||
-        type === "netease-music" || type === "music-link" || type === "ai-chat") {
+        type === "netease-music" || type === "music-link" || type === "ai-chat" ||
+        type === "quote" || type === "contact-form") {
       draft.url = "";
     }
 
@@ -1421,7 +1475,8 @@ export function LinksPanel({ links, isPaid, planLabel, creating, busyLinkId, onC
     if (newType === "text" || newType === "group-title" || newType === "divider" ||
         newType === "cover-image" || newType === "popup-image" || newType === "carousel" ||
         newType === "bilibili-video" || newType === "youtube-video" || newType === "video-link" ||
-        newType === "netease-music" || newType === "music-link" || newType === "ai-chat") {
+        newType === "netease-music" || newType === "music-link" || newType === "ai-chat" ||
+        newType === "quote" || newType === "contact-form") {
       patch.url = "";
     }
 
@@ -1433,6 +1488,7 @@ export function LinksPanel({ links, isPaid, planLabel, creating, busyLinkId, onC
 
     if (newType !== "shop" && newType !== "booking" &&
         newType !== "product-card" && newType !== "service-card" && newType !== "offer" &&
+        newType !== "quote" && newType !== "contact-form" &&
         newType !== "map" &&
         newType !== "copy-text" && newType !== "divider" &&
         newType !== "cover-image" && newType !== "popup-image" && newType !== "carousel" &&
@@ -1443,6 +1499,13 @@ export function LinksPanel({ links, isPaid, planLabel, creating, busyLinkId, onC
 
     if (newType === "divider") {
       patch.title = "";
+    }
+    if (newType === "quote" || newType === "contact-form") {
+      patch.title = getModuleDefinition(newType)?.label || "";
+      patch.payloadJson = JSON.stringify({
+        title: patch.title,
+        buttonText: newType === "quote" ? "提交报价需求" : "提交联系信息",
+      });
     }
 
     setter(patch);

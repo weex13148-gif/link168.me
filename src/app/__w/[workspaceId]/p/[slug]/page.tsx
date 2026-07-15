@@ -248,6 +248,7 @@ export default async function WorkspaceEmployeeProfilePage({ params, searchParam
       />
       <main className={`mx-auto flex min-h-dvh w-full max-w-2xl flex-col px-4 py-6 sm:py-10 ${surfaceClass}`}>
         <PublicProfileClientWrapper
+          profileId={profile.id}
           template={resolveTemplate(profile, query.template)}
           username={profile.username}
           displayName={profile.displayName || `@${profile.username}`}

@@ -27,6 +27,8 @@ const COMPONENT_TYPES = [
   "product-card",
   "service-card",
   "offer",
+  "quote",
+  "contact-form",
   "map",
   "copy-text",
   "cover-image",
@@ -56,6 +58,8 @@ const NEW_MODULE_TYPES = new Set([
   "product-card",
   "service-card",
   "offer",
+  "quote",
+  "contact-form",
 ]);
 const TITLE_OPTIONAL_TYPES = new Set([
   "text",
@@ -205,7 +209,9 @@ export async function POST(request: Request) {
     case "music-link":
     case "product-card":
     case "service-card":
-    case "offer": {
+    case "offer":
+    case "quote":
+    case "contact-form": {
       const rawUrl = typeof body.url === "string" ? body.url.trim() : "";
       const cleaned = sanitizePublicUrl(rawUrl);
       url = cleaned.url || "https://link168.me";

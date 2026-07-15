@@ -37,6 +37,7 @@ export type PhonePreviewAppearance = {
 
 type PhonePreviewProps = {
   variant?: PreviewShellVariant;
+  profileId?: string;
   poweredLogoClickable?: boolean;
   username?: string;
   displayName?: string | null;
@@ -56,7 +57,7 @@ const defaultLinks: PhonePreviewLink[] = [
   { id: "site", label: "我的网站", caption: "作品、服务和介绍" },
 ];
 
-export function PhonePreview({ variant = "marketing", poweredLogoClickable = false, username = "abao", displayName, bio, avatarUrl, links = defaultLinks, appearance, className = "", onQrCodeClick, onShareClick }: PhonePreviewProps) {
+export function PhonePreview({ variant = "marketing", profileId, poweredLogoClickable = false, username = "abao", displayName, bio, avatarUrl, links = defaultLinks, appearance, className = "", onQrCodeClick, onShareClick }: PhonePreviewProps) {
   const exampleFallbackUrl = variant === "public" ? null : "https://link168.me";
   const showPowered = appearance?.showPowered !== false;
 
@@ -76,7 +77,7 @@ export function PhonePreview({ variant = "marketing", poweredLogoClickable = fal
 
   return (
     <PreviewShell variant={variant} className={className} surfaceClassName={appearance?.surfaceClassName}>
-      <SharePageRenderer template={appearance?.template || "business"} username={username} displayName={displayName || "阿宝的名片"} bio={bio} avatarUrl={avatarUrl} links={activeLinks} themeName={appearance?.themeName} customTheme={appearance?.customTheme || null} contactVisibility={appearance?.contactVisibility || undefined} surfaceClassName={appearance?.surfaceClassName} cardClassName={appearance?.cardClassName} linkClassName={appearance?.linkClassName} showBrandFoot={false} onQrCodeClick={onQrCodeClick} onShareClick={onShareClick} />
+      <SharePageRenderer template={appearance?.template || "business"} profileId={profileId} username={username} displayName={displayName || "阿宝的名片"} bio={bio} avatarUrl={avatarUrl} links={activeLinks} themeName={appearance?.themeName} customTheme={appearance?.customTheme || null} contactVisibility={appearance?.contactVisibility || undefined} surfaceClassName={appearance?.surfaceClassName} cardClassName={appearance?.cardClassName} linkClassName={appearance?.linkClassName} showBrandFoot={false} onQrCodeClick={onQrCodeClick} onShareClick={onShareClick} />
       {showPowered ? <div className="flex justify-center">{poweredLogoClickable ? <Link href="/">{brandMark}</Link> : brandMark}</div> : null}
     </PreviewShell>
   );

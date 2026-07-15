@@ -122,6 +122,9 @@ function buildPayload(draft: LinkDraft): string | undefined {
       return JSON.stringify({ name: draft.title, description: draft.description });
     case "offer":
       return JSON.stringify({ title: draft.title, description: draft.description });
+    case "quote":
+    case "contact-form":
+      return JSON.stringify({ title: draft.title, description: draft.description });
     case "shop":
     case "booking":
       return draft.payloadJson || JSON.stringify({});

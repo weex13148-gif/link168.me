@@ -129,6 +129,16 @@ export type OfferPayload = {
   couponCode?: string;
 };
 
+export type LeadFormPayload = {
+  title: string;
+  description?: string;
+  buttonText?: string;
+  messagePlaceholder?: string;
+};
+
+export type QuotePayload = LeadFormPayload;
+export type ContactFormPayload = LeadFormPayload;
+
 export type ShopPayload = Record<string, unknown>;
 export type BookingPayload = {
   title?: string;
@@ -667,6 +677,32 @@ function validateOfferPayload(raw: unknown): ValidationResult {
   return { valid: true, errors: [], sanitizedPayload: sanitized };
 }
 
+function validateLeadFormPayload(raw: unknown): ValidationResult {
+  if (!isObject(raw)) {
+    return { valid: false, errors: ["payload 必须是对象"] };
+  }
+  const errors: string[] = [];
+  if (!isNonEmptyString(raw.title)) errors.push("title 不能为空");
+  if (raw.title && !isValidTextLength(raw.title as string, 1, 100)) errors.push("title 长度必须在 1-100 之间");
+  if (!isStringOrUndefined(raw.description)) errors.push("description 必须是字符串");
+  if (raw.description && !isValidTextLength(raw.description as string, 0, 500)) errors.push("description 长度不能超过 500");
+  if (!isStringOrUndefined(raw.buttonText)) errors.push("buttonText 必须是字符串");
+  if (raw.buttonText && !isValidTextLength(raw.buttonText as string, 0, 50)) errors.push("buttonText 长度不能超过 50");
+  if (!isStringOrUndefined(raw.messagePlaceholder)) errors.push("messagePlaceholder 必须是字符串");
+  if (raw.messagePlaceholder && !isValidTextLength(raw.messagePlaceholder as string, 0, 120)) errors.push("messagePlaceholder 长度不能超过 120");
+  for (const value of [raw.title, raw.description, raw.buttonText, raw.messagePlaceholder]) {
+    if (typeof value === "string" && hasDangerousContent(value)) errors.push("payload 包含非法内容");
+  }
+  if (errors.length > 0) return { valid: false, errors };
+  const sanitized: LeadFormPayload = {
+    title: (raw.title as string).trim().slice(0, 100),
+    description: raw.description ? (raw.description as string).trim().slice(0, 500) : undefined,
+    buttonText: raw.buttonText ? (raw.buttonText as string).trim().slice(0, 50) : undefined,
+    messagePlaceholder: raw.messagePlaceholder ? (raw.messagePlaceholder as string).trim().slice(0, 120) : undefined,
+  };
+  return { valid: true, errors: [], sanitizedPayload: sanitized };
+}
+
 function validateGroupTitlePayload(raw: unknown): ValidationResult {
   const errors: string[] = [];
   if (!isObject(raw)) {
@@ -872,6 +908,8 @@ const VALIDATORS: Record<ProfileModuleType, (raw: unknown) => ValidationResult> 
   "product-card": validateProductCardPayload,
   "service-card": validateServiceCardPayload,
   "offer": validateOfferPayload,
+  quote: validateLeadFormPayload,
+  "contact-form": validateLeadFormPayload,
 };
 
 export function validateModulePayload(

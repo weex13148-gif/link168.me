@@ -26,6 +26,7 @@ export const runtime = "nodejs";
 const MAX_NAME_LENGTH = 50;
 const MAX_CONTACT_LENGTH = 100;
 const MAX_MESSAGE_LENGTH = 500;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const VALID_SOURCE_COMPONENTS = new Set([
   "contact_form",
   "product_card",
@@ -128,6 +129,7 @@ function buildMessage(body: Record<string, unknown>, baseMessage: string, source
   const serviceName = stringField(body, "serviceName", 80);
   const offerTitle = stringField(body, "offerTitle", 80);
   const couponCode = stringField(body, "couponCode", 80);
+  const componentTitle = stringField(body, "componentTitle", 100);
 
   if (sourceComponent === "booking") {
     const lines = [
@@ -141,9 +143,17 @@ function buildMessage(body: Record<string, unknown>, baseMessage: string, source
 
   if (sourceComponent === "quote") {
     const lines = [
-      offerTitle ? `报价咨询：${offerTitle}` : "",
+      componentTitle || offerTitle ? `报价咨询：${componentTitle || offerTitle}` : "",
       couponCode ? `优惠码：${couponCode}` : "",
       baseMessage ? `需求说明：${baseMessage}` : "",
+    ].filter(Boolean);
+    return lines.join("\n").slice(0, MAX_MESSAGE_LENGTH);
+  }
+
+  if (sourceComponent === "contact_form") {
+    const lines = [
+      componentTitle ? `来源表单：${componentTitle}` : "",
+      baseMessage ? `留言：${baseMessage}` : "",
     ].filter(Boolean);
     return lines.join("\n").slice(0, MAX_MESSAGE_LENGTH);
   }
@@ -189,13 +199,13 @@ export async function POST(request: Request) {
 
   // 蜜罐检测
   if (isHoneypotTriggered(body)) {
-    // 静默拒绝，但不暴露检测逻辑
-    return NextResponse.json({
-      success: true,
-      message: "已收到你的联系请求，工作人员将尽快回复。",
-    });
+    return NextResponse.json(
+      { success: false, error: "提交内容无效。" },
+      { status: 400 },
+    );
   }
 
+  const profileId = stringField(body, "profileId", 80);
   const username = typeof body.username === "string" ? body.username.trim().toLowerCase() : "";
   const name = typeof body.name === "string" ? body.name.trim().slice(0, MAX_NAME_LENGTH) : "";
   const contact = stringField(body, "contact", MAX_CONTACT_LENGTH);
@@ -204,15 +214,26 @@ export async function POST(request: Request) {
   const rawWechat = stringField(body, "wechat", MAX_CONTACT_LENGTH);
   const rawMessage = stringField(body, "message", MAX_MESSAGE_LENGTH);
   const requestedSource = stringField(body, "sourceComponent", 50);
-  const sourceComponent = VALID_SOURCE_COMPONENTS.has(requestedSource) ? requestedSource : "contact_form";
+  if (requestedSource && !VALID_SOURCE_COMPONENTS.has(requestedSource)) {
+    return NextResponse.json({ success: false, error: "来源组件无效。" }, { status: 400 });
+  }
+  const sourceComponent = requestedSource || "contact_form";
   const message = buildMessage(body, rawMessage, sourceComponent);
-  const sourcePage = stringField(body, "sourcePage", 200) || null;
+  const requestedSourcePage = stringField(body, "sourcePage", 200);
+  const sourcePage = requestedSourcePage.startsWith("/") && !requestedSourcePage.startsWith("//")
+    ? requestedSourcePage
+    : null;
   const interestedProductId = stringField(body, "interestedProductId", 80) || null;
 
-  // 至少需要姓名或联系方式
-  if (!name && !contact && !rawPhone && !rawEmail && !rawWechat) {
+  if (!name) {
     return NextResponse.json(
-      { success: false, error: "请填写姓名或联系方式。" },
+      { success: false, error: "请填写姓名。" },
+      { status: 400 }
+    );
+  }
+  if (!contact && !rawPhone && !rawEmail && !rawWechat) {
+    return NextResponse.json(
+      { success: false, error: "请至少填写一种联系方式。" },
       { status: 400 }
     );
   }
@@ -254,18 +275,28 @@ export async function POST(request: Request) {
     }
   }
 
-  // 查找目标 Profile
-  if (!username) {
+  if (!email && !phone && !wechat) {
     return NextResponse.json(
-      { success: false, error: "用户名无效。" },
+      { success: false, error: "请填写有效的邮箱、电话或微信号。" },
+      { status: 400 },
+    );
+  }
+
+  // 查找目标 Profile
+  if (!profileId && !username) {
+    return NextResponse.json(
+      { success: false, error: "主页标识无效。" },
       { status: 400 }
     );
+  }
+  if (profileId && !UUID_PATTERN.test(profileId)) {
+    return NextResponse.json({ success: false, error: "主页标识无效。" }, { status: 400 });
   }
 
   let profile;
   try {
     profile = await db.profile.findUnique({
-      where: { username },
+      where: profileId ? { id: profileId } : { username },
     });
   } catch {
     return NextResponse.json(
@@ -279,6 +310,9 @@ export async function POST(request: Request) {
       { success: false, error: "用户不存在。" },
       { status: 404 }
     );
+  }
+  if (username && profile.username !== username) {
+    return NextResponse.json({ success: false, error: "主页不存在。" }, { status: 404 });
   }
 
   // ===== 公开访问状态守卫 =====
@@ -331,12 +365,13 @@ export async function POST(request: Request) {
   }
 
   // 创建 Lead（包含产品快照）
+  const leadId = newId();
   try {
     await db.lead.create({
       data: {
-        id: newId(),
+        id: leadId,
         profileId: profile.id as string,
-        name: name || null,
+        name,
         email: email ?? undefined,
         phone: phone ?? undefined,
         wechat: wechat ?? undefined,
@@ -360,6 +395,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     success: true,
+    leadId,
     message: "已收到你的联系请求，工作人员将尽快回复。",
   });
 }
