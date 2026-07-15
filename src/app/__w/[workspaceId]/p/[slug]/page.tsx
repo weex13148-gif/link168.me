@@ -14,17 +14,25 @@ import {
   type ActiveRestriction,
 } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { assertWorkspacePublicHost } from "@/lib/workspace-public-host";
+import { validateWorkspacePublicRequestHost } from "@/lib/workspace-public-host";
 import { sanitizePublicUrl } from "@/lib/public-url-security";
 import { resolveWorkspacePublicProfile } from "@/lib/domains";
 
 export const dynamic = "force-dynamic";
 
-const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://link168.me").replace(/\/$/, "");
-
 type Props = {
   params: Promise<{ workspaceId: string; slug: string }>;
 };
+
+async function requireVerifiedHost(workspaceId: string): Promise<string> {
+  const { headers } = await import("next/headers");
+  const verifiedHost = await validateWorkspacePublicRequestHost(
+    workspaceId,
+    (await headers()).get("host"),
+  );
+  if (!verifiedHost) notFound();
+  return verifiedHost;
+}
 
 function resolveTemplate(profile: { template: string | null }, requested?: string): SharePageTemplate {
   if (requested === "business" || requested === "creator" || requested === "conversion") return requested;
@@ -57,6 +65,8 @@ function restrictionPage(restrictions: ActiveRestriction[]) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { workspaceId, slug } = await params;
+  const host = await requireVerifiedHost(workspaceId);
+  const hostUrl = `https://${host}`;
   const resolved = await resolveWorkspacePublicProfile(workspaceId, slug);
   if (!resolved) {
     return { title: "员工名片不存在 | Link168" };
@@ -67,7 +77,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     include: { links: { where: { isActive: true }, orderBy: { position: "asc" } } },
   });
   if (!profile) {
-    return buildRestrictedProfileMetadata(resolved.slug, appUrl);
+    return buildRestrictedProfileMetadata(resolved.slug, hostUrl);
   }
 
   let indexable = profile.isPublic;
@@ -85,7 +95,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? `${profile.avatarUrl.split("?")[0]}?v=${profile.updatedAt.getTime()}`
     : null;
 
-  const hostUrl = appUrl;
   const pageUrl = `${hostUrl}/${resolved.slug}`;
 
   return buildPublicProfileMetadata({
@@ -104,13 +113,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function WorkspaceEmployeeProfilePage({ params, searchParams }: Props & { searchParams?: Promise<{ template?: string }> }) {
   const { workspaceId, slug } = await params;
   const query = searchParams ? await searchParams : {};
-  const hostHeader = await import('next/headers');
-  const host = (await hostHeader.headers()).get('host');
-
-  if (host) {
-    const hostVerified = await assertWorkspacePublicHost(workspaceId, host);
-    if (!hostVerified) notFound();
-  }
+  const host = await requireVerifiedHost(workspaceId);
 
   const resolved = await resolveWorkspacePublicProfile(workspaceId, slug);
   if (!resolved) notFound();
@@ -201,7 +204,7 @@ export default async function WorkspaceEmployeeProfilePage({ params, searchParam
     };
   });
 
-  const hostUrl = appUrl;
+  const hostUrl = `https://${host}`;
   const pageUrl = `${hostUrl}/${resolved.slug}`;
   const reportUrl = `/report?url=${encodeURIComponent(pageUrl)}`;
   const themeName = profile.theme || "Link168 草木默认";

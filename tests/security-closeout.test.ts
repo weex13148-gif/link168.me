@@ -290,23 +290,27 @@ describe("Cookie secure flag", () => {
 // ============================================
 
 describe("Enterprise host validation", () => {
-  test("enterprise home page always reads real request host", () => {
+  test("enterprise home page and metadata share a fail-closed Host gate", () => {
     const fs = require("fs");
     const content = fs.readFileSync(
       "src/app/__w/[workspaceId]/page.tsx",
       "utf8",
     );
-    expect(content).toContain("const host = (await hostHeader.headers()).get('host');");
+    expect(content).toContain("validateWorkspacePublicRequestHost");
+    expect((content.match(/await requireWorkspaceForRequest\(workspaceId\)/g) ?? []).length).toBe(2);
+    expect(content).not.toMatch(/if\s*\(host\)/);
     expect(content).not.toContain("NEXT_PUBLIC_APP_URL ? null");
   });
 
-  test("enterprise employee profile page always reads real request host", () => {
+  test("enterprise employee page and metadata share a fail-closed Host gate", () => {
     const fs = require("fs");
     const content = fs.readFileSync(
       "src/app/__w/[workspaceId]/p/[slug]/page.tsx",
       "utf8",
     );
-    expect(content).toContain("const host = (await hostHeader.headers()).get('host');");
+    expect(content).toContain("validateWorkspacePublicRequestHost");
+    expect((content.match(/await requireVerifiedHost\(workspaceId\)/g) ?? []).length).toBe(2);
+    expect(content).not.toMatch(/if\s*\(host\)/);
     expect(content).not.toContain("NEXT_PUBLIC_APP_URL ? null");
   });
 });

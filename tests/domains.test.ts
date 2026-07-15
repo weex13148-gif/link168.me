@@ -15,6 +15,9 @@ import {
   updateWorkspacePublicProfileSlug,
   setWorkspacePublicProfileStatus,
 } from "@/lib/domains";
+import {
+  validateWorkspacePublicRequestHost,
+} from "@/lib/workspace-public-host";
 
 // ============================================
 // Mock Prisma db
@@ -1113,5 +1116,102 @@ describe("setWorkspacePublicProfileStatus", () => {
     });
     const result = await setWorkspacePublicProfileStatus(profileId, workspaceId, "removed");
     expect(result.status).toBe("removed");
+  });
+});
+
+// ============================================
+// 企业公开页 Host fail-closed 边界
+// ============================================
+
+describe("validateWorkspacePublicRequestHost", () => {
+  test.each([null, undefined, "", "   "])(
+    "missing Host %p is rejected before database access",
+    async (rawHost) => {
+      await expect(
+        validateWorkspacePublicRequestHost("ws-1", rawHost),
+      ).resolves.toBeNull();
+      expect(mockDb.domain.findUnique).not.toHaveBeenCalled();
+      expect(mockDb.workspace.findUnique).not.toHaveBeenCalled();
+    },
+  );
+
+  test.each([
+    "link168.me",
+    "www.link168.me",
+    "app.link168.me:443",
+    "merchant.link168.me",
+  ])("platform Host %s is rejected before database access", async (rawHost) => {
+    await expect(
+      validateWorkspacePublicRequestHost("ws-1", rawHost),
+    ).resolves.toBeNull();
+    expect(mockDb.domain.findUnique).not.toHaveBeenCalled();
+    expect(mockDb.workspace.findUnique).not.toHaveBeenCalled();
+  });
+
+  test("unknown Host is rejected before loading Workspace", async () => {
+    mockDb.domain.findUnique.mockResolvedValue(null);
+
+    await expect(
+      validateWorkspacePublicRequestHost("ws-1", "unknown.example.com"),
+    ).resolves.toBeNull();
+    expect(mockDb.workspace.findUnique).not.toHaveBeenCalled();
+  });
+
+  test.each(["pending", "failed", "unbound"])(
+    "%s Domain is rejected before loading Workspace",
+    async (status) => {
+      mockDb.domain.findUnique.mockResolvedValue({
+        workspaceId: "ws-1",
+        status,
+      });
+
+      await expect(
+        validateWorkspacePublicRequestHost("ws-1", "brand.example.com"),
+      ).resolves.toBeNull();
+      expect(mockDb.workspace.findUnique).not.toHaveBeenCalled();
+    },
+  );
+
+  test("cross-Workspace Host is rejected before loading Workspace", async () => {
+    mockDb.domain.findUnique.mockResolvedValue({
+      workspaceId: "ws-2",
+      status: "verified",
+    });
+
+    await expect(
+      validateWorkspacePublicRequestHost("ws-1", "other.example.com"),
+    ).resolves.toBeNull();
+    expect(mockDb.workspace.findUnique).not.toHaveBeenCalled();
+  });
+
+  test("inactive Workspace is rejected", async () => {
+    mockDb.domain.findUnique.mockResolvedValue({
+      workspaceId: "ws-1",
+      status: "verified",
+    });
+    mockDb.workspace.findUnique.mockResolvedValue({ isActive: false });
+
+    await expect(
+      validateWorkspacePublicRequestHost("ws-1", "brand.example.com"),
+    ).resolves.toBeNull();
+  });
+
+  test("verified Host is normalized for case, trailing dot, and port", async () => {
+    mockDb.domain.findUnique.mockResolvedValue({
+      workspaceId: "ws-1",
+      status: "verified",
+    });
+    mockDb.workspace.findUnique.mockResolvedValue({ isActive: true });
+
+    await expect(
+      validateWorkspacePublicRequestHost(
+        "ws-1",
+        "  Brand.Example.com.:443  ",
+      ),
+    ).resolves.toBe("brand.example.com");
+    expect(mockDb.domain.findUnique).toHaveBeenCalledWith({
+      where: { normalizedDomain: "brand.example.com" },
+      select: { workspaceId: true, status: true },
+    });
   });
 });
