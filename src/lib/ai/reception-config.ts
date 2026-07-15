@@ -39,7 +39,7 @@ export type AiReceptionConfigRecord = AiReceptionConfigPatch & {
   providerMode?: string | null;
 };
 
-export type PublicAiReceptionConfig = {
+export type CustomerAiReceptionConfig = {
   enabled: boolean;
   assistantName: string;
   welcomeMessage: string;
@@ -50,6 +50,8 @@ export type PublicAiReceptionConfig = {
   privacyNoticeText: string | null;
   quickActions: AiReceptionQuickAction[];
 };
+
+export type PublicAiReceptionConfig = CustomerAiReceptionConfig;
 
 export const DEFAULT_AI_RECEPTION_CONFIG: AiReceptionConfigPatch = Object.freeze({
   enabled: false,
@@ -141,8 +143,8 @@ function normalizeAction(raw: unknown, index: number): AiReceptionQuickAction {
 }
 
 function normalizeActionArray(value: unknown): AiReceptionQuickAction[] {
-  if (!Array.isArray(value)) throw new Error("快捷按钮必须是数组。 ");
-  if (value.length > 6) throw new Error("最多配置 6 个快捷按钮。 ");
+  if (!Array.isArray(value)) throw new Error("快捷按钮必须是数组。");
+  if (value.length > 6) throw new Error("最多配置 6 个快捷按钮。");
   return value
     .map((item, index) => ({ item: normalizeAction(item, index), index }))
     .sort((a, b) => a.item.position - b.item.position || a.index - b.index)
@@ -200,16 +202,16 @@ export function normalizeAiReceptionConfig(input: unknown): AiReceptionConfigPat
     ),
     collectLead: booleanValue(input.collectLead, DEFAULT_AI_RECEPTION_CONFIG.collectLead),
     allowReport: booleanValue(input.allowReport, DEFAULT_AI_RECEPTION_CONFIG.allowReport),
-    allowTransferToHuman: booleanValue(
-      input.allowTransferToHuman,
-      DEFAULT_AI_RECEPTION_CONFIG.allowTransferToHuman,
-    ),
+    // 人工坐席与实时接管不属于当前 MVP，客户端不能开启该能力。
+    allowTransferToHuman: false,
     privacyNoticeText: nullableText(input.privacyNoticeText, "隐私提示", 300),
     quickActionsJson: JSON.stringify(actions),
   };
 }
 
-export function toPublicAiReceptionConfig(config: AiReceptionConfigRecord): PublicAiReceptionConfig {
+export function toCustomerAiReceptionConfig(
+  config: AiReceptionConfigRecord | null | undefined,
+): CustomerAiReceptionConfig {
   const normalized = normalizeAiReceptionConfig(config);
   return {
     enabled: normalized.enabled,
@@ -220,6 +222,14 @@ export function toPublicAiReceptionConfig(config: AiReceptionConfigRecord): Publ
     collectLead: normalized.collectLead,
     allowReport: normalized.allowReport,
     privacyNoticeText: normalized.privacyNoticeText,
-    quickActions: parseAiReceptionQuickActions(normalized.quickActionsJson, { publicOnly: true }),
+    quickActions: parseAiReceptionQuickActions(normalized.quickActionsJson),
+  };
+}
+
+export function toPublicAiReceptionConfig(config: AiReceptionConfigRecord): PublicAiReceptionConfig {
+  const customer = toCustomerAiReceptionConfig(config);
+  return {
+    ...customer,
+    quickActions: customer.quickActions.filter((action) => action.enabled),
   };
 }
