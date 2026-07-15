@@ -265,6 +265,7 @@ export default async function PublicProfilePage({ params, searchParams }: Public
       icon: iconModerationApproved
         ? item.iconUrl || item.iconValue || null
         : item.iconValue || null,
+      iconType: item.iconType || null,
       type: item.iconType || null,
       componentType: item.type || null,
       payload: item.payloadJson || null,

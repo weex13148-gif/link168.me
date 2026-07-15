@@ -11,6 +11,7 @@ export type PhonePreviewLink = {
   url?: string | null;
   href?: string | null;
   icon?: string | null;
+  iconType?: string | null;
   type?: string | null;
   componentType?: string | null;
   payload?: string | null;
@@ -65,6 +66,7 @@ export function PhonePreview({ variant = "marketing", poweredLogoClickable = fal
     description: link.caption || link.description || null,
     url: link.href || link.url || exampleFallbackUrl,
     icon: link.icon || null,
+    iconType: link.iconType || null,
     type: link.type || null,
     componentType: link.componentType || link.type || null,
     payload: link.payload || null,

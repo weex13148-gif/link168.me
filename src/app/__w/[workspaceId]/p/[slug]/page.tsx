@@ -173,6 +173,7 @@ export default async function WorkspaceEmployeeProfilePage({ params, searchParam
       icon: iconModerationApproved
         ? item.iconUrl || item.iconValue || null
         : item.iconValue || null,
+      iconType: item.iconType || null,
       type: item.iconType || null,
       componentType: item.type || null,
       payload: item.payloadJson || null,

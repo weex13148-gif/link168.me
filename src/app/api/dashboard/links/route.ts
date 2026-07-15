@@ -8,10 +8,11 @@ import { sanitizePublicUrl, sanitizePhoneNumber, sanitizeMapUrl, sanitizeQrPaylo
 import { getUserEntitlements } from "@/lib/billing/entitlements";
 import { isModuleType, validateModulePayload } from "@/features/profile-modules/validators";
 import { getModuleDefinition } from "@/features/profile-modules/registry";
+import { allowedIconTypes, normalizePlatformIconKey } from "@/lib/link-icons";
 
 export const runtime = "nodejs";
 
-const ICON_TYPES = ["default", "emoji", "custom"] as const;
+const ICON_TYPES = allowedIconTypes;
 const COMPONENT_TYPES = [
   "link",
   "text",
@@ -261,7 +262,13 @@ export async function POST(request: Request) {
 
   const iconTypeRaw = typeof body.iconType === "string" ? body.iconType.trim().toLowerCase() : "default";
   const iconType = ICON_TYPES.includes(iconTypeRaw as (typeof ICON_TYPES)[number]) ? iconTypeRaw : "default";
-  const iconValue = iconType === "emoji" ? normalizeNullableString(body.iconValue) : null;
+  const platformIconValue = iconType === "platform" ? normalizePlatformIconKey(body.iconValue) : null;
+  if (iconType === "platform" && !platformIconValue) {
+    return NextResponse.json({ success: false, error: "请选择支持的平台图标。" }, { status: 400 });
+  }
+  const iconValue = iconType === "emoji"
+    ? normalizeNullableString(body.iconValue)
+    : platformIconValue;
   const iconUrlRaw = typeof body.iconUrl === "string" ? body.iconUrl.trim() : "";
   const iconUrl = iconType === "custom" ? sanitizePublicUrl(iconUrlRaw).url : null;
 

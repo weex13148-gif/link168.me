@@ -68,6 +68,7 @@ export default function DashboardV1Client() {
       caption: link.description,
       url: link.url,
       icon: link.icon_url || link.icon_value,
+      iconType: link.icon_type,
       type: link.type,
       componentType: link.type,
       payload: link.payload_json,
