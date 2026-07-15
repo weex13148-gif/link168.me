@@ -130,6 +130,16 @@ export function generateEventDedupeKey(
     .digest("hex");
 }
 
+export function generateEventDedupeId(
+  eventType: string,
+  profileId: string,
+  visitorId: string,
+  timestamp: Date,
+): string {
+  const key = generateEventDedupeKey(eventType, profileId, visitorId, timestamp);
+  return `${key.slice(0, 8)}-${key.slice(8, 12)}-${key.slice(12, 16)}-${key.slice(16, 20)}-${key.slice(20)}`;
+}
+
 /**
  * 地区信息结构
  */

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle, Loader, MessageCircle, X } from "lucide-react";
 import { PublicAiAssistant } from "@/components/share/PublicAiAssistant";
 import { PublicProductsSection, type ProductDto } from "@/components/share/PublicProductsSection";
@@ -244,6 +244,17 @@ export function SharePageWithContact(props: Props) {
 
   const pageUrl = typeof window === "undefined" ? "" : window.location.href;
 
+  const trackContactInteraction = useCallback((linkId: string) => {
+    const visitorId = getOrCreateVisitorId();
+    if (!visitorId) return;
+    fetch(`/api/public/links/${encodeURIComponent(linkId)}/click`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visitorId }),
+      keepalive: true,
+    }).catch(() => undefined);
+  }, []);
+
   useEffect(() => {
     const visitorId = getOrCreateVisitorId();
     if (!visitorId) return;
@@ -283,6 +294,7 @@ export function SharePageWithContact(props: Props) {
         address={props.address}
         website={props.website}
         contactVisibility={props.contactVisibility}
+        onContactInteraction={trackContactInteraction}
       />
 
       {props.showBrandFoot !== false ? <div className="flex justify-center"><BrandFooter /></div> : null}

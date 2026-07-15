@@ -1,13 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BarChart3, Eye, Link2, Loader2, MousePointerClick, TrendingUp, Users } from "lucide-react";
+import { BarChart3, Eye, Link2, Loader2, MessageCircle, TrendingUp, Users } from "lucide-react";
 
 type TopLink = { title: string; clicks: number };
 
 type DailyItem = { date: string; views: number };
 
 type StatsData = {
+  visits: number;
+  consultations: number;
+  leads: number;
+  conversions: number;
   totalProfileViews: number;
   totalUniqueVisitors: number;
   totalClicks: number;
@@ -37,7 +41,7 @@ export function StatsPanel({ username }: { username: string }) {
       })
       .then((json) => {
         if (cancelled) return;
-        setData(json.data ?? json);
+        setData(json.stats ?? json.data ?? json);
       })
       .catch((err) => {
         if (cancelled) return;
@@ -87,15 +91,18 @@ export function StatsPanel({ username }: { username: string }) {
     );
   }
 
-  const hasData = data && (data.totalProfileViews > 0 || data.totalClicks > 0 || data.totalUniqueVisitors > 0);
+  const hasData = data && (
+    data.visits > 0
+    || data.consultations > 0
+    || data.leads > 0
+    || data.conversions > 0
+  );
 
   const statsCards = [
-    { label: "主页访问", value: data?.totalProfileViews ?? 0, icon: Eye, color: "var(--ui-brand)" },
-    { label: "独立访客", value: data?.totalUniqueVisitors ?? 0, icon: Users, color: "var(--ui-info)" },
-    { label: "链接点击", value: data?.totalClicks ?? 0, icon: MousePointerClick, color: "var(--ui-success)" },
-    { label: "点击率", value: data ? `${(data.ctr * 100).toFixed(1)}%` : "0.0%", icon: TrendingUp, color: "var(--ui-accent)" },
-    { label: "链接数量", value: data?.totalLinks ?? 0, icon: Link2, color: "var(--ui-brand-hover)" },
-    { label: "今日点击", value: data?.clicksToday ?? 0, icon: BarChart3, color: "var(--ui-info)" },
+    { label: "访问量", value: data?.visits ?? 0, icon: Eye, color: "var(--ui-brand)" },
+    { label: "咨询量", value: data?.consultations ?? 0, icon: MessageCircle, color: "var(--ui-info)" },
+    { label: "线索量", value: data?.leads ?? 0, icon: Users, color: "var(--ui-success)" },
+    { label: "成交量", value: data?.conversions ?? 0, icon: TrendingUp, color: "var(--ui-accent)" },
   ];
 
   const dailyData = data?.daily ?? [];
@@ -123,7 +130,7 @@ export function StatsPanel({ username }: { username: string }) {
       ) : (
         <>
           {/* 统计卡片 */}
-          <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {statsCards.map((card) => {
               const Icon = card.icon;
               return (

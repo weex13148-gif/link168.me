@@ -15,12 +15,14 @@ export {
   generateVisitorId,
   isPotentialBot,
   generateEventDedupeKey,
+  generateEventDedupeId,
 } from "./events";
 export type { DeviceType, DeviceInfo, GeoInfo } from "./events";
 
 // 统计
 export {
   getAnalyticsStats,
+  getCoreMvpMetrics,
   calculateConversionFunnel,
   getGeoStats,
   getTimeRange,
@@ -33,6 +35,7 @@ export type {
   FunnelStep,
   ConversionFunnel,
   ShortLinkStat,
+  CoreMvpMetrics,
 } from "./stats";
 
 // 短链接

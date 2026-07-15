@@ -108,6 +108,7 @@ export interface SharePageRendererProps {
   address?: string | null;
   website?: string | null;
   contactVisibility?: string;
+  onContactInteraction?: (linkId: string) => void;
 }
 
 function safeParseJson<T = unknown>(value: string | null | undefined): T | null {
@@ -357,7 +358,15 @@ function renderNewModule(item: SharePageLink, componentType: string, payload: Re
   }
 }
 
-function renderLegacyItem(item: SharePageLink, componentType: string, payload: Record<string, unknown> | null, classes: ShareThemeClassSet, variant: SharePageTemplate, linkClassName: string) {
+function renderLegacyItem(
+  item: SharePageLink,
+  componentType: string,
+  payload: Record<string, unknown> | null,
+  classes: ShareThemeClassSet,
+  variant: SharePageTemplate,
+  linkClassName: string,
+  onContactInteraction?: (linkId: string) => void,
+) {
   const safe = sanitizeHref(componentType, item.url, payload);
   const title = item.title || "链接";
   const description = item.description;
@@ -385,13 +394,13 @@ function renderLegacyItem(item: SharePageLink, componentType: string, payload: R
     }
     if (componentType === "wechat") {
       const wechatId = typeof payload?.wechat === "string" ? payload.wechat : item.url || description || "";
-      return <div key={item.id} className={common}>{body}<span className="rounded-full bg-[#3F5F31]/10 px-2 py-1 text-xs font-black text-[#3F5F31]">{wechatId || "微信"}</span></div>;
+      return <button key={item.id} type="button" onClick={() => { onContactInteraction?.(item.id); if (wechatId) void navigator.clipboard?.writeText(wechatId).catch(() => undefined); }} className={`${common} w-full text-left`}>{body}<span className="rounded-full bg-[#3F5F31]/10 px-2 py-1 text-xs font-black text-[#3F5F31]">{wechatId || "微信"}</span></button>;
     }
     return <div key={item.id} className={common}>{body}</div>;
   }
 
   return (
-    <a key={item.id} href={safe.href} target={safe.href.startsWith("tel:") ? undefined : "_blank"} rel={safe.href.startsWith("tel:") ? undefined : "noopener noreferrer"} className={common}>
+    <a key={item.id} href={safe.href} onClick={() => { if (["phone", "email"].includes(componentType)) onContactInteraction?.(item.id); }} target={safe.href.startsWith("tel:") || safe.href.startsWith("mailto:") ? undefined : "_blank"} rel={safe.href.startsWith("tel:") || safe.href.startsWith("mailto:") ? undefined : "noopener noreferrer"} className={common}>
       {body}
       {variant === "conversion" ? <ArrowRight className="size-4 shrink-0 opacity-80" /> : <ArrowUpRight className="size-4 shrink-0 opacity-70" />}
     </a>
@@ -417,7 +426,7 @@ function renderComponentList(props: SharePageRendererProps, classes: ShareThemeC
         const componentType = normalizeComponentType(item);
         const payload = safeParseJson<Record<string, unknown>>(item.payload);
         if (moduleTypes.has(componentType)) return renderNewModule(item, componentType, payload, props.username, props.profileId);
-        return renderLegacyItem(item, componentType, payload, classes, props.template || "business", linkClassName);
+        return renderLegacyItem(item, componentType, payload, classes, props.template || "business", linkClassName, props.onContactInteraction);
       })}
     </div>
   );
