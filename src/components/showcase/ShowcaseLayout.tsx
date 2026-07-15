@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { ExternalLink, Menu, X } from "lucide-react";
@@ -44,7 +45,7 @@ export default function ShowcaseLayout({
             </Link>
             <button
               type="button"
-              onClick={() => setMenuOpen((v) => !v)}
+              onClick={() => setMenuOpen((open) => !open)}
               className="ui-button-secondary px-3 xl:hidden"
               aria-label="打开导航"
             >
@@ -69,11 +70,28 @@ export default function ShowcaseLayout({
       </header>
       <main>{children}</main>
       <footer className="border-t border-[var(--ui-line)] bg-[var(--ui-surface)] py-10">
-        <div className="ui-container flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <p className="text-xs text-[var(--ui-muted)]">
-            {SHOWCASE_PROJECT.name} · 版本 {SHOWCASE_PROJECT.version} · 更新于 {SHOWCASE_PROJECT.updatedAt}
-          </p>
-          <div className="flex items-center gap-4 text-xs text-[var(--ui-muted)]">
+        <div className="ui-container grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+          <div className="flex min-w-0 items-center gap-4">
+            <div className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-[var(--ui-radius-sm)] border border-[var(--ui-line)] bg-white p-1.5">
+              <Image
+                src={SHOWCASE_PROJECT.company.logoUrl}
+                alt={`${SHOWCASE_PROJECT.company.name} Logo`}
+                width={64}
+                height={64}
+                className="size-full object-contain"
+              />
+            </div>
+            <div className="min-w-0">
+              <p className="font-black text-[var(--ui-ink)]">{SHOWCASE_PROJECT.company.name}</p>
+              <p className="mt-1 text-xs leading-5 text-[var(--ui-muted)]">
+                {SHOWCASE_PROJECT.name} 运营主体 · {SHOWCASE_PROJECT.icp} · {SHOWCASE_PROJECT.company.contactEmail}
+              </p>
+              <p className="mt-1 text-xs text-[var(--ui-faint)]">
+                版本 {SHOWCASE_PROJECT.version} · 更新于 {SHOWCASE_PROJECT.updatedAt}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--ui-muted)]">
             <Link href="/showcase" className="hover:text-[var(--ui-brand)]">尽调入口</Link>
             <Link href="/showcase/judge" className="hover:text-[var(--ui-brand)]">评委</Link>
             <Link href="/showcase/investor" className="hover:text-[var(--ui-brand)]">投资人</Link>
