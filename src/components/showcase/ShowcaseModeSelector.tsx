@@ -19,7 +19,7 @@ export default function ShowcaseModeSelector() {
             <span className="grid size-9 place-items-center rounded-[var(--ui-radius-sm)] bg-[var(--ui-brand)] font-black text-white">L</span>
             <span>
               <strong className="block text-sm">{SHOWCASE_PROJECT.name}</strong>
-              <small className="text-[var(--ui-muted)]">外部尽调整理</small>
+              <small className="text-[var(--ui-muted)]">比赛展示与外部尽调</small>
             </span>
           </Link>
           <Link href="/" target="_blank" className="ui-button-secondary text-xs">
@@ -33,8 +33,8 @@ export default function ShowcaseModeSelector() {
           <div className="text-center">
             <p className="ui-eyebrow">{SHOWCASE_PROJECT.name} 外部尽调</p>
             <h1 className="ui-title mt-3 text-3xl sm:text-4xl">选择您的查看视角</h1>
-            <p className="ui-muted mx-auto mt-4 max-w-xl leading-7">
-              三种受众模式共用同一套真实数据，仅改变排序和叙事方式。所有内容来自统一配置，后台修改后前台即时生效。
+            <p className="ui-muted mx-auto mt-4 max-w-2xl leading-7">
+              三种视角共用同一套主体信息和产品状态，只改变排序与叙事重点。公司资料和发布状态来自版本配置；可编辑章节、文件与访问记录由后台比赛中心管理。
             </p>
           </div>
 
@@ -64,10 +64,10 @@ export default function ShowcaseModeSelector() {
 
           <div className="mt-10 rounded-[var(--ui-radius-lg)] border border-[var(--ui-line)] bg-[var(--ui-surface-muted)] p-6 text-center">
             <p className="text-sm font-bold text-[var(--ui-muted)]">
-              当前阶段：{SHOWCASE_PROJECT.fullName}
+              运营主体：{SHOWCASE_PROJECT.company.name}
             </p>
             <p className="mt-2 text-xs text-[var(--ui-faint)]">
-              版本 {SHOWCASE_PROJECT.version} · 更新于 {SHOWCASE_PROJECT.updatedAt} · 所有数据来自统一配置内核
+              版本 {SHOWCASE_PROJECT.version} · 更新于 {SHOWCASE_PROJECT.updatedAt} · {SHOWCASE_PROJECT.icp}
             </p>
           </div>
         </div>
