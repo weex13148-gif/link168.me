@@ -360,8 +360,12 @@ export async function POST(request: Request) {
         price: product.priceText,
         category: product.category,
       };
+    } else {
+      return NextResponse.json(
+        { success: false, error: "所选产品不存在、已下架或不属于当前主页。" },
+        { status: 400 },
+      );
     }
-    // 产品不存在、已下架或不属于当前用户：不建立关联，静默忽略
   }
 
   // 创建 Lead（包含产品快照）

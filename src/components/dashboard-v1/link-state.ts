@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import type { DashboardLink, LinkDraft, SaveState } from "@/components/dashboard-v1/types";
-import { createLinkRequest, deleteLinkRequest, reorderLinksRequest, updateLinkRequest } from "@/components/dashboard-v1/dashboard-api";
+import { createLinkRequest, deleteLinkRequest, reorderLinksRequest, toggleLinkRequest, updateLinkRequest } from "@/components/dashboard-v1/dashboard-api";
 
 function draftFromLink(link: DashboardLink): LinkDraft {
   return {
@@ -97,7 +97,7 @@ export function useDashboardLinks({
     setBusyLinkId(link.id);
     setGlobalSaveState("saving");
     try {
-      const result = await updateLinkRequest(link, draftFromLink(link), !link.is_active);
+      const result = await toggleLinkRequest(link.id, !link.is_active);
       if (!result.ok) {
         setGlobalSaveState("error");
         showToast(result.error, "error");

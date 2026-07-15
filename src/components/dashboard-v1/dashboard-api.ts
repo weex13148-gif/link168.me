@@ -189,6 +189,19 @@ export async function updateLinkRequest(link: DashboardLink, draft: LinkDraft, i
   return { ok: true, data: data.link };
 }
 
+export async function toggleLinkRequest(linkId: string, isActive: boolean): Promise<ApiResult<DashboardLink>> {
+  const response = await fetch(`/api/dashboard/links/${linkId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ isActive }),
+  });
+  const data = await readJson<{ success?: boolean; link?: DashboardLink; error?: string }>(response);
+  if (!response.ok || !data.success || !data.link) {
+    return { ok: false, error: data.error || "内容状态更新失败。", status: response.status };
+  }
+  return { ok: true, data: data.link };
+}
+
 export async function deleteLinkRequest(linkId: string): Promise<ApiResult<null>> {
   const response = await fetch(`/api/dashboard/links/${linkId}`, { method: "DELETE" });
   const data = await readJson<{ success?: boolean; error?: string }>(response);

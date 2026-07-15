@@ -20,6 +20,8 @@ import {
 } from "@/lib/content-safety";
 import { sanitizePublicUrl } from "@/lib/public-url-security";
 import { revalidatePublicProfileByUser } from "@/lib/cache/public-profile";
+import { collectManagedMediaUrls } from "@/lib/owned-media";
+import { cleanupOwnedMediaUrls } from "@/lib/owned-media-lifecycle";
 
 export const runtime = "nodejs";
 
@@ -131,9 +133,10 @@ export async function PUT(
     );
   }
 
+  const hasCoverImageUrl = Object.prototype.hasOwnProperty.call(body, "coverImageUrl");
   const coverImageUrlRaw = normalizeNullableString(body.coverImageUrl);
-  const coverImageUrl = coverImageUrlRaw
-    ? sanitizePublicUrl(coverImageUrlRaw).url ?? null
+  const coverImageUrl = hasCoverImageUrl
+    ? coverImageUrlRaw ? sanitizePublicUrl(coverImageUrlRaw).url ?? null : null
     : existing.coverImageUrl;
 
   const ctaUrlRaw = normalizeNullableString(body.ctaUrl);
@@ -171,9 +174,22 @@ export async function PUT(
     },
   });
 
+  const profile = await db.profile.findUnique({
+    where: { userId: user.id },
+    select: { id: true },
+  });
+  const mediaCleanup = profile && existing.coverImageUrl !== updated.coverImageUrl
+    ? await cleanupOwnedMediaUrls(collectManagedMediaUrls(existing.coverImageUrl), profile.id)
+    : [];
+
   await revalidatePublicProfileByUser(user.id);
 
-  return NextResponse.json({ success: true, product: toProductDto(updated) });
+  return NextResponse.json({
+    success: true,
+    product: toProductDto(updated),
+    mediaCleanup,
+    mediaCleanupOk: mediaCleanup.every((result) => result.status !== "failed"),
+  });
 }
 
 export async function DELETE(
@@ -197,7 +213,19 @@ export async function DELETE(
 
   await db.product.delete({ where: { id } });
 
+  const profile = await db.profile.findUnique({
+    where: { userId: user.id },
+    select: { id: true },
+  });
+  const mediaCleanup = profile
+    ? await cleanupOwnedMediaUrls(collectManagedMediaUrls(existing.coverImageUrl), profile.id)
+    : [];
+
   await revalidatePublicProfileByUser(user.id);
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({
+    success: true,
+    mediaCleanup,
+    mediaCleanupOk: mediaCleanup.every((result) => result.status !== "failed"),
+  });
 }

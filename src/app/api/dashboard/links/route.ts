@@ -9,6 +9,10 @@ import { getUserEntitlements } from "@/lib/billing/entitlements";
 import { isModuleType, validateModulePayload } from "@/features/profile-modules/validators";
 import { getModuleDefinition } from "@/features/profile-modules/registry";
 import { allowedIconTypes, normalizePlatformIconKey } from "@/lib/link-icons";
+import {
+  ProductBindingError,
+  hydrateOwnedActiveProductCardPayload,
+} from "@/lib/products/binding";
 
 export const runtime = "nodejs";
 
@@ -244,6 +248,18 @@ export async function POST(request: Request) {
       }
     } catch {
       // 如果 JSON 解析失败，保留原始 payloadJson
+    }
+  }
+
+  if (componentType === "product-card") {
+    try {
+      const payload = payloadJson ? JSON.parse(payloadJson) as Record<string, unknown> : {};
+      payloadJson = JSON.stringify(await hydrateOwnedActiveProductCardPayload(user.id, payload));
+    } catch (error) {
+      if (error instanceof ProductBindingError) {
+        return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+      }
+      return NextResponse.json({ success: false, error: "产品绑定校验失败。" }, { status: 400 });
     }
   }
 

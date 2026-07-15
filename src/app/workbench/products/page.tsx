@@ -16,7 +16,7 @@ export default async function WorkbenchProductsPage() {
   const [products, profile] = await Promise.all([
     db.product.findMany({
       where: { userId: user.id },
-      orderBy: [{ isActive: "desc" }, { sortOrder: "asc" }, { createdAt: "desc" }],
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
     }),
     db.profile.findUnique({ where: { userId: user.id } }),
   ]);

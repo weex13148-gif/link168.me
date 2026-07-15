@@ -14,6 +14,17 @@ import { AddModuleDrawer } from "@/components/dashboard-v1/AddModuleDrawer";
 import { getModuleDefinition, listAllModules } from "@/features/profile-modules";
 import type { ProfileModuleType, CarouselImageItem } from "@/features/profile-modules";
 
+type ProductOption = {
+  id: string;
+  name: string;
+  category: string | null;
+  description: string | null;
+  price_text: string | null;
+  cover_image_url: string | null;
+  cta_label: string | null;
+  cta_url: string | null;
+};
+
 function parsePayloadJson(value: string | null | undefined): Record<string, unknown> {
   if (!value) return {};
   try { return JSON.parse(value) as Record<string, unknown>; } catch { return {}; }
@@ -508,7 +519,14 @@ function needsIconEditor(ct: LinkComponentType | undefined): boolean {
   return ct === "link";
 }
 
-function DynamicFields({ draft, onChange, isNew }: { draft: LinkDraft; onChange: (patch: Partial<LinkDraft>) => void; isNew?: boolean }) {
+function DynamicFields({ draft, onChange, isNew, products, productsLoading, productsError }: {
+  draft: LinkDraft;
+  onChange: (patch: Partial<LinkDraft>) => void;
+  isNew?: boolean;
+  products: ProductOption[];
+  productsLoading: boolean;
+  productsError: string;
+}) {
   const ct = draft.componentType || "link";
   const labelClass = isNew ? "text-sm font-black" : "text-xs font-black ui-muted";
 
@@ -852,35 +870,48 @@ function DynamicFields({ draft, onChange, isNew }: { draft: LinkDraft; onChange:
 
       {ct === "product-card" ? (
         <>
-          <label className="grid gap-2">
-            <span className={labelClass}>产品 ID（选填）</span>
-            <input value={payloadField(draft.payloadJson, "productId")} onChange={(event) => updatePayload("productId", event.target.value)} maxLength={80} placeholder="关联 Product.id" className="ui-input" />
-          </label>
-          <label className="grid gap-2">
-            <span className={labelClass}>名称</span>
-            <input value={payloadField(draft.payloadJson, "name") || draft.title} onChange={(event) => { onChange({ title: event.target.value }); updatePayload("name", event.target.value); }} maxLength={60} placeholder="产品名称" className="ui-input" />
-          </label>
-          <label className="grid gap-2">
-            <span className={labelClass}>分类</span>
-            <input value={payloadField(draft.payloadJson, "category")} onChange={(event) => updatePayload("category", event.target.value)} maxLength={50} placeholder="例如：咨询服务" className="ui-input" />
-          </label>
-          <label className="grid gap-2">
-            <span className={labelClass}>价格</span>
-            <input value={payloadField(draft.payloadJson, "priceText")} onChange={(event) => updatePayload("priceText", event.target.value)} maxLength={50} placeholder="例如：¥299 起" className="ui-input" />
-          </label>
           <label className="grid gap-2 lg:col-span-2">
-            <span className={labelClass}>简介</span>
-            <textarea value={payloadField(draft.payloadJson, "description") || draft.description} onChange={(event) => { onChange({ description: event.target.value }); updatePayload("description", event.target.value); }} maxLength={300} rows={2} placeholder="产品简介" className="ui-input min-h-[60px] resize-y" />
+            <span className={labelClass}>选择已上架产品</span>
+            <select
+              value={payloadField(draft.payloadJson, "productId")}
+              disabled={productsLoading}
+              onChange={(event) => {
+                const product = products.find((item) => item.id === event.target.value);
+                if (!product) return;
+                onChange({
+                  title: product.name,
+                  description: product.description || "",
+                  url: product.cta_url || "",
+                  payloadJson: JSON.stringify({
+                    productId: product.id,
+                    name: product.name,
+                    ...(product.category ? { category: product.category } : {}),
+                    ...(product.description ? { description: product.description } : {}),
+                    ...(product.price_text ? { priceText: product.price_text } : {}),
+                    ...(product.cover_image_url ? { coverImageUrl: product.cover_image_url } : {}),
+                    ...(product.cta_label ? { ctaLabel: product.cta_label } : {}),
+                    ...(product.cta_url ? { ctaUrl: product.cta_url } : {}),
+                  }),
+                });
+              }}
+              className="ui-input"
+            >
+              <option value="">{productsLoading ? "正在加载产品…" : "请选择产品"}</option>
+              {payloadField(draft.payloadJson, "productId") && !products.some((item) => item.id === payloadField(draft.payloadJson, "productId")) ? (
+                <option value={payloadField(draft.payloadJson, "productId")} disabled>当前绑定产品已下架，请重新选择</option>
+              ) : null}
+              {products.map((product) => <option key={product.id} value={product.id}>{product.name}{product.price_text ? ` · ${product.price_text}` : ""}</option>)}
+            </select>
+            {productsError ? <span className="text-xs text-[var(--ui-danger)]">{productsError}</span> : null}
+            {!productsLoading && !productsError && products.length === 0 ? <span className="text-xs ui-muted">请先在“产品与服务”中新增并上架产品。</span> : null}
           </label>
-          <ImageUploadField label="封面图片" value={payloadField(draft.payloadJson, "coverImageUrl")} onChange={(url) => updatePayload("coverImageUrl", url)} uploadType="cover" labelClass={labelClass} />
-          <label className="grid gap-2">
-            <span className={labelClass}>按钮名称</span>
-            <input value={payloadField(draft.payloadJson, "ctaLabel")} onChange={(event) => updatePayload("ctaLabel", event.target.value)} maxLength={30} placeholder="例如：查看详情" className="ui-input" />
-          </label>
-          <label className="grid gap-2">
-            <span className={labelClass}>按钮链接</span>
-            <input value={payloadField(draft.payloadJson, "ctaUrl")} onChange={(event) => updatePayload("ctaUrl", event.target.value)} placeholder="https://..." className="ui-input" />
-          </label>
+          {payloadField(draft.payloadJson, "productId") ? (
+            <div className="rounded-xl border border-[var(--ui-line)] bg-white p-4 lg:col-span-2">
+              <p className="font-black text-[var(--ui-ink)]">{payloadField(draft.payloadJson, "name") || draft.title}</p>
+              <p className="mt-1 text-xs ui-muted">{[payloadField(draft.payloadJson, "category"), payloadField(draft.payloadJson, "priceText")].filter(Boolean).join(" · ") || "已绑定产品"}</p>
+              {payloadField(draft.payloadJson, "description") ? <p className="mt-2 text-sm leading-6 ui-muted">{payloadField(draft.payloadJson, "description")}</p> : null}
+            </div>
+          ) : null}
         </>
       ) : null}
 
@@ -1378,7 +1409,7 @@ function isDraftValid(draft: LinkDraft): boolean {
     if (!payloadField(draft.payloadJson, "url").trim()) return false;
   }
   if (ct === "product-card") {
-    if (!payloadField(draft.payloadJson, "name").trim() && !draft.title.trim()) return false;
+    if (!payloadField(draft.payloadJson, "productId").trim()) return false;
   }
   if (ct === "service-card") {
     if (!payloadField(draft.payloadJson, "name").trim() && !draft.title.trim()) return false;
@@ -1414,8 +1445,23 @@ export function LinksPanel({ links, isPaid, planLabel, creating, busyLinkId, onC
   const [expandedId, setExpandedId] = useState<string>("");
   const [drafts, setDrafts] = useState<Record<string, LinkDraft>>({});
   const [addModuleOpen, setAddModuleOpen] = useState(false);
+  const [products, setProducts] = useState<ProductOption[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState("");
 
   useEffect(() => { setDrafts((current) => { const next: Record<string, LinkDraft> = {}; for (const link of links) next[link.id] = current[link.id] || draftFromLink(link); return next; }); }, [links]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/dashboard/products?active=1")
+      .then(async (response) => {
+        const data = await response.json() as { success?: boolean; products?: ProductOption[]; error?: string };
+        if (!response.ok || !data.success) throw new Error(data.error || "产品加载失败");
+        if (!cancelled) setProducts(data.products || []);
+      })
+      .catch((error) => { if (!cancelled) setProductsError(error instanceof Error ? error.message : "产品加载失败"); })
+      .finally(() => { if (!cancelled) setProductsLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
   const orderedLinks = useMemo(() => [...links].sort((a, b) => a.position - b.position), [links]);
 
   async function createLink(event: React.FormEvent<HTMLFormElement>) {
@@ -1596,7 +1642,7 @@ export function LinksPanel({ links, isPaid, planLabel, creating, busyLinkId, onC
               </div>
             </label>
 
-            <DynamicFields draft={newDraft} onChange={(patch) => setNewDraft((current) => ({ ...current, ...patch }))} isNew />
+            <DynamicFields draft={newDraft} onChange={(patch) => setNewDraft((current) => ({ ...current, ...patch }))} isNew products={products} productsLoading={productsLoading} productsError={productsError} />
           </div>
 
           <div className="mt-5 grid gap-2 border-t border-[var(--ui-line)] pt-5 sm:flex sm:justify-end sm:gap-2">
@@ -1679,7 +1725,7 @@ export function LinksPanel({ links, isPaid, planLabel, creating, busyLinkId, onC
                           </div>
                         </label>
 
-                        <DynamicFields draft={draft} onChange={(patch) => updateDraft(link.id, patch)} />
+                        <DynamicFields draft={draft} onChange={(patch) => updateDraft(link.id, patch)} products={products} productsLoading={productsLoading} productsError={productsError} />
                       </div>
 
                       <div className="mt-4 grid gap-2 border-t border-[var(--ui-line)] pt-3 sm:mt-5 sm:flex sm:flex-wrap sm:items-center sm:justify-end sm:gap-2 sm:pt-4">
