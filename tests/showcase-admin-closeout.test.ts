@@ -10,6 +10,7 @@ function read(relativePath: string) {
 describe("Showcase and Jeepwork release closeout", () => {
   test("showcase publishes the verified company identity without legacy placeholders", () => {
     const source = read("src/lib/showcase-config.ts");
+    const layout = read("src/components/showcase/ShowcaseLayout.tsx");
 
     expect(source).toContain("合肥造梦哈勃文化传媒有限公司");
     expect(source).toContain("91340104MADEECUN15");
@@ -20,6 +21,9 @@ describe("Showcase and Jeepwork release closeout", () => {
     expect(source).toContain("皖ICP备2026018031号-1");
     expect(source).toContain("business@link168.me");
     expect(source).toContain("/company/zaomeng-hubble-logo.webp");
+    expect(layout).toContain("SHOWCASE_PROJECT.company.logoUrl");
+    expect(layout).toContain("SHOWCASE_PROJECT.company.name");
+    expect(layout).toContain("SHOWCASE_PROJECT.icp");
 
     expect(source).not.toMatch(/未备案|待补充主体名称|每日重置数据/);
     expect(source).not.toContain('username: "demo"');
