@@ -56,15 +56,13 @@
 ### 3.1 仓库
 
 - GitHub：`weex13148-gif/link168.me`
-- 默认分支：`master`
-- `master` 当前仍属于较早 MVP 基线，不能自动代表最近 D2/D4 修复结果。
-- D2 审查分支：`review/d2-domain-fix`
-- D2 已知 HEAD：`7e23ddd2d2ef96a39e7ac63a1e93ee8d194221ab`
-- D4 审查分支：`review/d4-enterprise-quota-fix`
-- D4 已知 HEAD：`a0e50d9d73f5317985519c0b73b0a9602beca828`
-- 当前文档分支：`docs/link168-prd-constitution-20260714`
+- 唯一 MVP 开发主线：`integration/mvp-closeout-r1`
+- 已验证 P0/P1 代码 SHA：`11afec7193d7569e2b31a8761dfe3b4bfbc51567`
+- `master`：仅作为生产发布分支，不直接承接 MVP 开发。
+- `codex/link168-v2-direction`：历史参考分支，停止继续开发。
+- `review/d2-domain-fix`、`review/d4-enterprise-quota-fix` 和 `docs/link168-prd-constitution-20260714`：历史审查或文档来源，不是并行开发主线。
 
-当前没有一条已经独立验收、同时包含 D2、D4、用户装修闭环和本 PRD 全部要求的正式集成分支。
+P0/P1 收口证据与仍待真实外部服务验证的边界见 `docs/superpowers/reports/2026-07-15-mvp-launch-readiness.md`。
 
 ### 3.2 正式文档
 
