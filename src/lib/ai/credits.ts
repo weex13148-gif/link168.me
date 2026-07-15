@@ -27,6 +27,32 @@ export function createAiCreditOperationId() {
   return crypto.randomUUID();
 }
 
+/**
+ * 验证客户端传入的幂等键。
+ * 必须是非空字符串，长度 1-128。
+ */
+export function validateIdempotencyKey(key: unknown): string | null {
+  if (typeof key !== "string") return null;
+  const trimmed = key.trim();
+  if (trimmed.length === 0 || trimmed.length > 128) return null;
+  return trimmed;
+}
+
+/**
+ * 将客户端幂等键绑定到服务端用户上下文，防止跨用户复用。
+ */
+export function bindIdempotencyKey(
+  userId: string,
+  rawKey: string,
+  context?: { profileId?: string; conversationId?: string },
+): string {
+  const parts = [userId];
+  if (context?.profileId) parts.push(context.profileId);
+  if (context?.conversationId) parts.push(context.conversationId);
+  parts.push(rawKey);
+  return parts.join(":");
+}
+
 export async function getAiCreditBalance(userId: string): Promise<AiCreditBalance> {
   const account = await db.aiCreditAccount.upsert({
     where: { userId },

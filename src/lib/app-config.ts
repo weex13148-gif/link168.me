@@ -43,8 +43,19 @@ import {
 const ENCRYPTION_ALGORITHM = "aes-256-gcm";
 
 function getEncryptionKey(): Buffer {
-  const secret = process.env.CONFIG_ENCRYPTION_KEY || process.env.ADMIN_SECRET || "link168-default-encryption-key-please-change-2025";
-  return crypto.createHash("sha256").update(secret).digest();
+  const isProd = process.env.NODE_ENV === "production";
+  const explicitKey = process.env.CONFIG_ENCRYPTION_KEY;
+
+  if (isProd) {
+    if (!explicitKey || explicitKey.length < 16) {
+      throw new Error("生产环境必须配置安全且长度不少于 16 字符的 CONFIG_ENCRYPTION_KEY");
+    }
+    return crypto.createHash("sha256").update(explicitKey).digest();
+  }
+
+  // 开发/测试环境：允许使用 CONFIG_ENCRYPTION_KEY 或明确的测试密钥，禁止静默回退到 ADMIN_SECRET 或公开默认值
+  const devKey = explicitKey || "link168-test-encryption-key-for-dev-only";
+  return crypto.createHash("sha256").update(devKey).digest();
 }
 
 function encryptSensitive(value: string): string {

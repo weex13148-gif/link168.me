@@ -50,12 +50,28 @@ const MODULES: ProfileModuleDefinition[] = [
     free: true,
   },
   {
+    type: "email",
+    label: "邮箱地址",
+    description: "展示邮箱地址",
+    iconName: "Mail",
+    category: "contact",
+    free: true,
+  },
+  {
+    type: "address",
+    label: "联系地址",
+    description: "展示联系地址",
+    iconName: "MapPin",
+    category: "contact",
+    free: true,
+  },
+  {
     type: "shop",
     label: "商品服务",
     description: "展示商品或服务卡片",
     iconName: "ShoppingBag",
     category: "commerce",
-    free: false,
+    free: true,
   },
   {
     type: "product-card",
@@ -63,7 +79,7 @@ const MODULES: ProfileModuleDefinition[] = [
     description: "展示产品信息并收集咨询线索",
     iconName: "Package",
     category: "commerce",
-    free: false,
+    free: true,
   },
   {
     type: "service-card",
@@ -71,7 +87,7 @@ const MODULES: ProfileModuleDefinition[] = [
     description: "展示服务信息并支持咨询或预约",
     iconName: "ConciergeBell",
     category: "commerce",
-    free: false,
+    free: true,
   },
   {
     type: "offer",
@@ -79,7 +95,23 @@ const MODULES: ProfileModuleDefinition[] = [
     description: "展示优惠或报价咨询入口",
     iconName: "Gift",
     category: "commerce",
-    free: false,
+    free: true,
+  },
+  {
+    type: "quote",
+    label: "报价咨询",
+    description: "收集客户需求并创建报价线索",
+    iconName: "ReceiptText",
+    category: "commerce",
+    free: true,
+  },
+  {
+    type: "contact-form",
+    label: "联系表单",
+    description: "收集访客联系方式和留言",
+    iconName: "MessageSquareText",
+    category: "contact",
+    free: true,
   },
   {
     type: "booking",
@@ -87,13 +119,13 @@ const MODULES: ProfileModuleDefinition[] = [
     description: "接受预约咨询",
     iconName: "Calendar",
     category: "commerce",
-    free: false,
+    free: true,
   },
   {
     type: "map",
     label: "地图位置",
-    description: "展示门店或地址",
-    iconName: "MapPin",
+    description: "展示门店或地址地图",
+    iconName: "Map",
     category: "contact",
     free: true,
   },
@@ -119,7 +151,7 @@ const MODULES: ProfileModuleDefinition[] = [
     description: "展示单张图片",
     iconName: "Image",
     category: "image",
-    free: false,
+    free: true,
   },
   {
     type: "popup-image",
@@ -127,7 +159,7 @@ const MODULES: ProfileModuleDefinition[] = [
     description: "缩略图点击放大查看",
     iconName: "Maximize2",
     category: "image",
-    free: false,
+    free: true,
   },
   {
     type: "carousel",
@@ -135,7 +167,7 @@ const MODULES: ProfileModuleDefinition[] = [
     description: "多张图片轮播展示",
     iconName: "Images",
     category: "image",
-    free: false,
+    free: true,
   },
   {
     type: "bilibili-video",
@@ -212,4 +244,17 @@ export function listFreeModules(): ProfileModuleDefinition[] {
 
 export function listAllModules(): ProfileModuleDefinition[] {
   return [...MODULES];
+}
+
+// 免费用户可用组件（基础名片 + 基础经营组件，不含 AI 和高级媒体）
+export function isFreeUserAvailable(type: ProfileModuleType): boolean {
+  const paidOnlyTypes: ProfileModuleType[] = [
+    "ai-chat",
+    "bilibili-video",
+    "youtube-video",
+    "video-link",
+    "netease-music",
+    "music-link",
+  ];
+  return !paidOnlyTypes.includes(type);
 }

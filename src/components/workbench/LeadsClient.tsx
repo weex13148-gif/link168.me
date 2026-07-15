@@ -56,6 +56,7 @@ type LeadItem = {
   source_component: string | null;
   source_page: string | null;
   status: string;
+  is_historical_status?: boolean;
   status_is_legacy?: boolean;
   status_display?: string | null;
   handler_note: string | null;
@@ -83,14 +84,24 @@ type PaginationInfo = {
   totalPages: number;
 };
 
-const VALID_STATUSES = ["new", "contacted", "following", "converted", "closed"] as const;
+// 统一新状态
+const VALID_STATUSES = ["new", "viewed", "following_up", "won", "closed"] as const;
 type ValidStatus = typeof VALID_STATUSES[number];
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; dot: string }> = {
-  new: { label: "新线索", color: "text-[#B42318]", bg: "bg-[#FFE6E2]", dot: "bg-[#B42318]" },
+// 历史状态兼容显示
+const HISTORICAL_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; dot: string }> = {
   contacted: { label: "待联系", color: "text-[#2563EB]", bg: "bg-[#EAF3FF]", dot: "bg-[#2563EB]" },
   following: { label: "跟进中", color: "text-[#8C612E]", bg: "bg-[#F6E7C8]", dot: "bg-[#8C612E]" },
   converted: { label: "已成交", color: "text-[#3F5F31]", bg: "bg-[#DDE8CD]", dot: "bg-[#3F5F31]" },
+  qualified: { label: "已确认", color: "text-[#8C612E]", bg: "bg-[#F6E7C8]", dot: "bg-[#8C612E]" },
+  lost: { label: "已流失", color: "text-[#7A6D5E]", bg: "bg-[#F7F1E7]", dot: "bg-[#7A6D5E]" },
+};
+
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; dot: string }> = {
+  new: { label: "新线索", color: "text-[#B42318]", bg: "bg-[#FFE6E2]", dot: "bg-[#B42318]" },
+  viewed: { label: "已查看", color: "text-[#2563EB]", bg: "bg-[#EAF3FF]", dot: "bg-[#2563EB]" },
+  following_up: { label: "跟进中", color: "text-[#8C612E]", bg: "bg-[#F6E7C8]", dot: "bg-[#8C612E]" },
+  won: { label: "已成交", color: "text-[#3F5F31]", bg: "bg-[#DDE8CD]", dot: "bg-[#3F5F31]" },
   closed: { label: "已关闭", color: "text-[#7A6D5E]", bg: "bg-[#F7F1E7]", dot: "bg-[#7A6D5E]" },
 };
 
@@ -105,6 +116,8 @@ const SOURCE_LABELS: Record<string, string> = {
   "ai-chat": "AI 接待",
   contact_form: "联系表单",
   product_card: "产品咨询",
+  service_card: "服务咨询",
+  offer: "优惠活动",
   quote: "报价咨询",
   unknown: "未知来源",
 };
@@ -114,6 +127,8 @@ const SOURCE_OPTIONS = [
   { value: "ai-chat", label: "AI 对话" },
   { value: "contact_form", label: "联系表单" },
   { value: "product_card", label: "产品咨询" },
+  { value: "service_card", label: "服务咨询" },
+  { value: "offer", label: "优惠活动" },
   { value: "booking", label: "预约申请" },
   { value: "quote", label: "报价咨询" },
   { value: "link", label: "链接组件" },
@@ -164,15 +179,20 @@ function formatDate(date: Date): string {
 }
 
 function getStatusDisplay(lead: LeadItem) {
-  if (lead.status_is_legacy) {
-    return {
-      label: lead.status_display || "未知状态",
-      color: "text-[#B42318]",
-      bg: "bg-[#FFE6E2]",
-      dot: "bg-[#B42318]",
+  if (lead.is_historical_status) {
+    return HISTORICAL_STATUS_CONFIG[lead.status] ?? {
+      label: lead.status,
+      color: "text-[#7A6D5E]",
+      bg: "bg-[#F7F1E7]",
+      dot: "bg-[#7A6D5E]",
     };
   }
-  return STATUS_CONFIG[lead.status] ?? { label: "未知状态", color: "text-[#B42318]", bg: "bg-[#FFE6E2]", dot: "bg-[#B42318]" };
+  return STATUS_CONFIG[lead.status] ?? {
+    label: lead.status,
+    color: "text-[#7A6D5E]",
+    bg: "bg-[#F7F1E7]",
+    dot: "bg-[#7A6D5E]",
+  };
 }
 
 function getProductSnapshotStatus(lead: LeadItem) {
@@ -234,12 +254,17 @@ type Props = {
   initialStats?: {
     total: number;
     new: number;
-    contacted: number;
-    following: number;
-    converted: number;
+    viewed: number;
+    following_up: number;
+    won: number;
     closed: number;
-    legacyQualified?: number;
-    legacyLost?: number;
+    historical?: {
+      contacted: number;
+      following: number;
+      converted: number;
+      qualified: number;
+      lost: number;
+    };
   };
 };
 
@@ -321,18 +346,18 @@ export default function LeadsClient({ initialLeads, initialStats }: Props) {
   const displayStats = stats ?? {
     total: leads.length,
     new: leads.filter((l) => l.status === "new").length,
-    contacted: leads.filter((l) => l.status === "contacted").length,
-    following: leads.filter((l) => l.status === "following").length,
-    converted: leads.filter((l) => l.status === "converted").length,
+    viewed: leads.filter((l) => l.status === "viewed").length,
+    following_up: leads.filter((l) => l.status === "following_up").length,
+    won: leads.filter((l) => l.status === "won").length,
     closed: leads.filter((l) => l.status === "closed").length,
   };
 
   const filterTabs = [
     { key: "all", label: "全部", count: displayStats.total },
     { key: "new", label: "新线索", count: displayStats.new },
-    { key: "contacted", label: "待联系", count: displayStats.contacted },
-    { key: "following", label: "跟进中", count: displayStats.following },
-    { key: "converted", label: "已成交", count: displayStats.converted },
+    { key: "viewed", label: "已查看", count: displayStats.viewed },
+    { key: "following_up", label: "跟进中", count: displayStats.following_up },
+    { key: "won", label: "已成交", count: displayStats.won },
     { key: "closed", label: "已关闭", count: displayStats.closed },
   ];
 
@@ -620,10 +645,10 @@ export default function LeadsClient({ initialLeads, initialStats }: Props) {
                           <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-black ${cfg.bg} ${cfg.color}`}>
                             {cfg.label}
                           </span>
-                          {lead.status_is_legacy && (
+                          {lead.is_historical_status && (
                             <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold text-[#B42318] bg-[#FFE6E2] flex items-center gap-1">
                               <AlertTriangle className="size-3" />
-                              需处理
+                              历史
                             </span>
                           )}
                         </div>
@@ -787,10 +812,10 @@ export default function LeadsClient({ initialLeads, initialStats }: Props) {
                       );
                     })()}
                   </div>
-                  {detail.status_is_legacy && (
+                  {detail.is_historical_status && (
                     <div className="mt-1 flex items-center gap-1 text-xs text-[#B42318]">
                       <AlertTriangle className="size-3" />
-                      未知状态值: {detail.status}，请更新状态
+                      历史状态值: {detail.status}，建议更新为新状态
                     </div>
                   )}
                   <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[#7A6D5E]">
@@ -910,7 +935,7 @@ export default function LeadsClient({ initialLeads, initialStats }: Props) {
                                 {formatFullTime(fu.created_at)}
                                 {isStatusChange && fu.previous_status && fu.new_status && (
                                   <span className="ml-2 text-[#2563EB]">
-                                    状态: {STATUS_CONFIG[fu.previous_status]?.label ?? fu.previous_status} → {STATUS_CONFIG[fu.new_status]?.label ?? fu.new_status}
+                                    状态: {(STATUS_CONFIG[fu.previous_status] || HISTORICAL_STATUS_CONFIG[fu.previous_status])?.label ?? fu.previous_status} → {(STATUS_CONFIG[fu.new_status] || HISTORICAL_STATUS_CONFIG[fu.new_status])?.label ?? fu.new_status}
                                   </span>
                                 )}
                               </p>
@@ -971,7 +996,7 @@ export default function LeadsClient({ initialLeads, initialStats }: Props) {
               <div className="mt-4">
                 <p className="mb-2 text-xs font-bold text-[#7A6D5E]">更新状态</p>
                 <div className="grid grid-cols-5 gap-2">
-                  {(["new", "contacted", "following", "converted", "closed"] as const).map((key) => {
+                  {(["new", "viewed", "following_up", "won", "closed"] as const).map((key) => {
                     const cfg = STATUS_CONFIG[key];
                     const active = detail.status === key;
                     return (
@@ -985,7 +1010,7 @@ export default function LeadsClient({ initialLeads, initialStats }: Props) {
                             : "bg-[#F7F1E7] text-[#7A6D5E] hover:bg-[#F2E7D8]"
                         }`}
                       >
-                        {key === "converted" ? (
+                        {key === "won" ? (
                           <CheckCircle2 aria-hidden className="size-5" />
                         ) : key === "closed" ? (
                           <XCircle aria-hidden className="size-5" />

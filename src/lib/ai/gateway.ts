@@ -8,7 +8,6 @@ import { detectPromptInjection, sanitizeUserMessage, hasSensitiveContent, modera
 import { getAiQuota, checkUserAiRestricted } from "@/lib/ai/permissions";
 import { getConfig, isAssistantEnabled } from "@/lib/app-config";
 import { logAiRiskEvent, type AiRiskEventType, type AiRiskLevel } from "@/lib/ai/risk-log";
-import { refundCredit } from "@/lib/ai/permissions";
 import crypto from "crypto";
 import { addAiDisclaimer, AI_DISCLAIMER, AI_GENERATED_MARKER } from "@/lib/ai/compliance";
 

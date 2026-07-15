@@ -4,10 +4,26 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ChevronUp, Copy, Eye, EyeOff, Link2, Loader2, Pencil, Plus, Save, Trash2, Upload, X, RefreshCw, PlusCircle, MinusCircle } from "lucide-react";
 import type { DashboardLink, LinkComponentType, LinkDraft } from "@/components/dashboard-v1/types";
 import { emptyLinkDraft, isValidHttpUrl } from "@/components/dashboard-v1/types";
-import { getDefaultIconForUrl } from "@/lib/link-icons";
+import {
+  getDefaultIconForUrl,
+  getPlatformIconOptions,
+  resolvePlatformIcon,
+  type PlatformIconKey,
+} from "@/lib/link-icons";
 import { AddModuleDrawer } from "@/components/dashboard-v1/AddModuleDrawer";
 import { getModuleDefinition, listAllModules } from "@/features/profile-modules";
 import type { ProfileModuleType, CarouselImageItem } from "@/features/profile-modules";
+
+type ProductOption = {
+  id: string;
+  name: string;
+  category: string | null;
+  description: string | null;
+  price_text: string | null;
+  cover_image_url: string | null;
+  cta_label: string | null;
+  cta_url: string | null;
+};
 
 function parsePayloadJson(value: string | null | undefined): Record<string, unknown> {
   if (!value) return {};
@@ -57,6 +73,7 @@ type IconMode = "default" | "emoji" | "custom" | "platform" | "favicon";
 function iconTypeToMode(iconType: string): IconMode {
   if (iconType === "emoji") return "emoji";
   if (iconType === "custom") return "custom";
+  if (iconType === "platform") return "platform";
   return "default";
 }
 
@@ -103,6 +120,10 @@ function LinkIconPreview({ draft, index }: { draft: LinkDraft; index?: number })
   if (draft.iconType === "emoji" && draft.iconValue) {
     return <span className="text-lg">{draft.iconValue}</span>;
   }
+  if (draft.iconType === "platform") {
+    const iconPath = resolvePlatformIcon(draft.iconValue);
+    if (iconPath) return <img src={iconPath} alt="" className="size-full rounded-xl object-cover" />;
+  }
   if (typeof index === "number") {
     return <span className="text-sm font-black">{index + 1}</span>;
   }
@@ -111,6 +132,9 @@ function LinkIconPreview({ draft, index }: { draft: LinkDraft; index?: number })
 
 function IconEditor({ draft, onChange, url, isNew }: { draft: LinkDraft; onChange: (patch: Partial<LinkDraft>) => void; url: string; isNew?: boolean }) {
   const [mode, setMode] = useState<IconMode>(iconTypeToMode(draft.iconType));
+  const [platformSelectionMode, setPlatformSelectionMode] = useState<"auto" | "manual">(
+    draft.iconType === "platform" ? "manual" : "auto",
+  );
   const [faviconLoading, setFaviconLoading] = useState(false);
   const [faviconError, setFaviconError] = useState("");
   const [uploadLoading, setUploadLoading] = useState(false);
@@ -122,11 +146,13 @@ function IconEditor({ draft, onChange, url, isNew }: { draft: LinkDraft; onChang
   }, [draft.iconType]);
 
   useEffect(() => {
-    if (mode === "platform" && url) {
+    if (mode === "platform" && platformSelectionMode === "auto" && url) {
       const icon = getDefaultIconForUrl(url);
-      onChange({ iconType: "emoji", iconValue: icon.iconValue, iconUrl: "" });
+      if (draft.iconType !== icon.iconType || draft.iconValue !== icon.iconValue || draft.iconUrl) {
+        onChange({ iconType: icon.iconType, iconValue: icon.iconValue, iconUrl: "" });
+      }
     }
-  }, [mode, url, onChange]);
+  }, [draft.iconType, draft.iconUrl, draft.iconValue, mode, onChange, platformSelectionMode, url]);
 
   async function handleFaviconFetch() {
     if (!url || !isValidHttpUrl(url)) {
@@ -195,8 +221,9 @@ function IconEditor({ draft, onChange, url, isNew }: { draft: LinkDraft; onChang
     } else if (newMode === "emoji") {
       onChange({ iconType: "emoji", iconValue: draft.iconValue || "🔗", iconUrl: "" });
     } else if (newMode === "platform") {
+      setPlatformSelectionMode("auto");
       const icon = getDefaultIconForUrl(url);
-      onChange({ iconType: "emoji", iconValue: icon.iconValue, iconUrl: "" });
+      onChange({ iconType: icon.iconType, iconValue: icon.iconValue, iconUrl: "" });
     } else if (newMode === "favicon") {
       void handleFaviconFetch();
     } else if (newMode === "custom") {
@@ -240,13 +267,25 @@ function IconEditor({ draft, onChange, url, isNew }: { draft: LinkDraft; onChang
       {mode === "platform" ? (
         <div className="grid gap-2 lg:col-span-2">
           <span className={labelClass}>平台识别</span>
-          <div className="rounded-xl border border-[var(--ui-line)] bg-white p-3 text-sm ui-muted">
-            {url ? (
-              <span>根据网址自动识别为：<strong className="text-base">{getDefaultIconForUrl(url).iconValue} {getDefaultIconForUrl(url).label}</strong></span>
-            ) : (
-              <span>请先填写网址，系统将自动匹配平台图标。</span>
-            )}
+          <div className="flex rounded-lg border border-[var(--ui-line)] bg-[var(--ui-surface-muted)] p-1">
+            <button type="button" onClick={() => { setPlatformSelectionMode("auto"); const icon = getDefaultIconForUrl(url); onChange({ iconType: icon.iconType, iconValue: icon.iconValue, iconUrl: "" }); }} className={`min-h-9 flex-1 rounded-md px-3 text-xs font-black ${platformSelectionMode === "auto" ? "bg-white text-[var(--ui-brand-hover)] shadow-sm" : "ui-muted"}`}>自动识别</button>
+            <button type="button" onClick={() => setPlatformSelectionMode("manual")} className={`min-h-9 flex-1 rounded-md px-3 text-xs font-black ${platformSelectionMode === "manual" ? "bg-white text-[var(--ui-brand-hover)] shadow-sm" : "ui-muted"}`}>手动选择</button>
           </div>
+          {platformSelectionMode === "auto" ? (
+            <div className="rounded-xl border border-[var(--ui-line)] bg-white p-3 text-sm ui-muted">
+              {url ? <span>根据网址识别为：<strong>{getDefaultIconForUrl(url).label}</strong></span> : <span>请先填写网址。</span>}
+            </div>
+          ) : (
+            <select
+              value={draft.iconType === "platform" ? draft.iconValue : ""}
+              onChange={(event) => onChange({ iconType: "platform", iconValue: event.target.value as PlatformIconKey, iconUrl: "" })}
+              className="ui-input"
+              aria-label="选择平台图标"
+            >
+              <option value="" disabled>选择平台</option>
+              {getPlatformIconOptions().map((option) => <option key={option.key} value={option.key}>{option.label}</option>)}
+            </select>
+          )}
         </div>
       ) : null}
 
@@ -372,8 +411,11 @@ function ImageUploadField({
       )}
 
       {value ? (
-        <div className="mt-2 grid size-24 place-items-center overflow-hidden rounded-xl border border-[var(--ui-line)] bg-white">
-          <img src={value} alt="" className="size-full object-cover" />
+        <div className="mt-2 flex items-end gap-2">
+          <div className="grid size-24 place-items-center overflow-hidden rounded-xl border border-[var(--ui-line)] bg-white">
+            <img src={value} alt="" className="size-full object-cover" />
+          </div>
+          <button type="button" onClick={() => onChange("")} className="ui-button-quiet text-[var(--ui-danger)]"><Trash2 className="size-4" />删除图片</button>
         </div>
       ) : null}
       {error ? <p className="text-xs text-[var(--ui-danger)]">{error}</p> : null}
@@ -477,7 +519,14 @@ function needsIconEditor(ct: LinkComponentType | undefined): boolean {
   return ct === "link";
 }
 
-function DynamicFields({ draft, onChange, isNew }: { draft: LinkDraft; onChange: (patch: Partial<LinkDraft>) => void; isNew?: boolean }) {
+function DynamicFields({ draft, onChange, isNew, products, productsLoading, productsError }: {
+  draft: LinkDraft;
+  onChange: (patch: Partial<LinkDraft>) => void;
+  isNew?: boolean;
+  products: ProductOption[];
+  productsLoading: boolean;
+  productsError: string;
+}) {
   const ct = draft.componentType || "link";
   const labelClass = isNew ? "text-sm font-black" : "text-xs font-black ui-muted";
 
@@ -494,7 +543,14 @@ function DynamicFields({ draft, onChange, isNew }: { draft: LinkDraft; onChange:
           </span>
           <input
             value={draft.title}
-            onChange={(event) => onChange({ title: event.target.value })}
+            onChange={(event) => {
+              const title = event.target.value;
+              if (ct === "quote" || ct === "contact-form") {
+                onChange({ title, payloadJson: setPayloadField(draft.payloadJson, "title", title) });
+              } else {
+                onChange({ title });
+              }
+            }}
             maxLength={60}
             placeholder={ct === "group-title" ? "例如：社交媒体" : "例如：我的官方网站"}
             className="ui-input"
@@ -517,7 +573,7 @@ function DynamicFields({ draft, onChange, isNew }: { draft: LinkDraft; onChange:
         </label>
       ) : null}
 
-      {ct === "link" || ct === "shop" || ct === "booking" || ct === "map" ? (
+      {ct === "link" || ct === "shop" || ct === "booking" || ct === "map" || ct === "email" || ct === "address" ? (
         <label className="grid gap-2 lg:col-span-2">
           <span className={labelClass}>描述（选填）</span>
           <input
@@ -593,6 +649,19 @@ function DynamicFields({ draft, onChange, isNew }: { draft: LinkDraft; onChange:
             className="ui-input"
           />
           <span className="text-xs ui-muted">访客点击将直接拨打。</span>
+        </label>
+      ) : null}
+
+      {ct === "email" ? (
+        <label className="grid gap-2">
+          <span className={labelClass}>邮箱地址</span>
+          <input
+            value={draft.url}
+            onChange={(event) => onChange({ url: event.target.value })}
+            placeholder="例如：hello@example.com"
+            className="ui-input"
+          />
+          <span className="text-xs ui-muted">访客点击将唤起邮件客户端。</span>
         </label>
       ) : null}
 
@@ -801,35 +870,48 @@ function DynamicFields({ draft, onChange, isNew }: { draft: LinkDraft; onChange:
 
       {ct === "product-card" ? (
         <>
-          <label className="grid gap-2">
-            <span className={labelClass}>产品 ID（选填）</span>
-            <input value={payloadField(draft.payloadJson, "productId")} onChange={(event) => updatePayload("productId", event.target.value)} maxLength={80} placeholder="关联 Product.id" className="ui-input" />
-          </label>
-          <label className="grid gap-2">
-            <span className={labelClass}>名称</span>
-            <input value={payloadField(draft.payloadJson, "name") || draft.title} onChange={(event) => { onChange({ title: event.target.value }); updatePayload("name", event.target.value); }} maxLength={60} placeholder="产品名称" className="ui-input" />
-          </label>
-          <label className="grid gap-2">
-            <span className={labelClass}>分类</span>
-            <input value={payloadField(draft.payloadJson, "category")} onChange={(event) => updatePayload("category", event.target.value)} maxLength={50} placeholder="例如：咨询服务" className="ui-input" />
-          </label>
-          <label className="grid gap-2">
-            <span className={labelClass}>价格</span>
-            <input value={payloadField(draft.payloadJson, "priceText")} onChange={(event) => updatePayload("priceText", event.target.value)} maxLength={50} placeholder="例如：¥299 起" className="ui-input" />
-          </label>
           <label className="grid gap-2 lg:col-span-2">
-            <span className={labelClass}>简介</span>
-            <textarea value={payloadField(draft.payloadJson, "description") || draft.description} onChange={(event) => { onChange({ description: event.target.value }); updatePayload("description", event.target.value); }} maxLength={300} rows={2} placeholder="产品简介" className="ui-input min-h-[60px] resize-y" />
+            <span className={labelClass}>选择已上架产品</span>
+            <select
+              value={payloadField(draft.payloadJson, "productId")}
+              disabled={productsLoading}
+              onChange={(event) => {
+                const product = products.find((item) => item.id === event.target.value);
+                if (!product) return;
+                onChange({
+                  title: product.name,
+                  description: product.description || "",
+                  url: product.cta_url || "",
+                  payloadJson: JSON.stringify({
+                    productId: product.id,
+                    name: product.name,
+                    ...(product.category ? { category: product.category } : {}),
+                    ...(product.description ? { description: product.description } : {}),
+                    ...(product.price_text ? { priceText: product.price_text } : {}),
+                    ...(product.cover_image_url ? { coverImageUrl: product.cover_image_url } : {}),
+                    ...(product.cta_label ? { ctaLabel: product.cta_label } : {}),
+                    ...(product.cta_url ? { ctaUrl: product.cta_url } : {}),
+                  }),
+                });
+              }}
+              className="ui-input"
+            >
+              <option value="">{productsLoading ? "正在加载产品…" : "请选择产品"}</option>
+              {payloadField(draft.payloadJson, "productId") && !products.some((item) => item.id === payloadField(draft.payloadJson, "productId")) ? (
+                <option value={payloadField(draft.payloadJson, "productId")} disabled>当前绑定产品已下架，请重新选择</option>
+              ) : null}
+              {products.map((product) => <option key={product.id} value={product.id}>{product.name}{product.price_text ? ` · ${product.price_text}` : ""}</option>)}
+            </select>
+            {productsError ? <span className="text-xs text-[var(--ui-danger)]">{productsError}</span> : null}
+            {!productsLoading && !productsError && products.length === 0 ? <span className="text-xs ui-muted">请先在“产品与服务”中新增并上架产品。</span> : null}
           </label>
-          <ImageUploadField label="封面图片" value={payloadField(draft.payloadJson, "coverImageUrl")} onChange={(url) => updatePayload("coverImageUrl", url)} uploadType="cover" labelClass={labelClass} />
-          <label className="grid gap-2">
-            <span className={labelClass}>按钮名称</span>
-            <input value={payloadField(draft.payloadJson, "ctaLabel")} onChange={(event) => updatePayload("ctaLabel", event.target.value)} maxLength={30} placeholder="例如：查看详情" className="ui-input" />
-          </label>
-          <label className="grid gap-2">
-            <span className={labelClass}>按钮链接</span>
-            <input value={payloadField(draft.payloadJson, "ctaUrl")} onChange={(event) => updatePayload("ctaUrl", event.target.value)} placeholder="https://..." className="ui-input" />
-          </label>
+          {payloadField(draft.payloadJson, "productId") ? (
+            <div className="rounded-xl border border-[var(--ui-line)] bg-white p-4 lg:col-span-2">
+              <p className="font-black text-[var(--ui-ink)]">{payloadField(draft.payloadJson, "name") || draft.title}</p>
+              <p className="mt-1 text-xs ui-muted">{[payloadField(draft.payloadJson, "category"), payloadField(draft.payloadJson, "priceText")].filter(Boolean).join(" · ") || "已绑定产品"}</p>
+              {payloadField(draft.payloadJson, "description") ? <p className="mt-2 text-sm leading-6 ui-muted">{payloadField(draft.payloadJson, "description")}</p> : null}
+            </div>
+          ) : null}
         </>
       ) : null}
 
@@ -917,6 +999,47 @@ function DynamicFields({ draft, onChange, isNew }: { draft: LinkDraft; onChange:
           <label className="grid gap-2">
             <span className={labelClass}>优惠码</span>
             <input value={payloadField(draft.payloadJson, "couponCode")} onChange={(event) => updatePayload("couponCode", event.target.value)} maxLength={80} placeholder="例如：LINK168" className="ui-input" />
+          </label>
+        </>
+      ) : null}
+
+      {ct === "quote" || ct === "contact-form" ? (
+        <>
+          <label className="grid gap-2 lg:col-span-2">
+            <span className={labelClass}>说明（选填）</span>
+            <textarea
+              value={payloadField(draft.payloadJson, "description")}
+              onChange={(event) => {
+                onChange({
+                  description: event.target.value,
+                  payloadJson: setPayloadField(draft.payloadJson, "description", event.target.value),
+                });
+              }}
+              maxLength={500}
+              rows={3}
+              placeholder={ct === "quote" ? "说明报价所需的信息" : "说明提交后如何联系"}
+              className="ui-input min-h-[72px] resize-y"
+            />
+          </label>
+          <label className="grid gap-2">
+            <span className={labelClass}>按钮文字</span>
+            <input
+              value={payloadField(draft.payloadJson, "buttonText")}
+              onChange={(event) => updatePayload("buttonText", event.target.value)}
+              maxLength={50}
+              placeholder={ct === "quote" ? "提交报价需求" : "提交联系信息"}
+              className="ui-input"
+            />
+          </label>
+          <label className="grid gap-2">
+            <span className={labelClass}>需求提示（选填）</span>
+            <input
+              value={payloadField(draft.payloadJson, "messagePlaceholder")}
+              onChange={(event) => updatePayload("messagePlaceholder", event.target.value)}
+              maxLength={120}
+              placeholder={ct === "quote" ? "项目范围、预算、时间要求" : "想咨询的内容"}
+              className="ui-input"
+            />
           </label>
         </>
       ) : null}
@@ -1237,6 +1360,12 @@ function isDraftValid(draft: LinkDraft): boolean {
   if (ct === "phone") {
     if (!draft.url.trim()) return false;
   }
+  if (ct === "email") {
+    if (!draft.url.trim()) return false;
+  }
+  if (ct === "address") {
+    if (!draft.url.trim()) return false;
+  }
   if (ct === "shop") {
     if (!draft.url.trim()) return false;
   }
@@ -1280,7 +1409,7 @@ function isDraftValid(draft: LinkDraft): boolean {
     if (!payloadField(draft.payloadJson, "url").trim()) return false;
   }
   if (ct === "product-card") {
-    if (!payloadField(draft.payloadJson, "name").trim() && !draft.title.trim()) return false;
+    if (!payloadField(draft.payloadJson, "productId").trim()) return false;
   }
   if (ct === "service-card") {
     if (!payloadField(draft.payloadJson, "name").trim() && !draft.title.trim()) return false;
@@ -1316,8 +1445,23 @@ export function LinksPanel({ links, isPaid, planLabel, creating, busyLinkId, onC
   const [expandedId, setExpandedId] = useState<string>("");
   const [drafts, setDrafts] = useState<Record<string, LinkDraft>>({});
   const [addModuleOpen, setAddModuleOpen] = useState(false);
+  const [products, setProducts] = useState<ProductOption[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState("");
 
   useEffect(() => { setDrafts((current) => { const next: Record<string, LinkDraft> = {}; for (const link of links) next[link.id] = current[link.id] || draftFromLink(link); return next; }); }, [links]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/dashboard/products?active=1")
+      .then(async (response) => {
+        const data = await response.json() as { success?: boolean; products?: ProductOption[]; error?: string };
+        if (!response.ok || !data.success) throw new Error(data.error || "产品加载失败");
+        if (!cancelled) setProducts(data.products || []);
+      })
+      .catch((error) => { if (!cancelled) setProductsError(error instanceof Error ? error.message : "产品加载失败"); })
+      .finally(() => { if (!cancelled) setProductsLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
   const orderedLinks = useMemo(() => [...links].sort((a, b) => a.position - b.position), [links]);
 
   async function createLink(event: React.FormEvent<HTMLFormElement>) {
@@ -1351,12 +1495,18 @@ export function LinksPanel({ links, isPaid, planLabel, creating, busyLinkId, onC
       draft.payloadJson = JSON.stringify({ name: mod.label, allowBooking: true });
     } else if (type === "offer") {
       draft.payloadJson = JSON.stringify({ title: mod.label });
+    } else if (type === "quote" || type === "contact-form") {
+      draft.payloadJson = JSON.stringify({
+        title: mod.label,
+        buttonText: type === "quote" ? "提交报价需求" : "提交联系信息",
+      });
     }
 
     if (type === "text" || type === "group-title" || type === "divider" ||
         type === "cover-image" || type === "popup-image" || type === "carousel" ||
         type === "bilibili-video" || type === "youtube-video" || type === "video-link" ||
-        type === "netease-music" || type === "music-link" || type === "ai-chat") {
+        type === "netease-music" || type === "music-link" || type === "ai-chat" ||
+        type === "quote" || type === "contact-form") {
       draft.url = "";
     }
 
@@ -1374,7 +1524,8 @@ export function LinksPanel({ links, isPaid, planLabel, creating, busyLinkId, onC
     if (newType === "text" || newType === "group-title" || newType === "divider" ||
         newType === "cover-image" || newType === "popup-image" || newType === "carousel" ||
         newType === "bilibili-video" || newType === "youtube-video" || newType === "video-link" ||
-        newType === "netease-music" || newType === "music-link" || newType === "ai-chat") {
+        newType === "netease-music" || newType === "music-link" || newType === "ai-chat" ||
+        newType === "quote" || newType === "contact-form") {
       patch.url = "";
     }
 
@@ -1386,6 +1537,7 @@ export function LinksPanel({ links, isPaid, planLabel, creating, busyLinkId, onC
 
     if (newType !== "shop" && newType !== "booking" &&
         newType !== "product-card" && newType !== "service-card" && newType !== "offer" &&
+        newType !== "quote" && newType !== "contact-form" &&
         newType !== "map" &&
         newType !== "copy-text" && newType !== "divider" &&
         newType !== "cover-image" && newType !== "popup-image" && newType !== "carousel" &&
@@ -1397,6 +1549,13 @@ export function LinksPanel({ links, isPaid, planLabel, creating, busyLinkId, onC
     if (newType === "divider") {
       patch.title = "";
     }
+    if (newType === "quote" || newType === "contact-form") {
+      patch.title = getModuleDefinition(newType)?.label || "";
+      patch.payloadJson = JSON.stringify({
+        title: patch.title,
+        buttonText: newType === "quote" ? "提交报价需求" : "提交联系信息",
+      });
+    }
 
     setter(patch);
   }
@@ -1407,6 +1566,10 @@ export function LinksPanel({ links, isPaid, planLabel, creating, busyLinkId, onC
     }
     if (link.icon_type === "emoji" && link.icon_value) {
       return <span className="text-sm">{link.icon_value}</span>;
+    }
+    if (link.icon_type === "platform") {
+      const iconPath = resolvePlatformIcon(link.icon_value);
+      if (iconPath) return <img src={iconPath} alt="" className="size-full rounded-xl object-cover" />;
     }
     const ct = link.type || "link";
     const found = COMPONENT_TYPE_OPTIONS.find((o) => o.value === ct);
@@ -1479,7 +1642,7 @@ export function LinksPanel({ links, isPaid, planLabel, creating, busyLinkId, onC
               </div>
             </label>
 
-            <DynamicFields draft={newDraft} onChange={(patch) => setNewDraft((current) => ({ ...current, ...patch }))} isNew />
+            <DynamicFields draft={newDraft} onChange={(patch) => setNewDraft((current) => ({ ...current, ...patch }))} isNew products={products} productsLoading={productsLoading} productsError={productsError} />
           </div>
 
           <div className="mt-5 grid gap-2 border-t border-[var(--ui-line)] pt-5 sm:flex sm:justify-end sm:gap-2">
@@ -1562,7 +1725,7 @@ export function LinksPanel({ links, isPaid, planLabel, creating, busyLinkId, onC
                           </div>
                         </label>
 
-                        <DynamicFields draft={draft} onChange={(patch) => updateDraft(link.id, patch)} />
+                        <DynamicFields draft={draft} onChange={(patch) => updateDraft(link.id, patch)} products={products} productsLoading={productsLoading} productsError={productsError} />
                       </div>
 
                       <div className="mt-4 grid gap-2 border-t border-[var(--ui-line)] pt-3 sm:mt-5 sm:flex sm:flex-wrap sm:items-center sm:justify-end sm:gap-2 sm:pt-4">

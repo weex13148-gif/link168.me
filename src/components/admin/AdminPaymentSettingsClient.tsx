@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { CheckCircle2, Copy, Loader2, Save, ShieldAlert } from "lucide-react";
+import { Copy, Loader2, Save, ShieldAlert } from "lucide-react";
 import PaymentDiagnosticsPanel from "@/components/admin/PaymentDiagnosticsPanel";
 import AiCreditAuditPanel from "@/components/admin/AiCreditAuditPanel";
 
@@ -168,8 +168,8 @@ export default function AdminPaymentSettingsClient() {
       <section className="rounded-[24px] border border-[#E8DCCB] bg-white p-5 shadow-sm sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div><p className="text-sm font-black text-[#1677FF]">支付宝收款状态</p><h2 className="mt-1 text-2xl font-black">{ready ? "配置完整，等待真实验收" : "配置尚未完整"}</h2><p className="mt-2 text-sm leading-6 text-[#7A6D5E]">当前网站只向用户展示支付宝；微信支付统一标注为后续开放。配置完整不等于真实支付已验收。</p></div>
-          <span className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-black ${ready ? "bg-[#EEF4E7] text-[#355126]" : "bg-[#FFF7ED] text-[#9A4E12]"}`}>
-            {ready ? <CheckCircle2 className="size-4" /> : <ShieldAlert className="size-4" />}{ready ? "配置完整" : "待完善"}
+          <span className="inline-flex items-center gap-2 rounded-full bg-[#FFF7ED] px-4 py-2 text-sm font-black text-[#9A4E12]">
+            <ShieldAlert className="size-4" />{ready ? "配置完整，待真实测试" : "待完善"}
           </span>
         </div>
       </section>

@@ -72,6 +72,78 @@ export interface ShortLinkStat {
   dailyTrend: Array<{ date: string; clicks: number }>;
 }
 
+export interface CoreMvpMetrics {
+  visits: number;
+  consultations: number;
+  leads: number;
+  conversions: number;
+}
+
+const CONTACT_LINK_TYPES = ["phone", "email", "wechat"] as const;
+const CONSULTATION_LEAD_SOURCES = [
+  "contact_form",
+  "quote",
+  "booking",
+  "product_card",
+  "service_card",
+  "offer",
+  "ai-chat",
+] as const;
+
+export async function getCoreMvpMetrics(
+  profileId: string,
+  range: { from: Date; to: Date },
+): Promise<CoreMvpMetrics> {
+  if (
+    !profileId
+    || !Number.isFinite(range.from.getTime())
+    || !Number.isFinite(range.to.getTime())
+    || range.from >= range.to
+  ) {
+    throw new Error("Invalid analytics range");
+  }
+
+  const createdAt = { gte: range.from, lt: range.to };
+  const [
+    visits,
+    contactLinkClicks,
+    consultationLeads,
+    leads,
+    conversions,
+  ] = await Promise.all([
+    db.profileVisit.count({
+      where: { profileId, isBot: false, createdAt },
+    }),
+    db.linkClick.count({
+      where: {
+        profileId,
+        createdAt,
+        link: { type: { in: [...CONTACT_LINK_TYPES] } },
+      },
+    }),
+    db.lead.count({
+      where: {
+        profileId,
+        createdAt,
+        sourceComponent: { in: [...CONSULTATION_LEAD_SOURCES] },
+      },
+    }),
+    db.lead.count({
+      where: { profileId, createdAt },
+    }),
+    db.lead.count({
+      where: { profileId, createdAt, status: "won" },
+    }),
+  ]);
+
+  return {
+    visits,
+    consultations: contactLinkClicks + consultationLeads,
+    leads,
+    conversions,
+  };
+}
+
 /**
  * 获取时间范围（统一使用 Asia/Shanghai 时区计算当日零点）
  */
@@ -158,7 +230,7 @@ export async function getAnalyticsStats(params: {
       where: { profileId, createdAt: { gte: start } },
     }),
 
-    // 线索状态分布
+    // 线索状态分布（按原始状态分组，前端自行映射）
     db.lead.groupBy({
       by: ["status"],
       where: { profileId, createdAt: { gte: start } },
@@ -282,89 +354,42 @@ export async function calculateConversionFunnel(params: {
 }): Promise<ConversionFunnel> {
   const { profileId, range = "30d" } = params;
   const { start, days } = getTimeRange(range);
+  const end = new Date(start.getTime() + days * 24 * 60 * 60 * 1000);
+  const metrics = await getCoreMvpMetrics(profileId, { from: start, to: end });
 
-  // 查询各阶段数据
-  const [
-    pageViews,       // 主页访问（通过 LinkClick 估算，每次点击链接算一次访问）
-    linkClicks,     // 链接点击
-    contactClicks,  // 联系方式点击（通过 sourceComponent 推断）
-    leadCreates,    // 线索创建
-    contactedLeads,  // 已联系
-    convertedLeads, // 已成交
-  ] = await Promise.all([
-    // 主页访问：统计该用户在 start 时间后的所有点击
-    db.linkClick.count({
-      where: { profileId, createdAt: { gte: start } },
-    }),
-    // 链接点击
-    db.linkClick.count({
-      where: { profileId, createdAt: { gte: start } },
-    }),
-    // 联系方式点击（通过 sourceComponent='contact_form' 的 lead）
-    db.lead.count({
-      where: { profileId, sourceComponent: "contact_form", createdAt: { gte: start } },
-    }),
-    // 线索创建
-    db.lead.count({
-      where: { profileId, createdAt: { gte: start } },
-    }),
-    // 已联系
-    db.lead.count({
-      where: { profileId, status: "contacted", createdAt: { gte: start } },
-    }),
-    // 已成交
-    db.lead.count({
-      where: { profileId, status: "converted", createdAt: { gte: start } },
-    }),
-  ]);
-
-  // 构建漏斗步骤
   const funnelSteps: FunnelStep[] = [
     {
       name: "页面访问",
       eventType: "page_view",
-      count: pageViews,
-      conversionRate: 100, // 第一步为100%
+      count: metrics.visits,
+      conversionRate: 100,
     },
     {
-      name: "链接点击",
-      eventType: "link_click",
-      count: linkClicks,
-      conversionRate: pageViews > 0 ? (linkClicks / pageViews) * 100 : 0,
+      name: "咨询互动",
+      eventType: "contact_click",
+      count: metrics.consultations,
+      conversionRate: metrics.visits > 0 ? (metrics.consultations / metrics.visits) * 100 : 0,
     },
     {
-      name: "表单提交",
-      eventType: "form_submit",
-      count: contactClicks,
-      conversionRate: linkClicks > 0 ? (contactClicks / linkClicks) * 100 : 0,
-    },
-    {
-      name: "线索创建",
+      name: "有效线索",
       eventType: "lead_create",
-      count: leadCreates,
-      conversionRate: contactClicks > 0 ? (leadCreates / contactClicks) * 100 : 0,
-    },
-    {
-      name: "已联系",
-      eventType: "lead_create",
-      count: contactedLeads,
-      conversionRate: leadCreates > 0 ? (contactedLeads / leadCreates) * 100 : 0,
+      count: metrics.leads,
+      conversionRate: metrics.consultations > 0 ? (metrics.leads / metrics.consultations) * 100 : 0,
     },
     {
       name: "已成交",
       eventType: "lead_create",
-      count: convertedLeads,
-      conversionRate: contactedLeads > 0 ? (convertedLeads / contactedLeads) * 100 : 0,
+      count: metrics.conversions,
+      conversionRate: metrics.leads > 0 ? (metrics.conversions / metrics.leads) * 100 : 0,
     },
   ];
 
-  // 计算整体转化率
-  const overallConversionRate = pageViews > 0 ? (convertedLeads / pageViews) * 100 : 0;
-
   return {
     steps: funnelSteps,
-    overallConversionRate,
-    totalLeads: leadCreates,
+    overallConversionRate: metrics.visits > 0
+      ? (metrics.conversions / metrics.visits) * 100
+      : 0,
+    totalLeads: metrics.leads,
   };
 }
 

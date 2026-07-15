@@ -77,8 +77,8 @@ function BookingModule({ payload, username }: BookingModuleProps) {
         }),
       });
 
-      const data = (await response.json()) as { success?: boolean; error?: string };
-      if (!response.ok || !data.success) {
+      const data = (await response.json()) as { success?: boolean; leadId?: string; error?: string };
+      if (!response.ok || !data.success || !data.leadId) {
         setError(data.error ?? "提交失败，请稍后重试。");
         return;
       }

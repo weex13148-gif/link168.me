@@ -24,22 +24,32 @@ type AvatarCandidate = {
   fileName: string;
 };
 
-export async function deletePreviousAvatar(options: DeletePreviousAvatarOptions): Promise<void> {
+export type AvatarCleanupResult = {
+  status: "deleted" | "not_found" | "not_owned" | "failed";
+  deletedCount: number;
+  failedCount: number;
+};
+
+type AvatarFileDeleteStatus = AvatarCleanupResult["status"];
+
+export async function deletePreviousAvatar(options: DeletePreviousAvatarOptions): Promise<AvatarCleanupResult> {
   const previousPath = normalizePreviousAvatarPath(options.previousAvatarUrl);
-  if (!previousPath) return;
+  if (!previousPath) return summarizeCleanup(["not_owned"]);
 
   try {
     if (previousPath.startsWith(AVATAR_API_PREFIX)) {
-      await deleteOwnedAvatarsForApiUrl(options, previousPath);
-      return;
+      return summarizeCleanup(await deleteOwnedAvatarsForApiUrl(options, previousPath));
     }
 
     if (previousPath.startsWith(LEGACY_UPLOAD_PREFIX)) {
-      await deleteExplicitLegacyAvatar(options, previousPath);
+      return summarizeCleanup(await deleteExplicitLegacyAvatar(options, previousPath));
     }
   } catch {
     logCleanupIssue(options, "unexpected_cleanup_error");
+    return summarizeCleanup(["failed"]);
   }
+
+  return summarizeCleanup(["not_owned"]);
 }
 
 function normalizePreviousAvatarPath(value: string | null | undefined): string | null {
@@ -58,26 +68,37 @@ function normalizePreviousAvatarPath(value: string | null | undefined): string |
   return pathOnly;
 }
 
-async function deleteOwnedAvatarsForApiUrl(options: DeletePreviousAvatarOptions, previousPath: string): Promise<void> {
+async function deleteOwnedAvatarsForApiUrl(
+  options: DeletePreviousAvatarOptions,
+  previousPath: string,
+): Promise<AvatarFileDeleteStatus[]> {
   const previousUsername = sanitizeOwnerPart(previousPath.slice(AVATAR_API_PREFIX.length));
   const currentUsername = sanitizeOwnerPart(options.username || "");
-  if (!previousUsername || previousUsername !== currentUsername) return;
+  if (!previousUsername || previousUsername !== currentUsername) return ["not_owned"];
 
   const candidates = await findOwnedAvatarCandidates(options);
+  if (!candidates.length) return ["not_found"];
+  const results: AvatarFileDeleteStatus[] = [];
   for (const candidate of candidates) {
-    await removeAvatarFile(options, candidate.fullPath, candidate.fileName, path.resolve(options.avatarUploadDir));
+    results.push(await removeAvatarFile(options, candidate.fullPath, candidate.fileName, path.resolve(options.avatarUploadDir)));
   }
+  return results;
 }
 
-async function deleteExplicitLegacyAvatar(options: DeletePreviousAvatarOptions, previousPath: string): Promise<void> {
+async function deleteExplicitLegacyAvatar(
+  options: DeletePreviousAvatarOptions,
+  previousPath: string,
+): Promise<AvatarFileDeleteStatus[]> {
   const fileName = path.basename(previousPath);
-  if (!isOwnedAvatarFileName(options, fileName)) return;
+  if (!isOwnedAvatarFileName(options, fileName)) return ["not_owned"];
 
+  const results: AvatarFileDeleteStatus[] = [];
   for (const legacyDir of options.legacyAvatarDirs) {
     const targetPath = resolveFileInsideDirectory(legacyDir, fileName);
     if (!targetPath) continue;
-    await removeAvatarFile(options, targetPath, fileName, path.resolve(legacyDir));
+    results.push(await removeAvatarFile(options, targetPath, fileName, path.resolve(legacyDir)));
   }
+  return results.length ? results : ["not_found"];
 }
 
 async function findOwnedAvatarCandidates(options: DeletePreviousAvatarOptions): Promise<AvatarCandidate[]> {
@@ -120,23 +141,36 @@ async function removeAvatarFile(
   targetPath: string,
   fileName: string,
   allowedRoot: string,
-): Promise<void> {
+): Promise<AvatarFileDeleteStatus> {
   const resolvedTarget = path.resolve(targetPath);
-  if (!isInsideDirectory(allowedRoot, resolvedTarget)) return;
-  if (!isOwnedAvatarFileName(options, fileName)) return;
-  if (isCurrentAvatar(options, resolvedTarget, fileName)) return;
+  if (!isInsideDirectory(allowedRoot, resolvedTarget)) return "not_owned";
+  if (!isOwnedAvatarFileName(options, fileName)) return "not_owned";
+  if (isCurrentAvatar(options, resolvedTarget, fileName)) return "not_owned";
 
   try {
     const fileStat = await stat(resolvedTarget).catch((error: NodeJS.ErrnoException) => {
       if (error.code === "ENOENT") return null;
       throw error;
     });
-    if (!fileStat || !fileStat.isFile()) return;
+    if (!fileStat || !fileStat.isFile()) return "not_found";
 
     await rm(resolvedTarget, { force: true });
+    return "deleted";
   } catch {
     logCleanupIssue(options, "delete_failed", fileName);
+    return "failed";
   }
+}
+
+function summarizeCleanup(statuses: AvatarFileDeleteStatus[]): AvatarCleanupResult {
+  const deletedCount = statuses.filter((status) => status === "deleted").length;
+  const failedCount = statuses.filter((status) => status === "failed").length;
+  if (failedCount) return { status: "failed", deletedCount, failedCount };
+  if (deletedCount) return { status: "deleted", deletedCount, failedCount: 0 };
+  if (statuses.some((status) => status === "not_found")) {
+    return { status: "not_found", deletedCount: 0, failedCount: 0 };
+  }
+  return { status: "not_owned", deletedCount: 0, failedCount: 0 };
 }
 
 function resolveFileInsideDirectory(directory: string, fileName: string): string | null {

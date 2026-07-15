@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { getPlanDefinition, type PlanCode, type PlanDefinition } from "../plans";
+import { getPlanDefinition, type PlanCode, type PlanDefinition, normalizePlanCode } from "../plans";
 
 export type EntitlementCheck = {
   allowed: boolean;
@@ -40,18 +40,12 @@ export type UserEntitlements = {
 const GRACE_PERIOD_DAYS = 3;
 const PLAN_RANK: PlanCode[] = [
   "free",
-  "member_basic",
-  "member_plus",
+  "plus",
   "pro",
   "enterprise",
-  "enterprise_pro_plus",
+  "enterprise_pro",
   "internal_test",
 ];
-
-function normalizePlanCode(value: string | null | undefined): PlanCode {
-  if (value === "member_basic") return "member_plus";
-  return PLAN_RANK.includes(value as PlanCode) ? value as PlanCode : "free";
-}
 
 function remaining(max: number, used: number) {
   return max === -1 ? -1 : Math.max(0, max - used);
@@ -99,18 +93,31 @@ export async function getUserEntitlements(userId: string): Promise<UserEntitleme
   ]);
 
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const usage = creditAccount
-    ? await db.aiCreditLedger.aggregate({
-        where: { accountId: creditAccount.id, createdAt: { gte: monthStart }, entryType: "consume" },
-        _sum: { amount: true },
+  const monthEntries = creditAccount
+    ? await db.aiCreditLedger.findMany({
+        where: {
+          accountId: creditAccount.id,
+          createdAt: { gte: monthStart },
+          entryType: { in: ["consume", "refund"] },
+        },
+        select: { amount: true, metadata: true },
       })
-    : { _sum: { amount: 0 } };
+    : [];
 
-  const aiUsed = Math.abs(usage._sum.amount ?? 0);
+  const netPlanAmount = monthEntries.reduce((sum, entry) => {
+    const metadata = entry.metadata;
+    if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+      return sum;
+    }
+    return (metadata as Record<string, unknown>).creditSource === "plan"
+      ? sum + entry.amount
+      : sum;
+  }, 0);
+  const aiUsed = Math.max(0, -netPlanAmount);
   const aiLimit = plan.limits.aiChatsPerMonth;
   const paid = effectivePlanCode !== "free" && (hasActiveMembership || isGracePeriod);
-  const proOrAbove = ["pro", "enterprise", "enterprise_pro_plus", "internal_test"].includes(effectivePlanCode);
-  const enterprise = ["enterprise", "enterprise_pro_plus", "internal_test"].includes(effectivePlanCode);
+  const proOrAbove = ["pro", "enterprise", "enterprise_pro", "internal_test"].includes(effectivePlanCode);
+  const enterprise = ["enterprise", "enterprise_pro", "internal_test"].includes(effectivePlanCode);
 
   return {
     hasActiveMembership,

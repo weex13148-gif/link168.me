@@ -73,9 +73,11 @@ export async function GET(request: Request) {
   const { user, response } = await requireDashboardUser(request);
   if (response || !user) return response;
 
+  const activeOnly = new URL(request.url).searchParams.get("active") === "1";
+
   const products = await db.product.findMany({
-    where: { userId: user.id },
-    orderBy: [{ isActive: "desc" }, { sortOrder: "asc" }, { createdAt: "desc" }],
+    where: { userId: user.id, ...(activeOnly ? { isActive: true } : {}) },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
   });
 
   return NextResponse.json({
@@ -162,11 +164,11 @@ export async function POST(request: Request) {
   // 价格文本
   const priceText = normalizeNullableString(body.priceText);
 
-  // 排序
-  const sortOrder =
-    typeof body.sortOrder === "number"
-      ? Math.max(0, Math.floor(body.sortOrder))
-      : 0;
+  const currentOrder = await db.product.aggregate({
+    where: { userId: user.id },
+    _max: { sortOrder: true },
+  });
+  const sortOrder = (currentOrder._max.sortOrder ?? -1) + 1;
 
   const isActive = sanitizeBool(body.isActive, true);
   const allowAiRecommendation = sanitizeBool(

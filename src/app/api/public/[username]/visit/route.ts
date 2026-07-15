@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { parseDeviceInfo, hashIp, getClientIp, isPotentialBot } from "@/lib/analytics/events";
-import crypto from "crypto";
+import {
+  generateEventDedupeId,
+  generateVisitorId,
+  getClientIp,
+  hashIp,
+  isPotentialBot,
+  parseDeviceInfo,
+} from "@/lib/analytics/events";
 
 export const runtime = "nodejs";
 
@@ -30,12 +36,17 @@ export async function POST(request: NextRequest, context: RouteContext) {
     const deviceInfo = parseDeviceInfo(userAgent);
     const ipHash = hashIp(ipRaw).slice(0, 16);
     const botDetected = isPotentialBot(request);
+    const browserVisitorId = typeof body.visitorId === "string"
+      ? body.visitorId.trim().slice(0, 100)
+      : "";
+    const visitorId = browserVisitorId || generateVisitorId(request);
+    const eventId = generateEventDedupeId("profile-visit", profile.id, visitorId, new Date());
 
     await db.profileVisit.create({
       data: {
-        id: crypto.randomUUID(),
+        id: eventId,
         profileId: profile.id,
-        visitorId: body.visitorId || null,
+        visitorId,
         ipHash,
         userAgent: userAgent || null,
         referer: referer || null,

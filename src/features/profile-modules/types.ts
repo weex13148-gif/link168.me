@@ -5,6 +5,8 @@ export type ProfileModuleType =
   | "qr"
   | "wechat"
   | "phone"
+  | "email"
+  | "address"
   | "shop"
   | "booking"
   | "map"
@@ -21,7 +23,9 @@ export type ProfileModuleType =
   | "ai-chat"
   | "product-card"
   | "service-card"
-  | "offer";
+  | "offer"
+  | "quote"
+  | "contact-form";
 
 export type ProfileModuleCategory =
   | "basic"

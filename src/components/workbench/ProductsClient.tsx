@@ -4,7 +4,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Sparkles, Package, X, Check, Trash2, ExternalLink } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, ExternalLink, Package, Plus, Sparkles, Trash2, X } from "lucide-react";
 import type { Product } from "@/generated/prisma/client";
 
 type ProductWithDates = Product & {
@@ -140,6 +140,7 @@ export default function ProductsClient({ initialProducts }: Props) {
         );
       } else {
         setProducts((prev) => [
+          ...prev,
           {
             ...data.product,
             userId: data.product.user_id,
@@ -149,7 +150,6 @@ export default function ProductsClient({ initialProducts }: Props) {
             createdAt: new Date(data.product.created_at),
             updatedAt: new Date(),
           } as ProductWithDates,
-          ...prev,
         ]);
       }
 
@@ -206,6 +206,36 @@ export default function ProductsClient({ initialProducts }: Props) {
     }
   }
 
+  async function handleMove(id: string, direction: "up" | "down") {
+    const currentIndex = products.findIndex((product) => product.id === id);
+    const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= products.length) return;
+
+    const next = [...products];
+    const [moved] = next.splice(currentIndex, 1);
+    next.splice(targetIndex, 0, moved);
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/dashboard/products/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productIds: next.map((product) => product.id) }),
+      });
+      const data = await response.json() as { success?: boolean; error?: string };
+      if (!response.ok || !data.success) {
+        setError(data.error || "产品排序保存失败。");
+        return;
+      }
+      setProducts(next.map((product, sortOrder) => ({ ...product, sortOrder })));
+    } catch {
+      setError("产品排序保存失败，请稍后重试。");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <section className="mt-6 rounded-[28px] border border-[#E8DCCB] bg-white p-5 shadow-sm sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -247,7 +277,7 @@ export default function ProductsClient({ initialProducts }: Props) {
         </div>
       ) : (
         <ul className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {products.map((product) => (
+          {products.map((product, index) => (
             <li
               key={product.id}
               className="flex h-full flex-col justify-between rounded-[28px] border border-[#E8DCCB] bg-[#F7F1E7] p-5"
@@ -280,6 +310,24 @@ export default function ProductsClient({ initialProducts }: Props) {
                   {product.priceText ?? "价格待定"}
                 </span>
                 <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => void handleMove(product.id, "up")}
+                    disabled={loading || index === 0}
+                    className="link168-button-press grid size-8 place-items-center rounded-xl bg-white text-[#3F5F31] ring-1 ring-[#E8DCCB] disabled:opacity-30"
+                    title="上移"
+                    aria-label={`上移 ${product.name}`}
+                  >
+                    <ChevronUp aria-hidden className="size-3" />
+                  </button>
+                  <button
+                    onClick={() => void handleMove(product.id, "down")}
+                    disabled={loading || index === products.length - 1}
+                    className="link168-button-press grid size-8 place-items-center rounded-xl bg-white text-[#3F5F31] ring-1 ring-[#E8DCCB] disabled:opacity-30"
+                    title="下移"
+                    aria-label={`下移 ${product.name}`}
+                  >
+                    <ChevronDown aria-hidden className="size-3" />
+                  </button>
                   <button
                     onClick={() => handleToggleActive(product.id, product.isActive)}
                     disabled={loading}

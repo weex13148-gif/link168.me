@@ -5,14 +5,14 @@ import { getAssistantDefinition, AI_ASSISTANT_LIST } from "@/lib/ai/assistants";
 import { callAssistant, getProviderConfig, isProviderConfigured } from "@/lib/ai/provider";
 import { rateLimit } from "@/lib/rate-limit";
 import { detectPromptInjection, sanitizeUserMessage, hasSensitiveContent, moderateAiOutput } from "@/lib/content-safety";
-import { getAiQuota, consumeCredit, refundCredit, checkUserAiRestricted } from "@/lib/ai/permissions";
+import { getAiQuota, consumeCredit, refundConsumedCredit, checkUserAiRestricted } from "@/lib/ai/permissions";
 import { assertAiEntitlement, buildAiUsageMetadata } from "@/lib/ai/entitlement-guard";
 import { createConversation, addMessage, getConversation } from "@/lib/ai/conversations";
 import { logAiRiskEvent } from "@/lib/ai/risk-log";
 import { createAiTraceContext, setTraceIdOnNextResponse, logAiTraceInfo } from "@/lib/observability/ai-trace";
 import { recordAiMetrics, recordSafetyRejection } from "@/lib/observability/ai-metrics";
 import { mapProviderErrorToAiCode, getAiErrorMessage, type AiErrorCode } from "@/lib/ai/provider-error";
-import crypto from "crypto";
+import { validateIdempotencyKey } from "@/lib/ai/credits";
 
 export const runtime = "nodejs";
 
@@ -24,6 +24,7 @@ type ChatPayload = {
   message?: unknown;
   conversationId?: unknown;
   history?: unknown;
+  requestId?: unknown;
 };
 
 function getClientIp(request: Request): string {
@@ -135,6 +136,15 @@ export async function POST(request: Request) {
   const conversationId = typeof body.conversationId === "string" ? body.conversationId : "";
   const historyRaw = Array.isArray(body.history) ? (body.history as unknown[]) : [];
 
+  // ===== 幂等键校验 =====
+  const clientIdempotencyKey = validateIdempotencyKey(body.requestId);
+  if (!clientIdempotencyKey) {
+    return NextResponse.json(
+      { success: false, error: "缺少有效的 requestId（幂等键）。", code: "MISSING_IDEMPOTENCY_KEY" as AiErrorCode, traceId: traceCtx.traceId },
+      { status: 400 },
+    );
+  }
+
   const assistantDef = getAssistantDefinition(rawAssistant);
   if (!assistantDef) {
     return NextResponse.json(
@@ -240,10 +250,7 @@ export async function POST(request: Request) {
     convId = newConv.id;
   }
 
-  // 幂等键：防止重复扣减和重复消息
-  const messageId = crypto.randomUUID();
-
-  await addMessage(convId, "user", sanitizedMessage, 0, { messageId });
+  await addMessage(convId, "user", sanitizedMessage, 0, { requestId: clientIdempotencyKey });
 
   const history = historyRaw
     .map((item) => {
@@ -264,7 +271,7 @@ export async function POST(request: Request) {
     user.id,
     creditCost,
     "ai_message",
-    messageId,
+    convId,
     buildAiUsageMetadata({
       usageType: "business_ai",
       assistant: assistantDef.title,
@@ -272,10 +279,11 @@ export async function POST(request: Request) {
       conversationId: convId,
       extra: { model: providerConfig.model },
     }),
+    clientIdempotencyKey,
   );
 
   if (!creditResult.success) {
-    await addMessage(convId, "assistant", "额度不足，请升级套餐或购买额度包。", 0, { messageId, blocked: true });
+    await addMessage(convId, "assistant", "额度不足，请升级套餐或购买额度包。", 0, { requestId: clientIdempotencyKey, blocked: true });
     return NextResponse.json(
       {
         success: false,
@@ -297,7 +305,32 @@ export async function POST(request: Request) {
 
   // ===== 模型调用失败 =====
   if (!result.ok || !result.reply) {
-    await refundCredit(user.id, creditCost, "ai_message", messageId, "调用失败回补");
+    const refundResult = await refundConsumedCredit({
+      userId: user.id,
+      operationKey: creditResult.operationKey,
+      reason: "模型调用失败自动补偿",
+      metadata: { conversationId: convId, traceId: traceCtx.traceId },
+    });
+    if (!refundResult.success) {
+      await logAiRiskEvent({
+        userId: user.id,
+        eventType: "refund_failed",
+        assistant: assistantDef.title,
+        riskLevel: "high",
+        metadata: {
+          reason: "模型调用失败退款失败",
+          conversationId: convId,
+          traceId: traceCtx.traceId,
+          error: result.error,
+        },
+      });
+      const resp = NextResponse.json(
+        { success: false, error: "AI 调用失败且退款处理中，请联系客服。", code: "REFUND_PENDING" as AiErrorCode, traceId: traceCtx.traceId, conversationId: convId },
+        { status: 502 },
+      );
+      setTraceIdOnNextResponse(resp, traceCtx.traceId);
+      return resp;
+    }
     await logAiRiskEvent({
       userId: user.id,
       eventType: "model_error",
@@ -325,11 +358,11 @@ export async function POST(request: Request) {
       assistant: assistantDef.title,
     });
 
-    await addMessage(convId, "assistant", result.error || "AI 服务暂时不可用。", 0, { messageId, error: result.error });
+    await addMessage(convId, "assistant", result.error || "AI 服务暂时不可用。", 0, { requestId: clientIdempotencyKey, error: result.error });
     const resp = NextResponse.json(
       {
         success: false,
-        error: result.error || "AI 服务暂时不可用。",
+        error: result.error || "AI 服务暂时不可用，已自动退回额度。",
         code: aiErrorCode,
         traceId: traceCtx.traceId,
         conversationId: convId,
@@ -361,7 +394,31 @@ export async function POST(request: Request) {
   // ===== 输出安全审核 =====
   const moderated = moderateAiOutput(result.reply.summary, result.reply.content);
   if (moderated.blocked) {
-    // 内容审核拦截：不回补（已消耗服务资源）
+    const refundResult = await refundConsumedCredit({
+      userId: user.id,
+      operationKey: creditResult.operationKey,
+      reason: "输出审核拦截自动补偿",
+      metadata: { conversationId: convId, traceId: traceCtx.traceId },
+    });
+    if (!refundResult.success) {
+      await logAiRiskEvent({
+        userId: user.id,
+        eventType: "refund_failed",
+        assistant: assistantDef.title,
+        riskLevel: "high",
+        metadata: {
+          reason: "输出审核拦截退款失败",
+          conversationId: convId,
+          traceId: traceCtx.traceId,
+        },
+      });
+      const resp = NextResponse.json(
+        { success: false, error: "内容审核未通过且退款处理中，请联系客服。", code: "REFUND_PENDING" as AiErrorCode, traceId: traceCtx.traceId, conversationId: convId },
+        { status: 400 },
+      );
+      setTraceIdOnNextResponse(resp, traceCtx.traceId);
+      return resp;
+    }
     await logAiRiskEvent({
       userId: user.id,
       eventType: "output_blocked",
@@ -380,11 +437,11 @@ export async function POST(request: Request) {
       reason: moderated.reason ?? "内容审核拒绝",
       requestSource: "workbench-ai:chat",
     });
-    await addMessage(convId, "assistant", "该问题无法提供有效回答，请换一种方式提问。", creditCost, { messageId, blocked: true });
+    await addMessage(convId, "assistant", "该问题无法提供有效回答，请换一种方式提问。", creditCost, { requestId: clientIdempotencyKey, blocked: true });
     const resp = NextResponse.json(
       {
         success: false,
-        error: "该问题无法提供有效回答，请换一种方式提问。",
+        error: "该问题无法提供有效回答，请换一种方式提问。已自动退回额度。",
         code: "AI_SAFETY_REJECTED" as AiErrorCode,
         traceId: traceCtx.traceId,
         conversationId: convId,
@@ -416,17 +473,53 @@ export async function POST(request: Request) {
     .filter((line) => line !== null && line !== undefined)
     .join("\n");
 
-  await addMessage(convId, "assistant", fullReplyText, creditCost, {
-    messageId,
-    structured: {
-      summary: moderated.summary,
-      suggestions: replyText.suggestions,
-      content: moderated.content,
-      disclaimer: moderated.disclaimer,
-    },
-    providerMeta: result.providerMeta,
-    creditSource: creditResult.source,
-  });
+  // 保存助手回复到数据库
+  try {
+    await addMessage(convId, "assistant", fullReplyText, creditCost, {
+      requestId: clientIdempotencyKey,
+      structured: {
+        summary: moderated.summary,
+        suggestions: replyText.suggestions,
+        content: moderated.content,
+        disclaimer: moderated.disclaimer,
+      },
+      providerMeta: result.providerMeta,
+      creditSource: creditResult.source,
+    });
+  } catch (dbError) {
+    const refundResult = await refundConsumedCredit({
+      userId: user.id,
+      operationKey: creditResult.operationKey,
+      reason: "写库失败自动补偿（助手回复）",
+      metadata: { conversationId: convId, traceId: traceCtx.traceId },
+    });
+    if (!refundResult.success) {
+      await logAiRiskEvent({
+        userId: user.id,
+        eventType: "refund_failed",
+        assistant: assistantDef.title,
+        riskLevel: "high",
+        metadata: {
+          reason: "写库失败退款失败（助手回复）",
+          conversationId: convId,
+          traceId: traceCtx.traceId,
+          error: String(dbError),
+        },
+      });
+      const resp = NextResponse.json(
+        { success: false, error: "服务异常且退款处理中，请联系客服。", code: "REFUND_PENDING" as AiErrorCode, traceId: traceCtx.traceId, conversationId: convId },
+        { status: 500 },
+      );
+      setTraceIdOnNextResponse(resp, traceCtx.traceId);
+      return resp;
+    }
+    const resp = NextResponse.json(
+      { success: false, error: "服务异常，已自动退回额度。", code: "DB_WRITE_FAILED" as AiErrorCode, traceId: traceCtx.traceId, conversationId: convId },
+      { status: 500 },
+    );
+    setTraceIdOnNextResponse(resp, traceCtx.traceId);
+    return resp;
+  }
 
   // 返回更新后的配额
   const updatedQuota = await getAiQuota(user.id);
@@ -435,7 +528,7 @@ export async function POST(request: Request) {
     success: true,
     traceId: traceCtx.traceId,
     conversationId: convId,
-    messageId,
+    requestId: clientIdempotencyKey,
     reply: fullReplyText,
     structured: {
       summary: moderated.summary,

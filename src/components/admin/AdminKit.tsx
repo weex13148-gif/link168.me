@@ -101,6 +101,9 @@ const STATUS_TONE_MAP: Record<string, { label: string; tone: StatusTone }> = {
   available: { label: "可用", tone: "success" },
   ok: { label: "正常", tone: "success" },
   healthy: { label: "健康", tone: "success" },
+  configured_and_passed: { label: "已配置且真实测试通过", tone: "success" },
+  not_configured: { label: "未配置", tone: "neutral" },
+  configured_but_failed: { label: "已配置但未通过真实测试", tone: "danger" },
   inactive: { label: "未启用", tone: "neutral" },
   disabled: { label: "已停用", tone: "neutral" },
   pending: { label: "待处理", tone: "warning" },
@@ -137,9 +140,10 @@ const STATUS_TONE_MAP: Record<string, { label: string; tone: StatusTone }> = {
   appealed: { label: "申诉中", tone: "info" },
   // 会员
   free: { label: "免费版", tone: "neutral" },
-  member_plus: { label: "Pro", tone: "info" },
+  plus: { label: "Plus", tone: "info" },
   pro: { label: "Pro", tone: "info" },
   enterprise: { label: "企业版", tone: "info" },
+  enterprise_pro: { label: "企业专业版", tone: "info" },
   // 角色
   super_admin: { label: "超级管理员", tone: "critical" },
   admin: { label: "管理员", tone: "info" },

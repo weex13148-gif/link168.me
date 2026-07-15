@@ -265,6 +265,7 @@ export default async function PublicProfilePage({ params, searchParams }: Public
       icon: iconModerationApproved
         ? item.iconUrl || item.iconValue || null
         : item.iconValue || null,
+      iconType: item.iconType || null,
       type: item.iconType || null,
       componentType: item.type || null,
       payload: item.payloadJson || null,
@@ -338,6 +339,7 @@ export default async function PublicProfilePage({ params, searchParams }: Public
       />
       <main className={`mx-auto flex min-h-dvh w-full max-w-2xl flex-col px-4 py-6 sm:py-10 ${surfaceClass}`}>
         <PublicProfileClientWrapper
+          profileId={profile.id}
           template={resolveTemplate(profile, query.template)}
           username={profile.username}
           displayName={profile.displayName || `@${profile.username}`}

@@ -86,10 +86,11 @@ export default async function ConsoleHomePage() {
   }
 
   const quickStats = [
-    { label: "产品服务", value: productCount, icon: Package, tone: "bg-[#DDE8CD] text-[#3F5F31]", href: "/workbench/products" },
+    { label: "产品数量", value: productCount, icon: Package, tone: "bg-[#DDE8CD] text-[#3F5F31]", href: "/workbench/products" },
     { label: "客户线索", value: leads, icon: UserPlus, tone: "bg-[#EAF3FF] text-[#2563EB]", href: "/workbench/leads" },
-    { label: "短链接", value: shortLinks, icon: Link2, tone: "bg-[#E8E6FF] text-[#3D48B8]", href: "/workbench/short-links" },
-    { label: "AI 客服", value: aiEnabled ? "已开启" : "未开启", icon: Bot, tone: aiEnabled ? "bg-[#6F8F4E] text-white" : "bg-[#FFE6E2] text-[#B42318]", href: "/workbench/ai-service" },
+    { label: "新 Lead", value: activeLeads, icon: UserPlus, tone: "bg-[#FFE6E2] text-[#B42318]", href: "/workbench/leads" },
+    { label: "AI 状态", value: aiEnabled ? "已开启" : "未开启", icon: Bot, tone: aiEnabled ? "bg-[#6F8F4E] text-white" : "bg-[#FFE6E2] text-[#B42318]", href: "/workbench/ai" },
+    { label: "会员状态", value: planLabel, icon: Crown, tone: "bg-[#F6E7C8] text-[#8C612E]", href: "/workbench/membership" },
   ];
 
   const nextSteps = [
@@ -210,7 +211,7 @@ export default async function ConsoleHomePage() {
       </section>
 
       {/* 快速数据卡片 */}
-      <section className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {quickStats.map(({ label, value, icon: Icon, tone, href }) => (
           <Link
             key={label}
@@ -374,7 +375,7 @@ export default async function ConsoleHomePage() {
       <section className="mt-6 rounded-[28px] border border-[#E8DCCB] bg-white p-5 shadow-sm sm:p-6">
         <p className="text-sm font-black text-[#3F5F31]">全部功能</p>
         <h2 className="mt-1 text-xl font-black text-[#2B241E]">快速进入</h2>
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
           {[
             { label: "名片装修", href: "/dashboard", icon: Palette, tone: "bg-[#DDE8CD] text-[#3F5F31]" },
             { label: "产品服务", href: "/workbench/products", icon: Package, tone: "bg-[#EAF3FF] text-[#2563EB]" },
@@ -382,8 +383,6 @@ export default async function ConsoleHomePage() {
             { label: "短链接", href: "/workbench/short-links", icon: Link2, tone: "bg-[#E8E6FF] text-[#3D48B8]" },
             { label: "数据分析", href: "/workbench/analytics", icon: BarChart3, tone: "bg-[#E8E6FF] text-[#3D48B8]" },
             { label: "AI 助手", href: "/workbench/ai", icon: Bot, tone: "bg-[#F6E7C8] text-[#8C612E]", badge: "Beta" },
-            { label: "企业空间", href: "/workbench/enterprise", icon: Building2, tone: "bg-[#F7F1E7] text-[#2B241E]" },
-            { label: "知识库", href: "/workbench/enterprise", icon: FileText, tone: "bg-[#F7F1E7] text-[#2B241E]" },
             { label: "会员套餐", href: "/workbench/membership", icon: Crown, tone: "bg-[#F6E7C8] text-[#8C612E]" },
             { label: "账户设置", href: "/workbench/account", icon: ShieldCheck, tone: "bg-[#F5F0E6] text-[#2B241E]" },
           ].map(({ label, href, icon: Icon, tone, badge }) => (

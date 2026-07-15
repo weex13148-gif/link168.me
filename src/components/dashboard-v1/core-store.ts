@@ -3,7 +3,7 @@
 import { useCallback, useState, type FormEvent } from "react";
 import type { DashboardLink, DashboardProfile, DashboardUser, SaveState } from "@/components/dashboard-v1/types";
 import { isTemporaryUsername } from "@/components/dashboard-v1/types";
-import { fetchDashboard, fetchPlan, saveAppearanceRequest, saveProfileRequest, uploadAvatarRequest, saveCustomThemeRequest, saveProfileSettingsRequest, deactivateAccountRequest, logoutRequest } from "@/components/dashboard-v1/dashboard-api";
+import { deleteAvatarRequest, fetchDashboard, fetchPlan, saveAppearanceRequest, saveProfileRequest, uploadAvatarRequest, saveCustomThemeRequest, saveProfileSettingsRequest, deactivateAccountRequest, logoutRequest } from "@/components/dashboard-v1/dashboard-api";
 import type { CustomTheme } from "@/components/theme/types";
 
 async function compressAvatarImage(file: File): Promise<File> {
@@ -220,6 +220,27 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
     }
   }, [showToast]);
 
+  const deleteAvatar = useCallback(async () => {
+    setUploadingAvatar(true);
+    setSaveState("saving");
+    try {
+      const result = await deleteAvatarRequest();
+      if (!result.ok) {
+        setSaveState("error");
+        showToast(result.error, "error");
+        return;
+      }
+      setProfile(result.data);
+      setSaveState("saved");
+      showToast(result.message || "头像已删除。");
+    } catch {
+      setSaveState("error");
+      showToast("头像删除失败，请稍后重试。", "error");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  }, [showToast]);
+
   const saveAppearance = useCallback(async (theme: string, template: string) => {
     setAppearanceSaving(true);
     setSaveState("saving");
@@ -315,7 +336,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
     loading, loadError, user, profile, planCode, planEntitlements,
     username, displayName, bio, saveState, uploadingAvatar, appearanceSaving, deactivating,
     setUsername, setDisplayName, setBio, setSaveState,
-    load, markDirty, saveProfile, uploadAvatar, saveAppearance, saveCustomTheme, saveProfileSettings,
+    load, markDirty, saveProfile, uploadAvatar, deleteAvatar, saveAppearance, saveCustomTheme, saveProfileSettings,
     refreshEntitlements, deactivateAccount,
   };
 }

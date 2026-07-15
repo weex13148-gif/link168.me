@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle, Loader, MessageCircle, X } from "lucide-react";
 import { PublicAiAssistant } from "@/components/share/PublicAiAssistant";
 import { PublicProductsSection, type ProductDto } from "@/components/share/PublicProductsSection";
@@ -26,6 +26,7 @@ function getOrCreateVisitorId(): string {
 }
 
 type Props = {
+  profileId: string;
   username: string;
   displayName: string;
   bio: string | null;
@@ -85,11 +86,13 @@ function BrandFooter() {
 }
 
 function ContactForm({
+  profileId,
   username,
   products = [],
   interestedProductId,
   onClose,
 }: {
+  profileId: string;
   username: string;
   products?: ProductDto[];
   interestedProductId?: string;
@@ -122,8 +125,12 @@ function ContactForm({
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!form.name.trim() && !form.contact.trim()) {
-      setError("请填写姓名或联系方式。");
+    if (!form.name.trim()) {
+      setError("请填写姓名。");
+      return;
+    }
+    if (!form.contact.trim()) {
+      setError("请填写联系方式。");
       return;
     }
 
@@ -134,6 +141,7 @@ function ContactForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          profileId,
           username,
           name: form.name.trim(),
           contact: form.contact.trim(),
@@ -143,8 +151,8 @@ function ContactForm({
           interestedProductId: form.productId || undefined,
         }),
       });
-      const result = (await response.json()) as { success?: boolean; error?: string };
-      if (!response.ok || !result.success) {
+      const result = (await response.json()) as { success?: boolean; leadId?: string; error?: string };
+      if (!response.ok || !result.success || !result.leadId) {
         setError(result.error || "提交失败，请稍后重试。");
         return;
       }
@@ -236,6 +244,17 @@ export function SharePageWithContact(props: Props) {
 
   const pageUrl = typeof window === "undefined" ? "" : window.location.href;
 
+  const trackContactInteraction = useCallback((linkId: string) => {
+    const visitorId = getOrCreateVisitorId();
+    if (!visitorId) return;
+    fetch(`/api/public/links/${encodeURIComponent(linkId)}/click`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visitorId }),
+      keepalive: true,
+    }).catch(() => undefined);
+  }, []);
+
   useEffect(() => {
     const visitorId = getOrCreateVisitorId();
     if (!visitorId) return;
@@ -254,6 +273,7 @@ export function SharePageWithContact(props: Props) {
     <>
       <SharePageRenderer
         template={props.template}
+        profileId={props.profileId}
         username={props.username}
         displayName={props.displayName}
         bio={props.bio}
@@ -274,6 +294,7 @@ export function SharePageWithContact(props: Props) {
         address={props.address}
         website={props.website}
         contactVisibility={props.contactVisibility}
+        onContactInteraction={trackContactInteraction}
       />
 
       {props.showBrandFoot !== false ? <div className="flex justify-center"><BrandFooter /></div> : null}
@@ -297,7 +318,7 @@ export function SharePageWithContact(props: Props) {
         />
       ) : null}
 
-      {showContact ? <ContactForm username={props.username} products={props.products} interestedProductId={props.interestedProductId} onClose={() => setShowContact(false)} /> : null}
+      {showContact ? <ContactForm profileId={props.profileId} username={props.username} products={props.products} interestedProductId={props.interestedProductId} onClose={() => setShowContact(false)} /> : null}
       <QrCodeModal isOpen={showQrCode} onClose={() => setShowQrCode(false)} pageUrl={pageUrl} displayName={props.displayName} username={props.username} />
       <ShareModal isOpen={showShare} onClose={() => setShowShare(false)} pageUrl={pageUrl} displayName={props.displayName} username={props.username} onOpenQrCode={() => setShowQrCode(true)} />
     </>

@@ -14,7 +14,8 @@ export type AiRiskEventType =
   | "report_received"      // 收到用户举报
   | "report_confirmed"     // 举报经审核确认
   | "report_dismissed"     // 举报经审核驳回
-  | "manual_review";       // 管理员主动标记
+  | "manual_review"        // 管理员主动标记
+  | "refund_failed";       // 退款失败（需要人工介入）
 
 export type AiRiskLevel = "low" | "medium" | "high" | "critical";
 

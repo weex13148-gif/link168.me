@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="WeChat">
+  <rect width="48" height="48" rx="12" fill="#07C160"/>
+  <ellipse cx="20" cy="22" rx="12" ry="9" fill="#fff"/>
+  <ellipse cx="31" cy="29" rx="10" ry="8" fill="#fff" stroke="#07C160" stroke-width="2"/>
+  <circle cx="16" cy="20" r="1.5" fill="#07C160"/><circle cx="23" cy="20" r="1.5" fill="#07C160"/>
+  <circle cx="28" cy="27" r="1.4" fill="#07C160"/><circle cx="34" cy="27" r="1.4" fill="#07C160"/>
+  <path d="M11 31l3-5 4 4zM37 37l-2-5-4 4z" fill="#fff"/>
+</svg>

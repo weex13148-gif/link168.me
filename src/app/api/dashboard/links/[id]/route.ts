@@ -7,12 +7,19 @@ import { sanitizePublicUrl, sanitizePhoneNumber, sanitizeMapUrl, sanitizeQrPaylo
 import { getUserEntitlements } from "@/lib/billing/entitlements";
 import { isModuleType, validateModulePayload } from "@/features/profile-modules/validators";
 import { getModuleDefinition } from "@/features/profile-modules/registry";
+import { allowedIconTypes, normalizePlatformIconKey } from "@/lib/link-icons";
+import { collectManagedMediaUrls } from "@/lib/owned-media";
+import { cleanupOwnedMediaUrls } from "@/lib/owned-media-lifecycle";
+import {
+  ProductBindingError,
+  hydrateOwnedActiveProductCardPayload,
+} from "@/lib/products/binding";
 
 export const runtime = "nodejs";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
-const ICON_TYPES = ["default", "emoji", "custom"] as const;
+const ICON_TYPES = allowedIconTypes;
 const COMPONENT_TYPES = [
   "link",
   "text",
@@ -20,11 +27,15 @@ const COMPONENT_TYPES = [
   "qr",
   "wechat",
   "phone",
+  "email",
+  "address",
   "shop",
   "booking",
   "product-card",
   "service-card",
   "offer",
+  "quote",
+  "contact-form",
   "map",
   "copy-text",
   "cover-image",
@@ -54,6 +65,8 @@ const NEW_MODULE_TYPES = new Set([
   "product-card",
   "service-card",
   "offer",
+  "quote",
+  "contact-form",
 ]);
 const TITLE_OPTIONAL_TYPES = new Set([
   "text",
@@ -174,9 +187,15 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   const iconTypeRaw = typeof body.iconType === "string" ? body.iconType.trim().toLowerCase() : existing.iconType;
   const iconType = ICON_TYPES.includes(iconTypeRaw as (typeof ICON_TYPES)[number]) ? iconTypeRaw : "default";
+  const platformIconValue = iconType === "platform"
+    ? normalizePlatformIconKey(body.iconValue !== undefined ? body.iconValue : existing.iconValue)
+    : null;
+  if (iconType === "platform" && !platformIconValue) {
+    return NextResponse.json({ success: false, error: "请选择支持的平台图标。" }, { status: 400 });
+  }
   const iconValue = iconType === "emoji"
     ? (body.iconValue !== undefined ? normalizeNullableString(body.iconValue) : existing.iconValue)
-    : null;
+    : platformIconValue;
   const iconUrlRaw = typeof body.iconUrl === "string" ? body.iconUrl.trim() : existing.iconUrl || "";
   const iconUrl = iconType === "custom" ? sanitizePublicUrl(iconUrlRaw).url : null;
 
@@ -202,6 +221,18 @@ export async function PATCH(request: Request, context: RouteContext) {
       }
     } catch {
       // 如果 JSON 解析失败，保留原始 payloadJson
+    }
+  }
+
+  if (componentType === "product-card" && (body.payload !== undefined || body.componentType !== undefined)) {
+    try {
+      const payload = payloadJson ? JSON.parse(payloadJson) as Record<string, unknown> : {};
+      payloadJson = JSON.stringify(await hydrateOwnedActiveProductCardPayload(user.id, payload));
+    } catch (error) {
+      if (error instanceof ProductBindingError) {
+        return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+      }
+      return NextResponse.json({ success: false, error: "产品绑定校验失败。" }, { status: 400 });
     }
   }
 
@@ -243,9 +274,19 @@ export async function PATCH(request: Request, context: RouteContext) {
     },
   });
 
+  const previousMediaUrls = collectManagedMediaUrls(existing.iconUrl, existing.payloadJson);
+  const currentMediaUrls = collectManagedMediaUrls(link.iconUrl, link.payloadJson);
+  const staleMediaUrls = [...previousMediaUrls].filter((urlValue) => !currentMediaUrls.has(urlValue));
+  const mediaCleanup = await cleanupOwnedMediaUrls(staleMediaUrls, profile.id);
+
   await revalidatePublicProfileByUser(user.id);
 
-  return NextResponse.json({ success: true, link: toLinkDto(link) });
+  return NextResponse.json({
+    success: true,
+    link: toLinkDto(link),
+    mediaCleanup,
+    mediaCleanupOk: mediaCleanup.every((result) => result.status !== "failed"),
+  });
 }
 
 export async function DELETE(request: Request, context: RouteContext) {
@@ -255,10 +296,22 @@ export async function DELETE(request: Request, context: RouteContext) {
   if (!profile) return NextResponse.json({ success: false, error: "没有找到当前用户的主页资料。" }, { status: 404 });
 
   const { id } = await context.params;
+  const existing = await db.link.findFirst({ where: { id, profileId: profile.id } });
+  if (!existing) return NextResponse.json({ success: false, error: "没有找到这条链接。" }, { status: 404 });
+
   const deleted = await db.link.deleteMany({ where: { id, profileId: profile.id } });
   if (!deleted.count) return NextResponse.json({ success: false, error: "没有找到这条链接。" }, { status: 404 });
 
+  const mediaCleanup = await cleanupOwnedMediaUrls(
+    collectManagedMediaUrls(existing.iconUrl, existing.payloadJson),
+    profile.id,
+  );
+
   await revalidatePublicProfileByUser(user.id);
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({
+    success: true,
+    mediaCleanup,
+    mediaCleanupOk: mediaCleanup.every((result) => result.status !== "failed"),
+  });
 }

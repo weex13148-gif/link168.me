@@ -1,164 +1,110 @@
-export type PlatformIcon = {
-  iconType: "emoji";
-  iconValue: string;
+export const allowedIconTypes = ["default", "emoji", "custom", "platform"] as const;
+
+export type AllowedIconType = (typeof allowedIconTypes)[number];
+
+export type PlatformIconKey =
+  | "wechat"
+  | "douyin"
+  | "xiaohongshu"
+  | "bilibili"
+  | "youtube"
+  | "linkedin"
+  | "instagram"
+  | "facebook"
+  | "x";
+
+type PlatformIconOption = {
+  key: PlatformIconKey;
   label: string;
+  hostnames: string[];
 };
 
-const PLATFORM_ICONS: Array<{ patterns: RegExp[]; icon: PlatformIcon }> = [
-  {
-    patterns: [/weixin\.qq\.com/i, /mp\.weixin\.qq\.com/i, /wechat/i, /微信/i],
-    icon: { iconType: "emoji", iconValue: "💬", label: "微信" },
-  },
-  {
-    patterns: [/weibo\.com/i, /weibo\.cn/i, /微博/i],
-    icon: { iconType: "emoji", iconValue: "📢", label: "微博" },
-  },
-  {
-    patterns: [/douyin\.com/i, /iesdouyin\.com/i, /抖音/i],
-    icon: { iconType: "emoji", iconValue: "🎵", label: "抖音" },
-  },
-  {
-    patterns: [/xiaohongshu\.com/i, /xhslink\.com/i, /小红书/i],
-    icon: { iconType: "emoji", iconValue: "📕", label: "小红书" },
-  },
-  {
-    patterns: [/bilibili\.com/i, /b23\.tv/i, /B站/i, /哔哩哔哩/i],
-    icon: { iconType: "emoji", iconValue: "📺", label: "B站" },
-  },
-  {
-    patterns: [/zhihu\.com/i, /知乎/i],
-    icon: { iconType: "emoji", iconValue: "❓", label: "知乎" },
-  },
-  {
-    patterns: [/github\.com/i, /github\.io/i],
-    icon: { iconType: "emoji", iconValue: "💻", label: "GitHub" },
-  },
-  {
-    patterns: [/taobao\.com/i, /tmall\.com/i, /淘宝/i, /天猫/i],
-    icon: { iconType: "emoji", iconValue: "🛒", label: "淘宝/天猫" },
-  },
-  {
-    patterns: [/jd\.com/i, /京东/i],
-    icon: { iconType: "emoji", iconValue: "📦", label: "京东" },
-  },
-  {
-    patterns: [/pinduoduo\.com/i, /yangkeduo\.com/i, /拼多多/i],
-    icon: { iconType: "emoji", iconValue: "🏪", label: "拼多多" },
-  },
-  {
-    patterns: [/meituan\.com/i, /美团/i],
-    icon: { iconType: "emoji", iconValue: "🍜", label: "美团" },
-  },
-  {
-    patterns: [/dianping\.com/i, /大众点评/i],
-    icon: { iconType: "emoji", iconValue: "⭐", label: "大众点评" },
-  },
-  {
-    patterns: [/baidu\.com/i, /百度/i],
-    icon: { iconType: "emoji", iconValue: "🔍", label: "百度" },
-  },
-  {
-    patterns: [/amap\.com/i, /gaode\.com/i, /高德/i],
-    icon: { iconType: "emoji", iconValue: "📍", label: "高德地图" },
-  },
-  {
-    patterns: [/v\.qq\.com/i, /腾讯视频/i],
-    icon: { iconType: "emoji", iconValue: "🎬", label: "腾讯视频" },
-  },
-  {
-    patterns: [/iqiyi\.com/i, /爱奇艺/i],
-    icon: { iconType: "emoji", iconValue: "🎞️", label: "爱奇艺" },
-  },
-  {
-    patterns: [/youku\.com/i, /优酷/i],
-    icon: { iconType: "emoji", iconValue: "🎥", label: "优酷" },
-  },
-  {
-    patterns: [/mp\.weixin\.qq\.com/i, /公众号/i],
-    icon: { iconType: "emoji", iconValue: "📰", label: "公众号" },
-  },
-  {
-    patterns: [/channels\.weixin\.qq\.com/i, /视频号/i],
-    icon: { iconType: "emoji", iconValue: "📹", label: "视频号" },
-  },
-  {
-    patterns: [/miniprogram/i, /小程序/i],
-    icon: { iconType: "emoji", iconValue: "🧩", label: "小程序" },
-  },
-  {
-    patterns: [/work\.weixin\.qq\.com/i, /企业微信/i, /wework/i],
-    icon: { iconType: "emoji", iconValue: "🏢", label: "企业微信" },
-  },
-  {
-    patterns: [/dingtalk\.com/i, /钉钉/i],
-    icon: { iconType: "emoji", iconValue: "🔔", label: "钉钉" },
-  },
-  {
-    patterns: [/feishu\.cn/i, /larksuite\.com/i, /飞书/i, /lark/i],
-    icon: { iconType: "emoji", iconValue: "🐦", label: "飞书" },
-  },
-  {
-    patterns: [/slack\.com/i],
-    icon: { iconType: "emoji", iconValue: "💼", label: "Slack" },
-  },
-  {
-    patterns: [/twitter\.com/i, /x\.com/i, /t\.co/i],
-    icon: { iconType: "emoji", iconValue: "🐦", label: "Twitter/X" },
-  },
-  {
-    patterns: [/facebook\.com/i, /fb\.com/i],
-    icon: { iconType: "emoji", iconValue: "👤", label: "Facebook" },
-  },
-  {
-    patterns: [/instagram\.com/i, /instagr\.am/i],
-    icon: { iconType: "emoji", iconValue: "📷", label: "Instagram" },
-  },
-  {
-    patterns: [/linkedin\.com/i],
-    icon: { iconType: "emoji", iconValue: "💼", label: "LinkedIn" },
-  },
-  {
-    patterns: [/youtube\.com/i, /youtu\.be/i],
-    icon: { iconType: "emoji", iconValue: "▶️", label: "YouTube" },
-  },
-  {
-    patterns: [/whatsapp\.com/i, /wa\.me/i],
-    icon: { iconType: "emoji", iconValue: "💚", label: "WhatsApp" },
-  },
-  {
-    patterns: [/telegram\.org/i, /t\.me/i],
-    icon: { iconType: "emoji", iconValue: "✈️", label: "Telegram" },
-  },
+export type ResolvedLinkIcon =
+  | { iconType: "platform"; iconValue: PlatformIconKey; label: string }
+  | { iconType: "default"; iconValue: ""; label: "通用链接" };
+
+const PLATFORM_ICON_OPTIONS: PlatformIconOption[] = [
+  { key: "wechat", label: "微信", hostnames: ["weixin.qq.com", "wechat.com"] },
+  { key: "douyin", label: "抖音", hostnames: ["douyin.com", "iesdouyin.com"] },
+  { key: "xiaohongshu", label: "小红书", hostnames: ["xiaohongshu.com", "xhslink.com"] },
+  { key: "bilibili", label: "哔哩哔哩", hostnames: ["bilibili.com", "b23.tv"] },
+  { key: "youtube", label: "YouTube", hostnames: ["youtube.com", "youtu.be"] },
+  { key: "linkedin", label: "LinkedIn", hostnames: ["linkedin.com"] },
+  { key: "instagram", label: "Instagram", hostnames: ["instagram.com", "instagr.am"] },
+  { key: "facebook", label: "Facebook", hostnames: ["facebook.com", "fb.com"] },
+  { key: "x", label: "X", hostnames: ["x.com", "twitter.com", "t.co"] },
 ];
 
-export const DEFAULT_LINK_ICON: PlatformIcon = {
-  iconType: "emoji",
-  iconValue: "🔗",
-  label: "默认链接",
+const PLATFORM_ICON_PATHS: Record<PlatformIconKey, string> = {
+  wechat: "/platform-logos/wechat.svg",
+  douyin: "/platform-logos/douyin.svg",
+  xiaohongshu: "/platform-logos/xiaohongshu.svg",
+  bilibili: "/platform-logos/bilibili.svg",
+  youtube: "/platform-logos/youtube.svg",
+  linkedin: "/platform-logos/linkedin.svg",
+  instagram: "/platform-logos/instagram.svg",
+  facebook: "/platform-logos/facebook.svg",
+  x: "/platform-logos/x.svg",
 };
 
-export function getDefaultIconForUrl(url: string): PlatformIcon {
-  if (!url) return DEFAULT_LINK_ICON;
+const PLATFORM_ICON_KEYS = new Set<PlatformIconKey>(
+  PLATFORM_ICON_OPTIONS.map((option) => option.key),
+);
 
-  let hostname = "";
-  try {
-    const parsed = new URL(url);
-    hostname = parsed.hostname.toLowerCase();
-  } catch {
-    hostname = url.toLowerCase();
-  }
+export const DEFAULT_LINK_ICON: ResolvedLinkIcon = {
+  iconType: "default",
+  iconValue: "",
+  label: "通用链接",
+};
 
-  for (const platform of PLATFORM_ICONS) {
-    for (const pattern of platform.patterns) {
-      if (pattern.test(hostname) || pattern.test(url)) {
-        return platform.icon;
-      }
-    }
-  }
-
-  return DEFAULT_LINK_ICON;
+export function isPlatformIconKey(value: unknown): value is PlatformIconKey {
+  return typeof value === "string" && PLATFORM_ICON_KEYS.has(value as PlatformIconKey);
 }
 
-export function getAllPlatformIcons(): PlatformIcon[] {
-  return PLATFORM_ICONS.map((p) => p.icon);
+export function normalizePlatformIconKey(value: unknown): PlatformIconKey | null {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim().toLowerCase();
+  return isPlatformIconKey(normalized) ? normalized : null;
+}
+
+export function resolvePlatformIcon(value: string | null | undefined): string | null {
+  const key = normalizePlatformIconKey(value);
+  return key ? PLATFORM_ICON_PATHS[key] : null;
+}
+
+export function getPlatformIconOptions(): ReadonlyArray<Pick<PlatformIconOption, "key" | "label">> {
+  return PLATFORM_ICON_OPTIONS.map(({ key, label }) => ({ key, label }));
+}
+
+function hostnameMatches(hostname: string, allowedHostname: string): boolean {
+  return hostname === allowedHostname || hostname.endsWith(`.${allowedHostname}`);
+}
+
+export function detectPlatformIcon(url: string): PlatformIconKey | null {
+  if (!url) return null;
+
+  let hostname: string;
+  try {
+    hostname = new URL(url).hostname.toLowerCase().replace(/\.$/, "");
+  } catch {
+    return null;
+  }
+
+  for (const option of PLATFORM_ICON_OPTIONS) {
+    if (option.hostnames.some((allowed) => hostnameMatches(hostname, allowed))) {
+      return option.key;
+    }
+  }
+  return null;
+}
+
+export function getDefaultIconForUrl(url: string): ResolvedLinkIcon {
+  const key = detectPlatformIcon(url);
+  if (!key) return DEFAULT_LINK_ICON;
+  const option = PLATFORM_ICON_OPTIONS.find((candidate) => candidate.key === key);
+  return {
+    iconType: "platform",
+    iconValue: key,
+    label: option?.label || key,
+  };
 }

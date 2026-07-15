@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { db } from "@/lib/db";
-import { getPlanDefinition, type PlanCode } from "./plans";
+import { getPlanDefinition, type PlanCode, normalizePlanCode, isUniqueConstraintError } from "./plans";
 import { writeAdminAuditLog } from "@/lib/admin-audit-log";
 
 export const GRACE_PERIOD_DAYS = 3;
@@ -42,22 +42,6 @@ export type MembershipExpiryResult = {
   newStatus: string;
   reason?: string;
 };
-
-function normalizePlanCode(value: string | null | undefined): PlanCode {
-  const valid: PlanCode[] = [
-    "free",
-    "member_basic",
-    "member_plus",
-    "pro",
-    "enterprise",
-    "enterprise_pro_plus",
-    "internal_test",
-  ];
-  if (value && valid.includes(value as PlanCode)) {
-    return value as PlanCode;
-  }
-  return "free";
-}
 
 function getDaysBetween(a: Date, b: Date): number {
   const msPerDay = 24 * 60 * 60 * 1000;
@@ -421,11 +405,10 @@ export async function calculateRenewalExtension(
 
   const planRank: PlanCode[] = [
     "free",
-    "member_basic",
-    "member_plus",
+    "plus",
     "pro",
     "enterprise",
-    "enterprise_pro_plus",
+    "enterprise_pro",
     "internal_test",
   ];
   const currentRank = planRank.indexOf(previousPlan);
@@ -520,7 +503,7 @@ export async function activateOrRenewMembership(params: {
 
         const idempotencyKey = orderId
           ? `grant:order:${orderId}`
-          : `grant:manual:${userId}:${Date.now()}`;
+          : `grant:manual:${userId}:${planCode}:${billingCycle}`;
 
         try {
           await tx.aiCreditLedger.create({
@@ -543,8 +526,12 @@ export async function activateOrRenewMembership(params: {
               },
             },
           });
-        } catch {
-          // 幂等：已存在则跳过
+        } catch (e) {
+          if (isUniqueConstraintError(e, "idempotency_key")) {
+            // 幂等：已存在则跳过
+          } else {
+            throw e;
+          }
         }
       }
 

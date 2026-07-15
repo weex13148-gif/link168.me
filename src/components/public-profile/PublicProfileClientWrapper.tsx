@@ -10,6 +10,7 @@ import type { SharePageTemplate } from "@/components/share/SharePageRenderer";
 import type { ProductDto } from "@/components/share/PublicProductsSection";
 
 interface PublicProfileClientWrapperProps {
+  profileId: string;
   template: SharePageTemplate;
   username: string;
   displayName: string;

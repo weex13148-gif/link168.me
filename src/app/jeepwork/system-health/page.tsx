@@ -49,6 +49,8 @@ interface MailHealth {
   fromAddress: string | null;
   connectivityTested: boolean;
   connectivityOk: boolean | null;
+  readinessStatus: "configured_and_passed" | "not_configured" | "configured_but_failed";
+  readinessLabel: string;
 }
 
 interface AiServiceHealth {
@@ -58,6 +60,8 @@ interface AiServiceHealth {
   baseUrl: string | null;
   model: string | null;
   apiKeyPresent: boolean;
+  readinessStatus: "configured_and_passed" | "not_configured" | "configured_but_failed";
+  readinessLabel: string;
   assistantTaxEnabled: boolean;
   assistantLegalEnabled: boolean;
   assistantMarketEnabled: boolean;
@@ -73,6 +77,8 @@ interface UploadHealth {
   totalSizeBytes: number;
   storageProvider: string;
   storageEnabled: boolean;
+  objectStorageReadinessStatus: "configured_and_passed" | "not_configured" | "configured_but_failed";
+  objectStorageReadinessLabel: string;
 }
 
 interface ScheduledTask {
@@ -563,6 +569,7 @@ export default function SystemHealthPage() {
               <InfoRow label="SMTP用户" value={report.mail.smtpUser} />
               <InfoRow label="安全模式" value={report.mail.smtpSecureMode} />
               <InfoRow label="发件地址" value={report.mail.fromAddress} />
+              <InfoRow label="真实服务状态" value={report.mail.readinessLabel} />
               <InfoRow label="连接已测试" value={report.mail.connectivityTested ? "是" : "否"} />
             </div>
           </SectionCard>
@@ -578,6 +585,7 @@ export default function SystemHealthPage() {
               <InfoRow label="Base URL" value={report.ai.baseUrl} />
               <InfoRow label="模型" value={report.ai.model} />
               <InfoRow label="API Key" value={report.ai.apiKeyPresent ? "已配置" : "未配置"} />
+              <InfoRow label="百炼真实服务状态" value={report.ai.readinessLabel} />
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {[
@@ -609,6 +617,7 @@ export default function SystemHealthPage() {
             <div className="mt-4">
               <InfoRow label="存储提供商" value={report.upload.storageProvider} />
               <InfoRow label="存储启用" value={report.upload.storageEnabled ? "是" : "否"} />
+              <InfoRow label="对象存储真实服务状态" value={report.upload.objectStorageReadinessLabel} />
               <InfoRow label="目录存在" value={report.upload.directoryExists ? "是" : "否"} />
               <InfoRow label="可写" value={report.upload.directoryWritable ? "是" : "否"} />
               <InfoRow label="临时文件" value={report.upload.tempFileCount} />

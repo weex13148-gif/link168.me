@@ -12,13 +12,13 @@ import { PLAN_DEFINITIONS, type PlanCode } from "@/lib/billing/plans";
 export const runtime = "nodejs";
 
 const LEGACY_PLAN_MAP: Record<string, PlanCode> = {
-  basic: "member_plus",
-  plus: "member_plus",
+  basic: "plus",
+  plus: "plus",
   pro: "pro",
-  member_basic: "member_basic",
-  member_plus: "member_plus",
+  member_basic: "plus",
+  member_plus: "plus",
   enterprise: "enterprise",
-  enterprise_pro_plus: "enterprise_pro_plus",
+  enterprise_pro_plus: "enterprise_pro",
   internal_test: "internal_test",
 };
 

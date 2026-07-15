@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireDashboardUser } from "@/lib/auth";
+import { getCoreMvpMetrics } from "@/lib/analytics";
 import { db } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -27,6 +28,10 @@ export async function GET(request: NextRequest) {
       {
         success: true,
         stats: {
+          visits: 0,
+          consultations: 0,
+          leads: 0,
+          conversions: 0,
           totalClicks: 0,
           totalLinks: 0,
           clicksToday: 0,
@@ -48,9 +53,11 @@ export async function GET(request: NextRequest) {
 
   const now = new Date();
   const todayStart = startOfDay(now);
+  const tomorrowStart = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
   const sevenDaysAgoStart = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
 
   const [
+    coreMetrics,
     totalClicksResult,
     totalLinks,
     clicksTodayCount,
@@ -64,6 +71,7 @@ export async function GET(request: NextRequest) {
     profileViewsLast7DaysCount,
     profileDailyResult,
   ] = await Promise.all([
+    getCoreMvpMetrics(profile.id, { from: profile.createdAt, to: tomorrowStart }),
     db.link.aggregate({
       where: { profileId: profile.id },
       _sum: { totalClicks: true },
@@ -153,6 +161,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({
     success: true,
     stats: {
+      ...coreMetrics,
       totalClicks,
       totalLinks,
       clicksToday: clicksTodayCount,
@@ -163,8 +172,9 @@ export async function GET(request: NextRequest) {
       profileViewsLast7Days: profileViewsLast7DaysCount,
       ctr,
       byDevice: byDeviceResult.map((r) => ({ device: r.device || "unknown", count: r._count.device })),
-      topLinks: topLinksResult.map((l) => ({ id: l.id, title: l.title, totalClicks: l.totalClicks })),
-      daily,
+      topLinks: topLinksResult.map((l) => ({ id: l.id, title: l.title, clicks: l.totalClicks })),
+      daily: profileDaily.map((item) => ({ date: item.date, views: item.pv })),
+      clickDaily: daily,
       profileDaily,
     },
   });

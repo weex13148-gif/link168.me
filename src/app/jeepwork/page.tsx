@@ -42,10 +42,10 @@ const shortcuts = [
 
 const serviceLabels: Record<string, string> = {
   database: "数据库",
-  mail: "邮箱服务",
-  ai: "AI 服务",
-  storage: "上传与存储",
-  payment: "支付服务",
+  bailian: "阿里百炼",
+  mail: "阿里云邮件",
+  alipay: "支付宝",
+  object_storage: "对象存储",
 };
 
 export default function JeepworkHomePage() {
@@ -229,7 +229,7 @@ export default function JeepworkHomePage() {
                     {Object.entries(summary.services).map(([key, service]) => (
                       <div key={key} className="flex items-center justify-between gap-4 px-5 py-4">
                         <span className="text-sm font-bold text-[var(--ui-ink)]">{serviceLabels[key] || key}</span>
-                        <AdminStatusBadgeFromCode status={service.status} fallbackLabel={service.label} />
+                        <AdminStatusBadgeFromCode status={service.status} hint={service.label} />
                       </div>
                     ))}
                   </div>

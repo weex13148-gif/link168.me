@@ -206,6 +206,33 @@ exports.Prisma.ProfileScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.DomainScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  domain: 'domain',
+  normalizedDomain: 'normalizedDomain',
+  domainType: 'domainType',
+  status: 'status',
+  failureReason: 'failureReason',
+  verificationToken: 'verificationToken',
+  cnameTarget: 'cnameTarget',
+  verifiedAt: 'verifiedAt',
+  unboundAt: 'unboundAt',
+  lastVerifiedAt: 'lastVerifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WorkspacePublicProfileScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  userId: 'userId',
+  slug: 'slug',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.LinkScalarFieldEnum = {
   id: 'id',
   profileId: 'profileId',
@@ -695,6 +722,31 @@ exports.Prisma.WorkspaceMemberScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.EnterpriseQuotaPoolScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  totalQuota: 'totalQuota',
+  usedQuota: 'usedQuota',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.EnterpriseQuotaConsumptionScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  userId: 'userId',
+  operationId: 'operationId',
+  amount: 'amount',
+  source: 'source',
+  status: 'status',
+  failureReason: 'failureReason',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -728,6 +780,8 @@ exports.Prisma.ModelName = {
   UsernameHistory: 'UsernameHistory',
   UsernameRegistry: 'UsernameRegistry',
   Profile: 'Profile',
+  Domain: 'Domain',
+  WorkspacePublicProfile: 'WorkspacePublicProfile',
   Link: 'Link',
   LinkClick: 'LinkClick',
   ProfileVisit: 'ProfileVisit',
@@ -761,7 +815,9 @@ exports.Prisma.ModelName = {
   ShowcasePromptDraft: 'ShowcasePromptDraft',
   ContentModerationRecord: 'ContentModerationRecord',
   Workspace: 'Workspace',
-  WorkspaceMember: 'WorkspaceMember'
+  WorkspaceMember: 'WorkspaceMember',
+  EnterpriseQuotaPool: 'EnterpriseQuotaPool',
+  EnterpriseQuotaConsumption: 'EnterpriseQuotaConsumption'
 };
 
 /**

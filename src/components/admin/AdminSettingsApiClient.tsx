@@ -63,9 +63,25 @@ type ConfigForm = {
   customApiConfig: string;
 };
 
+type ExternalReadinessStatus =
+  | "configured_and_passed"
+  | "not_configured"
+  | "configured_but_failed";
+
+type ExternalReadiness = {
+  status: ExternalReadinessStatus;
+  label: string;
+  lastTestedAt: string | null;
+};
+
+type ExternalReadinessMap = Record<
+  "bailian" | "mail" | "alipay" | "object_storage",
+  ExternalReadiness
+>;
+
 type ApiEnvelope<T> = {
   success?: boolean;
-  data?: T | { config?: T; message?: string } | null;
+  data?: T | { config?: T; readiness?: ExternalReadinessMap; message?: string } | null;
   message?: string;
   error?: { message?: string } | string | null;
 };
@@ -204,14 +220,24 @@ function Section({ id, title, description, children }: { id?: string; title: str
   );
 }
 
-function StatusCard({ label, ok, text }: { label: string; ok: boolean; text: string }) {
+function StatusCard({ label, readiness }: { label: string; readiness: ExternalReadiness }) {
+  const passed = readiness.status === "configured_and_passed";
+  const failed = readiness.status === "configured_but_failed";
   return (
-    <div className={`rounded-xl border p-4 ${ok ? "border-[#CFE0BF] bg-[#F2F7ED]" : "border-[#E8DCCB] bg-[#FFF9F0]"}`}>
+    <div className={`rounded-xl border p-4 ${passed ? "border-[#CFE0BF] bg-[#F2F7ED]" : failed ? "border-[#F0C7C2] bg-[#FFF1F0]" : "border-[#E8DCCB] bg-[#F7F3EC]"}`}>
       <p className="text-xs font-black text-[#7A6D5E]">{label}</p>
-      <p className={`mt-1 text-sm font-black ${ok ? "text-[#3F5F31]" : "text-[#8C612E]"}`}>{text}</p>
+      <p className={`mt-1 text-sm font-black ${passed ? "text-[#3F5F31]" : failed ? "text-[#B42318]" : "text-[#6F6255]"}`}>{readiness.label}</p>
+      {readiness.lastTestedAt ? <p className="mt-2 text-[11px] text-[#8B7B68]">最近测试：{new Date(readiness.lastTestedAt).toLocaleString("zh-CN", { hour12: false })}</p> : null}
     </div>
   );
 }
+
+const READINESS_LABELS: Record<keyof ExternalReadinessMap, string> = {
+  bailian: "阿里百炼",
+  mail: "阿里云邮件",
+  alipay: "支付宝",
+  object_storage: "对象存储",
+};
 
 export default function AdminSettingsApiClient() {
   const [form, setForm] = useState<ConfigForm>(initialForm);
@@ -223,6 +249,7 @@ export default function AdminSettingsApiClient() {
   const [testMessage, setTestMessage] = useState("");
   const [aiTesterEmails, setAiTesterEmails] = useState("");
   const [secretConfigured, setSecretConfigured] = useState<Record<string, boolean>>({});
+  const [readiness, setReadiness] = useState<ExternalReadinessMap | null>(null);
 
   function update<K extends keyof ConfigForm>(key: K, value: ConfigForm[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -235,7 +262,7 @@ export default function AdminSettingsApiClient() {
       const response = await fetch("/api/jeepwork/settings/api", { cache: "no-store" });
       const result = (await response.json()) as ApiEnvelope<ConfigForm>;
       if (!response.ok || !result.success || !result.data) throw new Error(errorText(result.error));
-      const nested = result.data as { config?: ConfigForm };
+      const nested = result.data as { config?: ConfigForm; readiness?: ExternalReadinessMap };
       const loaded = nested.config || result.data as ConfigForm;
       const configured: Record<string, boolean> = {};
       const safeLoaded = { ...initialForm, ...loaded };
@@ -246,6 +273,7 @@ export default function AdminSettingsApiClient() {
       }
       setSecretConfigured(configured);
       setForm(safeLoaded);
+      setReadiness(nested.readiness ?? null);
       setAiTesterEmails(Array.isArray(loaded.aiTesterEmails) ? loaded.aiTesterEmails.join("\n") : "");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "配置加载失败。" );
@@ -295,15 +323,13 @@ export default function AdminSettingsApiClient() {
       if (!response.ok || !result.success) throw new Error(errorText(result.error));
       const data = result.data as { message?: string } | null;
       setTestMessage(data?.message || result.message || "操作成功。" );
+      await load();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "测试失败。" );
     }
   }
 
   if (loading) return <div className="rounded-[24px] border border-[#E8DCCB] bg-white p-10 text-center font-bold text-[#7A6D5E]">正在加载系统配置…</div>;
-
-  const mailComplete = Boolean(form.smtpHost && form.smtpUser && (secretConfigured.smtpPassword || form.smtpPassword) && form.mailFrom);
-  const mailReady = form.mailEnabled && mailComplete;
 
   return (
     <form onSubmit={save} className="grid gap-6 pb-24">
@@ -317,15 +343,18 @@ export default function AdminSettingsApiClient() {
       {message ? <p className="rounded-2xl bg-[#EEF4E7] px-4 py-3 text-sm font-bold text-[#355126]">{message}</p> : null}
       {error ? <p className="rounded-2xl bg-[#FFF1F0] px-4 py-3 text-sm font-bold text-[#B42318]">{error}</p> : null}
 
-      <Section id="mail" title="邮箱验证码与 SMTP 邮件配置" description="这套配置同时用于注册验证码、重新发送验证码、忘记密码和系统测试邮件。SMTP 测试成功不等于产品闭环完成，下方会显示各功能是否具备发送条件。">
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <StatusCard label="邮件服务总开关" ok={form.mailEnabled} text={form.mailEnabled ? "已开启" : "已关闭"} />
-          <StatusCard label="SMTP 配置" ok={mailComplete} text={mailComplete ? "配置完整" : "配置不完整"} />
-          <StatusCard label="注册邮箱验证码" ok={mailReady} text={mailReady ? "具备发送条件" : "暂不可用"} />
-          <StatusCard label="忘记密码邮件" ok={mailReady} text={mailReady ? "具备发送条件" : "暂不可用"} />
-        </div>
+      {readiness ? (
+        <Section title="外部服务就绪状态" description="只有当前配置已经完成真实供应商连通测试时才显示绿色；配置完整、模拟结果或本地校验都不算通过。">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {(Object.keys(READINESS_LABELS) as Array<keyof ExternalReadinessMap>).map((service) => (
+              <StatusCard key={service} label={READINESS_LABELS[service]} readiness={readiness[service]} />
+            ))}
+          </div>
+        </Section>
+      ) : null}
 
-        <div className="mt-5 grid gap-4 xl:grid-cols-[1.1fr_1fr]">
+      <Section id="mail" title="邮箱验证码与 SMTP 邮件配置" description="这套配置同时用于注册验证码、重新发送验证码、忘记密码和系统测试邮件。SMTP 测试成功不等于产品闭环完成，下方会显示各功能是否具备发送条件。">
+        <div className="grid gap-4 xl:grid-cols-[1.1fr_1fr]">
           <div className="grid gap-4 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] p-5 md:grid-cols-2">
             <div className="md:col-span-2"><Toggle label="邮件服务总开关" checked={form.mailEnabled} onChange={(value) => update("mailEnabled", value)} hint="关闭后注册验证码、重发验证码和忘记密码邮件都不会发送。" /></div>
             <Field label="SMTP 服务器地址" value={form.smtpHost} onChange={(value) => update("smtpHost", value)} placeholder="smtpdm.aliyun.com" />

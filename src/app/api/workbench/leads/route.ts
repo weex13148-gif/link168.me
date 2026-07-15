@@ -9,28 +9,28 @@ import { NextResponse } from "next/server";
 import { requireDashboardUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getOwnedProfile } from "@/lib/dashboard-data";
-import { sanitizePublicText } from "@/lib/content-safety";
 
 export const runtime = "nodejs";
 
-// 统一状态枚举
-const VALID_STATUSES = ["new", "contacted", "following", "converted", "closed"] as const;
+// 统一新状态枚举
+const VALID_STATUSES = ["new", "viewed", "following_up", "won", "closed"] as const;
 type LeadStatus = typeof VALID_STATUSES[number];
 
-// 旧状态映射（新系统不再使用，但历史数据可能存在）
-const OLD_STATUS_MAP: Record<string, LeadStatus> = {
-  qualified: "following",
-  lost: "closed",
-};
+// 历史状态保留，提供兼容显示（不破坏性映射）
+const HISTORICAL_STATUSES = ["contacted", "following", "converted", "qualified", "lost"] as const;
 
-function normalizeStatus(status: string): LeadStatus | "unknown" {
+function isValidNewStatus(status: string): status is LeadStatus {
+  return VALID_STATUSES.includes(status as LeadStatus);
+}
+
+function isHistoricalStatus(status: string): boolean {
+  return HISTORICAL_STATUSES.includes(status as typeof HISTORICAL_STATUSES[number]);
+}
+
+function normalizeFilterStatus(status: string): LeadStatus | typeof HISTORICAL_STATUSES[number] | "unknown" {
   const lower = status.toLowerCase();
-  if (VALID_STATUSES.includes(lower as LeadStatus)) {
-    return lower as LeadStatus;
-  }
-  if (OLD_STATUS_MAP[lower]) {
-    return OLD_STATUS_MAP[lower];
-  }
+  if (isValidNewStatus(lower)) return lower;
+  if (isHistoricalStatus(lower)) return lower as typeof HISTORICAL_STATUSES[number];
   return "unknown";
 }
 
@@ -145,10 +145,10 @@ export async function GET(request: Request) {
     ? { sourceComponent: sourceFilter }
     : {};
 
-  // 构建状态过滤（支持新旧状态）
+  // 构建状态过滤（支持新状态和历史状态）
   let normalizedFilter: string | undefined;
   if (statusFilter) {
-    const normalized = normalizeStatus(statusFilter);
+    const normalized = normalizeFilterStatus(statusFilter);
     if (normalized !== "unknown") {
       normalizedFilter = normalized;
     }
@@ -254,17 +254,22 @@ export async function GET(request: Request) {
     db.lead.count({ where }),
   ]);
 
-  // 统计（使用新状态）
+  // 统计（新状态 + 历史状态分别统计，不破坏性映射）
   const stats = {
     total,
     new: await db.lead.count({ where: { profileId: profile.id, status: "new" } }),
-    contacted: await db.lead.count({ where: { profileId: profile.id, status: "contacted" } }),
-    following: await db.lead.count({ where: { profileId: profile.id, status: "following" } }),
-    converted: await db.lead.count({ where: { profileId: profile.id, status: "converted" } }),
+    viewed: await db.lead.count({ where: { profileId: profile.id, status: "viewed" } }),
+    following_up: await db.lead.count({ where: { profileId: profile.id, status: "following_up" } }),
+    won: await db.lead.count({ where: { profileId: profile.id, status: "won" } }),
     closed: await db.lead.count({ where: { profileId: profile.id, status: "closed" } }),
-    // 统计可能存在的旧状态数据（仅计数，不计入主统计）
-    legacyQualified: await db.lead.count({ where: { profileId: profile.id, status: "qualified" } }),
-    legacyLost: await db.lead.count({ where: { profileId: profile.id, status: "lost" } }),
+    // 历史状态兼容统计（仅计数，不映射）
+    historical: {
+      contacted: await db.lead.count({ where: { profileId: profile.id, status: "contacted" } }),
+      following: await db.lead.count({ where: { profileId: profile.id, status: "following" } }),
+      converted: await db.lead.count({ where: { profileId: profile.id, status: "converted" } }),
+      qualified: await db.lead.count({ where: { profileId: profile.id, status: "qualified" } }),
+      lost: await db.lead.count({ where: { profileId: profile.id, status: "lost" } }),
+    },
   };
 
   // DTO 转换
@@ -278,6 +283,7 @@ export async function GET(request: Request) {
     source_component: lead.sourceComponent,
     source_page: lead.sourcePage,
     status: lead.status,
+    is_historical_status: isHistoricalStatus(lead.status),
     handler_note: lead.handlerNote,
     handled_at: lead.handledAt ? lead.handledAt.toISOString() : null,
     wechat: lead.wechat,
@@ -327,5 +333,6 @@ export async function GET(request: Request) {
     },
     stats,
     valid_statuses: VALID_STATUSES,
+    historical_statuses: HISTORICAL_STATUSES,
   });
 }

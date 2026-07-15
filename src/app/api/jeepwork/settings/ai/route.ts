@@ -3,6 +3,10 @@ import { AUDIT_ACTION, writeAdminAuditLog } from "@/lib/admin-audit-log";
 import { getConfig, getMaskedConfig, updateConfig, type AppConfigValues } from "@/lib/app-config";
 import { getJeepworkSessionUser, requireJeepworkSuperAdmin } from "@/lib/jeepwork-auth";
 import {
+  recordExternalServiceTest,
+  sanitizeExternalServiceMessage,
+} from "@/lib/external-service-readiness";
+import {
   getEnterpriseAiSettingsUrlValidationError,
   validateEnterpriseAiSettingsPatch,
 } from "@/lib/ai/enterprise-bailian";
@@ -141,13 +145,22 @@ async function handleTestAiConnection(): Promise<NextResponse> {
 
     if (!response.ok) {
       const errorText = await response.text().catch(() => "");
+      const safeError = sanitizeExternalServiceMessage(
+        `AI 服务返回错误（${response.status}）：${errorText.slice(0, 200)}`,
+      );
+      if (config.aiProvider === "bailian") {
+        await recordExternalServiceTest("bailian", config, {
+          passed: false,
+          message: safeError,
+        }).catch(() => undefined);
+      }
       return NextResponse.json(
         {
           success: false,
           data: {
             success: false,
             status: response.status,
-            error: `AI 服务返回错误（${response.status}）：${errorText.slice(0, 200)}`,
+            error: safeError,
           } satisfies AiTestResult,
           error: null,
         },
@@ -160,6 +173,17 @@ async function handleTestAiConnection(): Promise<NextResponse> {
       model?: string;
       usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
     };
+
+    if (config.aiProvider === "bailian") {
+      try {
+        await recordExternalServiceTest("bailian", config, {
+          passed: true,
+          message: "百炼真实连接测试成功",
+        });
+      } catch {
+        return apiError("READINESS_RECORD_FAILED", "百炼连接成功，但测试证据保存失败，请稍后重试。", 500);
+      }
+    }
 
     return NextResponse.json({
       success: true,
@@ -179,7 +203,15 @@ async function handleTestAiConnection(): Promise<NextResponse> {
   } catch (error) {
     const duration = Date.now() - startTime;
     clearTimeout(timer);
-    const message = redactKeys(error instanceof Error ? error.message : "无法连接 AI 服务");
+    const message = sanitizeExternalServiceMessage(
+      redactKeys(error instanceof Error ? error.message : "无法连接 AI 服务"),
+    );
+    if (config.aiProvider === "bailian") {
+      await recordExternalServiceTest("bailian", config, {
+        passed: false,
+        message,
+      }).catch(() => undefined);
+    }
     return NextResponse.json(
       {
         success: false,

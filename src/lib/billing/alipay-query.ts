@@ -162,7 +162,7 @@ export async function testAlipayConfiguration() {
       alipayPublicKeyFingerprint: fingerprint(publicKey),
       notifyUrl: config.alipayNotifyUrl,
       testMode: config.testMode,
-      message: "应用私钥可正常生成 RSA2 签名，支付宝公钥格式有效。",
+      message: "本地 RSA2 签名和公钥格式校验通过；尚未验证支付宝真实服务连接。",
     };
   } catch (error) {
     return {

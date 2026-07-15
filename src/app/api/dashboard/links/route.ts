@@ -8,10 +8,15 @@ import { sanitizePublicUrl, sanitizePhoneNumber, sanitizeMapUrl, sanitizeQrPaylo
 import { getUserEntitlements } from "@/lib/billing/entitlements";
 import { isModuleType, validateModulePayload } from "@/features/profile-modules/validators";
 import { getModuleDefinition } from "@/features/profile-modules/registry";
+import { allowedIconTypes, normalizePlatformIconKey } from "@/lib/link-icons";
+import {
+  ProductBindingError,
+  hydrateOwnedActiveProductCardPayload,
+} from "@/lib/products/binding";
 
 export const runtime = "nodejs";
 
-const ICON_TYPES = ["default", "emoji", "custom"] as const;
+const ICON_TYPES = allowedIconTypes;
 const COMPONENT_TYPES = [
   "link",
   "text",
@@ -19,11 +24,15 @@ const COMPONENT_TYPES = [
   "qr",
   "wechat",
   "phone",
+  "email",
+  "address",
   "shop",
   "booking",
   "product-card",
   "service-card",
   "offer",
+  "quote",
+  "contact-form",
   "map",
   "copy-text",
   "cover-image",
@@ -53,6 +62,8 @@ const NEW_MODULE_TYPES = new Set([
   "product-card",
   "service-card",
   "offer",
+  "quote",
+  "contact-form",
 ]);
 const TITLE_OPTIONAL_TYPES = new Set([
   "text",
@@ -202,7 +213,9 @@ export async function POST(request: Request) {
     case "music-link":
     case "product-card":
     case "service-card":
-    case "offer": {
+    case "offer":
+    case "quote":
+    case "contact-form": {
       const rawUrl = typeof body.url === "string" ? body.url.trim() : "";
       const cleaned = sanitizePublicUrl(rawUrl);
       url = cleaned.url || "https://link168.me";
@@ -238,6 +251,18 @@ export async function POST(request: Request) {
     }
   }
 
+  if (componentType === "product-card") {
+    try {
+      const payload = payloadJson ? JSON.parse(payloadJson) as Record<string, unknown> : {};
+      payloadJson = JSON.stringify(await hydrateOwnedActiveProductCardPayload(user.id, payload));
+    } catch (error) {
+      if (error instanceof ProductBindingError) {
+        return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+      }
+      return NextResponse.json({ success: false, error: "产品绑定校验失败。" }, { status: 400 });
+    }
+  }
+
   // D15: Offer 有效期服务端校验 — validUntil 如提供必须晚于当前时间
   if (componentType === "offer" && payloadJson) {
     try {
@@ -259,7 +284,13 @@ export async function POST(request: Request) {
 
   const iconTypeRaw = typeof body.iconType === "string" ? body.iconType.trim().toLowerCase() : "default";
   const iconType = ICON_TYPES.includes(iconTypeRaw as (typeof ICON_TYPES)[number]) ? iconTypeRaw : "default";
-  const iconValue = iconType === "emoji" ? normalizeNullableString(body.iconValue) : null;
+  const platformIconValue = iconType === "platform" ? normalizePlatformIconKey(body.iconValue) : null;
+  if (iconType === "platform" && !platformIconValue) {
+    return NextResponse.json({ success: false, error: "请选择支持的平台图标。" }, { status: 400 });
+  }
+  const iconValue = iconType === "emoji"
+    ? normalizeNullableString(body.iconValue)
+    : platformIconValue;
   const iconUrlRaw = typeof body.iconUrl === "string" ? body.iconUrl.trim() : "";
   const iconUrl = iconType === "custom" ? sanitizePublicUrl(iconUrlRaw).url : null;
 

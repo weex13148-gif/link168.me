@@ -84,6 +84,20 @@ export async function uploadAvatarRequest(file: File): Promise<ApiResult<Dashboa
   return { ok: true, data: data.profile };
 }
 
+export async function deleteAvatarRequest(): Promise<ApiResult<DashboardProfile>> {
+  const response = await fetch("/api/dashboard/avatar", { method: "DELETE", cache: "no-store" });
+  const data = await readJson<{
+    success?: boolean;
+    profile?: DashboardProfile;
+    error?: string;
+    message?: string;
+  }>(response);
+  if (!response.ok || !data.success || !data.profile) {
+    return { ok: false, error: data.error || "头像删除失败。", status: response.status };
+  }
+  return { ok: true, data: data.profile, message: data.message };
+}
+
 function buildPayload(draft: LinkDraft): string | undefined {
   const ct = draft.componentType || "link";
 
@@ -121,6 +135,9 @@ function buildPayload(draft: LinkDraft): string | undefined {
     case "service-card":
       return JSON.stringify({ name: draft.title, description: draft.description });
     case "offer":
+      return JSON.stringify({ title: draft.title, description: draft.description });
+    case "quote":
+    case "contact-form":
       return JSON.stringify({ title: draft.title, description: draft.description });
     case "shop":
     case "booking":
@@ -169,6 +186,19 @@ export async function updateLinkRequest(link: DashboardLink, draft: LinkDraft, i
   });
   const data = await readJson<{ success?: boolean; link?: DashboardLink; error?: string }>(response);
   if (!response.ok || !data.success || !data.link) return { ok: false, error: data.error || "内容保存失败。", status: response.status };
+  return { ok: true, data: data.link };
+}
+
+export async function toggleLinkRequest(linkId: string, isActive: boolean): Promise<ApiResult<DashboardLink>> {
+  const response = await fetch(`/api/dashboard/links/${linkId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ isActive }),
+  });
+  const data = await readJson<{ success?: boolean; link?: DashboardLink; error?: string }>(response);
+  if (!response.ok || !data.success || !data.link) {
+    return { ok: false, error: data.error || "内容状态更新失败。", status: response.status };
+  }
   return { ok: true, data: data.link };
 }
 

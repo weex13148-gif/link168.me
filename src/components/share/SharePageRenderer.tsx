@@ -23,6 +23,7 @@ import { getThemeClasses, type ShareThemeClassSet } from "@/components/theme/pre
 import type { CustomTheme } from "@/components/theme/types";
 import { normalizeCustomTheme } from "@/components/theme/normalize";
 import { sanitizeMapUrl, sanitizePhoneNumber, sanitizePublicUrl } from "@/lib/public-url-security";
+import { resolvePlatformIcon } from "@/lib/link-icons";
 import { CoverImageModule } from "@/components/share/modules/CoverImageModule";
 import { PopupImageModule } from "@/components/share/modules/PopupImageModule";
 import { CarouselModule } from "@/components/share/modules/CarouselModule";
@@ -39,6 +40,8 @@ import BookingModule from "@/components/share/modules/BookingModule";
 import ProductCardModule from "@/components/share/modules/ProductCardModule";
 import ServiceCardModule from "@/components/share/modules/ServiceCardModule";
 import OfferModule from "@/components/share/modules/OfferModule";
+import { QuoteModule } from "@/components/share/modules/QuoteModule";
+import { ContactFormModule } from "@/components/share/modules/ContactFormModule";
 import {
   isModuleType,
   validateModulePayload,
@@ -52,6 +55,8 @@ import {
   type MusicLinkPayload,
   type NeteaseMusicPayload,
   type OfferPayload,
+  type QuotePayload,
+  type ContactFormPayload,
   type PopupImagePayload,
   type ProductCardPayload,
   type ServiceCardPayload,
@@ -68,6 +73,7 @@ export type SharePageLink = {
   description?: string | null;
   url?: string | null;
   icon?: string | null;
+  iconType?: string | null;
   type?: string | null;
   componentType?: string | null;
   payload?: string | null;
@@ -75,6 +81,7 @@ export type SharePageLink = {
 
 export interface SharePageRendererProps {
   template?: SharePageTemplate;
+  profileId?: string;
   username: string;
   displayName: string;
   bio?: string | null;
@@ -101,6 +108,7 @@ export interface SharePageRendererProps {
   address?: string | null;
   website?: string | null;
   contactVisibility?: string;
+  onContactInteraction?: (linkId: string) => void;
 }
 
 function safeParseJson<T = unknown>(value: string | null | undefined): T | null {
@@ -166,6 +174,21 @@ function sanitizeHref(componentType: string, itemUrl: string | null | undefined,
       ? { href: cleaned.url, displayFallback: null as string | null }
       : { href: null, displayFallback: "地图链接被系统判定为不安全" };
   }
+  if (componentType === "email") {
+    const raw = typeof payload?.email === "string" ? payload.email : itemUrl || "";
+    const email = raw.trim().slice(0, 254);
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    return valid
+      ? { href: `mailto:${email}`, displayFallback: null as string | null }
+      : { href: null, displayFallback: "邮箱格式不正确" };
+  }
+  if (componentType === "address") {
+    const raw = typeof payload?.address === "string" ? payload.address : itemUrl || "";
+    const address = raw.trim();
+    return address.length >= 2 && address.length <= 300
+      ? { href: `https://maps.google.com/maps?q=${encodeURIComponent(address)}`, displayFallback: null as string | null }
+      : { href: null, displayFallback: "地址格式不正确" };
+  }
   if (["wechat", "text", "group-title"].includes(componentType)) {
     return { href: null, displayFallback: null as string | null };
   }
@@ -192,8 +215,19 @@ function SafeAvatar({ src, alt, fallbackInitial, className, avatarClassName }: {
   );
 }
 
-function renderLinkIcon(iconValue: string | null | undefined, defaultClass: string): ReactNode {
+function renderLinkIcon(iconValue: string | null | undefined, iconType: string | null | undefined, defaultClass: string): ReactNode {
   const value = (iconValue || "").trim();
+  if (iconType === "platform") {
+    const iconPath = resolvePlatformIcon(value);
+    if (iconPath) {
+      return (
+        <span className={`grid size-9 shrink-0 place-items-center overflow-hidden rounded-xl border border-black/5 ${defaultClass}`}>
+          <img src={iconPath} alt="" className="size-full object-cover" />
+        </span>
+      );
+    }
+    return <span className={`grid size-9 shrink-0 place-items-center rounded-xl ${defaultClass}`}><Globe aria-hidden className="size-5" /></span>;
+  }
   if (value.startsWith("http://") || value.startsWith("https://")) {
     return (
       <span className={`grid size-9 shrink-0 place-items-center overflow-hidden rounded-xl border border-black/5 ${defaultClass}`}>
@@ -293,7 +327,7 @@ function renderHeader(props: SharePageRendererProps, classes: ShareThemeClassSet
   );
 }
 
-function renderNewModule(item: SharePageLink, componentType: string, payload: Record<string, unknown> | null, username: string): ReactNode {
+function renderNewModule(item: SharePageLink, componentType: string, payload: Record<string, unknown> | null, username: string, profileId?: string): ReactNode {
   if (!payload) return <div key={item.id}><ModuleFallback message="模块数据为空" /></div>;
   if (!isModuleType(componentType)) return <div key={item.id}><ModuleFallback message="未知模块类型" /></div>;
   const validation = validateModulePayload(componentType, payload);
@@ -318,11 +352,21 @@ function renderNewModule(item: SharePageLink, componentType: string, payload: Re
     case "service-card": return <div key={item.id}><ServiceCardModule payload={payload as ServiceCardPayload} username={username} /></div>;
     case "offer": return <div key={item.id}><OfferModule payload={payload as OfferPayload} username={username} /></div>;
     case "booking": return <div key={item.id}><BookingModule payload={payload as BookingPayload} username={username} /></div>;
+    case "quote": return <div key={item.id}><QuoteModule payload={payload as QuotePayload} profileId={profileId} username={username} /></div>;
+    case "contact-form": return <div key={item.id}><ContactFormModule payload={payload as ContactFormPayload} profileId={profileId} username={username} /></div>;
     default: return <div key={item.id}><ModuleFallback message="未知模块类型" /></div>;
   }
 }
 
-function renderLegacyItem(item: SharePageLink, componentType: string, payload: Record<string, unknown> | null, classes: ShareThemeClassSet, variant: SharePageTemplate, linkClassName: string) {
+function renderLegacyItem(
+  item: SharePageLink,
+  componentType: string,
+  payload: Record<string, unknown> | null,
+  classes: ShareThemeClassSet,
+  variant: SharePageTemplate,
+  linkClassName: string,
+  onContactInteraction?: (linkId: string) => void,
+) {
   const safe = sanitizeHref(componentType, item.url, payload);
   const title = item.title || "链接";
   const description = item.description;
@@ -330,9 +374,10 @@ function renderLegacyItem(item: SharePageLink, componentType: string, payload: R
   const body = (
     <span className="flex min-w-0 flex-1 items-center gap-3">
       {componentType === "phone" ? <span className="grid size-9 place-items-center rounded-xl bg-[#F3E7D1]"><Phone className="size-4 text-[#8A6A2E]" /></span> : null}
-      {componentType === "map" ? <span className="grid size-9 place-items-center rounded-xl bg-[#F3E7D1]"><MapPin className="size-4 text-[#8A6A2E]" /></span> : null}
+      {componentType === "email" ? <span className="grid size-9 place-items-center rounded-xl bg-[#F3E7D1]"><Mail className="size-4 text-[#8A6A2E]" /></span> : null}
+      {componentType === "map" || componentType === "address" ? <span className="grid size-9 place-items-center rounded-xl bg-[#F3E7D1]"><MapPin className="size-4 text-[#8A6A2E]" /></span> : null}
       {componentType === "shop" || componentType === "booking" ? <span className="grid size-9 place-items-center rounded-xl bg-[#DDE8CD]">{componentType === "booking" ? <CalendarClock className="size-4 text-[#3F5F31]" /> : <ShoppingBag className="size-4 text-[#8A6A2E]" />}</span> : null}
-      {!["phone", "map", "shop", "booking"].includes(componentType) ? renderLinkIcon(item.icon, classes.avatarClassName) : null}
+      {!["phone", "email", "map", "address", "shop", "booking"].includes(componentType) ? renderLinkIcon(item.icon, item.iconType, classes.avatarClassName) : null}
       <span className="min-w-0 text-left">
         <span className="block truncate font-black">{title}</span>
         {description || !safe.href ? <span className={`mt-0.5 block line-clamp-2 text-xs leading-5 ${safe.href ? classes.subClassName : "text-red-600"}`}>{safe.href ? description : safe.displayFallback}</span> : null}
@@ -349,13 +394,13 @@ function renderLegacyItem(item: SharePageLink, componentType: string, payload: R
     }
     if (componentType === "wechat") {
       const wechatId = typeof payload?.wechat === "string" ? payload.wechat : item.url || description || "";
-      return <div key={item.id} className={common}>{body}<span className="rounded-full bg-[#3F5F31]/10 px-2 py-1 text-xs font-black text-[#3F5F31]">{wechatId || "微信"}</span></div>;
+      return <button key={item.id} type="button" onClick={() => { onContactInteraction?.(item.id); if (wechatId) void navigator.clipboard?.writeText(wechatId).catch(() => undefined); }} className={`${common} w-full text-left`}>{body}<span className="rounded-full bg-[#3F5F31]/10 px-2 py-1 text-xs font-black text-[#3F5F31]">{wechatId || "微信"}</span></button>;
     }
     return <div key={item.id} className={common}>{body}</div>;
   }
 
   return (
-    <a key={item.id} href={safe.href} target={safe.href.startsWith("tel:") ? undefined : "_blank"} rel={safe.href.startsWith("tel:") ? undefined : "noopener noreferrer"} className={common}>
+    <a key={item.id} href={safe.href} onClick={() => { if (["phone", "email"].includes(componentType)) onContactInteraction?.(item.id); }} target={safe.href.startsWith("tel:") || safe.href.startsWith("mailto:") ? undefined : "_blank"} rel={safe.href.startsWith("tel:") || safe.href.startsWith("mailto:") ? undefined : "noopener noreferrer"} className={common}>
       {body}
       {variant === "conversion" ? <ArrowRight className="size-4 shrink-0 opacity-80" /> : <ArrowUpRight className="size-4 shrink-0 opacity-70" />}
     </a>
@@ -374,14 +419,14 @@ function renderComponentList(props: SharePageRendererProps, classes: ShareThemeC
   }
 
   const linkClassName = buildLinkClassSet(classes, props.linkStyle || "solid", props.linkClassName);
-  const moduleTypes = new Set(["cover-image", "popup-image", "carousel", "bilibili-video", "youtube-video", "video-link", "netease-music", "music-link", "divider", "copy-text", "ai-chat", "product-card", "service-card", "offer", "booking"]);
+  const moduleTypes = new Set(["cover-image", "popup-image", "carousel", "bilibili-video", "youtube-video", "video-link", "netease-music", "music-link", "divider", "copy-text", "ai-chat", "product-card", "service-card", "offer", "booking", "quote", "contact-form"]);
   return (
     <div className="space-y-2" style={custom?.moduleGap ? { gap: `${custom.moduleGap}px` } : undefined}>
       {props.links.map((item) => {
         const componentType = normalizeComponentType(item);
         const payload = safeParseJson<Record<string, unknown>>(item.payload);
-        if (moduleTypes.has(componentType)) return renderNewModule(item, componentType, payload, props.username);
-        return renderLegacyItem(item, componentType, payload, classes, props.template || "business", linkClassName);
+        if (moduleTypes.has(componentType)) return renderNewModule(item, componentType, payload, props.username, props.profileId);
+        return renderLegacyItem(item, componentType, payload, classes, props.template || "business", linkClassName, props.onContactInteraction);
       })}
     </div>
   );

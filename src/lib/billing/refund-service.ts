@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { ORDER_STATUS, type DbOrder, type PaymentChannel } from "./orders";
 import { transitionOrderState, canInitiateRefund, ORDER_STATE_MACHINE } from "./payment-state-machine";
 import { getPaymentConfig, amountStringToCents } from "./payments";
+import { normalizePlanCode } from "./plans";
 import { writeAdminAuditLog } from "@/lib/admin-audit-log";
 
 export type RefundRequestParams = {
@@ -153,19 +154,35 @@ async function callAlipayRefund(
 }
 
 async function revokeMembershipOnFullRefund(
-  userId: string,
-  txClient: Pick<typeof db, "membershipSubscription">,
-) {
-  const subscription = await txClient.membershipSubscription.findUnique({
-    where: { userId },
+  order: DbOrder,
+  tx: Parameters<Parameters<typeof db.$transaction>[0]>[0],
+): Promise<{ revoked: boolean; previousPlan?: string }> {
+  const subscription = await tx.membershipSubscription.findUnique({
+    where: { userId: order.userId },
   });
 
   if (!subscription || subscription.planCode === "free") {
     return { revoked: false };
   }
 
-  await txClient.membershipSubscription.update({
-    where: { userId },
+  // 核对被退款订单与当前订阅的套餐关系
+  if (normalizePlanCode(subscription.planCode) !== normalizePlanCode(order.planCode)) {
+    return { revoked: false };
+  }
+
+  // 如果存在更新的已支付订单，说明会员可能由后续订单产生/续期，不撤销
+  const newerPaidOrder = await tx.order.findFirst({
+    where: {
+      userId: order.userId,
+      id: { not: order.id },
+      status: { in: [ORDER_STATUS.PAID, ORDER_STATUS.PARTIALLY_REFUNDED] },
+      createdAt: { gt: order.createdAt },
+    },
+  });
+  if (newerPaidOrder) return { revoked: false };
+
+  await tx.membershipSubscription.update({
+    where: { userId: order.userId },
     data: {
       planCode: "free",
       status: "cancelled",
@@ -310,7 +327,7 @@ export async function requestRefund(params: RefundRequestParams): Promise<Refund
       }
 
       if (isFullRefund) {
-        await revokeMembershipOnFullRefund(order.userId, tx);
+        await revokeMembershipOnFullRefund(order, tx);
       }
 
       return { finalState, isFullRefund };

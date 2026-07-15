@@ -1,0 +1,84 @@
+name: MVP Closeout
+
+on:
+  push:
+    branches:
+      - integration/mvp-closeout-r1
+  pull_request:
+    branches:
+      - integration/mvp-closeout-r1
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mvp-closeout-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: link168
+          POSTGRES_PASSWORD: link168
+          POSTGRES_DB: link168_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U link168 -d link168_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://link168:link168@127.0.0.1:5432/link168_ci
+      SESSION_SECRET: link168-mvp-closeout-ci-session-secret-2026
+      CONFIG_ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      MAIL_ENABLED: "false"
+      COOKIE_SECURE: "false"
+      RATE_LIMIT_STORE: memory
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Prisma schema
+        run: npx prisma validate
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Apply test migrations
+        run: npx prisma migrate deploy
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test -- --runInBand
+
+      - name: Build
+        run: npm run build
+
+      - name: Diff check
+        run: git diff --check

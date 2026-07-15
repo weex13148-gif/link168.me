@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+import { getConfig } from "@/lib/app-config";
 import { db } from "@/lib/db";
+import { recordExternalServiceTest } from "@/lib/external-service-readiness";
 import { getJeepworkSessionUser, requireJeepworkSuperAdmin } from "@/lib/jeepwork-auth";
 import { testAlipayConfiguration } from "@/lib/billing/alipay-query";
 import {
@@ -154,6 +156,15 @@ export async function POST(request: Request) {
         reconcile: action === "reconcile-order",
         source: "admin",
       });
+      if (result.providerTested) {
+        const config = await getConfig();
+        await recordExternalServiceTest("alipay", config, {
+          passed: result.providerVerified === true,
+          message: result.providerVerified
+            ? "支付宝真实查单响应验签通过"
+            : result.error || "支付宝真实查单未通过响应验签",
+        }).catch(() => undefined);
+      }
       return NextResponse.json(
         { success: result.success, data: result, error: result.success ? null : { code: "ALIPAY_QUERY_FAILED", message: result.error } },
         { status: result.success ? 200 : 400 },

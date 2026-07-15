@@ -24,8 +24,8 @@ export default function JeepworkUsersPage() {
           if (!cancelled) router.replace("/jeepwork/login");
           return;
         }
-        if (result.user.role !== "admin" && result.user.role !== "super_admin") {
-          if (!cancelled) router.replace("/jeepwork");
+        if (result.user.role !== "super_admin") {
+          if (!cancelled) router.replace("/jeepwork/login");
           return;
         }
         if (!cancelled) setUser(result.user);
