@@ -35,9 +35,18 @@ export type AiReceptionConfigPatch = {
   quickActionsJson: string;
 };
 
-export type AiReceptionConfigRecord = Partial<Omit<AiReceptionConfigPatch, "quickActionsJson">> & {
-  quickActionsJson?: string | null;
-  providerMode?: string | null;
+export type AiReceptionConfigRecord = {
+  enabled?: unknown;
+  assistantName?: unknown;
+  welcomeMessage?: unknown;
+  tone?: unknown;
+  allowProductRecommendation?: unknown;
+  collectLead?: unknown;
+  allowReport?: unknown;
+  allowTransferToHuman?: unknown;
+  privacyNoticeText?: unknown;
+  quickActionsJson?: unknown;
+  providerMode?: unknown;
 };
 
 export type CustomerAiReceptionConfig = {
