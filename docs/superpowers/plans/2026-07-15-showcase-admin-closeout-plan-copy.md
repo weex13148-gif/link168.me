@@ -1,1 +1,0 @@
-Execution checkpoint: test-first commit 3556fd1520b2edd219f096cdbe08544cd0387aa7 created. Full plan remains in 2026-07-15-showcase-admin-closeout-plan.md.
