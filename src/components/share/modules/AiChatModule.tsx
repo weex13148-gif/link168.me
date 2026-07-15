@@ -118,7 +118,8 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
       });
       const result = await response.json() as ChatApiResult;
       if (response.ok && result.success && result.data?.reply) {
-        appendMessage("assistant", result.data.reply, "ai");
+        const reply = result.data.reply;
+        appendMessage("assistant", reply, "ai");
       } else {
         appendMessage("system", publicErrorMessage(result.code));
       }
