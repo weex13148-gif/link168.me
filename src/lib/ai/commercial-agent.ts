@@ -412,7 +412,7 @@ export async function runCommercialAgent(
 
   const resolved = resolveEnterpriseBailianConfig(platformConfig);
   if (!isBailianApplicationConfigured(resolved)) {
-    return { success: false, status: 503, error: "AI 服务尚未完成配置。", code: "AI_NOT_CONFIGURED", traceId: traceCtx.traceId };
+    return { success: false, status: 503, error: "AI 服务暂不可用，请稍后再试。", code: "AI_NOT_CONFIGURED", traceId: traceCtx.traceId };
   }
 
   const message = sanitizeUserMessage(rawMessage || "请根据当前访客行为生成一句合规、克制的下一步引导文案。");
@@ -463,15 +463,17 @@ export async function runCommercialAgent(
     take: 8,
     select: { role: true, content: true },
   });
-  const products: ProductContext[] = profile.user.products.map((item) => ({
-    id: item.id,
-    name: item.name,
-    category: item.category,
-    description: item.description,
-    priceText: item.priceText,
-    ctaLabel: item.ctaLabel,
-    ctaUrl: item.ctaUrl,
-  }));
+  const products: ProductContext[] = serviceConfig.allowProductRecommendation
+    ? profile.user.products.map((item) => ({
+        id: item.id,
+        name: item.name,
+        category: item.category,
+        description: item.description,
+        priceText: item.priceText,
+        ctaLabel: item.ctaLabel,
+        ctaUrl: item.ctaUrl,
+      }))
+    : [];
   const action = kind === "conversion" ? resolveConversionAction(rawInput.event, products) : { type: "reply" as const };
 
   // ===== 统一 Credits 消耗（个人 AI 单一模型） =====
@@ -501,7 +503,7 @@ export async function runCommercialAgent(
       httpStatus: 402,
       assistant: kind,
     });
-    return { success: false, status: 402, error: consumed.reason || "主页 AI 额度不足。", code: "AI_CREDITS_EXHAUSTED", traceId: traceCtx.traceId };
+    return { success: false, status: 402, error: "当前主页的 AI 服务额度已用完。", code: "AI_CREDITS_EXHAUSTED", traceId: traceCtx.traceId };
   }
 
   // 保存用户消息（失败需要退款补偿）
@@ -594,11 +596,11 @@ export async function runCommercialAgent(
       httpStatus: result.status >= 400 ? result.status : 502,
       assistant: kind,
     });
-    return { success: false, status: result.status >= 400 ? result.status : 502, error: "AI 接待暂时不可用，已自动退回额度。", code: "AI_PROVIDER_FAILED", traceId: traceCtx.traceId };
+    return { success: false, status: result.status >= 400 ? result.status : 502, error: "AI 接待暂时不可用，本次未消耗额度。", code: "AI_PROVIDER_FAILED", traceId: traceCtx.traceId };
   }
 
   const moderated = moderateAiOutput("", result.reply);
-  const rawReply = sanitizePublicText(moderated.content) || "抱歉，暂时无法回答这个问题，请联系人工咨询。";
+  const rawReply = sanitizePublicText(moderated.content) || "抱歉，暂时无法回答这个问题，请使用页面中的快捷按钮或其他联系方式。";
   const reply = addAiDisclaimer(rawReply);
 
   // 输出审核失败时退款
@@ -720,7 +722,7 @@ export async function runCommercialAgent(
   const privacyNotice = buildPrivacyNoticeFromConfig({
     collectLead: serviceConfig.collectLead,
     allowReport: serviceConfig.allowReport,
-    allowTransferToHuman: serviceConfig.allowTransferToHuman,
+    allowTransferToHuman: false,
     privacyNoticeText: serviceConfig.privacyNoticeText,
   });
 
@@ -751,7 +753,7 @@ export async function runCommercialAgent(
       creditBalance: consumed.balanceAfter ?? 0,
       privacyNotice,
       collectLeadEnabled: serviceConfig.collectLead ?? false,
-      transferToHumanEnabled: serviceConfig.allowTransferToHuman ?? false,
+      transferToHumanEnabled: false,
       allowReportEnabled: serviceConfig.allowReport ?? false,
     },
   };

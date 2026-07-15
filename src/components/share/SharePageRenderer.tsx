@@ -45,7 +45,6 @@ import { ContactFormModule } from "@/components/share/modules/ContactFormModule"
 import {
   isModuleType,
   validateModulePayload,
-  type AiChatPayload,
   type BilibiliVideoPayload,
   type BookingPayload,
   type CarouselPayload,
@@ -344,10 +343,7 @@ function renderNewModule(item: SharePageLink, componentType: string, payload: Re
     case "music-link": return <div key={item.id}><MusicLinkModule payload={payload as MusicLinkPayload} /></div>;
     case "divider": return <div key={item.id}><DividerModule payload={payload as DividerPayload} /></div>;
     case "copy-text": return <div key={item.id}><CopyTextModule payload={payload as CopyTextPayload} /></div>;
-    case "ai-chat": {
-      const aiPayload = payload as AiChatPayload;
-      return <div key={item.id}><AiChatModule assistantName={aiPayload.assistantName || "AI 接待"} welcomeText={aiPayload.greeting || "你好，有什么可以帮你？"} username={username} mode="customer-service" /></div>;
-    }
+    case "ai-chat": return <div key={item.id}><AiChatModule username={username} mode="customer-service" /></div>;
     case "product-card": return <div key={item.id}><ProductCardModule payload={payload as ProductCardPayload} username={username} /></div>;
     case "service-card": return <div key={item.id}><ServiceCardModule payload={payload as ServiceCardPayload} username={username} /></div>;
     case "offer": return <div key={item.id}><OfferModule payload={payload as OfferPayload} username={username} /></div>;
