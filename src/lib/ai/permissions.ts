@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { getUserEntitlements } from "@/lib/billing/entitlements";
 import type { PlanCode } from "@/lib/billing/plans";
 import { bindIdempotencyKey } from "@/lib/ai/credits";
+import type { Prisma } from "@/generated/prisma/client";
 
 // ============================================================================
 // AI 权限与额度服务（单一权威来源：src/lib/billing/plans.ts + entitlements）
@@ -15,6 +16,24 @@ import { bindIdempotencyKey } from "@/lib/ai/credits";
 // ============================================================================
 
 export type AiAccessLevel = "none" | "preview" | "full";
+export type AiCreditSource = "plan" | "credit";
+
+type ConsumeCreditResult =
+  | {
+      success: true;
+      source: AiCreditSource;
+      balanceAfter: number;
+      operationKey: string;
+    }
+  | { success: false; reason: string };
+
+function readCreditSource(metadata: unknown): AiCreditSource | null {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+    return null;
+  }
+  const value = (metadata as Record<string, unknown>).creditSource;
+  return value === "plan" || value === "credit" ? value : null;
+}
 
 // 兼容旧调用：返回用户当前套餐与状态（已委托 entitlements）
 export async function getMembershipPlan(userId: string): Promise<{ planCode: string; status: string }> {
@@ -178,7 +197,44 @@ export async function consumeCredit(
   referenceId: string,
   metadata?: Record<string, unknown>,
   idempotencyKey?: string,
-): Promise<{ success: boolean; reason?: string; balanceAfter?: number; source?: "plan" | "credit" }> {
+): Promise<ConsumeCreditResult> {
+  const operationKey = bindIdempotencyKey(
+    userId,
+    idempotencyKey ?? `${referenceType}:${referenceId}`,
+    {
+      profileId: metadata?.profileId as string | undefined,
+      conversationId: metadata?.conversationId as string | undefined,
+    },
+  );
+
+  const existingConsumption = await db.aiCreditLedger.findUnique({
+    where: { idempotencyKey: operationKey },
+    select: {
+      accountId: true,
+      balanceAfter: true,
+      entryType: true,
+      idempotencyKey: true,
+      metadata: true,
+    },
+  });
+  if (existingConsumption) {
+    const existingAccount = await getOrCreateCreditAccount(userId);
+    const existingSource = readCreditSource(existingConsumption.metadata);
+    if (
+      existingConsumption.accountId !== existingAccount.id ||
+      existingConsumption.entryType !== "consume" ||
+      !existingSource
+    ) {
+      return { success: false, reason: "幂等键冲突" };
+    }
+    return {
+      success: true,
+      source: existingSource,
+      balanceAfter: existingConsumption.balanceAfter,
+      operationKey: existingConsumption.idempotencyKey ?? operationKey,
+    };
+  }
+
   const quota = await getAiQuota(userId);
 
   if (!quota.canCall) {
@@ -186,12 +242,9 @@ export async function consumeCredit(
   }
 
   const account = await getOrCreateCreditAccount(userId);
-  const boundKey = idempotencyKey
-    ? bindIdempotencyKey(userId, idempotencyKey, { profileId: metadata?.profileId as string | undefined, conversationId: metadata?.conversationId as string | undefined })
-    : `${referenceType}:${referenceId}`;
 
   // 确定扣减来源：优先套餐额度，其次 Credit
-  let source: "plan" | "credit" = "plan";
+  let source: AiCreditSource = "plan";
   if (quota.planUsage.limit !== -1 && quota.planUsage.remaining <= 0) {
     if (quota.creditBalance >= amount) {
       source = "credit";
@@ -201,7 +254,7 @@ export async function consumeCredit(
   }
 
   try {
-    const result = await db.$transaction(async (tx) => {
+    const result = await db.$transaction(async (tx): Promise<ConsumeCreditResult> => {
       const current = await tx.aiCreditAccount.findUnique({
         where: { id: account.id },
       });
@@ -212,14 +265,29 @@ export async function consumeCredit(
 
       // 幂等检查：已存在相同 idempotencyKey 的 consume 记录则视为成功
       const existing = await tx.aiCreditLedger.findUnique({
-        where: { idempotencyKey: boundKey },
-        select: { id: true, balanceAfter: true, entryType: true },
+        where: { idempotencyKey: operationKey },
+        select: {
+          id: true,
+          balanceAfter: true,
+          entryType: true,
+          idempotencyKey: true,
+          metadata: true,
+        },
       });
       if (existing) {
-        if (existing.entryType === "consume") {
-          return { success: true, balanceAfter: existing.balanceAfter, source };
+        if (existing.entryType !== "consume") {
+          return { success: false, reason: "幂等键冲突" };
         }
-        return { success: false, reason: "幂等键冲突" };
+        const existingSource = readCreditSource(existing.metadata);
+        if (!existingSource) {
+          return { success: false, reason: "原始消费缺少额度来源" };
+        }
+        return {
+          success: true,
+          balanceAfter: existing.balanceAfter,
+          source: existingSource,
+          operationKey: existing.idempotencyKey ?? operationKey,
+        };
       }
 
       // 扣减 Credit 余额（如果是 credit 来源）
@@ -242,88 +310,18 @@ export async function consumeCredit(
           entryType: "consume",
           amount: -amount,
           balanceAfter: newBalance,
-          idempotencyKey: boundKey,
+          idempotencyKey: operationKey,
           referenceType,
           referenceId,
-          metadata: metadata as Record<string, never> | undefined,
+          metadata: {
+            ...(metadata ?? {}),
+            creditSource: source,
+            operationKey,
+          } as unknown as Prisma.InputJsonValue,
         },
       });
 
-      return { success: true, balanceAfter: newBalance, source };
-    });
-
-    return result;
-  } catch (e: any) {
-    // 幂等：重复请求视为成功
-    if (e?.code === "P2002" && e?.meta?.target?.includes("idempotencyKey")) {
-      return { success: true, balanceAfter: account.balance, source };
-    }
-    throw e;
-  }
-}
-
-// 回补额度（调用失败时）
-// 外部传入 idempotencyKey 时，会绑定到 userId 上下文
-export async function refundCredit(
-  userId: string,
-  amount: number,
-  referenceType: string,
-  referenceId: string,
-  reason?: string,
-  idempotencyKey?: string,
-  metadata?: Record<string, unknown>,
-): Promise<{ success: boolean; balanceAfter?: number; alreadyApplied?: boolean }> {
-  const account = await getOrCreateCreditAccount(userId);
-  const boundKey = idempotencyKey
-    ? bindIdempotencyKey(userId, idempotencyKey, { profileId: metadata?.profileId as string | undefined, conversationId: metadata?.conversationId as string | undefined })
-    : `refund:${referenceType}:${referenceId}`;
-
-  try {
-    const result = await db.$transaction(async (tx) => {
-      const current = await tx.aiCreditAccount.findUnique({
-        where: { id: account.id },
-      });
-
-      if (!current) {
-        return { success: false };
-      }
-
-      // 幂等检查：已存在相同 idempotencyKey 的 refund 记录则视为成功
-      const existing = await tx.aiCreditLedger.findUnique({
-        where: { idempotencyKey: boundKey },
-        select: { id: true, balanceAfter: true, entryType: true },
-      });
-      if (existing) {
-        if (existing.entryType === "refund") {
-          return { success: true, balanceAfter: existing.balanceAfter, alreadyApplied: true };
-        }
-        return { success: false };
-      }
-
-      // 回补 Credit 余额（仅当原消耗来自 credit 时）
-      // 这里简化处理：直接回补到 balance，并记录 refund
-      const newBalance = current.balance + amount;
-
-      await tx.aiCreditAccount.update({
-        where: { id: account.id, version: current.version },
-        data: { balance: newBalance, version: { increment: 1 } },
-      });
-
-      await tx.aiCreditLedger.create({
-        data: {
-          id: crypto.randomUUID(),
-          accountId: account.id,
-          entryType: "refund",
-          amount,
-          balanceAfter: newBalance,
-          idempotencyKey: boundKey,
-          referenceType,
-          referenceId,
-          reason,
-        },
-      });
-
-      return { success: true, balanceAfter: newBalance };
+      return { success: true, balanceAfter: newBalance, source, operationKey };
     });
 
     return result;
@@ -331,15 +329,141 @@ export async function refundCredit(
     // 幂等：重复请求视为成功
     if (e?.code === "P2002" && e?.meta?.target?.includes("idempotencyKey")) {
       const existing = await db.aiCreditLedger.findUnique({
-        where: { idempotencyKey: boundKey },
-        select: { id: true, balanceAfter: true, entryType: true },
+        where: { idempotencyKey: operationKey },
+        select: {
+          balanceAfter: true,
+          entryType: true,
+          idempotencyKey: true,
+          metadata: true,
+        },
       });
-      if (existing && existing.entryType === "refund") {
-        return { success: true, balanceAfter: existing.balanceAfter, alreadyApplied: true };
+      const existingSource = readCreditSource(existing?.metadata);
+      if (existing?.entryType === "consume" && existingSource) {
+        return {
+          success: true,
+          balanceAfter: existing.balanceAfter,
+          source: existingSource,
+          operationKey: existing.idempotencyKey ?? operationKey,
+        };
       }
+      return { success: false, reason: "幂等消费状态无法确认" };
     }
-    return { success: false };
+    throw e;
   }
+}
+
+export async function refundConsumedCredit(params: {
+  userId: string;
+  operationKey: string;
+  reason: string;
+  metadata?: Record<string, unknown>;
+}): Promise<{
+  success: boolean;
+  source?: AiCreditSource;
+  balanceAfter?: number;
+  alreadyApplied?: boolean;
+  reason?: string;
+}> {
+  const account = await getOrCreateCreditAccount(params.userId);
+  const refundKey = `refund:${params.operationKey}`;
+
+  return db.$transaction(async (tx) => {
+    const existingRefund = await tx.aiCreditLedger.findUnique({
+      where: { idempotencyKey: refundKey },
+      select: {
+        accountId: true,
+        balanceAfter: true,
+        metadata: true,
+        entryType: true,
+      },
+    });
+    if (existingRefund) {
+      if (
+        existingRefund.entryType !== "refund" ||
+        existingRefund.accountId !== account.id
+      ) {
+        return { success: false, reason: "退款幂等键冲突" };
+      }
+      const existingSource = readCreditSource(existingRefund.metadata);
+      if (!existingSource) {
+        return { success: false, reason: "退款流水缺少额度来源" };
+      }
+      return {
+        success: true,
+        source: existingSource,
+        balanceAfter: existingRefund.balanceAfter,
+        alreadyApplied: true,
+      };
+    }
+
+    const consume = await tx.aiCreditLedger.findUnique({
+      where: { idempotencyKey: params.operationKey },
+      select: {
+        id: true,
+        accountId: true,
+        entryType: true,
+        amount: true,
+        metadata: true,
+      },
+    });
+    if (
+      !consume ||
+      consume.accountId !== account.id ||
+      consume.entryType !== "consume" ||
+      consume.amount >= 0
+    ) {
+      return { success: false, reason: "未找到可退款的原始消费" };
+    }
+
+    const source = readCreditSource(consume.metadata);
+    if (!source) {
+      return { success: false, reason: "原始消费缺少额度来源" };
+    }
+
+    const current = await tx.aiCreditAccount.findUnique({
+      where: { id: account.id },
+    });
+    if (!current) {
+      return { success: false, reason: "额度账户不存在" };
+    }
+
+    const refundAmount = Math.abs(consume.amount);
+    let balanceAfter = current.balance;
+    if (source === "credit") {
+      balanceAfter = current.balance + refundAmount;
+      await tx.aiCreditAccount.update({
+        where: { id: account.id, version: current.version },
+        data: { balance: balanceAfter, version: { increment: 1 } },
+      });
+    }
+
+    await tx.aiCreditLedger.create({
+      data: {
+        id: crypto.randomUUID(),
+        accountId: account.id,
+        entryType: "refund",
+        amount: refundAmount,
+        balanceAfter,
+        idempotencyKey: refundKey,
+        referenceType: "ai_compensation",
+        referenceId: consume.id,
+        reason: params.reason,
+        metadata: {
+          ...(params.metadata ?? {}),
+          creditSource: source,
+          reversesOperationKey: params.operationKey,
+          reversesLedgerId: consume.id,
+        } as unknown as Prisma.InputJsonValue,
+      },
+    });
+
+    return {
+      success: true,
+      source,
+      balanceAfter,
+      alreadyApplied: false,
+    };
+  });
 }
 
 export async function grantCredit(

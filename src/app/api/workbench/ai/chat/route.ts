@@ -5,14 +5,14 @@ import { getAssistantDefinition, AI_ASSISTANT_LIST } from "@/lib/ai/assistants";
 import { callAssistant, getProviderConfig, isProviderConfigured } from "@/lib/ai/provider";
 import { rateLimit } from "@/lib/rate-limit";
 import { detectPromptInjection, sanitizeUserMessage, hasSensitiveContent, moderateAiOutput } from "@/lib/content-safety";
-import { getAiQuota, consumeCredit, refundCredit, checkUserAiRestricted } from "@/lib/ai/permissions";
+import { getAiQuota, consumeCredit, refundConsumedCredit, checkUserAiRestricted } from "@/lib/ai/permissions";
 import { assertAiEntitlement, buildAiUsageMetadata } from "@/lib/ai/entitlement-guard";
 import { createConversation, addMessage, getConversation } from "@/lib/ai/conversations";
 import { logAiRiskEvent } from "@/lib/ai/risk-log";
 import { createAiTraceContext, setTraceIdOnNextResponse, logAiTraceInfo } from "@/lib/observability/ai-trace";
 import { recordAiMetrics, recordSafetyRejection } from "@/lib/observability/ai-metrics";
 import { mapProviderErrorToAiCode, getAiErrorMessage, type AiErrorCode } from "@/lib/ai/provider-error";
-import { validateIdempotencyKey, bindIdempotencyKey } from "@/lib/ai/credits";
+import { validateIdempotencyKey } from "@/lib/ai/credits";
 
 export const runtime = "nodejs";
 
@@ -250,9 +250,6 @@ export async function POST(request: Request) {
     convId = newConv.id;
   }
 
-  // 幂等键绑定到用户和会话上下文
-  const boundIdempotencyKey = bindIdempotencyKey(user.id, clientIdempotencyKey, { conversationId: convId });
-
   await addMessage(convId, "user", sanitizedMessage, 0, { requestId: clientIdempotencyKey });
 
   const history = historyRaw
@@ -282,7 +279,7 @@ export async function POST(request: Request) {
       conversationId: convId,
       extra: { model: providerConfig.model },
     }),
-    boundIdempotencyKey,
+    clientIdempotencyKey,
   );
 
   if (!creditResult.success) {
@@ -308,14 +305,12 @@ export async function POST(request: Request) {
 
   // ===== 模型调用失败 =====
   if (!result.ok || !result.reply) {
-    const refundResult = await refundCredit(
-      user.id,
-      creditCost,
-      "ai_message",
-      convId,
-      "调用失败回补",
-      boundIdempotencyKey,
-    );
+    const refundResult = await refundConsumedCredit({
+      userId: user.id,
+      operationKey: creditResult.operationKey,
+      reason: "模型调用失败自动补偿",
+      metadata: { conversationId: convId, traceId: traceCtx.traceId },
+    });
     if (!refundResult.success) {
       await logAiRiskEvent({
         userId: user.id,
@@ -399,14 +394,12 @@ export async function POST(request: Request) {
   // ===== 输出安全审核 =====
   const moderated = moderateAiOutput(result.reply.summary, result.reply.content);
   if (moderated.blocked) {
-    const refundResult = await refundCredit(
-      user.id,
-      creditCost,
-      "ai_message",
-      convId,
-      "输出审核拦截回补",
-      boundIdempotencyKey,
-    );
+    const refundResult = await refundConsumedCredit({
+      userId: user.id,
+      operationKey: creditResult.operationKey,
+      reason: "输出审核拦截自动补偿",
+      metadata: { conversationId: convId, traceId: traceCtx.traceId },
+    });
     if (!refundResult.success) {
       await logAiRiskEvent({
         userId: user.id,
@@ -494,14 +487,12 @@ export async function POST(request: Request) {
       creditSource: creditResult.source,
     });
   } catch (dbError) {
-    const refundResult = await refundCredit(
-      user.id,
-      creditCost,
-      "ai_message",
-      convId,
-      "写库失败自动退回（助手回复）",
-      boundIdempotencyKey,
-    );
+    const refundResult = await refundConsumedCredit({
+      userId: user.id,
+      operationKey: creditResult.operationKey,
+      reason: "写库失败自动补偿（助手回复）",
+      metadata: { conversationId: convId, traceId: traceCtx.traceId },
+    });
     if (!refundResult.success) {
       await logAiRiskEvent({
         userId: user.id,

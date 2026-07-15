@@ -3,10 +3,10 @@ import { db } from "@/lib/db";
 import { getConfig } from "@/lib/app-config";
 import { canShowPublicProfile, getActiveRestrictions } from "@/lib/auth";
 import { getUserEntitlements } from "@/lib/billing/entitlements";
-import { AI_CHAT_CREDIT_COST, validateIdempotencyKey, bindIdempotencyKey } from "@/lib/ai/credits";
+import { AI_CHAT_CREDIT_COST, validateIdempotencyKey } from "@/lib/ai/credits";
 import {
   consumeCredit,
-  refundCredit,
+  refundConsumedCredit,
 } from "@/lib/ai/permissions";
 import {
   detectPromptInjection,
@@ -476,10 +476,6 @@ export async function runCommercialAgent(
 
   // ===== 统一 Credits 消耗（个人 AI 单一模型） =====
   // 使用 consumeCredit 替代 consumeAiCredits，确保个人 AI 只使用一套额度模型
-  const consumeIdempotencyKey = bindIdempotencyKey(profile.user.id, clientIdempotencyKey, {
-    profileId: profile.id,
-    conversationId: conversation.id,
-  });
   const consumed = await consumeCredit(
     profile.user.id,
     AI_CHAT_CREDIT_COST,
@@ -491,9 +487,9 @@ export async function runCommercialAgent(
       provider: "bailian-app",
       conversationId: conversation.id,
       visitorSessionId,
-      extra: { kind, username: profile.username },
+      extra: { kind, username: profile.username, profileId: profile.id },
     }),
-    consumeIdempotencyKey,
+    clientIdempotencyKey,
   );
   if (!consumed.success) {
     recordAiMetrics({
@@ -520,15 +516,12 @@ export async function runCommercialAgent(
       },
     });
   } catch (dbError) {
-    const refundResult = await refundCredit(
-      profile.user.id,
-      AI_CHAT_CREDIT_COST,
-      "commercial_agent",
-      conversation.id,
-      "写库失败自动退回（用户消息）",
-      consumeIdempotencyKey.replace(":consume", ":refund"),
-      { profileId: profile.id, conversationId: conversation.id },
-    );
+    const refundResult = await refundConsumedCredit({
+      userId: profile.user.id,
+      operationKey: consumed.operationKey,
+      reason: "写库失败自动退回（用户消息）",
+      metadata: { profileId: profile.id, conversationId: conversation.id },
+    });
     if (!refundResult.success) {
       await logAiRiskEvent({
         userId: profile.user.id,
@@ -569,15 +562,12 @@ export async function runCommercialAgent(
   }, prompt);
 
   if (!result.ok) {
-    const refundResult = await refundCredit(
-      profile.user.id,
-      AI_CHAT_CREDIT_COST,
-      "commercial_agent",
-      conversation.id,
-      "商业 Agent 调用失败自动退回",
-      consumeIdempotencyKey.replace(":consume", ":refund"),
-      { profileId: profile.id, conversationId: conversation.id },
-    );
+    const refundResult = await refundConsumedCredit({
+      userId: profile.user.id,
+      operationKey: consumed.operationKey,
+      reason: "商业 Agent 调用失败自动退回",
+      metadata: { profileId: profile.id, conversationId: conversation.id },
+    });
     if (!refundResult.success) {
       await logAiRiskEvent({
         userId: profile.user.id,
@@ -613,15 +603,12 @@ export async function runCommercialAgent(
 
   // 输出审核失败时退款
   if (moderated.blocked) {
-    const refundResult = await refundCredit(
-      profile.user.id,
-      AI_CHAT_CREDIT_COST,
-      "commercial_agent",
-      conversation.id,
-      "输出审核拦截自动退回",
-      consumeIdempotencyKey.replace(":consume", ":refund"),
-      { profileId: profile.id, conversationId: conversation.id },
-    );
+    const refundResult = await refundConsumedCredit({
+      userId: profile.user.id,
+      operationKey: consumed.operationKey,
+      reason: "输出审核拦截自动退回",
+      metadata: { profileId: profile.id, conversationId: conversation.id },
+    });
     if (!refundResult.success) {
       await logAiRiskEvent({
         userId: profile.user.id,
@@ -666,15 +653,12 @@ export async function runCommercialAgent(
       },
     });
   } catch (dbError) {
-    const refundResult = await refundCredit(
-      profile.user.id,
-      AI_CHAT_CREDIT_COST,
-      "commercial_agent",
-      conversation.id,
-      "写库失败自动退回（助手回复）",
-      consumeIdempotencyKey.replace(":consume", ":refund"),
-      { profileId: profile.id, conversationId: conversation.id },
-    );
+    const refundResult = await refundConsumedCredit({
+      userId: profile.user.id,
+      operationKey: consumed.operationKey,
+      reason: "写库失败自动退回（助手回复）",
+      metadata: { profileId: profile.id, conversationId: conversation.id },
+    });
     if (!refundResult.success) {
       await logAiRiskEvent({
         userId: profile.user.id,

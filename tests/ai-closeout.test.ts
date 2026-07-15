@@ -154,7 +154,7 @@ jest.mock("@/lib/ai/provider-error", () => mockProviderError);
 
 // ---------- Import under test ----------
 import { runCommercialAgent } from "@/lib/ai/commercial-agent";
-import { consumeCredit, refundCredit } from "@/lib/ai/permissions";
+import { consumeCredit, refundConsumedCredit } from "@/lib/ai/permissions";
 import { validateIdempotencyKey, bindIdempotencyKey } from "@/lib/ai/credits";
 
 describe("AI Closeout Tests", () => {
@@ -198,6 +198,24 @@ describe("AI Closeout Tests", () => {
     };
   }
 
+  function setupPersistentCreditLedger() {
+    const entries = new Map<string, Record<string, any>>();
+    mockDb.aiCreditLedger.findUnique.mockImplementation(
+      ({ where }: { where: { idempotencyKey: string } }) =>
+        Promise.resolve(entries.get(where.idempotencyKey) ?? null),
+    );
+    mockDb.aiCreditLedger.create.mockImplementation(
+      ({ data }: { data: Record<string, any> }) => {
+        const entry = { id: crypto.randomUUID(), ...data };
+        if (typeof data.idempotencyKey === "string") {
+          entries.set(data.idempotencyKey, entry);
+        }
+        return Promise.resolve(entry);
+      },
+    );
+    return entries;
+  }
+
   describe("1. Idempotency", () => {
     test("缺少 requestId 返回 400", async () => {
       const result = await runCommercialAgent("customer-service", {
@@ -220,8 +238,7 @@ describe("AI Closeout Tests", () => {
       mockDb.aiConversation.findFirst.mockResolvedValue(conversation);
       mockDb.aiMessage.findMany.mockResolvedValue([]);
       mockDb.aiCreditAccount.findUnique.mockResolvedValue(account);
-      mockDb.aiCreditLedger.findUnique.mockResolvedValue(null);
-      mockDb.aiCreditLedger.create.mockResolvedValue({ id: crypto.randomUUID() });
+      setupPersistentCreditLedger();
       mockDb.aiCreditAccount.updateMany.mockResolvedValue({ count: 1 });
       mockDb.aiCreditAccount.findUniqueOrThrow.mockResolvedValue({ balance: 99 });
       mockDb.aiMessage.create.mockResolvedValue({ id: crypto.randomUUID() });
@@ -239,13 +256,6 @@ describe("AI Closeout Tests", () => {
         requestId,
       });
       expect(result1.success).toBe(true);
-
-      // Second request with same idempotency key should reuse
-      mockDb.aiCreditLedger.findUnique.mockResolvedValue({
-        id: crypto.randomUUID(),
-        balanceAfter: 99,
-        entryType: "consume",
-      });
 
       const result2 = await runCommercialAgent("customer-service", {
         username: "testuser",
@@ -272,8 +282,7 @@ describe("AI Closeout Tests", () => {
       mockDb.aiConversation.findFirst.mockResolvedValue(conversation);
       mockDb.aiMessage.findMany.mockResolvedValue([]);
       mockDb.aiCreditAccount.findUnique.mockResolvedValue(account);
-      mockDb.aiCreditLedger.findUnique.mockResolvedValue(null);
-      mockDb.aiCreditLedger.create.mockResolvedValue({ id: crypto.randomUUID() });
+      setupPersistentCreditLedger();
       mockDb.aiCreditAccount.updateMany.mockResolvedValue({ count: 1 });
       mockDb.aiCreditAccount.findUniqueOrThrow.mockResolvedValue({ balance: 99 });
       mockDb.aiMessage.create.mockResolvedValue({ id: crypto.randomUUID() });
@@ -310,8 +319,7 @@ describe("AI Closeout Tests", () => {
       mockDb.aiConversation.findFirst.mockResolvedValue(conversation);
       mockDb.aiMessage.findMany.mockResolvedValue([]);
       mockDb.aiCreditAccount.findUnique.mockResolvedValue(account);
-      mockDb.aiCreditLedger.findUnique.mockResolvedValue(null);
-      mockDb.aiCreditLedger.create.mockResolvedValue({ id: crypto.randomUUID() });
+      setupPersistentCreditLedger();
       mockDb.aiCreditAccount.updateMany.mockResolvedValue({ count: 1 });
       mockDb.aiCreditAccount.findUniqueOrThrow.mockResolvedValue({ balance: 99 });
       mockDb.aiMessage.create.mockResolvedValue({ id: crypto.randomUUID() });
@@ -349,8 +357,7 @@ describe("AI Closeout Tests", () => {
       mockDb.aiConversation.findFirst.mockResolvedValue(conversation);
       mockDb.aiMessage.findMany.mockResolvedValue([]);
       mockDb.aiCreditAccount.findUnique.mockResolvedValue(account);
-      mockDb.aiCreditLedger.findUnique.mockResolvedValue(null);
-      mockDb.aiCreditLedger.create.mockResolvedValue({ id: crypto.randomUUID() });
+      setupPersistentCreditLedger();
       mockDb.aiCreditAccount.updateMany.mockResolvedValue({ count: 1 });
       mockDb.aiCreditAccount.findUniqueOrThrow.mockResolvedValue({ balance: 99 });
       mockDb.aiMessage.create.mockResolvedValue({ id: crypto.randomUUID() });
@@ -394,8 +401,7 @@ describe("AI Closeout Tests", () => {
       mockDb.aiConversation.findFirst.mockResolvedValue(conversation);
       mockDb.aiMessage.findMany.mockResolvedValue([]);
       mockDb.aiCreditAccount.findUnique.mockResolvedValue(account);
-      mockDb.aiCreditLedger.findUnique.mockResolvedValue(null);
-      mockDb.aiCreditLedger.create.mockResolvedValue({ id: crypto.randomUUID() });
+      setupPersistentCreditLedger();
       mockDb.aiCreditAccount.updateMany.mockResolvedValue({ count: 1 });
       mockDb.aiCreditAccount.findUniqueOrThrow.mockResolvedValue({ balance: 99 });
       mockDb.aiMessage.create.mockRejectedValueOnce(new Error("DB connection lost"));
@@ -535,7 +541,7 @@ describe("AI Closeout Tests", () => {
     });
   });
 
-  describe("9. consumeCredit / refundCredit idempotency", () => {
+  describe("9. consumeCredit / refundConsumedCredit idempotency", () => {
     test("consumeCredit 使用外部 idempotencyKey 并绑定用户上下文", async () => {
       const userId = "user-test";
       const account = setupCreditAccount(100);
@@ -559,24 +565,23 @@ describe("AI Closeout Tests", () => {
       expect(ledgerCall.data.idempotencyKey).toContain("client-key");
     });
 
-    test("refundCredit 幂等：重复退款只执行一次", async () => {
+    test("refundConsumedCredit 幂等：重复退款只执行一次", async () => {
       const userId = "user-test";
       const account = setupCreditAccount(99);
       mockDb.aiCreditAccount.findUnique.mockResolvedValue(account);
       mockDb.aiCreditLedger.findUnique.mockResolvedValue({
         id: "ledger-1",
+        accountId: account.id,
         balanceAfter: 100,
         entryType: "refund",
+        metadata: { creditSource: "credit" },
       });
 
-      const result = await refundCredit(
+      const result = await refundConsumedCredit({
         userId,
-        1,
-        "test",
-        "ref-1",
-        "test refund",
-        "client-key",
-      );
+        operationKey: "operation-1",
+        reason: "test refund",
+      });
 
       expect(result.success).toBe(true);
       expect(result.alreadyApplied).toBe(true);

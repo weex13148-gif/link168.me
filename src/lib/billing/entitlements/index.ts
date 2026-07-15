@@ -93,14 +93,27 @@ export async function getUserEntitlements(userId: string): Promise<UserEntitleme
   ]);
 
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const usage = creditAccount
-    ? await db.aiCreditLedger.aggregate({
-        where: { accountId: creditAccount.id, createdAt: { gte: monthStart }, entryType: "consume" },
-        _sum: { amount: true },
+  const monthEntries = creditAccount
+    ? await db.aiCreditLedger.findMany({
+        where: {
+          accountId: creditAccount.id,
+          createdAt: { gte: monthStart },
+          entryType: { in: ["consume", "refund"] },
+        },
+        select: { amount: true, metadata: true },
       })
-    : { _sum: { amount: 0 } };
+    : [];
 
-  const aiUsed = Math.abs(usage._sum.amount ?? 0);
+  const netPlanAmount = monthEntries.reduce((sum, entry) => {
+    const metadata = entry.metadata;
+    if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+      return sum;
+    }
+    return (metadata as Record<string, unknown>).creditSource === "plan"
+      ? sum + entry.amount
+      : sum;
+  }, 0);
+  const aiUsed = Math.max(0, -netPlanAmount);
   const aiLimit = plan.limits.aiChatsPerMonth;
   const paid = effectivePlanCode !== "free" && (hasActiveMembership || isGracePeriod);
   const proOrAbove = ["pro", "enterprise", "enterprise_pro", "internal_test"].includes(effectivePlanCode);
