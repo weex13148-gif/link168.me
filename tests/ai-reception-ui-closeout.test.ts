@@ -45,11 +45,11 @@ describe("AI reception customer and visitor UI closeout", () => {
   test("preset replies are distinguished from model-generated replies", () => {
     const chat = source("src/components/share/modules/AiChatModule.tsx");
 
-    expect(chat).toContain('source: "preset"');
-    expect(chat).toContain('source: "ai"');
+    expect(chat).toContain('source?: "preset" | "ai"');
     expect(chat).toContain('message.source === "preset" ? "— 预设回复" : "— AI 生成内容"');
     expect(chat).toContain('appendMessage("assistant", action.value, "preset")');
     expect(chat).toContain('appendMessage("assistant", reply, "ai")');
+    expect(chat).toContain('appendMessage("system", publicErrorMessage(result.code))');
   });
 
   test("profile AI component controls placement only and links to the single config page", () => {
