@@ -6,7 +6,7 @@ on:
       - integration/mvp-closeout-r1
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   snapshot:
@@ -18,37 +18,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
 
-      - name: Apply exact AI reception schema field
-        id: schema
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          path = Path("prisma/schema.prisma")
-          text = path.read_text()
-          field = '  quickActionsJson            String?  @map("quick_actions_json")\n'
-          if field in text:
-              print("Schema field already present")
-              Path("/tmp/schema_changed").write_text("false")
-          else:
-              needle = '  privacyNoticeText          String?  @map("privacy_notice_text")\n'
-              if needle not in text:
-                  raise SystemExit("AiServiceConfig insertion point not found")
-              path.write_text(text.replace(needle, needle + field, 1))
-              Path("/tmp/schema_changed").write_text("true")
-          PY
-          echo "changed=$(cat /tmp/schema_changed)" >> "$GITHUB_OUTPUT"
-
-      - name: Commit exact schema patch
-        if: steps.schema.outputs.changed == 'true'
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add prisma/schema.prisma
-          git commit -m "feat: persist AI reception quick actions"
-          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
-
       - name: Upload AI reception source snapshot
         uses: actions/upload-artifact@v4
         with:
@@ -59,6 +28,7 @@ jobs:
             prisma/schema.prisma
             src/components/ai/**
             src/components/dashboard/**
+            src/components/dashboard-v1/**
             src/components/share/**
             src/lib/ai/**
             src/lib/app-config.ts
