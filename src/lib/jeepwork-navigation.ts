@@ -66,7 +66,6 @@ export const JEEPWORK_NAV_GROUPS: JeepworkNavGroup[] = [
     label: "外部展示",
     tone: "brand",
     items: [
-      { href: "/jeepwork/showcase", label: "Showcase 设置", icon: "◆", tone: "brand", requiredRole: "super_admin" },
       { href: "/jeepwork/competition-center", label: "比赛中心", icon: "赛", tone: "brand", requiredRole: "super_admin" },
     ],
   },
