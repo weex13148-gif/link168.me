@@ -7,6 +7,9 @@ export const runtime = "nodejs";
 
 const PAGE_SIZE = 20;
 
+type QueryRole = "super_admin" | "admin" | "user" | "";
+type AssignableRole = "super_admin" | "user" | "";
+
 function apiError(code: string, message: string, status = 400) {
   return NextResponse.json({ success: false, data: null, error: { code, message } }, { status });
 }
@@ -21,8 +24,15 @@ function normalizeEmail(raw: unknown) {
   return text.length > 120 ? text.slice(0, 120) : text;
 }
 
-function normalizeRole(raw: unknown): "super_admin" | "admin" | "user" | "" {
+// GET 仍允许查询历史 admin，便于超级管理员完成迁移。
+function normalizeQueryRole(raw: unknown): QueryRole {
   if (raw === "super_admin" || raw === "admin" || raw === "user") return raw;
+  return "";
+}
+
+// PATCH 只允许正式角色，禁止重新创建边界模糊的 admin。
+function normalizeAssignableRole(raw: unknown): AssignableRole {
+  if (raw === "super_admin" || raw === "user") return raw;
   return "";
 }
 
@@ -34,7 +44,7 @@ export async function GET(request: Request) {
   const page = Math.max(1, Number.parseInt(url.searchParams.get("page") || "1", 10) || 1);
   const keyword = normalizeKeyword(url.searchParams.get("q"));
   const emailFilter = normalizeEmail(url.searchParams.get("email"));
-  const roleFilter = normalizeRole(url.searchParams.get("role"));
+  const roleFilter = normalizeQueryRole(url.searchParams.get("role"));
 
   const whereItems: Array<Record<string, unknown>> = [];
   if (emailFilter) {
@@ -79,7 +89,7 @@ export async function GET(request: Request) {
       totalPages: Math.max(1, Math.ceil(total / PAGE_SIZE)),
       users: users.map((user) => ({
         id: user.id,
-        email: user.email, // 超级管理员可查看邮箱
+        email: user.email,
         emailVerified: user.emailVerified,
         role: user.role,
         isSystem: Boolean(user.isSystem),
@@ -99,12 +109,11 @@ export async function GET(request: Request) {
           shortLinkCount: user._count.shortLinks,
           aiUsageLogCount: user._count.aiUsageLogs,
         },
-        // 安全：限制记录摘要，不暴露原始 IP、Session 详情等敏感信息
-        _restrictions: (user.freezeRecords || []).map((r: { type: string; isActive: boolean; reason: string | null; expiresAt: Date | null }) => ({
-          type: r.type,
-          isActive: r.isActive,
-          reason: r.reason,
-          expiresAt: r.expiresAt?.toISOString() || null,
+        _restrictions: (user.freezeRecords || []).map((restriction: { type: string; isActive: boolean; reason: string | null; expiresAt: Date | null }) => ({
+          type: restriction.type,
+          isActive: restriction.isActive,
+          reason: restriction.reason,
+          expiresAt: restriction.expiresAt?.toISOString() || null,
         })),
       })),
     },
@@ -126,13 +135,15 @@ export async function PATCH(request: Request) {
   }
 
   const userId = typeof body.id === "string" ? body.id : "";
-  const newRole = normalizeRole(body.role);
+  const newRole = normalizeAssignableRole(body.role);
 
   if (!userId) return apiError("BAD_BODY", "缺少用户 ID");
-  if (!newRole) return apiError("BAD_BODY", "不支持的角色");
+  if (!newRole) return apiError("UNSUPPORTED_ROLE", "平台角色只支持普通用户或超级管理员；历史 admin 仅允许迁移", 400);
 
-  // 系统账号不可修改
-  const target = await db.user.findUnique({ where: { id: userId }, select: { id: true, email: true, role: true, isSystem: true } });
+  const target = await db.user.findUnique({
+    where: { id: userId },
+    select: { id: true, email: true, role: true, isSystem: true },
+  });
   if (!target) {
     await writeAdminAuditLog({
       actorUserId: actor?.id,
@@ -163,8 +174,7 @@ export async function PATCH(request: Request) {
     return apiError("FORBIDDEN", "系统账号禁止修改角色", 400);
   }
 
-  const isSelf = actor?.id === target.id;
-  if (isSelf) {
+  if (actor?.id === target.id) {
     await writeAdminAuditLog({
       actorUserId: actor?.id,
       actorEmail: actor?.email,
@@ -182,29 +192,18 @@ export async function PATCH(request: Request) {
     );
   }
 
-  // P0-1: 禁止把最后一名 super_admin 降级
-  // 使用 $transaction + PostgreSQL advisory transaction lock，防止两名 super_admin 并发互降
   const wasSuperAdmin = target.role === "super_admin";
   if (wasSuperAdmin && newRole !== "super_admin") {
-    // P0-4: 角色更新和审计日志在同一事务中，审计失败则角色更新回滚
     try {
-      await db.$transaction(async (tx) => {
-        // 在事务中获取 advisory transaction lock（事务提交/回滚时自动释放）
-        await tx.$executeRaw`SELECT pg_advisory_xact_lock(87654321)`;
-
-        // 在持有锁的情况下重新查询 super_admin 数量（防止并发修改）
-        const superAdminCount = await tx.user.count({
+      await db.$transaction(async (transaction) => {
+        await transaction.$executeRaw`SELECT pg_advisory_xact_lock(87654321)`;
+        const remainingSuperAdminCount = await transaction.user.count({
           where: { role: "super_admin", id: { not: target.id } },
         });
-        if (superAdminCount === 0) {
-          throw new Error("PREVENT_LAST_SUPER_ADMIN");
-        }
+        if (remainingSuperAdminCount === 0) throw new Error("PREVENT_LAST_SUPER_ADMIN");
 
-        // 执行角色更新
         const oldRole = target.role;
-        await tx.user.update({ where: { id: target.id }, data: { role: newRole } });
-
-        // 事务内写审计日志（P0-4: 失败时角色更新一并回滚）
+        await transaction.user.update({ where: { id: target.id }, data: { role: newRole } });
         await writeAdminAuditLog(
           {
             actorUserId: actor?.id,
@@ -217,11 +216,11 @@ export async function PATCH(request: Request) {
             request,
             success: true,
           },
-          tx,
+          transaction,
         );
       });
-    } catch (err) {
-      const reason = err instanceof Error ? err.message : String(err);
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error);
       if (reason === "PREVENT_LAST_SUPER_ADMIN") {
         await writeAdminAuditLog({
           actorUserId: actor?.id,
@@ -236,7 +235,6 @@ export async function PATCH(request: Request) {
         });
         return apiError("FORBIDDEN", "系统必须至少保留一名超级管理员", 400);
       }
-      // 其他事务错误（如数据库断开）走通用错误处理
       return apiError("TRANSACTION_FAILED", `事务执行失败: ${reason}`, 500);
     }
 
@@ -249,7 +247,6 @@ export async function PATCH(request: Request) {
 
   const oldRole = target.role;
   await db.user.update({ where: { id: userId }, data: { role: newRole } });
-
   await writeAdminAuditLog({
     actorUserId: actor?.id,
     actorEmail: actor?.email,
@@ -285,7 +282,10 @@ export async function DELETE(request: Request) {
   const userId = typeof body.id === "string" ? body.id : "";
   if (!userId) return apiError("BAD_BODY", "缺少用户 ID");
 
-  const target = await db.user.findUnique({ where: { id: userId }, select: { id: true, email: true, role: true, isSystem: true } });
+  const target = await db.user.findUnique({
+    where: { id: userId },
+    select: { id: true, email: true, role: true, isSystem: true },
+  });
   if (!target) {
     await writeAdminAuditLog({
       actorUserId: actor?.id,
@@ -334,8 +334,6 @@ export async function DELETE(request: Request) {
     return apiError("FORBIDDEN", "系统账号禁止删除", 400);
   }
 
-// P0-B: 用户物理删除已暂停，等待 UsernameRegistry、用户名释放和日志保留政策确认。
-// 当前返回 409，明确告知前端暂停原因。待政策确认后，将改为软删除。
   return NextResponse.json(
     { success: false, error: { code: "USER_DELETE_POLICY_PENDING", message: "账号注销和数据保留政策制定中，暂不可物理删除" } },
     { status: 409 },
