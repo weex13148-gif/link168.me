@@ -24,12 +24,11 @@ jobs:
           retention-days: 1
           path: |
             prisma/schema.prisma
-            src/components/ai/ReceptionConfigClient.tsx
-            src/components/dashboard/LinksPanel.tsx
-            src/components/share/modules/AiChatModule.tsx
-            src/components/share/SharePageRenderer.tsx
-            src/lib/ai/commercial-agent.ts
+            src/components/ai/**
+            src/components/dashboard/**
+            src/components/share/**
+            src/lib/ai/**
             src/lib/app-config.ts
-            src/app/[username]/page.tsx
+            src/app/**/page.tsx
             src/features/profile-modules/**
             tests/profile-module-closeout.test.ts
