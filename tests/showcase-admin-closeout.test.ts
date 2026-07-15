@@ -41,11 +41,11 @@ describe("Showcase and Jeepwork release closeout", () => {
     const showcaseLib = read("src/lib/showcase.ts");
     const sessionRoute = read("src/app/api/showcase/session/route.ts");
 
-    expect(showcaseLib).toContain("SHOWCASE_COOKIE_MAX_AGE");
     expect(showcaseLib).toContain("createShowcaseCookieValue(config.passwordHash)");
     expect(sessionRoute).toContain("export async function GET");
     expect(sessionRoute).toContain("hasValidShowcaseCookie");
     expect(sessionRoute).toContain("SHOWCASE_COOKIE_MAX_AGE");
+    expect(sessionRoute).toContain("10 * 365 * 24 * 60 * 60");
     expect(sessionRoute).not.toContain("8 * 60 * 60");
     expect(sessionRoute).not.toMatch(/rateLimit|wrongPasswordCount|tooManyAttempts/i);
   });
