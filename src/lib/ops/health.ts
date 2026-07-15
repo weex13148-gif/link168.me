@@ -4,6 +4,10 @@
 import { db } from "@/lib/db";
 import { getConfig } from "@/lib/app-config";
 import { checkCleanupHealth } from "@/lib/data-cleanup";
+import {
+  getExternalServiceReadiness,
+  type ExternalServiceReadinessStatus,
+} from "@/lib/external-service-readiness";
 import { currentStoreKind } from "@/lib/rate-limit";
 import path from "path";
 import fs from "fs/promises";
@@ -50,6 +54,8 @@ export interface MailHealth {
   fromAddress: string | null;
   connectivityTested: boolean;
   connectivityOk: boolean | null;
+  readinessStatus: ExternalServiceReadinessStatus;
+  readinessLabel: string;
   connectivityError?: string;
   error?: string;
 }
@@ -61,6 +67,8 @@ export interface AiServiceHealth {
   baseUrl: string | null;
   model: string | null;
   apiKeyPresent: boolean;
+  readinessStatus: ExternalServiceReadinessStatus;
+  readinessLabel: string;
   assistantTaxEnabled: boolean;
   assistantLegalEnabled: boolean;
   assistantMarketEnabled: boolean;
@@ -77,6 +85,8 @@ export interface UploadHealth {
   totalSizeBytes: number;
   storageProvider: string;
   storageEnabled: boolean;
+  objectStorageReadinessStatus: ExternalServiceReadinessStatus;
+  objectStorageReadinessLabel: string;
   error?: string;
 }
 
@@ -296,6 +306,8 @@ export async function checkMailHealth(): Promise<MailHealth> {
     fromAddress: null,
     connectivityTested: false,
     connectivityOk: null,
+    readinessStatus: "not_configured",
+    readinessLabel: "未配置",
   };
 
   try {
@@ -307,15 +319,16 @@ export async function checkMailHealth(): Promise<MailHealth> {
     result.smtpSecureMode = config.smtpSecureMode || null;
     result.fromAddress = config.mailFrom || null;
 
-    if (!config.mailEnabled || !config.smtpHost || !config.smtpUser || !config.smtpPassword) {
-      result.status = result.enabled ? "warn" : "unknown";
-      return result;
-    }
-
-    result.status = "ok";
-    result.connectivityTested = true;
-    // 注意：不做真实连接测试，避免超时阻塞
-    result.connectivityOk = null; // 需要手动测试
+    const readiness = (await getExternalServiceReadiness(config)).mail;
+    result.readinessStatus = readiness.status;
+    result.readinessLabel = readiness.label;
+    result.status = readiness.status === "configured_and_passed"
+      ? "ok"
+      : readiness.status === "not_configured" ? "unknown" : "warn";
+    result.connectivityTested = readiness.lastTestedAt !== null;
+    result.connectivityOk = readiness.status === "configured_and_passed"
+      ? true
+      : readiness.lastTestedAt ? false : null;
   } catch (error) {
     result.status = "error";
     result.error = error instanceof Error ? error.message : "邮件配置读取失败";
@@ -334,6 +347,8 @@ export async function checkAiServiceHealth(): Promise<AiServiceHealth> {
     baseUrl: null,
     model: null,
     apiKeyPresent: false,
+    readinessStatus: "not_configured",
+    readinessLabel: "未配置",
     assistantTaxEnabled: false,
     assistantLegalEnabled: false,
     assistantMarketEnabled: false,
@@ -354,17 +369,12 @@ export async function checkAiServiceHealth(): Promise<AiServiceHealth> {
     result.assistantDesignEnabled = config.aiAssistantDesignEnabled;
     result.assistantSocialEnabled = config.aiAssistantSocialEnabled;
 
-    if (!config.aiEnabled) {
-      result.status = "unknown";
-      return result;
-    }
-
-    if (!config.aiApiKey || !config.aiBaseUrl || !config.aiModel) {
-      result.status = "warn";
-      return result;
-    }
-
-    result.status = "ok";
+    const readiness = (await getExternalServiceReadiness(config)).bailian;
+    result.readinessStatus = readiness.status;
+    result.readinessLabel = readiness.label;
+    result.status = readiness.status === "configured_and_passed"
+      ? "ok"
+      : readiness.status === "not_configured" ? "unknown" : "warn";
   } catch (error) {
     result.status = "error";
     result.error = error instanceof Error ? error.message : "AI配置读取失败";
@@ -384,6 +394,8 @@ export async function checkUploadHealth(): Promise<UploadHealth> {
     totalSizeBytes: 0,
     storageProvider: "unknown",
     storageEnabled: false,
+    objectStorageReadinessStatus: "not_configured",
+    objectStorageReadinessLabel: "未配置",
   };
 
   try {
@@ -392,7 +404,12 @@ export async function checkUploadHealth(): Promise<UploadHealth> {
     result.storageEnabled = config.storageEnabled;
 
     if (config.storageProvider !== "local") {
-      result.status = config.storageEnabled ? "ok" : "warn";
+      const readiness = (await getExternalServiceReadiness(config)).object_storage;
+      result.objectStorageReadinessStatus = readiness.status;
+      result.objectStorageReadinessLabel = readiness.label;
+      result.status = readiness.status === "configured_and_passed"
+        ? "ok"
+        : readiness.status === "not_configured" ? "unknown" : "warn";
       result.directoryExists = null as unknown as boolean;
       result.directoryWritable = null as unknown as boolean;
       return result;
@@ -726,38 +743,36 @@ export async function getPreDeploymentReport(): Promise<PreDeploymentReport> {
     criticalFailed = true;
   }
 
-  // 4. AI 服务配置
+  // 4. 阿里百炼就绪状态
   try {
     const config = await getConfig();
-    if (!config.aiEnabled) {
-      checks.push({ item: "AI服务配置", status: "skip", message: "AI服务未启用" });
-    } else if (!config.aiApiKey || !config.aiBaseUrl) {
-      checks.push({ item: "AI服务配置", status: "warn", message: "AI服务已启用但配置不完整" });
-    } else {
-      checks.push({ item: "AI服务配置", status: "pass", message: "AI服务配置完整" });
-    }
+    const readiness = (await getExternalServiceReadiness(config)).bailian;
+    checks.push({
+      item: "阿里百炼",
+      status: readiness.status === "configured_and_passed" ? "pass" : readiness.status === "not_configured" ? "skip" : "warn",
+      message: readiness.label,
+    });
   } catch (error) {
     checks.push({
-      item: "AI服务配置",
+      item: "阿里百炼",
       status: "fail",
       message: "AI配置读取失败",
       details: error instanceof Error ? error.message : "未知错误",
     });
   }
 
-  // 5. 邮件服务配置
+  // 5. 阿里云邮件就绪状态
   try {
     const config = await getConfig();
-    if (!config.mailEnabled) {
-      checks.push({ item: "邮件服务配置", status: "skip", message: "邮件服务未启用" });
-    } else if (!config.smtpHost || !config.smtpUser || !config.smtpPassword) {
-      checks.push({ item: "邮件服务配置", status: "warn", message: "邮件服务已启用但SMTP配置不完整" });
-    } else {
-      checks.push({ item: "邮件服务配置", status: "pass", message: "邮件服务配置完整" });
-    }
+    const readiness = (await getExternalServiceReadiness(config)).mail;
+    checks.push({
+      item: "阿里云邮件",
+      status: readiness.status === "configured_and_passed" ? "pass" : readiness.status === "not_configured" ? "skip" : "warn",
+      message: readiness.label,
+    });
   } catch (error) {
     checks.push({
-      item: "邮件服务配置",
+      item: "阿里云邮件",
       status: "fail",
       message: "邮件配置读取失败",
       details: error instanceof Error ? error.message : "未知错误",
@@ -779,7 +794,12 @@ export async function getPreDeploymentReport(): Promise<PreDeploymentReport> {
         criticalFailed = true;
       }
     } else {
-      checks.push({ item: "存储配置", status: "pass", message: `使用 ${config.storageProvider} 云存储` });
+      const readiness = (await getExternalServiceReadiness(config)).object_storage;
+      checks.push({
+        item: "对象存储",
+        status: readiness.status === "configured_and_passed" ? "pass" : readiness.status === "not_configured" ? "skip" : "warn",
+        message: readiness.label,
+      });
     }
   } catch (error) {
     checks.push({
@@ -809,21 +829,17 @@ export async function getPreDeploymentReport(): Promise<PreDeploymentReport> {
     criticalFailed = true;
   }
 
-  // 8. 支付配置（仅检查开关状态）
+  // 8. 支付宝就绪状态
   try {
     const config = await getConfig();
-    if (!config.paymentEnabled) {
-      checks.push({ item: "支付配置", status: "skip", message: "支付服务未启用" });
-    } else {
-      const paymentConfigured = Boolean(config.paymentMerchantId && config.paymentAppId && config.paymentApiKey);
-      checks.push({
-        item: "支付配置",
-        status: paymentConfigured ? "pass" : "warn",
-        message: paymentConfigured ? "支付配置完整" : "支付服务已启用但配置不完整",
-      });
-    }
+    const readiness = (await getExternalServiceReadiness(config)).alipay;
+    checks.push({
+      item: "支付宝",
+      status: readiness.status === "configured_and_passed" ? "pass" : readiness.status === "not_configured" ? "skip" : "warn",
+      message: readiness.label,
+    });
   } catch {
-    checks.push({ item: "支付配置", status: "skip", message: "支付配置检查跳过" });
+    checks.push({ item: "支付宝", status: "skip", message: "支付宝状态检查跳过" });
   }
 
   // 9. 清理任务健康检查

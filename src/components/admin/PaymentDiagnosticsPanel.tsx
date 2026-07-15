@@ -115,7 +115,7 @@ export default function PaymentDiagnosticsPanel() {
       const result = await response.json() as ApiResult;
       if (!response.ok || !result.success) throw new Error(errorText(result.error));
       setLastResult(result.data || null);
-      if (name === "test-keys") setMessage("支付宝应用私钥可签名，支付宝公钥格式有效。 ");
+      if (name === "test-keys") setMessage("本地密钥格式与 RSA2 签名校验通过；这不代表支付宝真实服务已通过。 ");
       else if (name === "create-test-order") {
         const payUrl = result.data?.payment?.payUrl;
         const createdOrderNo = result.data?.order?.orderNo;
@@ -144,7 +144,7 @@ export default function PaymentDiagnosticsPanel() {
           <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white text-[#1677FF]"><ShieldCheck className="size-5" /></span>
           <div>
             <h2 className="text-xl font-black text-[#2B241E]">支付宝测试与漏单补偿</h2>
-            <p className="mt-2 text-sm leading-6 text-[#6F655A]">测试密钥格式、创建 0.01 元订单、主动查询支付宝订单，并在支付宝确认付款后安全补发会员和 AI Credits。</p>
+            <p className="mt-2 text-sm leading-6 text-[#6F655A]">本地校验密钥格式；只有真实主动查单并通过支付宝响应验签，才会记录真实服务通过。</p>
           </div>
         </div>
 

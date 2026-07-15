@@ -20,6 +20,8 @@ export type AlipayReconciliationResult = {
   orderStatus?: string;
   tradeStatus?: string;
   tradeNo?: string;
+  providerTested?: boolean;
+  providerVerified?: boolean;
   error?: string;
 };
 
@@ -47,6 +49,10 @@ export async function queryAndReconcileAlipayOrder(params: {
   }
 
   const query = await queryAlipayTrade(orderNo);
+  const providerEvidence = {
+    providerTested: true,
+    providerVerified: query.responseVerified === true,
+  };
   await recordAlipayDiagnostic({
     type: "TRADE_QUERY",
     success: query.success,
@@ -65,6 +71,7 @@ export async function queryAndReconcileAlipayOrder(params: {
 
   if (!query.success || !query.found) {
     return {
+      ...providerEvidence,
       success: query.success,
       reconciled: false,
       orderNo,
@@ -75,10 +82,11 @@ export async function queryAndReconcileAlipayOrder(params: {
   }
 
   if (!query.responseVerified) {
-    return { success: false, reconciled: false, orderNo, orderStatus: order.status, error: "支付宝查单响应未通过验签。" };
+    return { ...providerEvidence, success: false, reconciled: false, orderNo, orderStatus: order.status, error: "支付宝查单响应未通过验签。" };
   }
   if (!query.tradeStatus || !SUCCESS_STATUSES.has(query.tradeStatus)) {
     return {
+      ...providerEvidence,
       success: true,
       reconciled: false,
       orderNo,
@@ -89,7 +97,7 @@ export async function queryAndReconcileAlipayOrder(params: {
     };
   }
   if (!query.tradeNo) {
-    return { success: false, reconciled: false, orderNo, orderStatus: order.status, error: "支付宝查单结果缺少交易号。" };
+    return { ...providerEvidence, success: false, reconciled: false, orderNo, orderStatus: order.status, error: "支付宝查单结果缺少交易号。" };
   }
   if (query.totalAmountCents === undefined || query.totalAmountCents !== order.payableAmount) {
     await recordAlipayDiagnostic({
@@ -100,11 +108,12 @@ export async function queryAndReconcileAlipayOrder(params: {
       error: "主动查单金额不匹配",
       metadata: { expected: order.payableAmount, actual: query.totalAmountCents ?? null },
     });
-    return { success: false, reconciled: false, orderNo, orderStatus: order.status, error: "支付宝金额与本地订单不一致。" };
+    return { ...providerEvidence, success: false, reconciled: false, orderNo, orderStatus: order.status, error: "支付宝金额与本地订单不一致。" };
   }
 
   if (params.reconcile === false) {
     return {
+      ...providerEvidence,
       success: true,
       reconciled: false,
       orderNo,
@@ -115,7 +124,7 @@ export async function queryAndReconcileAlipayOrder(params: {
   }
 
   if (!RECONCILABLE_STATUSES.has(order.status)) {
-    return { success: false, reconciled: false, orderNo, orderStatus: order.status, error: `订单状态不允许补单：${order.status}` };
+    return { ...providerEvidence, success: false, reconciled: false, orderNo, orderStatus: order.status, error: `订单状态不允许补单：${order.status}` };
   }
 
   const existingMetadata = order.metadata && typeof order.metadata === "object" && !Array.isArray(order.metadata)
@@ -158,6 +167,7 @@ export async function queryAndReconcileAlipayOrder(params: {
   });
 
   return {
+    ...providerEvidence,
     success: processed.success,
     reconciled: processed.success,
     orderNo,

@@ -17,6 +17,10 @@ import {
 } from "@/lib/app-config";
 import { ROLE_SUPER_ADMIN } from "@/lib/auth";
 import { db } from "@/lib/db";
+import {
+  getExternalServiceReadiness,
+  recordExternalServiceTest,
+} from "@/lib/external-service-readiness";
 import { getJeepworkSessionUser, requireJeepworkSuperAdmin } from "@/lib/jeepwork-auth";
 
 export const runtime = "nodejs";
@@ -151,11 +155,18 @@ function mailFailureMessage(error: unknown) {
   return "测试邮件发送失败，请检查 SMTP 配置后重试。";
 }
 
+async function configPayload() {
+  const [config, maskedConfig] = await Promise.all([getConfig(), getMaskedConfig()]);
+  return {
+    config: visibleConfig(maskedConfig),
+    readiness: await getExternalServiceReadiness(config),
+  };
+}
+
 export async function GET(request: Request) {
   const forbidden = await requireJeepworkSuperAdmin(request);
   if (forbidden) return forbidden;
-  const config = await getMaskedConfig();
-  return NextResponse.json({ success: true, data: visibleConfig(config), error: null });
+  return NextResponse.json({ success: true, data: await configPayload(), error: null });
 }
 
 export async function PUT(request: Request) {
@@ -203,8 +214,7 @@ export async function PUT(request: Request) {
       request,
       success: true,
     });
-    const config = await getMaskedConfig();
-    return NextResponse.json({ success: true, data: visibleConfig(config), message: "配置已保存。", error: null });
+    return NextResponse.json({ success: true, data: await configPayload(), message: "配置已保存。", error: null });
   } catch {
     return errorResponse("SAVE_FAILED", "配置保存失败，请稍后重试。", 500);
   }
@@ -241,10 +251,21 @@ async function testMail(emailValue: unknown) {
       text: "收到本邮件表示 Link168 SMTP 配置可以正常发送注册验证码和忘记密码邮件。",
       html: "<h2>Link168 邮件服务测试成功</h2><p>收到本邮件表示 SMTP 配置可以正常发送注册验证码和忘记密码邮件。</p>",
     });
-    return NextResponse.json({ success: true, data: { message: "测试邮件发送成功，请检查收件箱或垃圾箱。" }, error: null });
   } catch (error) {
-    return errorResponse("SMTP_FAILED", mailFailureMessage(error), 502);
+    const message = mailFailureMessage(error);
+    await recordExternalServiceTest("mail", config, { passed: false, message }).catch(() => undefined);
+    return errorResponse("SMTP_FAILED", message, 502);
   }
+
+  try {
+    await recordExternalServiceTest("mail", config, {
+      passed: true,
+      message: "SMTP 验证和测试邮件发送成功",
+    });
+  } catch {
+    return errorResponse("READINESS_RECORD_FAILED", "测试邮件已发送，但测试证据保存失败，请稍后重试。", 500);
+  }
+  return NextResponse.json({ success: true, data: { message: "测试邮件发送成功，请检查收件箱或垃圾箱。" }, error: null });
 }
 
 async function testWhitelist(emailValue: unknown) {
@@ -272,7 +293,7 @@ async function testAi() {
   if (!config.aiEnabled) return errorResponse("AI_DISABLED", "AI 服务总开关尚未开启。", 400);
   if (!config.aiApiKey) return errorResponse("AI_INCOMPLETE", "请先填写完整的 AI API Key。", 400);
   if (config.aiProvider === "bailian" && !config.aiBailianAppId) return errorResponse("AI_INCOMPLETE", "请先填写百炼应用 App ID。", 400);
-  return NextResponse.json({ success: true, data: { message: "AI 配置项完整。真实对话请在企业 AI 页面验证。" }, error: null });
+  return errorResponse("REAL_TEST_REQUIRED", "配置完整不代表百炼连接通过，请在 AI 配置页执行真实连接测试。", 409);
 }
 
 export async function POST(request: Request) {
@@ -290,9 +311,9 @@ export async function POST(request: Request) {
     case "test-email": return testWhitelist(body.email);
     case "promote-super-admin": return promoteSuperAdmin(body.email);
     case "test-ai-connection": return testAi();
-    case "test-storage": return NextResponse.json({ success: true, data: { message: "存储配置已保存；云厂商实时连通测试尚未启用。" }, error: null });
-    case "test-payment": return NextResponse.json({ success: true, data: { message: "请在支付宝与收费页面使用专用签名测试、查单和补单工具。" }, error: null });
-    case "test-sms": return NextResponse.json({ success: true, data: { message: "短信配置已保存；内测阶段真实短信发送尚未启用。" }, error: null });
+    case "test-storage": return errorResponse("REAL_TEST_UNAVAILABLE", "尚未执行对象存储真实读写删除测试，不能标记为通过。", 409);
+    case "test-payment": return errorResponse("REAL_TEST_REQUIRED", "本地签名校验不代表支付宝连接通过，请使用真实查单并完成响应验签。", 409);
+    case "test-sms": return errorResponse("REAL_TEST_UNAVAILABLE", "尚未执行真实短信发送测试，不能标记为通过。", 409);
     default: return errorResponse("BAD_ACTION", "不支持的操作。", 400);
   }
 }

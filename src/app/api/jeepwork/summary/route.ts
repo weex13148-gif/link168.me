@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getConfig } from "@/lib/app-config";
 import { db } from "@/lib/db";
+import { getExternalServiceReadiness } from "@/lib/external-service-readiness";
 import { requireJeepworkSuperAdmin } from "@/lib/jeepwork-auth";
 
 export const runtime = "nodejs";
@@ -36,11 +37,7 @@ export async function GET(request: Request) {
     getConfig(),
   ]);
 
-  const smtpComplete = Boolean(config.smtpHost && config.smtpUser && config.smtpPassword && config.mailFrom);
-  const aiComplete = Boolean(config.aiApiKey && (config.aiProvider !== "bailian" || config.aiBailianAppId));
-  const storageConfigured = config.storageProvider === "local"
-    ? true
-    : Boolean(config.storageEndpoint && config.storageBucket && config.storageAccessKeyId && config.storageAccessKeySecret);
+  const externalServices = await getExternalServiceReadiness(config);
 
   return NextResponse.json({
     success: true,
@@ -59,22 +56,10 @@ export async function GET(request: Request) {
       },
       services: {
         database: { status: "available", label: "数据库可连接" },
-        mail: {
-          status: config.mailEnabled && smtpComplete ? "enabled" : config.mailEnabled ? "incomplete" : "disabled",
-          label: config.mailEnabled && smtpComplete ? "已开启并配置完整" : config.mailEnabled ? "已开启但配置不完整" : "未启用",
-        },
-        ai: {
-          status: config.aiEnabled && aiComplete ? "enabled" : config.aiEnabled ? "incomplete" : "disabled",
-          label: config.aiEnabled && aiComplete ? "已开启并配置完整" : config.aiEnabled ? "已开启但配置不完整" : "未启用",
-        },
-        storage: {
-          status: config.storageEnabled || config.storageProvider === "local" ? "configured" : "disabled",
-          label: config.storageProvider === "local" ? "服务器本地存储" : storageConfigured ? "云存储已配置" : "云存储未配置",
-        },
-        payment: {
-          status: config.paymentEnabled ? "enabled" : "disabled",
-          label: config.paymentEnabled ? (config.paymentTestMode ? "已开启（测试模式）" : "已开启") : "未启用",
-        },
+        bailian: externalServices.bailian,
+        mail: externalServices.mail,
+        alipay: externalServices.alipay,
+        object_storage: externalServices.object_storage,
       },
     },
     error: null,
