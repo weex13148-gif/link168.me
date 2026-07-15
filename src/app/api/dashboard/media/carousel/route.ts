@@ -13,7 +13,7 @@ import {
   hasForbiddenMimeType,
   isAllowedMimeType,
   generateSafeFileName,
-  validateUploadPathWithDate,
+  validateUploadPath,
   getDateSubdirectory,
   getPublicUrlForMedia,
   buildContentRef,
@@ -92,9 +92,10 @@ export async function POST(request: Request) {
   const fileName = generateSafeFileName(detectedMime);
   const uploadBaseDir = getMediaUploadDir(MEDIA_TYPE);
   const dateSubdir = getDateSubdirectory();
-  const uploadDir = path.join(uploadBaseDir, dateSubdir);
+  const relativeDir = path.join(profile.id.toLowerCase(), dateSubdir);
+  const uploadDir = path.join(uploadBaseDir, relativeDir);
 
-  const pathValidation = validateUploadPathWithDate(uploadBaseDir, fileName);
+  const pathValidation = validateUploadPath(uploadDir, fileName);
   if (!pathValidation.valid) {
     return NextResponse.json({ success: false, error: "文件名不安全。" }, { status: 400 });
   }
@@ -106,7 +107,7 @@ export async function POST(request: Request) {
     createdFile = pathValidation.fullPath;
     await writeFile(createdFile, buffer);
 
-    const relativePath = path.join(dateSubdir, fileName).replace(/\\/g, "/");
+    const relativePath = path.join(relativeDir, fileName).replace(/\\/g, "/");
     const imageUrl = getPublicUrlForMedia(MEDIA_TYPE, relativePath);
 
     const contentRef = buildContentRef(MEDIA_TYPE, relativePath);

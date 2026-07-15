@@ -4,6 +4,8 @@ import { getUserEntitlements } from "@/lib/billing/entitlements";
 import { toProfileDto } from "@/lib/dashboard-data";
 import { db } from "@/lib/db";
 import { revalidatePublicProfileByUser } from "@/lib/cache/public-profile";
+import { collectManagedMediaUrls } from "@/lib/owned-media";
+import { cleanupOwnedMediaUrls } from "@/lib/owned-media-lifecycle";
 
 export const runtime = "nodejs";
 
@@ -38,14 +40,27 @@ export async function PUT(request: Request) {
       return NextResponse.json({ success: false, error: "自定义主题格式不正确。" }, { status: 400 });
     }
 
+    const customTheme = body.customTheme === null ? null : JSON.stringify(body.customTheme);
     const updated = await db.profile.update({
       where: { userId: user.id },
-      data: { customTheme: body.customTheme === null ? null : JSON.stringify(body.customTheme) },
+      data: { customTheme },
     });
+    const previousMediaUrls = collectManagedMediaUrls(profile.customTheme);
+    const currentMediaUrls = collectManagedMediaUrls(customTheme);
+    const mediaCleanup = await cleanupOwnedMediaUrls(
+      [...previousMediaUrls].filter((url) => !currentMediaUrls.has(url)),
+      profile.id,
+    );
 
     await revalidatePublicProfileByUser(user.id);
 
-    return NextResponse.json({ success: true, profile: toProfileDto(updated), message: "自定义主题已保存。" });
+    return NextResponse.json({
+      success: true,
+      profile: toProfileDto(updated),
+      message: "自定义主题已保存。",
+      mediaCleanup,
+      mediaCleanupOk: mediaCleanup.every((result) => result.status !== "failed"),
+    });
   }
 
   const theme = typeof body.theme === "string" ? body.theme.trim() : "";

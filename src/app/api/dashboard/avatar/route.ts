@@ -122,7 +122,7 @@ export async function POST(request: Request) {
       },
     });
 
-    await deletePreviousAvatar({
+    const mediaCleanup = await deletePreviousAvatar({
       previousAvatarUrl,
       profileId: profile.id,
       username,
@@ -142,6 +142,8 @@ export async function POST(request: Request) {
         profile: { ...toProfileDto(updatedProfile), avatar_url: versionedAvatarUrl },
         avatarUrl: versionedAvatarUrl,
         moderationStatus,
+        mediaCleanup,
+        mediaCleanupOk: mediaCleanup.status !== "failed",
       },
       { headers: { "Cache-Control": "no-store" } },
     );
@@ -150,4 +152,45 @@ export async function POST(request: Request) {
     console.error("[dashboard:avatar] upload failed", err && (err as { message?: unknown }).message ? String((err as { message?: unknown }).message) : String(err));
     return NextResponse.json({ success: false, error: "头像上传失败，请稍后重试。" }, { status: 500 });
   }
+}
+
+export async function DELETE(request: Request) {
+  const { user, response } = await requireDashboardUser(request);
+  if (response || !user) return response;
+
+  const profile = await getOwnedProfile(user.id);
+  if (!profile) {
+    return NextResponse.json({ success: false, error: "请先保存主页资料。" }, { status: 400 });
+  }
+
+  const updatedProfile = await db.profile.update({
+    where: { id: profile.id },
+    data: {
+      avatarUrl: null,
+      avatarModerationStatus: "pending",
+    },
+  });
+  const mediaCleanup = await deletePreviousAvatar({
+    previousAvatarUrl: profile.avatarUrl,
+    profileId: profile.id,
+    username: profile.username,
+    currentFilePath: "",
+    currentFileName: "",
+    avatarUploadDir: getAvatarUploadDir(),
+    legacyAvatarDirs: getLegacyAvatarDirs(),
+    isSafeAvatarFileName,
+  });
+
+  await revalidatePublicProfileByUser(user.id);
+
+  return NextResponse.json({
+    success: true,
+    profile: toProfileDto(updatedProfile),
+    avatarUrl: null,
+    mediaCleanup,
+    mediaCleanupOk: mediaCleanup.status !== "failed",
+    message: mediaCleanup.status === "failed"
+      ? "头像引用已清除，但旧文件删除失败，请稍后重试或联系管理员。"
+      : "头像已删除。",
+  });
 }

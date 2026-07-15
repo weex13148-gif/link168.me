@@ -400,8 +400,11 @@ function ImageUploadField({
       )}
 
       {value ? (
-        <div className="mt-2 grid size-24 place-items-center overflow-hidden rounded-xl border border-[var(--ui-line)] bg-white">
-          <img src={value} alt="" className="size-full object-cover" />
+        <div className="mt-2 flex items-end gap-2">
+          <div className="grid size-24 place-items-center overflow-hidden rounded-xl border border-[var(--ui-line)] bg-white">
+            <img src={value} alt="" className="size-full object-cover" />
+          </div>
+          <button type="button" onClick={() => onChange("")} className="ui-button-quiet text-[var(--ui-danger)]"><Trash2 className="size-4" />删除图片</button>
         </div>
       ) : null}
       {error ? <p className="text-xs text-[var(--ui-danger)]">{error}</p> : null}

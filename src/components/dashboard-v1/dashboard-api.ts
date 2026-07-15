@@ -84,6 +84,20 @@ export async function uploadAvatarRequest(file: File): Promise<ApiResult<Dashboa
   return { ok: true, data: data.profile };
 }
 
+export async function deleteAvatarRequest(): Promise<ApiResult<DashboardProfile>> {
+  const response = await fetch("/api/dashboard/avatar", { method: "DELETE", cache: "no-store" });
+  const data = await readJson<{
+    success?: boolean;
+    profile?: DashboardProfile;
+    error?: string;
+    message?: string;
+  }>(response);
+  if (!response.ok || !data.success || !data.profile) {
+    return { ok: false, error: data.error || "头像删除失败。", status: response.status };
+  }
+  return { ok: true, data: data.profile, message: data.message };
+}
+
 function buildPayload(draft: LinkDraft): string | undefined {
   const ct = draft.componentType || "link";
 

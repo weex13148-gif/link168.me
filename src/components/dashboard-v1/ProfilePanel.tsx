@@ -1,10 +1,10 @@
 "use client";
 
-import { Camera, Save, UserRound } from "lucide-react";
+import { Camera, Save, Trash2, UserRound } from "lucide-react";
 import type { DashboardProfile, SaveState } from "@/components/dashboard-v1/types";
 import { isTemporaryUsername } from "@/components/dashboard-v1/types";
 
-export function ProfilePanel({ profile, username, displayName, bio, saveState, uploadingAvatar, onUsernameChange, onDisplayNameChange, onBioChange, onSave, onUploadAvatar }: {
+export function ProfilePanel({ profile, username, displayName, bio, saveState, uploadingAvatar, onUsernameChange, onDisplayNameChange, onBioChange, onSave, onUploadAvatar, onDeleteAvatar }: {
   profile: DashboardProfile | null;
   username: string;
   displayName: string;
@@ -16,6 +16,7 @@ export function ProfilePanel({ profile, username, displayName, bio, saveState, u
   onBioChange: (value: string) => void;
   onSave: (event: React.FormEvent<HTMLFormElement>) => void;
   onUploadAvatar: (file: File | null) => void;
+  onDeleteAvatar: () => void;
 }) {
   const canSetUsername = !profile || isTemporaryUsername(profile.username);
 
@@ -48,6 +49,7 @@ export function ProfilePanel({ profile, username, displayName, bio, saveState, u
               </div>
               <div className="xl:mt-4">
                 <label className="ui-button-secondary cursor-pointer"><Camera className="size-4" />{uploadingAvatar ? "正在上传…" : "更换头像"}<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" disabled={uploadingAvatar} onChange={(event) => { onUploadAvatar(event.target.files?.[0] || null); event.currentTarget.value = ""; }} /></label>
+                {profile?.avatar_url ? <button type="button" disabled={uploadingAvatar} onClick={() => { if (window.confirm("确定删除当前头像吗？")) onDeleteAvatar(); }} className="ui-button-quiet mt-2 text-[var(--ui-danger)] disabled:opacity-50"><Trash2 className="size-4" />删除头像</button> : null}
                 <p className="mt-2 text-xs leading-5 ui-muted">支持 JPG、PNG、WebP、GIF，最大 2MB。上传成功后会立即同步到预览和公开主页。</p>
               </div>
             </div>

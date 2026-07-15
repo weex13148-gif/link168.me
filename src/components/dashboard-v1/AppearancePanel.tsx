@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Crown, LayoutTemplate, Loader2, Palette, Save, Settings, Upload } from "lucide-react";
+import { Crown, LayoutTemplate, Loader2, Palette, Save, Settings, Trash2, Upload } from "lucide-react";
 import { defaultCustomTheme, type AvatarFrame, type BackgroundType, type ButtonStyle, type CardStyle, type CustomTheme } from "@/components/theme/types";
 import { getPresetThemeV2, listPresetThemeNamesV2, FREE_THEME_NAMES_V2, isFreeThemeV2 } from "@/components/theme/presetThemes";
 
@@ -112,8 +112,11 @@ function BackgroundUploadField({ value, onChange }: { value: string; onChange: (
       )}
 
       {value ? (
-        <div className="mt-2 h-24 overflow-hidden rounded-xl border border-[var(--ui-line)] bg-white">
-          <img src={value} alt="" className="size-full object-cover" />
+        <div className="mt-2 flex items-end gap-2">
+          <div className="h-24 flex-1 overflow-hidden rounded-xl border border-[var(--ui-line)] bg-white">
+            <img src={value} alt="" className="size-full object-cover" />
+          </div>
+          <button type="button" onClick={() => onChange("")} className="ui-button-quiet text-[var(--ui-danger)]"><Trash2 className="size-4" />删除背景</button>
         </div>
       ) : null}
       {error ? <p className="text-xs text-[var(--ui-danger)]">{error}</p> : null}

@@ -8,6 +8,8 @@ import { getUserEntitlements } from "@/lib/billing/entitlements";
 import { isModuleType, validateModulePayload } from "@/features/profile-modules/validators";
 import { getModuleDefinition } from "@/features/profile-modules/registry";
 import { allowedIconTypes, normalizePlatformIconKey } from "@/lib/link-icons";
+import { collectManagedMediaUrls } from "@/lib/owned-media";
+import { cleanupOwnedMediaUrls } from "@/lib/owned-media-lifecycle";
 
 export const runtime = "nodejs";
 
@@ -256,9 +258,19 @@ export async function PATCH(request: Request, context: RouteContext) {
     },
   });
 
+  const previousMediaUrls = collectManagedMediaUrls(existing.iconUrl, existing.payloadJson);
+  const currentMediaUrls = collectManagedMediaUrls(link.iconUrl, link.payloadJson);
+  const staleMediaUrls = [...previousMediaUrls].filter((urlValue) => !currentMediaUrls.has(urlValue));
+  const mediaCleanup = await cleanupOwnedMediaUrls(staleMediaUrls, profile.id);
+
   await revalidatePublicProfileByUser(user.id);
 
-  return NextResponse.json({ success: true, link: toLinkDto(link) });
+  return NextResponse.json({
+    success: true,
+    link: toLinkDto(link),
+    mediaCleanup,
+    mediaCleanupOk: mediaCleanup.every((result) => result.status !== "failed"),
+  });
 }
 
 export async function DELETE(request: Request, context: RouteContext) {
@@ -268,10 +280,22 @@ export async function DELETE(request: Request, context: RouteContext) {
   if (!profile) return NextResponse.json({ success: false, error: "没有找到当前用户的主页资料。" }, { status: 404 });
 
   const { id } = await context.params;
+  const existing = await db.link.findFirst({ where: { id, profileId: profile.id } });
+  if (!existing) return NextResponse.json({ success: false, error: "没有找到这条链接。" }, { status: 404 });
+
   const deleted = await db.link.deleteMany({ where: { id, profileId: profile.id } });
   if (!deleted.count) return NextResponse.json({ success: false, error: "没有找到这条链接。" }, { status: 404 });
 
+  const mediaCleanup = await cleanupOwnedMediaUrls(
+    collectManagedMediaUrls(existing.iconUrl, existing.payloadJson),
+    profile.id,
+  );
+
   await revalidatePublicProfileByUser(user.id);
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({
+    success: true,
+    mediaCleanup,
+    mediaCleanupOk: mediaCleanup.every((result) => result.status !== "failed"),
+  });
 }
