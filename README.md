@@ -1,76 +1,120 @@
-# Link168
+# Link168 链接一路发
 
-Link168 is a personal digital identity homepage and QR-code marketing tool for Chinese users.
+> 一个人，一个链接，连接你的生意。
 
-Brand slogan:
+Link168 是面向个人创业者、小商家、自媒体和轻量企业的 **AI 经营名片与商业基础设施平台**。
 
-- Link168 链接一路发
-- 一个人，一个链接，连接全网
+用户可以通过一个链接和二维码展示身份、企业、产品、服务和资料，接受客户咨询与留资，管理轻量客户跟进，并使用 AI 接待和六大经营助手提高经营效率。
 
-## V0.1 Scope
+## 正式产品文档
 
-V0.1 only supports the core path:
+在修改产品、设计、代码或数据库前，请按顺序阅读：
 
-1. Register
-2. Log in
-3. Create one public profile
-4. Edit profile information
-5. Add, edit, and delete links
-6. Visit the public profile by username
-7. Submit reports through the report center
-8. Review basic reports in the admin area
+1. [`DOCUMENT_INDEX.md`](./DOCUMENT_INDEX.md) — 当前正式文档及冲突处理索引
+2. [`PRODUCT_CONSTITUTION.md`](./PRODUCT_CONSTITUTION.md) — 产品最高原则、边界和长期规则
+3. [`PRD.md`](./PRD.md) — Link168 V2 详细功能、权限、流程和验收标准
+4. [`docs/V2_CONSTITUTION_PRD_CODE_AUDIT_20260711.md`](./docs/V2_CONSTITUTION_PRD_CODE_AUDIT_20260711.md) — 当前代码与正式规则的差距以及 P0、P1、P2 整改顺序
+5. [`PROJECT_RULES.md`](./PROJECT_RULES.md) — 工程、安全、测试、Git、数据库和部署规则
 
-Users can aggregate WeChat official accounts, Xiaohongshu, Douyin, WeChat Channels, website links, product links, consultation bookings, and other destinations into one public page.
+旧版 V0.1 文档、审计报告和历史方案仅供追溯。与上述正式文档冲突时，以正式文档为准。
 
-## Tech Stack
+## V2 核心闭环
+
+```text
+注册登录
+→ 创建经营名片
+→ 添加产品、服务和联系方式
+→ 手机预览并发布
+→ 分享链接或二维码
+→ 访客查看、咨询或留资
+→ 形成客户线索
+→ 用户跟进并查看数据
+→ 购买会员并使用 AI
+```
+
+## 用户后台结构
+
+用户后台固定为五个一级入口：
+
+- 首页
+- 名片
+- 客户
+- AI
+- 我的
+
+产品、二维码、短链接、数据、知识库、会员、订单、推广和企业空间应归入上述五类，不继续增加第六个一级入口。
+
+## 产品边界
+
+Link168 是：
+
+- AI 经营名片；
+- 对外业务主页；
+- 二维码和分享入口；
+- AI 接待入口；
+- 客户线索入口；
+- 轻量客户管理工具；
+- 经营 AI 工作台。
+
+Link168 当前不是完整 CRM、ERP、进销存、呼叫中心、私域群发工具或通用 AI 聊天网站。
+
+## AI 规则
+
+- 免费用户不能进入真实 AI 工作台；
+- 免费用户不能产生真实 AI 调用；
+- 免费用户不能购买 AI 加量包；
+- Plus、Pro、企业版和企业 Pro 按有效套餐使用 AI；
+- 六大经营助手共用统一资料库底座；
+- 外部 AI 未配置或调用失败时必须安全失败，不得伪造成功。
+
+六大经营助手：财税、法务、市场调研、设计、社媒运营、销售顾问。
+
+## 当前商业基线
+
+- 长期套餐结构：免费版、Plus、Pro、企业版、企业 Pro；
+- 当前核心公开销售套餐：Plus 188 元/年；
+- 当前正式支付方式：支付宝；
+- 未完整交付的套餐和权益必须显示为内测、联系销售或规划中。
+
+## 技术栈
 
 - Next.js App Router
 - Tailwind CSS
 - Prisma
 - PostgreSQL
-- Self-built register and login flow
-- bcrypt password hashing
+- 模块化单体架构
+- bcrypt 密码哈希
 - HttpOnly Cookie Session
+- PM2
+- Nginx
 
-## Pages
+当前服务基线包括腾讯云网站主服务器、阿里云 PostgreSQL 数据库、阿里云邮件推送、阿里云百炼 AI API 和支付宝支付。具体配置以安全环境变量和部署文档为准。
 
-- `/` V0.1 entry page
-- `/register` register page
-- `/login` login page
-- `/dashboard` user dashboard
-- `/[username]` public profile route
-- `/report` report center
-- `/admin/reports` basic admin report area
+## 核心页面与边界
 
-## Product Rules
+- `/`：产品首页
+- `/register`：注册
+- `/login`：登录
+- `/dashboard`、`/workbench` 或 `/console`：历史/现有用户后台入口，目标信息架构统一为五入口
+- `/[username]`：公开经营名片
+- `/report`：举报中心
+- `/jeepwork`：平台系统管理员后台
+- `/showcase`：比赛/路演展示中心，不在普通首页提供明显入口
 
-- Brand name: Link168
-- Official URL: `https://link168.me`
-- Free plan: one profile and one username
-- Free public profiles must show a clickable `Powered by Link168` brand footer
-- Logo asset: `public/brand/link168-logo.png`
-- Logo should be rendered through a clickable `BrandLogo` component that returns to `/`
-- V0.1 does not include membership, payment, AI, complex analytics, a template marketplace, or real WeChat login
-- VLink is only a functional layout reference. Do not copy its brand, images, copy, or colors.
+实际路由可以在保持兼容的前提下逐步统一，不得为了改名破坏现有业务。
 
-## Deployment Direction
+## 安全规则
 
-- Prefer Aliyun ECS for deployment.
-- Do not prioritize Vercel, Supabase, or other overseas services for the primary deployment path.
-- During HTTP public IP testing, set `COOKIE_SECURE=false`.
-- After the official HTTPS domain is live, set `COOKIE_SECURE=true`.
+- 不提交 `.env`、`.env.local`、`.env.production`；
+- 不提交数据库密码、Session 密钥、AI Key、支付私钥、邮件密钥和 SSH 私钥；
+- 会员、AI、支付、企业和管理员权限必须服务端校验；
+- 支付回调必须验证签名、金额和订单并保持幂等；
+- 用户与企业数据必须隔离；
+- 邮件、AI、支付和外部接口失败不得伪造成功。
 
-## Security Rules
+## 本地环境示例
 
-- Do not commit `.env`, `.env.local`, or `.env.production`.
-- Do not commit database passwords, `SESSION_SECRET`, or `ADMIN_SECRET`.
-- Passwords must be stored as bcrypt hashes.
-- Login state must use HttpOnly Cookie.
-- Admin APIs require `ADMIN_SECRET` or equivalent protection.
-
-## Local Setup
-
-Create `.env.local` from `.env.example`:
+从 `.env.example` 创建本地环境配置。下面只展示占位格式，不得使用生产密钥：
 
 ```bash
 DATABASE_URL=postgresql://user:password@host:5432/link168
@@ -79,11 +123,4 @@ SESSION_SECRET=replace-with-a-random-secret-at-least-32-characters
 COOKIE_SECURE=false
 ```
 
-Install dependencies and run:
-
-```bash
-npm install
-npm run dev
-```
-
-Then open `http://localhost:3000`.
+正式 HTTPS 环境应启用安全 Cookie。生产部署、数据库迁移和外部服务配置必须遵守仓库工程规则与部署流程。
