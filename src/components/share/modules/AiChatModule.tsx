@@ -12,6 +12,7 @@ type ChatMessage = {
   id: string;
   role: "assistant" | "user" | "system";
   content: string;
+  source?: "preset" | "ai";
 };
 
 type Props = {
@@ -67,7 +68,12 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
         if (!response.ok || !result.success || !result.config?.enabled) throw new Error("unavailable");
         if (cancelled) return;
         setConfig(result.config);
-        setMessages([{ id: "welcome", role: "assistant", content: result.config.welcomeMessage }]);
+        setMessages([{
+          id: "welcome",
+          role: "assistant",
+          content: result.config.welcomeMessage,
+          source: "preset",
+        }]);
       })
       .catch(() => {
         if (!cancelled) setConfigUnavailable(true);
@@ -85,8 +91,12 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
     if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
   }
 
-  function appendMessage(role: ChatMessage["role"], content: string) {
-    setMessages((current) => [...current, { id: makeId(), role, content }]);
+  function appendMessage(
+    role: ChatMessage["role"],
+    content: string,
+    source?: ChatMessage["source"],
+  ) {
+    setMessages((current) => [...current, { id: makeId(), role, content, source }]);
     window.setTimeout(scrollToBottom, 0);
   }
 
@@ -107,12 +117,13 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
         body: JSON.stringify({ username, message, requestId }),
       });
       const result = await response.json() as ChatApiResult;
-      const reply = response.ok && result.success && result.data?.reply
-        ? result.data.reply
-        : publicErrorMessage(result.code);
-      appendMessage("assistant", reply);
+      if (response.ok && result.success && result.data?.reply) {
+        appendMessage("assistant", result.data.reply, "ai");
+      } else {
+        appendMessage("system", publicErrorMessage(result.code));
+      }
     } catch {
-      appendMessage("assistant", "网络连接失败，请稍后再试。");
+      appendMessage("system", "网络连接失败，请稍后再试。");
     } finally {
       setLoading(false);
       window.setTimeout(scrollToBottom, 0);
@@ -121,7 +132,7 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
 
   async function handleQuickAction(action: AiReceptionQuickAction) {
     if (action.type === "auto_reply") {
-      appendMessage("assistant", action.value);
+      appendMessage("assistant", action.value, "preset");
       return;
     }
     if (action.type === "send_message") {
@@ -137,7 +148,7 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
         await navigator.clipboard.writeText(action.value);
         appendMessage("system", "内容已复制。");
       } catch {
-        appendMessage("system", "复制失败，请长按按钮内容手动复制。");
+        appendMessage("system", "复制失败，请稍后重试。");
       }
       return;
     }
@@ -212,7 +223,11 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
             ) : (
               <div className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-6 ${message.role === "user" ? "bg-[#6F8F4E] text-white" : "border border-[#E8DCCB] bg-white text-[#2B241E]"}`}>
                 <p className="whitespace-pre-wrap break-words">{message.content}</p>
-                {message.role === "assistant" ? <p className="mt-1 text-[10px] font-bold text-[#B0A090]">— AI 生成内容</p> : null}
+                {message.role === "assistant" ? (
+                  <p className="mt-1 text-[10px] font-bold text-[#B0A090]">
+                    {message.source === "preset" ? "— 预设回复" : "— AI 生成内容"}
+                  </p>
+                ) : null}
               </div>
             )}
             {message.role === "user" ? <span className="mt-1 grid size-7 shrink-0 place-items-center rounded-lg bg-[#F2E7D8] text-[#7A6D5E]"><UserRound className="size-4" /></span> : null}
