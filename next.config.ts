@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+// Next.js runtime supports allowedHosts but types may lag behind.
+// Using explicit type assertion for forward compatibility.
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
@@ -9,7 +11,7 @@ const securityHeaders = [
   { key: "X-DNS-Prefetch-Control", value: "on" },
 ];
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   output: "standalone",
   poweredByHeader: false,
   allowedHosts: [
@@ -34,6 +36,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-};
+} satisfies NextConfig & { allowedHosts?: string[] };
 
 export default nextConfig;
