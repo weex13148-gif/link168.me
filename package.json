@@ -12,6 +12,8 @@
     "test:d2": "jest tests/domains.test.ts",
     "test:d4": "jest tests/enterprise-quota.test.ts",
     "check": "npm run lint && npm run typecheck && npm run build",
+    "release:preflight": "node scripts/release/preflight.js",
+    "release:smoke": "node scripts/release/smoke-standalone.js",
     "db:backup": "node scripts/db/backup-db.js",
     "db:restore": "node scripts/db/restore-db.js",
     "db:migrate": "node scripts/db/migrate-db.js",
