@@ -148,7 +148,7 @@ export async function processMembershipExpiry(
   const graceCutoff = new Date(now.getTime() - GRACE_PERIOD_DAYS * 24 * 60 * 60 * 1000);
 
   const where: Record<string, unknown> = {
-    status: "active",
+    status: { in: ["active", "past_due"] },
     planCode: { not: "free" },
     currentPeriodEnd: { not: null, lt: now },
   };
@@ -238,7 +238,7 @@ async function processSingleExpiry(sub: {
     };
   }
 
-  if (sub.planCode === "free" || sub.status !== "active") {
+  if (sub.planCode === "free" || !["active", "past_due"].includes(sub.status)) {
     return {
       userId: sub.userId,
       action: "already_downgraded",
@@ -284,6 +284,18 @@ async function enterGracePeriod(
   daysSinceExpired: number,
 ): Promise<MembershipExpiryResult> {
   const graceDaysRemaining = GRACE_PERIOD_DAYS - daysSinceExpired;
+
+  if (sub.status === "past_due") {
+    return {
+      userId: sub.userId,
+      action: "grace_period",
+      previousPlan: sub.planCode,
+      newPlan: sub.planCode,
+      previousStatus: sub.status,
+      newStatus: sub.status,
+      reason: `宽限期第 ${daysSinceExpired + 1} 天，剩余 ${graceDaysRemaining} 天`,
+    };
+  }
 
   const updated = await db.membershipSubscription.update({
     where: { id: sub.id },
