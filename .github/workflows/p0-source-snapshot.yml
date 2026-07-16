@@ -1,0 +1,37 @@
+name: P0 Source Snapshot
+
+on:
+  push:
+    branches:
+      - integration/release-risk-closeout-20260716
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create source archive
+        run: |
+          tar \
+            --exclude=.git \
+            --exclude=node_modules \
+            --exclude=.next \
+            --exclude=.env \
+            --exclude=.env.local \
+            --exclude=.env.production \
+            --exclude=backups \
+            -czf link168-p0-source.tgz .
+
+      - name: Upload source archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: link168-p0-source
+          path: link168-p0-source.tgz
+          retention-days: 1
