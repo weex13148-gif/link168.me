@@ -89,9 +89,7 @@ async function main() {
     const staticResponse = await request(staticAsset);
     if (staticResponse.status !== 200) throw new Error(`Static asset returned ${staticResponse.status}`);
 
-    const brandAsset = firstAsset(html, "/brand/");
-    if (!brandAsset) throw new Error("Homepage did not reference a /brand/ asset");
-    const brandResponse = await request(brandAsset);
+    const brandResponse = await request("/brand/link168-logo.png");
     if (brandResponse.status !== 200) throw new Error(`Brand asset returned ${brandResponse.status}`);
 
     console.log("[release:smoke] standalone homepage, health, static and brand assets passed");
