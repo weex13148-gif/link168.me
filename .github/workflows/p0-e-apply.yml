@@ -1,0 +1,144 @@
+name: Apply P0-E Public Legal Rules
+
+on:
+  push:
+    branches:
+      - agent/p0-public-legal-pricing-20260716
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/p0-public-legal-pricing-20260716
+          fetch-depth: 0
+
+      - name: Apply exact public legal patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace(path, old, new):
+              p = Path(path)
+              text = p.read_text()
+              if old not in text:
+                  raise SystemExit(f"missing expected text in {path}: {old[:120]!r}")
+              p.write_text(text.replace(old, new, 1))
+
+          replace(
+              'src/lib/legal/meta.ts',
+              'export const SUPPORT_EMAIL: string | null = null;',
+              'export const SUPPORT_EMAIL: string = "business@link168.me";',
+          )
+          replace(
+              'src/app/page.tsx',
+              'AI 助手自动接待、解答常见问题并引导留资，7×24 小时不漏掉任何一次商机。',
+              'AI 助手自动接待、解答常见问题并引导留资，帮助及时回应咨询并减少遗漏。',
+          )
+
+          replace(
+              'src/app/pricing/page.tsx',
+              '  const [sandboxDelay, setSandboxDelay] = useState(0);',
+              '  const [sandboxDelay, setSandboxDelay] = useState(0);\n  const [acceptedLegalTerms, setAcceptedLegalTerms] = useState(false);',
+          )
+          replace(
+              'src/app/pricing/page.tsx',
+              '    setSelectedPlan(planCode);\n    setShowPaymentModal(true);',
+              '    setSelectedPlan(planCode);\n    setAcceptedLegalTerms(false);\n    setShowPaymentModal(true);',
+          )
+          replace(
+              'src/app/pricing/page.tsx',
+              '  const handleCreateOrder = async () => {\n    if (!selectedPlan) return;\n\n    setOrderLoading(true);',
+              '  const handleCreateOrder = async () => {\n    if (!selectedPlan) return;\n    if (!acceptedLegalTerms) {\n      setOrderResult({ error: "请先阅读并同意会员服务协议、支付与退款规则和 AI 服务说明。" });\n      return;\n    }\n\n    setOrderLoading(true);',
+          )
+          replace(
+              'src/app/pricing/page.tsx',
+              '                  a: "退款政策以服务条款为准。",',
+              '                  a: "具体适用条件、处理流程和到账时间请查看《支付与退款规则》。",',
+          )
+          pricing_anchor = '''            {orderResult?.error && (
+              <div className="mt-4 rounded-2xl bg-red-50 p-4 text-sm text-red-600">'''
+          pricing_legal = '''            <label className="mt-4 flex items-start gap-3 rounded-2xl border border-[#E8DCCB] bg-white p-4 text-xs leading-5 text-[#5F5347]">
+              <input
+                type="checkbox"
+                checked={acceptedLegalTerms}
+                onChange={(event) => setAcceptedLegalTerms(event.target.checked)}
+                className="mt-0.5 size-4"
+              />
+              <span>
+                我已阅读并同意
+                <Link href="/membership-agreement" target="_blank" className="font-black text-[#3F5F31]">《会员服务协议》</Link>、
+                <Link href="/refund-policy" target="_blank" className="font-black text-[#3F5F31]">《支付与退款规则》</Link>和
+                <Link href="/ai-disclaimer" target="_blank" className="font-black text-[#3F5F31]">《AI 服务说明》</Link>。
+              </span>
+            </label>
+
+            {orderResult?.error && (
+              <div className="mt-4 rounded-2xl bg-red-50 p-4 text-sm text-red-600">'''
+          replace('src/app/pricing/page.tsx', pricing_anchor, pricing_legal)
+          replace(
+              'src/app/pricing/page.tsx',
+              'disabled={orderLoading || pollingStatus === "polling" || pollingStatus === "success"}',
+              'disabled={!acceptedLegalTerms || orderLoading || pollingStatus === "polling" || pollingStatus === "success"}',
+          )
+
+          replace(
+              'src/app/workbench/membership/page.tsx',
+              'import { useCallback, useEffect, useMemo, useState } from "react";\n',
+              'import { useCallback, useEffect, useMemo, useState } from "react";\nimport Link from "next/link";\n',
+          )
+          replace(
+              'src/app/workbench/membership/page.tsx',
+              '  const [refundError, setRefundError] = useState("");',
+              '  const [refundError, setRefundError] = useState("");\n  const [acceptedLegalTerms, setAcceptedLegalTerms] = useState(false);',
+          )
+          replace(
+              'src/app/workbench/membership/page.tsx',
+              '    setCheckoutMessage("");\n    setActiveOrderId(null);\n    setCheckoutOpen(true);',
+              '    setCheckoutMessage("");\n    setActiveOrderId(null);\n    setAcceptedLegalTerms(false);\n    setCheckoutOpen(true);',
+          )
+          replace(
+              'src/app/workbench/membership/page.tsx',
+              '  async function createAlipayOrder() {\n    if (!selectedPlan || !data) return;\n    if (!data.email_verified) {',
+              '  async function createAlipayOrder() {\n    if (!selectedPlan || !data) return;\n    if (!acceptedLegalTerms) {\n      setCheckoutError("请先阅读并同意会员服务协议、支付与退款规则和 AI 服务说明。");\n      return;\n    }\n    if (!data.email_verified) {',
+          )
+          member_anchor = '''            {checkoutError ? (
+              <p className="mt-4 rounded-2xl bg-[#FFF1F0] p-4 text-sm font-bold text-[#B42318]">'''
+          member_legal = '''            <label className="mt-4 flex items-start gap-3 rounded-2xl border border-[#E8DCCB] bg-white p-4 text-xs leading-5 ui-muted">
+              <input
+                type="checkbox"
+                checked={acceptedLegalTerms}
+                onChange={(event) => setAcceptedLegalTerms(event.target.checked)}
+                className="mt-0.5 size-4"
+              />
+              <span>
+                我已阅读并同意
+                <Link href="/membership-agreement" target="_blank" className="font-black text-[#355126]">《会员服务协议》</Link>、
+                <Link href="/refund-policy" target="_blank" className="font-black text-[#355126]">《支付与退款规则》</Link>和
+                <Link href="/ai-disclaimer" target="_blank" className="font-black text-[#355126]">《AI 服务说明》</Link>。
+              </span>
+            </label>
+
+            {checkoutError ? (
+              <p className="mt-4 rounded-2xl bg-[#FFF1F0] p-4 text-sm font-bold text-[#B42318]">'''
+          replace('src/app/workbench/membership/page.tsx', member_anchor, member_legal)
+          replace(
+              'src/app/workbench/membership/page.tsx',
+              'disabled={submitting || Boolean(activeOrderId)}',
+              'disabled={!acceptedLegalTerms || submitting || Boolean(activeOrderId)}',
+          )
+          PY
+
+      - name: Commit patch
+        run: |
+          git config user.name "Link168 P0 Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src
+          git diff --cached --check
+          git commit -m "fix: require legal acknowledgement before purchase"
+          git push origin HEAD:agent/p0-public-legal-pricing-20260716
