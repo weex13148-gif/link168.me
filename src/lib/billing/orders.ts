@@ -570,86 +570,13 @@ export async function processRefund(params: {
   reason: string;
   refundedBy: string;
   amount?: number;
-}): Promise<{ success: boolean; error?: string; refundAmount?: number }> {
-  const { orderId, reason, refundedBy, amount } = params;
-
-  const order = await db.order.findUnique({
-    where: { id: orderId },
-  });
-
-  if (!order) {
-    return { success: false, error: "订单不存在" };
-  }
-
-  if (order.status !== ORDER_STATUS.PAID && order.status !== ORDER_STATUS.PARTIALLY_REFUNDED) {
-    return { success: false, error: `订单状态不允许退款：${order.status}` };
-  }
-
-  const payableAmount = order.payableAmount;
-  const alreadyRefunded = Number((order.metadata as Record<string, unknown>)?.refundAmount ?? 0);
-  const requestedAmount = amount ?? payableAmount;
-  const remainingAmount = payableAmount - alreadyRefunded;
-
-  if (requestedAmount > remainingAmount) {
-    return {
-      success: false,
-      error: `退款金额超过可退金额（可退：${remainingAmount}分）`,
-    };
-  }
-
-  if (requestedAmount <= 0) {
-    return { success: false, error: "退款金额必须大于 0" };
-  }
-
-  const newRefundAmount = alreadyRefunded + requestedAmount;
-
-  try {
-    await db.$transaction(async (tx) => {
-      const isFullRefund = newRefundAmount >= payableAmount;
-
-      const updateData: Record<string, unknown> = {
-        metadata: {
-          ...(order.metadata as Record<string, unknown>),
-          refundAmount: newRefundAmount,
-        },
-        refundReason: reason,
-        refundBy: refundedBy,
-      };
-
-      if (isFullRefund) {
-        updateData.status = ORDER_STATUS.REFUNDED;
-        updateData.refundedAt = new Date();
-      } else {
-        updateData.status = ORDER_STATUS.PARTIALLY_REFUNDED;
-      }
-
-      await tx.order.update({
-        where: { id: orderId },
-        data: updateData,
-      });
-
-      if (isFullRefund) {
-        const revoke = await shouldRevokeMembershipOnRefund(tx, order);
-        if (revoke) {
-          await tx.membershipSubscription.update({
-            where: { userId: order.userId },
-            data: {
-              planCode: "free",
-              status: "cancelled",
-            },
-          });
-        }
-      }
-    });
-
-    return {
-      success: true,
-      refundAmount: newRefundAmount,
-    };
-  } catch (err) {
-    console.error("[orders] 处理退款失败:", err);
-    return { success: false, error: "退款处理失败，请稍后重试" };
-  }
+}): Promise<{ success: boolean; error?: string; refundAmount?: number; code?: string }> {
+  void params;
+  return {
+    success: false,
+    code: "LEGACY_REFUND_DISABLED",
+    error: "本地退款入口已停用，请使用支付渠道确认退款流程。",
+  };
 }
 
 export async function updateOrderStatus(

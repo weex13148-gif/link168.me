@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { getConfig } from "@/lib/app-config";
 import type { BillingOrder, PaymentChannel } from "./orders";
+import { isPaymentSimulationAllowed, paymentSimulationBlockedReason } from "./payment-safety";
 
 export type PaymentConfig = {
   enabled: boolean;
@@ -73,6 +74,14 @@ export async function getPaymentAvailability(): Promise<PaymentAvailability> {
   if (!config.enabled) {
     result.wechatReason = "支付功能已关闭";
     result.alipayReason = "支付功能已关闭";
+    return result;
+  }
+
+  const simulationBlocked = paymentSimulationBlockedReason(config.testMode);
+  if (simulationBlocked) {
+    result.paymentEnabled = false;
+    result.wechatReason = simulationBlocked;
+    result.alipayReason = simulationBlocked;
     return result;
   }
 
@@ -315,6 +324,9 @@ async function createWechatPayment(order: BillingOrder, config: PaymentConfig): 
   params.sign = generateWechatSign(params, config.apiKey, "HMAC-SHA256");
 
   if (config.testMode) {
+    if (!isPaymentSimulationAllowed(config.testMode)) {
+      return { success: false, errorCode: "PAYMENT_SIMULATION_BLOCKED", errorMessage: "当前环境禁止测试支付模式" };
+    }
     return {
       success: true,
       qrCodeUrl: "",
@@ -386,6 +398,9 @@ async function createAlipayPayment(order: BillingOrder, config: PaymentConfig): 
   }
 
   if (config.testMode) {
+    if (!isPaymentSimulationAllowed(config.testMode)) {
+      return { success: false, errorCode: "PAYMENT_SIMULATION_BLOCKED", errorMessage: "当前环境禁止测试支付模式" };
+    }
     return {
       success: true,
       payUrl: `${process.env.NEXT_PUBLIC_APP_URL || ""}/api/payments/alipay/test?orderNo=${order.orderNo}`,

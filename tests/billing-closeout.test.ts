@@ -404,129 +404,17 @@ describe("processPaymentSuccess - credits atomicity", () => {
 // 4. Refund old order does not affect new membership
 // ============================================
 
-describe("processRefund - old order refund safety", () => {
-  test("full refund of old order does NOT cancel membership from newer order", async () => {
-    const oldOrder = {
-      id: "order-old",
-      userId: "user-1",
-      planCode: "plus",
-      payableAmount: 18800,
-      status: ORDER_STATUS.PAID,
-      metadata: { refundAmount: 0 },
-      createdAt: new Date("2026-01-01"),
-    };
-
-    mockDb.order.findUnique.mockResolvedValue(oldOrder);
-
-    const tx = makeMockTx();
-    tx.order.update.mockResolvedValue({});
-    tx.membershipSubscription.findUnique.mockResolvedValue({
-      id: "sub-1",
-      userId: "user-1",
-      planCode: "plus",
-      status: "active",
-    });
-    // Simulate a newer paid order exists
-    tx.order.findFirst.mockResolvedValue({
-      id: "order-new",
-      userId: "user-1",
-      status: ORDER_STATUS.PAID,
-      createdAt: new Date("2026-02-01"),
-    });
-
-    mockDb.$transaction.mockImplementation(async (fn: (tx: MockTx) => Promise<unknown>) => {
-      return fn(tx);
-    });
-
+describe("processRefund - legacy local refund is disabled", () => {
+  test("legacy path cannot update an order or membership without provider confirmation", async () => {
     const result = await processRefund({
-      orderId: "order-old",
+      orderId: "order-legacy",
       reason: "test refund",
       refundedBy: "admin-1",
     });
 
-    expect(result.success).toBe(true);
-    // Should NOT update membership subscription because newer order exists
-    expect(tx.membershipSubscription.update).not.toHaveBeenCalled();
-  });
-
-  test("full refund of latest order DOES cancel membership", async () => {
-    const latestOrder = {
-      id: "order-latest",
-      userId: "user-1",
-      planCode: "plus",
-      payableAmount: 18800,
-      status: ORDER_STATUS.PAID,
-      metadata: { refundAmount: 0 },
-      createdAt: new Date("2026-02-01"),
-    };
-
-    mockDb.order.findUnique.mockResolvedValue(latestOrder);
-
-    const tx = makeMockTx();
-    tx.order.update.mockResolvedValue({});
-    tx.membershipSubscription.findUnique.mockResolvedValue({
-      id: "sub-1",
-      userId: "user-1",
-      planCode: "plus",
-      status: "active",
-    });
-    // No newer paid order
-    tx.order.findFirst.mockResolvedValue(null);
-    tx.membershipSubscription.update.mockResolvedValue({});
-
-    mockDb.$transaction.mockImplementation(async (fn: (tx: MockTx) => Promise<unknown>) => {
-      return fn(tx);
-    });
-
-    const result = await processRefund({
-      orderId: "order-latest",
-      reason: "test refund",
-      refundedBy: "admin-1",
-    });
-
-    expect(result.success).toBe(true);
-    expect(tx.membershipSubscription.update).toHaveBeenCalledWith({
-      where: { userId: "user-1" },
-      data: { planCode: "free", status: "cancelled" },
-    });
-  });
-
-  test("refund of order with mismatched planCode does NOT cancel membership", async () => {
-    const oldOrder = {
-      id: "order-old",
-      userId: "user-1",
-      planCode: "plus",
-      payableAmount: 18800,
-      status: ORDER_STATUS.PAID,
-      metadata: { refundAmount: 0 },
-      createdAt: new Date("2026-01-01"),
-    };
-
-    mockDb.order.findUnique.mockResolvedValue(oldOrder);
-
-    const tx = makeMockTx();
-    tx.order.update.mockResolvedValue({});
-    // Current subscription is pro, not plus
-    tx.membershipSubscription.findUnique.mockResolvedValue({
-      id: "sub-1",
-      userId: "user-1",
-      planCode: "pro",
-      status: "active",
-    });
-    tx.order.findFirst.mockResolvedValue(null);
-
-    mockDb.$transaction.mockImplementation(async (fn: (tx: MockTx) => Promise<unknown>) => {
-      return fn(tx);
-    });
-
-    const result = await processRefund({
-      orderId: "order-old",
-      reason: "test refund",
-      refundedBy: "admin-1",
-    });
-
-    expect(result.success).toBe(true);
-    expect(tx.membershipSubscription.update).not.toHaveBeenCalled();
+    expect(result.success).toBe(false);
+    expect(result.code).toBe("LEGACY_REFUND_DISABLED");
+    expect(mockDb.$transaction).not.toHaveBeenCalled();
   });
 });
 

@@ -4,6 +4,7 @@ import { ORDER_STATUS, type DbOrder, type PaymentChannel } from "./orders";
 import { transitionOrderState, canInitiateRefund, ORDER_STATE_MACHINE } from "./payment-state-machine";
 import { getPaymentConfig, amountStringToCents } from "./payments";
 import { normalizePlanCode } from "./plans";
+import { isPaymentSimulationAllowed } from "./payment-safety";
 import { writeAdminAuditLog } from "@/lib/admin-audit-log";
 
 export type RefundRequestParams = {
@@ -69,6 +70,9 @@ async function callAlipayRefund(
   config: Awaited<ReturnType<typeof getPaymentConfig>>,
 ): Promise<{ success: boolean; refundId?: string; error?: string }> {
   if (config.testMode) {
+    if (!isPaymentSimulationAllowed(config.testMode)) {
+      return { success: false, error: "当前环境禁止测试退款模式，请关闭测试模式后使用支付宝真实退款。" };
+    }
     return {
       success: true,
       refundId: `test_refund_${orderNo}_${Date.now()}`,
