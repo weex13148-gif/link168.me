@@ -7,6 +7,7 @@ import WorkbenchShell from "@/components/workbench/WorkbenchShell";
 import ReceptionConfigClient from "@/components/ai/ReceptionConfigClient";
 import { getCurrentUserFromCookies } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { toCustomerAiReceptionConfig } from "@/lib/ai/reception-config";
 
 export const runtime = "nodejs";
 
@@ -30,7 +31,7 @@ export default async function AiReceptionPage() {
       subtitle="配置公开名片的 AI 客服，自动接待访客咨询，引导留资，转化客户线索。"
     >
       <ReceptionConfigClient
-        initialConfig={config}
+        initialConfig={toCustomerAiReceptionConfig(config)}
         profileUsername={profile?.username || null}
         productCount={productCount}
       />

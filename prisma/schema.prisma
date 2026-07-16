@@ -583,6 +583,7 @@ model AiServiceConfig {
   allowReport                Boolean  @default(true) @map("allow_report")
   allowTransferToHuman       Boolean  @default(true) @map("allow_transfer_to_human")
   privacyNoticeText          String?  @map("privacy_notice_text")
+  quickActionsJson            String?  @map("quick_actions_json")
   // providerMode：mock / 真实模型名（如 "gpt-4o-mini"）。具体模型的 API Key 不存本表
   providerMode               String   @default("mock") @map("provider_mode")
   createdAt                  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)

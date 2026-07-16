@@ -1286,43 +1286,19 @@ function DynamicFields({ draft, onChange, isNew, products, productsLoading, prod
       ) : null}
 
       {ct === "ai-chat" ? (
-        <>
-          <label className="grid gap-2">
-            <span className={labelClass}>助手名称（选填）</span>
-            <input
-              value={payloadField(draft.payloadJson, "assistantName")}
-              onChange={(event) => updatePayload("assistantName", event.target.value)}
-              maxLength={30}
-              placeholder="例如：小智助手"
-              className="ui-input"
-            />
-          </label>
-          <label className="grid gap-2 lg:col-span-2">
-            <span className={labelClass}>欢迎语（选填）</span>
-            <textarea
-              value={payloadField(draft.payloadJson, "greeting")}
-              onChange={(event) => updatePayload("greeting", event.target.value)}
-              maxLength={200}
-              rows={2}
-              placeholder="例如：你好！我是AI助手，有什么可以帮你的？"
-              className="ui-input min-h-[60px] resize-y"
-            />
-          </label>
-          <label className="grid gap-2">
-            <span className={labelClass}>语气风格（选填）</span>
-            <select
-              value={payloadField(draft.payloadJson, "tone")}
-              onChange={(event) => updatePayload("tone", event.target.value)}
-              className="ui-input"
-            >
-              <option value="">默认</option>
-              <option value="friendly">友好亲切</option>
-              <option value="professional">专业正式</option>
-              <option value="humorous">幽默风趣</option>
-              <option value="concise">简洁高效</option>
-            </select>
-          </label>
-        </>
+        <div className="rounded-2xl border border-[var(--ui-line)] bg-[var(--ui-surface-muted)] p-4 lg:col-span-2">
+          <p className="text-sm font-black text-[var(--ui-ink)]">AI 接待统一配置</p>
+          <p className="mt-1 text-xs leading-5 ui-muted">
+            助手名称、欢迎语、业务资料和快捷回复请在“访客 AI 接待”中统一配置。
+            当前组件只负责公开页中的位置、排序和显示状态。
+          </p>
+          <a
+            href="/workbench/ai/reception"
+            className="mt-3 inline-flex min-h-10 items-center rounded-xl bg-[var(--ui-ink)] px-4 text-xs font-black text-white"
+          >
+            前往访客 AI 接待配置
+          </a>
+        </div>
       ) : null}
 
       {needsIconEditor(ct) ? (
