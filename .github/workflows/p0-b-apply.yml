@@ -1,0 +1,140 @@
+name: Apply P0-B Refund Safety
+
+on:
+  push:
+    branches:
+      - agent/p0-refund-safety-20260716
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/p0-refund-safety-20260716
+          fetch-depth: 0
+
+      - name: Apply exact refund safety patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          def replace(path, old, new, count=-1):
+              p = Path(path)
+              text = p.read_text()
+              if old not in text:
+                  raise SystemExit(f"missing expected text in {path}: {old[:80]!r}")
+              p.write_text(text.replace(old, new, count))
+
+          Path('src/lib/billing/payment-safety.ts').write_text('''export type PaymentSimulationOptions = {
+            nodeEnv?: string;
+            explicitSandbox?: boolean;
+          };
+
+          export function isPaymentSimulationAllowed(
+            testMode: boolean,
+            options: PaymentSimulationOptions = {},
+          ): boolean {
+            if (!testMode) return false;
+            const nodeEnv = (options.nodeEnv ?? process.env.NODE_ENV ?? "").toLowerCase();
+            const explicitSandbox = options.explicitSandbox
+              ?? String(process.env.ALLOW_PAYMENT_SANDBOX || "false").toLowerCase() === "true";
+            return nodeEnv !== "production" && explicitSandbox;
+          }
+
+          export function paymentSimulationBlockedReason(testMode: boolean): string | null {
+            if (!testMode) return null;
+            return isPaymentSimulationAllowed(testMode)
+              ? null
+              : "当前环境禁止测试支付模式，请关闭测试模式并完成真实支付配置。";
+          }
+          '''.replace('          ', ''))
+
+          replace('src/lib/billing/payments.ts',
+            'import type { BillingOrder, PaymentChannel } from "./orders";\n',
+            'import type { BillingOrder, PaymentChannel } from "./orders";\nimport { isPaymentSimulationAllowed, paymentSimulationBlockedReason } from "./payment-safety";\n')
+          replace('src/lib/billing/payments.ts',
+            '  if (!config.enabled) {\n    result.wechatReason = "支付功能已关闭";\n    result.alipayReason = "支付功能已关闭";\n    return result;\n  }\n\n',
+            '  if (!config.enabled) {\n    result.wechatReason = "支付功能已关闭";\n    result.alipayReason = "支付功能已关闭";\n    return result;\n  }\n\n  const simulationBlocked = paymentSimulationBlockedReason(config.testMode);\n  if (simulationBlocked) {\n    result.paymentEnabled = false;\n    result.wechatReason = simulationBlocked;\n    result.alipayReason = simulationBlocked;\n    return result;\n  }\n\n')
+          replace('src/lib/billing/payments.ts',
+            '  if (config.testMode) {\n    return {\n      success: true,\n      qrCodeUrl: "",',
+            '  if (config.testMode) {\n    if (!isPaymentSimulationAllowed(config.testMode)) {\n      return { success: false, errorCode: "PAYMENT_SIMULATION_BLOCKED", errorMessage: "当前环境禁止测试支付模式" };\n    }\n    return {\n      success: true,\n      qrCodeUrl: "",')
+          replace('src/lib/billing/payments.ts',
+            '  if (config.testMode) {\n    return {\n      success: true,\n      payUrl:',
+            '  if (config.testMode) {\n    if (!isPaymentSimulationAllowed(config.testMode)) {\n      return { success: false, errorCode: "PAYMENT_SIMULATION_BLOCKED", errorMessage: "当前环境禁止测试支付模式" };\n    }\n    return {\n      success: true,\n      payUrl:')
+
+          replace('src/lib/billing/refund-service.ts',
+            'import { normalizePlanCode } from "./plans";\n',
+            'import { normalizePlanCode } from "./plans";\nimport { isPaymentSimulationAllowed } from "./payment-safety";\n')
+          replace('src/lib/billing/refund-service.ts',
+            '  if (config.testMode) {\n    return {\n      success: true,\n      refundId:',
+            '  if (config.testMode) {\n    if (!isPaymentSimulationAllowed(config.testMode)) {\n      return { success: false, error: "当前环境禁止测试退款模式，请关闭测试模式后使用支付宝真实退款。" };\n    }\n    return {\n      success: true,\n      refundId:')
+
+          p = Path('src/lib/billing/orders.ts')
+          text = p.read_text()
+          pattern = re.compile(r'export async function processRefund\([\s\S]*?\n}\n\nexport async function updateOrderStatus')
+          replacement = '''export async function processRefund(params: {
+            orderId: string;
+            reason: string;
+            refundedBy: string;
+            amount?: number;
+          }): Promise<{ success: boolean; error?: string; refundAmount?: number; code?: string }> {
+            void params;
+            return {
+              success: false,
+              code: "LEGACY_REFUND_DISABLED",
+              error: "本地退款入口已停用，请使用支付渠道确认退款流程。",
+            };
+          }
+
+          export async function updateOrderStatus'''.replace('          ', '')
+          text2, n = pattern.subn(replacement, text, count=1)
+          if n != 1:
+              raise SystemExit(f'orders processRefund replacement count={n}')
+          p.write_text(text2)
+
+          replace('src/app/jeepwork/page.tsx',
+            '· 退款流程仅更新本地订单状态，未调用支付宝接口',
+            '· 退款成功状态必须以支付宝确认结果为准，生产环境禁止测试退款模式')
+          replace('src/app/jeepwork/settings/payment/page.tsx',
+            '当前退款流程仅更新本地订单状态，未调用支付宝退款 API。需人工在支付宝后台确认退款到账。',
+            '生产退款仅在支付宝确认成功后更新订单与权益；测试模式在生产环境被禁止。')
+
+          p = Path('tests/billing-closeout.test.ts')
+          text = p.read_text()
+          pattern = re.compile(r'describe\("processRefund - old order refund safety"[\s\S]*?\n}\);\n\n// ============================================\n// 5\. Duplicate callback idempotency')
+          replacement = '''describe("processRefund - legacy local refund is disabled", () => {
+            test("legacy path cannot update an order or membership without provider confirmation", async () => {
+              const result = await processRefund({
+                orderId: "order-legacy",
+                reason: "test refund",
+                refundedBy: "admin-1",
+              });
+
+              expect(result.success).toBe(false);
+              expect(result.code).toBe("LEGACY_REFUND_DISABLED");
+              expect(mockDb.$transaction).not.toHaveBeenCalled();
+            });
+          });
+
+          // ============================================
+          // 5. Duplicate callback idempotency'''.replace('          ', '')
+          text2, n = pattern.subn(replacement, text, count=1)
+          if n != 1:
+              raise SystemExit(f'billing test replacement count={n}')
+          p.write_text(text2)
+          PY
+
+      - name: Commit patch
+        run: |
+          git config user.name "Link168 P0 Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src tests
+          git diff --cached --check
+          git commit -m "fix: enforce truthful payment and refund states"
+          git push origin HEAD:agent/p0-refund-safety-20260716
