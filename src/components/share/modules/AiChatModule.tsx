@@ -23,7 +23,7 @@ type Props = {
 type ChatApiResult = {
   success?: boolean;
   code?: string;
-  data?: { reply?: string };
+  data?: { reply?: string; replyKind?: "ai" | "preset" };
 };
 
 function publicErrorMessage(code?: string) {
@@ -119,7 +119,7 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
       const result = await response.json() as ChatApiResult;
       if (response.ok && result.success && result.data?.reply) {
         const reply = result.data.reply;
-        appendMessage("assistant", reply, "ai");
+        appendMessage("assistant", reply, result.data.replyKind === "preset" ? "preset" : "ai");
       } else {
         appendMessage("system", publicErrorMessage(result.code));
       }

@@ -25,6 +25,7 @@ import { createAiTraceContext, logAiTraceInfo, type AiTraceContext } from "@/lib
 import { recordAiMetrics, recordSafetyRejection } from "@/lib/observability/ai-metrics";
 import { mapProviderErrorToAiCode, type AiErrorCode } from "@/lib/ai/provider-error";
 import { logAiRiskEvent } from "@/lib/ai/risk-log";
+import { classifyAiBusinessRisk } from "@/lib/ai/business-risk";
 
 export type CommercialAgentKind = "sales" | "customer-service" | "conversion";
 
@@ -80,6 +81,7 @@ export type CommercialAgentResponse = {
   data?: {
     agent: CommercialAgentKind;
     reply: string;
+    replyKind: "ai" | "preset";
     conversationId: string;
     visitorSessionId: string;
     action: AgentAction;
@@ -311,6 +313,7 @@ export async function runCommercialAgent(
       data: {
         agent: kind,
         reply: "",
+        replyKind: "preset",
         conversationId: "",
         visitorSessionId,
         action: initialAction,
@@ -410,11 +413,6 @@ export async function runCommercialAgent(
     };
   }
 
-  const resolved = resolveEnterpriseBailianConfig(platformConfig);
-  if (!isBailianApplicationConfigured(resolved)) {
-    return { success: false, status: 503, error: "AI 服务暂不可用，请稍后再试。", code: "AI_NOT_CONFIGURED", traceId: traceCtx.traceId };
-  }
-
   const message = sanitizeUserMessage(rawMessage || "请根据当前访客行为生成一句合规、克制的下一步引导文案。");
   if (detectPromptInjection(message).detected) {
     recordSafetyRejection({
@@ -437,6 +435,57 @@ export async function runCommercialAgent(
       requestSource: `commercial-agent:${kind}`,
     });
     return { success: false, status: 400, error: "问题包含平台限制内容，请修改后重试。", code: "SENSITIVE_CONTENT", traceId: traceCtx.traceId };
+  }
+
+  const businessRisk = classifyAiBusinessRisk(message);
+  if (businessRisk.level !== 1) {
+    if (businessRisk.level >= 3) {
+      await logAiRiskEvent({
+        userId: profile.user.id,
+        eventType: "manual_review",
+        assistant: kind,
+        riskLevel: businessRisk.riskLevel,
+        metadata: {
+          category: businessRisk.code,
+          traceId: traceCtx.traceId,
+          source: "commercial-agent-business-risk",
+        },
+      });
+    }
+
+    const privacyNotice = buildPrivacyNoticeFromConfig({
+      collectLead: serviceConfig.collectLead,
+      allowReport: serviceConfig.allowReport,
+      allowTransferToHuman: false,
+      privacyNoticeText: serviceConfig.privacyNoticeText,
+    });
+
+    return {
+      success: true,
+      status: 200,
+      traceId: traceCtx.traceId,
+      data: {
+        agent: kind,
+        reply: businessRisk.reply,
+        replyKind: "preset",
+        conversationId: "",
+        visitorSessionId,
+        action: businessRisk.level === 3
+          ? { type: "contact", label: "联系确认" }
+          : { type: "reply" },
+        leadCaptured: false,
+        creditBalance: guard.entitlements.limits.aiChatsPerMonth.remaining,
+        privacyNotice,
+        collectLeadEnabled: serviceConfig.collectLead,
+        transferToHumanEnabled: false,
+        allowReportEnabled: serviceConfig.allowReport,
+      },
+    };
+  }
+
+  const resolved = resolveEnterpriseBailianConfig(platformConfig);
+  if (!isBailianApplicationConfigured(resolved)) {
+    return { success: false, status: 503, error: "AI 服务暂不可用，请稍后再试。", code: "AI_NOT_CONFIGURED", traceId: traceCtx.traceId };
   }
 
   const requestedConversationId = text(rawInput.conversationId, 64);
@@ -746,6 +795,7 @@ export async function runCommercialAgent(
     data: {
       agent: kind,
       reply,
+      replyKind: "ai",
       conversationId: conversation.id,
       visitorSessionId,
       action: finalAction,

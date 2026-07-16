@@ -48,7 +48,7 @@ describe("AI reception customer and visitor UI closeout", () => {
     expect(chat).toContain('source?: "preset" | "ai"');
     expect(chat).toContain('message.source === "preset" ? "— 预设回复" : "— AI 生成内容"');
     expect(chat).toContain('appendMessage("assistant", action.value, "preset")');
-    expect(chat).toContain('appendMessage("assistant", reply, "ai")');
+    expect(chat).toContain('appendMessage("assistant", reply, result.data.replyKind === "preset" ? "preset" : "ai")');
     expect(chat).toContain('appendMessage("system", publicErrorMessage(result.code))');
   });
 
