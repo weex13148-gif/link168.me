@@ -18,7 +18,7 @@ export const LEGAL_EFFECTIVE_DATE = "2026-07-05";
 export const LEGAL_UPDATE_DATE = "2026-07-05";
 
 // 客服信息：当前未配置真实邮箱，页面中动态判断是否展示
-export const SUPPORT_EMAIL: string | null = null;
+export const SUPPORT_EMAIL: string = "business@link168.me";
 
 export const PUBLIC_PLANS = [
   { code: "free", name: "免费版", priceYearlyCents: 0, aiChatsPerMonth: 0 },

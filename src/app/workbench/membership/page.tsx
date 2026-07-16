@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   AlertCircle,
   Check,
@@ -150,6 +151,7 @@ export default function WorkbenchMembershipPage() {
   const [refundReason, setRefundReason] = useState("");
   const [refundSubmitting, setRefundSubmitting] = useState(false);
   const [refundError, setRefundError] = useState("");
+  const [acceptedLegalTerms, setAcceptedLegalTerms] = useState(false);
 
   const loadMembership = useCallback(async () => {
     const response = await fetch("/api/workbench/membership", { cache: "no-store" });
@@ -249,6 +251,7 @@ export default function WorkbenchMembershipPage() {
     setCheckoutError("");
     setCheckoutMessage("");
     setActiveOrderId(null);
+    setAcceptedLegalTerms(false);
     setCheckoutOpen(true);
   }
 
@@ -266,6 +269,10 @@ export default function WorkbenchMembershipPage() {
 
   async function createAlipayOrder() {
     if (!selectedPlan || !data) return;
+    if (!acceptedLegalTerms) {
+      setCheckoutError("请先阅读并同意会员服务协议、支付与退款规则和 AI 服务说明。");
+      return;
+    }
     if (!data.email_verified) {
       setCheckoutError("请先完成邮箱验证，再购买会员。");
       return;
@@ -714,6 +721,21 @@ export default function WorkbenchMembershipPage() {
                 支付成功后立即开通，有效期 365 天
               </p>
             </div>
+            <label className="mt-4 flex items-start gap-3 rounded-2xl border border-[#E8DCCB] bg-white p-4 text-xs leading-5 ui-muted">
+              <input
+                type="checkbox"
+                checked={acceptedLegalTerms}
+                onChange={(event) => setAcceptedLegalTerms(event.target.checked)}
+                className="mt-0.5 size-4"
+              />
+              <span>
+                我已阅读并同意
+                <Link href="/membership-agreement" target="_blank" className="font-black text-[#355126]">《会员服务协议》</Link>、
+                <Link href="/refund-policy" target="_blank" className="font-black text-[#355126]">《支付与退款规则》</Link>和
+                <Link href="/ai-disclaimer" target="_blank" className="font-black text-[#355126]">《AI 服务说明》</Link>。
+              </span>
+            </label>
+
             {checkoutError ? (
               <p className="mt-4 rounded-2xl bg-[#FFF1F0] p-4 text-sm font-bold text-[#B42318]">
                 <AlertCircle className="mr-1 inline size-4" />
@@ -742,7 +764,7 @@ export default function WorkbenchMembershipPage() {
               <button
                 type="button"
                 onClick={() => void createAlipayOrder()}
-                disabled={submitting || Boolean(activeOrderId)}
+                disabled={!acceptedLegalTerms || submitting || Boolean(activeOrderId)}
                 className="ui-button-primary disabled:opacity-50"
               >
                 {submitting ? (
