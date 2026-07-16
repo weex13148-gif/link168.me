@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - integration/release-risk-closeout-20260716
+  pull_request:
+    branches:
+      - integration/release-risk-closeout-20260716
   workflow_dispatch:
 
 permissions:
