@@ -15,11 +15,12 @@ describe("single-mainline closeout guardrails", () => {
     expect((raw.match(/"test:d4"\s*:/g) ?? []).length).toBe(1);
   });
 
-  test("MVP Closeout targets only the integration branch", () => {
+  test("MVP Closeout verifies the release mainline and integration branches", () => {
     const workflow = read(".github/workflows/mvp-closeout.yml");
     expect(workflow).toContain("name: MVP Closeout");
+    expect(workflow).toContain("master");
     expect(workflow).toContain("integration/mvp-closeout-r1");
-    expect(workflow).not.toMatch(/^\s*-?\s*master\s*$/m);
+    expect(workflow).toContain("integration/release-risk-closeout-20260716");
   });
 
   test("MVP Closeout uses Node 22 and PostgreSQL 16", () => {
