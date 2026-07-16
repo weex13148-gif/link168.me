@@ -1,0 +1,32 @@
+name: Apply P0-E Final
+
+on:
+  push:
+    branches:
+      - agent/p0-public-legal-pricing-20260716
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/p0-public-legal-pricing-20260716
+          fetch-depth: 0
+
+      - name: Apply exact patch
+        run: python scripts/release/apply-p0-e.py
+
+      - name: Commit
+        run: |
+          git config user.name "Link168 P0 Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src
+          git diff --cached --check
+          git commit -m "fix: require legal acknowledgement before purchase"
+          git push origin HEAD:agent/p0-public-legal-pricing-20260716
