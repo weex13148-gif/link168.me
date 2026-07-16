@@ -49,6 +49,7 @@ export default function PricingPage() {
   } | null>(null);
   const [sandboxAction, setSandboxAction] = useState<"success" | "fail" | "cancel" | "timeout">("success");
   const [sandboxDelay, setSandboxDelay] = useState(0);
+  const [acceptedLegalTerms, setAcceptedLegalTerms] = useState(false);
 
   const fetchMembership = async () => {
     try {
@@ -90,6 +91,7 @@ export default function PricingPage() {
     }
 
     setSelectedPlan(planCode);
+    setAcceptedLegalTerms(false);
     setShowPaymentModal(true);
     setOrderResult(null);
     setPollingStatus("idle");
@@ -108,6 +110,10 @@ export default function PricingPage() {
 
   const handleCreateOrder = async () => {
     if (!selectedPlan) return;
+    if (!acceptedLegalTerms) {
+      setOrderResult({ error: "请先阅读并同意会员服务协议、支付与退款规则和 AI 服务说明。" });
+      return;
+    }
 
     setOrderLoading(true);
     setOrderResult(null);
@@ -442,7 +448,7 @@ export default function PricingPage() {
                 },
                 {
                   q: "退款政策是怎样的？",
-                  a: "退款政策以服务条款为准。",
+                  a: "具体适用条件、处理流程和到账时间请查看《支付与退款规则》。",
                 },
               ].map((faq, idx) => (
                 <div key={idx} className="rounded-[24px] border border-[#E8DCCB] bg-[#F7F1E7] p-5">
@@ -504,6 +510,21 @@ export default function PricingPage() {
               </p>
             </div>
 
+            <label className="mt-4 flex items-start gap-3 rounded-2xl border border-[#E8DCCB] bg-white p-4 text-xs leading-5 text-[#5F5347]">
+              <input
+                type="checkbox"
+                checked={acceptedLegalTerms}
+                onChange={(event) => setAcceptedLegalTerms(event.target.checked)}
+                className="mt-0.5 size-4"
+              />
+              <span>
+                我已阅读并同意
+                <Link href="/membership-agreement" target="_blank" className="font-black text-[#3F5F31]">《会员服务协议》</Link>、
+                <Link href="/refund-policy" target="_blank" className="font-black text-[#3F5F31]">《支付与退款规则》</Link>和
+                <Link href="/ai-disclaimer" target="_blank" className="font-black text-[#3F5F31]">《AI 服务说明》</Link>。
+              </span>
+            </label>
+
             {orderResult?.error && (
               <div className="mt-4 rounded-2xl bg-red-50 p-4 text-sm text-red-600">
                 {orderResult.error}
@@ -542,7 +563,7 @@ export default function PricingPage() {
               </button>
               <button
                 onClick={handleCreateOrder}
-                disabled={orderLoading || pollingStatus === "polling" || pollingStatus === "success"}
+                disabled={!acceptedLegalTerms || orderLoading || pollingStatus === "polling" || pollingStatus === "success"}
                 className="flex-1 min-h-11 rounded-full bg-[#6F8F4E] text-sm font-black text-white transition hover:bg-[#5E7F3F] disabled:opacity-50"
               >
                 {orderLoading ? "创建订单中..." : pollingStatus === "success" ? "支付成功" : "确认支付"}
