@@ -12,6 +12,13 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
+  allowedHosts: [
+    "link168.me",
+    "www.link168.me",
+    "122.51.183.200",
+    "127.0.0.1",
+    "localhost",
+  ],
   serverExternalPackages: ["pg", "@prisma/adapter-pg", "@upstash/redis", "ioredis"],
   async headers() {
     return [
