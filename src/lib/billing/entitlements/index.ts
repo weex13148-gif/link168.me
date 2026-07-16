@@ -63,7 +63,7 @@ export async function getUserEntitlements(userId: string): Promise<UserEntitleme
   let isGracePeriod = false;
   let gracePeriodDays = 0;
 
-  if (subscription?.status === "active") {
+  if (subscription && ["active", "past_due"].includes(subscription.status)) {
     const normalized = normalizePlanCode(subscription.planCode);
     if (normalized !== "free") {
       if (!currentPeriodEnd) {
