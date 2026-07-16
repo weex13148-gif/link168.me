@@ -1,0 +1,199 @@
+name: P0 Cross Branch Patcher
+
+on:
+  push:
+    branches:
+      - integration/release-risk-closeout-20260716
+
+permissions:
+  contents: write
+
+jobs:
+  patch-d:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/p0-ai-risk-boundaries-20260716
+          path: d
+          fetch-depth: 0
+
+      - name: Patch AI risk integration
+        working-directory: d
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace(path, old, new):
+              p = Path(path)
+              text = p.read_text()
+              if new in text:
+                  return
+              if old not in text:
+                  raise SystemExit(f"missing expected text in {path}: {old[:120]!r}")
+              p.write_text(text.replace(old, new, 1))
+
+          commercial = 'src/lib/ai/commercial-agent.ts'
+          replace(commercial,
+              'import { logAiRiskEvent } from "@/lib/ai/risk-log";\n',
+              'import { logAiRiskEvent } from "@/lib/ai/risk-log";\nimport { classifyAiBusinessRisk } from "@/lib/ai/business-risk";\n')
+          replace(commercial,
+              '    reply: string;\n    conversationId: string;',
+              '    reply: string;\n    replyKind: "ai" | "preset";\n    conversationId: string;')
+          replace(commercial,
+              '        reply: "",\n        conversationId: "",',
+              '        reply: "",\n        replyKind: "preset",\n        conversationId: "",')
+
+          provider = ('  const resolved = resolveEnterpriseBailianConfig(platformConfig);\n'
+                      '  if (!isBailianApplicationConfigured(resolved)) {\n'
+                      '    return { success: false, status: 503, error: "AI 服务暂不可用，请稍后再试。", code: "AI_NOT_CONFIGURED", traceId: traceCtx.traceId };\n'
+                      '  }\n\n')
+          p = Path(commercial)
+          text = p.read_text()
+          if provider in text:
+              p.write_text(text.replace(provider, '', 1))
+
+          risk_block = '''
+
+  const businessRisk = classifyAiBusinessRisk(message);
+  if (businessRisk.level !== 1) {
+    if (businessRisk.level >= 3) {
+      await logAiRiskEvent({
+        userId: profile.user.id,
+        eventType: "manual_review",
+        assistant: kind,
+        riskLevel: businessRisk.riskLevel,
+        metadata: {
+          category: businessRisk.code,
+          traceId: traceCtx.traceId,
+          source: "commercial-agent-business-risk",
+        },
+      });
+    }
+
+    const privacyNotice = buildPrivacyNoticeFromConfig({
+      collectLead: serviceConfig.collectLead,
+      allowReport: serviceConfig.allowReport,
+      allowTransferToHuman: false,
+      privacyNoticeText: serviceConfig.privacyNoticeText,
+    });
+
+    return {
+      success: true,
+      status: 200,
+      traceId: traceCtx.traceId,
+      data: {
+        agent: kind,
+        reply: businessRisk.reply,
+        replyKind: "preset",
+        conversationId: "",
+        visitorSessionId,
+        action: businessRisk.level === 3
+          ? { type: "contact", label: "联系确认" }
+          : { type: "reply" },
+        leadCaptured: false,
+        creditBalance: guard.entitlements.limits.aiChatsPerMonth.remaining,
+        privacyNotice,
+        collectLeadEnabled: serviceConfig.collectLead,
+        transferToHumanEnabled: false,
+        allowReportEnabled: serviceConfig.allowReport,
+      },
+    };
+  }
+
+  const resolved = resolveEnterpriseBailianConfig(platformConfig);
+  if (!isBailianApplicationConfigured(resolved)) {
+    return { success: false, status: 503, error: "AI 服务暂不可用，请稍后再试。", code: "AI_NOT_CONFIGURED", traceId: traceCtx.traceId };
+  }
+'''
+          replace(commercial,
+              '    return { success: false, status: 400, error: "问题包含平台限制内容，请修改后重试。", code: "SENSITIVE_CONTENT", traceId: traceCtx.traceId };\n  }\n\n  const requestedConversationId',
+              '    return { success: false, status: 400, error: "问题包含平台限制内容，请修改后重试。", code: "SENSITIVE_CONTENT", traceId: traceCtx.traceId };\n  }' + risk_block + '\n  const requestedConversationId')
+          replace(commercial,
+              '      reply,\n      conversationId: conversation.id,',
+              '      reply,\n      replyKind: "ai",\n      conversationId: conversation.id,')
+          replace('src/components/share/modules/AiChatModule.tsx',
+              '  data?: { reply?: string };',
+              '  data?: { reply?: string; replyKind?: "ai" | "preset" };')
+          replace('src/components/share/modules/AiChatModule.tsx',
+              '        appendMessage("assistant", reply, "ai");',
+              '        appendMessage("assistant", reply, result.data.replyKind === "preset" ? "preset" : "ai");')
+          replace('tests/ai-reception-ui-closeout.test.ts',
+              '    expect(chat).toContain(\'appendMessage("assistant", reply, "ai")\');',
+              '    expect(chat).toContain(\'appendMessage("assistant", reply, result.data.replyKind === "preset" ? "preset" : "ai")\');')
+          PY
+
+      - name: Commit D
+        working-directory: d
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name "Link168 P0 Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src tests
+          git diff --cached --check
+          git commit -m "fix: route high-risk AI questions deterministically"
+          git push origin HEAD:agent/p0-ai-risk-boundaries-20260716
+
+  patch-e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/p0-public-legal-pricing-20260716
+          path: e
+          fetch-depth: 0
+
+      - name: Patch public legal purchase flow
+        working-directory: e
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace(path, old, new):
+              p = Path(path)
+              text = p.read_text()
+              if new in text:
+                  return
+              if old not in text:
+                  raise SystemExit(f"missing expected text in {path}: {old[:120]!r}")
+              p.write_text(text.replace(old, new, 1))
+
+          replace('src/lib/legal/meta.ts', 'export const SUPPORT_EMAIL: string | null = null;', 'export const SUPPORT_EMAIL: string = "business@link168.me";')
+          replace('src/app/page.tsx', 'AI 助手自动接待、解答常见问题并引导留资，7×24 小时不漏掉任何一次商机。', 'AI 助手自动接待、解答常见问题并引导留资，帮助及时回应咨询并减少遗漏。')
+          replace('src/app/pricing/page.tsx', '  const [sandboxDelay, setSandboxDelay] = useState(0);', '  const [sandboxDelay, setSandboxDelay] = useState(0);\n  const [acceptedLegalTerms, setAcceptedLegalTerms] = useState(false);')
+          replace('src/app/pricing/page.tsx', '    setSelectedPlan(planCode);\n    setShowPaymentModal(true);', '    setSelectedPlan(planCode);\n    setAcceptedLegalTerms(false);\n    setShowPaymentModal(true);')
+          replace('src/app/pricing/page.tsx', '  const handleCreateOrder = async () => {\n    if (!selectedPlan) return;\n\n    setOrderLoading(true);', '  const handleCreateOrder = async () => {\n    if (!selectedPlan) return;\n    if (!acceptedLegalTerms) {\n      setOrderResult({ error: "请先阅读并同意会员服务协议、支付与退款规则和 AI 服务说明。" });\n      return;\n    }\n\n    setOrderLoading(true);')
+          replace('src/app/pricing/page.tsx', '                  a: "退款政策以服务条款为准。",', '                  a: "具体适用条件、处理流程和到账时间请查看《支付与退款规则》。",')
+          replace('src/app/pricing/page.tsx', '            {orderResult?.error && (\n              <div className="mt-4 rounded-2xl bg-red-50 p-4 text-sm text-red-600">', '''            <label className="mt-4 flex items-start gap-3 rounded-2xl border border-[#E8DCCB] bg-white p-4 text-xs leading-5 text-[#5F5347]">
+              <input type="checkbox" checked={acceptedLegalTerms} onChange={(event) => setAcceptedLegalTerms(event.target.checked)} className="mt-0.5 size-4" />
+              <span>我已阅读并同意<Link href="/membership-agreement" target="_blank" className="font-black text-[#3F5F31]">《会员服务协议》</Link>、<Link href="/refund-policy" target="_blank" className="font-black text-[#3F5F31]">《支付与退款规则》</Link>和<Link href="/ai-disclaimer" target="_blank" className="font-black text-[#3F5F31]">《AI 服务说明》</Link>。</span>
+            </label>
+
+            {orderResult?.error && (
+              <div className="mt-4 rounded-2xl bg-red-50 p-4 text-sm text-red-600">''')
+          replace('src/app/pricing/page.tsx', 'disabled={orderLoading || pollingStatus === "polling" || pollingStatus === "success"}', 'disabled={!acceptedLegalTerms || orderLoading || pollingStatus === "polling" || pollingStatus === "success"}')
+
+          replace('src/app/workbench/membership/page.tsx', 'import { useCallback, useEffect, useMemo, useState } from "react";\n', 'import { useCallback, useEffect, useMemo, useState } from "react";\nimport Link from "next/link";\n')
+          replace('src/app/workbench/membership/page.tsx', '  const [refundError, setRefundError] = useState("");', '  const [refundError, setRefundError] = useState("");\n  const [acceptedLegalTerms, setAcceptedLegalTerms] = useState(false);')
+          replace('src/app/workbench/membership/page.tsx', '    setCheckoutMessage("");\n    setActiveOrderId(null);\n    setCheckoutOpen(true);', '    setCheckoutMessage("");\n    setActiveOrderId(null);\n    setAcceptedLegalTerms(false);\n    setCheckoutOpen(true);')
+          replace('src/app/workbench/membership/page.tsx', '  async function createAlipayOrder() {\n    if (!selectedPlan || !data) return;\n    if (!data.email_verified) {', '  async function createAlipayOrder() {\n    if (!selectedPlan || !data) return;\n    if (!acceptedLegalTerms) {\n      setCheckoutError("请先阅读并同意会员服务协议、支付与退款规则和 AI 服务说明。");\n      return;\n    }\n    if (!data.email_verified) {')
+          replace('src/app/workbench/membership/page.tsx', '            {checkoutError ? (\n              <p className="mt-4 rounded-2xl bg-[#FFF1F0] p-4 text-sm font-bold text-[#B42318]">', '''            <label className="mt-4 flex items-start gap-3 rounded-2xl border border-[#E8DCCB] bg-white p-4 text-xs leading-5 ui-muted">
+              <input type="checkbox" checked={acceptedLegalTerms} onChange={(event) => setAcceptedLegalTerms(event.target.checked)} className="mt-0.5 size-4" />
+              <span>我已阅读并同意<Link href="/membership-agreement" target="_blank" className="font-black text-[#355126]">《会员服务协议》</Link>、<Link href="/refund-policy" target="_blank" className="font-black text-[#355126]">《支付与退款规则》</Link>和<Link href="/ai-disclaimer" target="_blank" className="font-black text-[#355126]">《AI 服务说明》</Link>。</span>
+            </label>
+
+            {checkoutError ? (
+              <p className="mt-4 rounded-2xl bg-[#FFF1F0] p-4 text-sm font-bold text-[#B42318]">''')
+          replace('src/app/workbench/membership/page.tsx', 'disabled={submitting || Boolean(activeOrderId)}', 'disabled={!acceptedLegalTerms || submitting || Boolean(activeOrderId)}')
+          PY
+
+      - name: Commit E
+        working-directory: e
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name "Link168 P0 Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src
+          git diff --cached --check
+          git commit -m "fix: require legal acknowledgement before purchase"
+          git push origin HEAD:agent/p0-public-legal-pricing-20260716
