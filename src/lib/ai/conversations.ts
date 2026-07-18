@@ -16,6 +16,7 @@ export async function ensureProfileForUser(userId: string) {
         id: crypto.randomUUID(),
         userId,
         username: `user_${userId.slice(0, 8)}`,
+        isPublic: false,
       },
       select: { id: true },
     });

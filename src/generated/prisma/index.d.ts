@@ -34409,6 +34409,7 @@ export namespace Prisma {
     allowReport: boolean | null
     allowTransferToHuman: boolean | null
     privacyNoticeText: string | null
+    quickActionsJson: string | null
     providerMode: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -34426,6 +34427,7 @@ export namespace Prisma {
     allowReport: boolean | null
     allowTransferToHuman: boolean | null
     privacyNoticeText: string | null
+    quickActionsJson: string | null
     providerMode: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -34443,6 +34445,7 @@ export namespace Prisma {
     allowReport: number
     allowTransferToHuman: number
     privacyNoticeText: number
+    quickActionsJson: number
     providerMode: number
     createdAt: number
     updatedAt: number
@@ -34462,6 +34465,7 @@ export namespace Prisma {
     allowReport?: true
     allowTransferToHuman?: true
     privacyNoticeText?: true
+    quickActionsJson?: true
     providerMode?: true
     createdAt?: true
     updatedAt?: true
@@ -34479,6 +34483,7 @@ export namespace Prisma {
     allowReport?: true
     allowTransferToHuman?: true
     privacyNoticeText?: true
+    quickActionsJson?: true
     providerMode?: true
     createdAt?: true
     updatedAt?: true
@@ -34496,6 +34501,7 @@ export namespace Prisma {
     allowReport?: true
     allowTransferToHuman?: true
     privacyNoticeText?: true
+    quickActionsJson?: true
     providerMode?: true
     createdAt?: true
     updatedAt?: true
@@ -34586,6 +34592,7 @@ export namespace Prisma {
     allowReport: boolean
     allowTransferToHuman: boolean
     privacyNoticeText: string | null
+    quickActionsJson: string | null
     providerMode: string
     createdAt: Date
     updatedAt: Date
@@ -34620,6 +34627,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -34638,6 +34646,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -34656,6 +34665,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -34674,12 +34684,13 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type AiServiceConfigOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "enabled" | "assistantName" | "welcomeMessage" | "tone" | "allowProductRecommendation" | "collectLead" | "allowReport" | "allowTransferToHuman" | "privacyNoticeText" | "providerMode" | "createdAt" | "updatedAt", ExtArgs["result"]["aiServiceConfig"]>
+  export type AiServiceConfigOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "enabled" | "assistantName" | "welcomeMessage" | "tone" | "allowProductRecommendation" | "collectLead" | "allowReport" | "allowTransferToHuman" | "privacyNoticeText" | "quickActionsJson" | "providerMode" | "createdAt" | "updatedAt", ExtArgs["result"]["aiServiceConfig"]>
   export type AiServiceConfigInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -34707,6 +34718,7 @@ export namespace Prisma {
       allowReport: boolean
       allowTransferToHuman: boolean
       privacyNoticeText: string | null
+      quickActionsJson: string | null
       providerMode: string
       createdAt: Date
       updatedAt: Date
@@ -35145,6 +35157,7 @@ export namespace Prisma {
     readonly allowReport: FieldRef<"AiServiceConfig", 'Boolean'>
     readonly allowTransferToHuman: FieldRef<"AiServiceConfig", 'Boolean'>
     readonly privacyNoticeText: FieldRef<"AiServiceConfig", 'String'>
+    readonly quickActionsJson: FieldRef<"AiServiceConfig", 'String'>
     readonly providerMode: FieldRef<"AiServiceConfig", 'String'>
     readonly createdAt: FieldRef<"AiServiceConfig", 'DateTime'>
     readonly updatedAt: FieldRef<"AiServiceConfig", 'DateTime'>
@@ -55676,6 +55689,7 @@ export namespace Prisma {
     allowReport: 'allowReport',
     allowTransferToHuman: 'allowTransferToHuman',
     privacyNoticeText: 'privacyNoticeText',
+    quickActionsJson: 'quickActionsJson',
     providerMode: 'providerMode',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -58392,6 +58406,7 @@ export namespace Prisma {
     allowReport?: BoolFilter<"AiServiceConfig"> | boolean
     allowTransferToHuman?: BoolFilter<"AiServiceConfig"> | boolean
     privacyNoticeText?: StringNullableFilter<"AiServiceConfig"> | string | null
+    quickActionsJson?: StringNullableFilter<"AiServiceConfig"> | string | null
     providerMode?: StringFilter<"AiServiceConfig"> | string
     createdAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
     updatedAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
@@ -58410,6 +58425,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrderInput | SortOrder
+    quickActionsJson?: SortOrderInput | SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -58431,6 +58447,7 @@ export namespace Prisma {
     allowReport?: BoolFilter<"AiServiceConfig"> | boolean
     allowTransferToHuman?: BoolFilter<"AiServiceConfig"> | boolean
     privacyNoticeText?: StringNullableFilter<"AiServiceConfig"> | string | null
+    quickActionsJson?: StringNullableFilter<"AiServiceConfig"> | string | null
     providerMode?: StringFilter<"AiServiceConfig"> | string
     createdAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
     updatedAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
@@ -58449,6 +58466,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrderInput | SortOrder
+    quickActionsJson?: SortOrderInput | SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -58472,6 +58490,7 @@ export namespace Prisma {
     allowReport?: BoolWithAggregatesFilter<"AiServiceConfig"> | boolean
     allowTransferToHuman?: BoolWithAggregatesFilter<"AiServiceConfig"> | boolean
     privacyNoticeText?: StringNullableWithAggregatesFilter<"AiServiceConfig"> | string | null
+    quickActionsJson?: StringNullableWithAggregatesFilter<"AiServiceConfig"> | string | null
     providerMode?: StringWithAggregatesFilter<"AiServiceConfig"> | string
     createdAt?: DateTimeWithAggregatesFilter<"AiServiceConfig"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"AiServiceConfig"> | Date | string
@@ -62634,6 +62653,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62652,6 +62672,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62668,6 +62689,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62686,6 +62708,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62703,6 +62726,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62719,6 +62743,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62736,6 +62761,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66181,6 +66207,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrder
+    quickActionsJson?: SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -66198,6 +66225,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrder
+    quickActionsJson?: SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -66215,6 +66243,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrder
+    quickActionsJson?: SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -69669,6 +69698,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -69685,6 +69715,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -70330,6 +70361,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70346,6 +70378,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

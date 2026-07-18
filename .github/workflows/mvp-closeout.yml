@@ -6,12 +6,14 @@ on:
       - master
       - integration/mvp-closeout-r1
       - integration/release-risk-closeout-20260716
+      - integration/saas-mainline-v1-20260718
       - "agent/p0-**"
   pull_request:
     branches:
       - master
       - integration/mvp-closeout-r1
       - integration/release-risk-closeout-20260716
+      - integration/saas-mainline-v1-20260718
   workflow_dispatch:
 
 permissions:

@@ -1,23 +1,17 @@
 import { NextResponse } from "next/server";
 import { requireDashboardUser } from "@/lib/auth";
 import { getUserEntitlements } from "@/lib/billing/entitlements";
+import { toMainlinePlanLabel } from "@/lib/product/mainline";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-function planLabel(planCode: string, planName: string): string {
-  if (planName && planName.trim()) return planName;
-  const code = planCode.toLowerCase();
-  if (code.includes("enterprise")) return "企业版";
-  if (code.includes("plus") || code.includes("pro") || code.includes("member")) return "会员版";
-  return "免费版";
-}
 
 export async function GET(request: Request) {
   const { user, response } = await requireDashboardUser(request);
   if (response || !user) return response;
 
   const entitlements = await getUserEntitlements(user.id);
+  const canonicalPlanName = toMainlinePlanLabel(entitlements.planCode);
   const status = entitlements.isLegacyActive
     ? "legacy_active"
     : entitlements.hasActiveMembership
@@ -30,8 +24,8 @@ export async function GET(request: Request) {
     success: true,
     data: {
       planCode: entitlements.planCode,
-      planName: entitlements.plan.name,
-      planLabel: planLabel(entitlements.planCode, entitlements.plan.name),
+      planName: canonicalPlanName,
+      planLabel: canonicalPlanName,
       status,
       isPaid: entitlements.hasActiveMembership || entitlements.isGracePeriod,
       isLegacyActive: entitlements.isLegacyActive,

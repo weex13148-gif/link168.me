@@ -20,6 +20,13 @@ export interface PublicProfileSeoInput {
 export function buildPublicProfileMetadata(input: PublicProfileSeoInput): Metadata {
   const { username, displayName, bio, avatarUrl, isPublic, isIndexable, pageUrl, appUrl } = input;
 
+  // Publication consent applies to metadata as well as the rendered page. A
+  // noindex directive alone would still expose private names, bios, and avatar
+  // URLs to anyone fetching the HTML.
+  if (!isPublic || !isIndexable) {
+    return buildRestrictedProfileMetadata(username, appUrl);
+  }
+
   const title = displayName || `@${username}`;
   const description = bio || `访问 @${username} 的 Link168 公开主页，查看联系方式、产品服务和社交链接。`;
   const canonicalUrl = `${appUrl}/${username}`;

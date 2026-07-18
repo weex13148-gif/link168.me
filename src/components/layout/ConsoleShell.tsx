@@ -48,7 +48,7 @@ export const MOBILE_BOTTOM_NAV: NavItem[] = SHARED_MOBILE_NAV.map(toNavItem);
 const GROUP_LABELS: Record<string, string> = {
   core: "经营核心",
   growth: "增长与数据",
-  ai: "AI 与企业",
+  ai: "AI 接待",
   settings: "账户与设置",
 };
 
@@ -235,7 +235,7 @@ const groupedSecondary = DESKTOP_SECONDARY_NAV.reduce<Record<string, NavItem[]>>
         className="fixed inset-x-0 bottom-0 z-40 border-t border-[#E8DCCB] bg-white/96 px-1 py-1 backdrop-blur lg:hidden safe-area-pb"
         aria-label="手机端控制台导航"
       >
-        <div className="mx-auto flex max-w-lg items-center justify-between gap-1 px-2">
+        <div className="mx-auto grid max-w-lg grid-cols-5 gap-1 px-2">
           {MOBILE_BOTTOM_NAV.map((item) => {
             const Icon = item.icon;
             const active = isItemActive(pathname, item.href);
@@ -243,24 +243,17 @@ const groupedSecondary = DESKTOP_SECONDARY_NAV.reduce<Record<string, NavItem[]>>
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex min-w-[44px] min-h-[56px] flex-col items-center justify-center gap-1 rounded-xl px-3 py-2 text-[10px] font-black transition ${
-                  active ? "bg-[#DDE8CD] text-[#3F5F31]" : "text-[#7A6D5E] hover:bg-[#F7F1E7]"
+                className={`flex min-h-[56px] min-w-[44px] flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[10px] font-black transition ${
+                  active
+                    ? "bg-[#DDE8CD] text-[#3F5F31]"
+                    : "text-[#7A6D5E] hover:bg-[#F7F1E7]"
                 }`}
               >
-                <Icon className="size-5" />
+                <Icon aria-hidden className="size-5" />
                 {item.label}
               </Link>
             );
           })}
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(true)}
-            className="flex min-w-[44px] min-h-[56px] flex-col items-center justify-center gap-1 rounded-xl px-3 py-2 text-[10px] font-black text-[#7A6D5E] hover:bg-[#F7F1E7]"
-            aria-label="更多功能"
-          >
-            <Menu className="size-5" />
-            更多
-          </button>
         </div>
       </nav>
 

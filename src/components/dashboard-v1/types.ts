@@ -1,4 +1,4 @@
-export type DashboardTab = "home" | "profile" | "links" | "appearance" | "share" | "stats" | "account";
+export type DashboardTab = "home" | "profile" | "links" | "appearance" | "share";
 
 export type SaveState = "saved" | "dirty" | "saving" | "error";
 

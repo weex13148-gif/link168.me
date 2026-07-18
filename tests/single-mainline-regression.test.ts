@@ -21,6 +21,7 @@ describe("single-mainline closeout guardrails", () => {
     expect(workflow).toContain("master");
     expect(workflow).toContain("integration/mvp-closeout-r1");
     expect(workflow).toContain("integration/release-risk-closeout-20260716");
+    expect(workflow).toContain("integration/saas-mainline-v1-20260718");
   });
 
   test("MVP Closeout uses Node 22 and PostgreSQL 16", () => {

@@ -21,6 +21,10 @@ import {
   UserCog,
   type LucideIcon,
 } from "lucide-react";
+import {
+  MAINLINE_PRIMARY_ROUTES,
+  type MainlineNavId,
+} from "@/lib/product/mainline";
 
 export type NavStatus = "live" | "beta" | "planned";
 
@@ -43,13 +47,52 @@ export type SharedNavItem = {
  * 4. AI     (/workbench/ai)
  * 5. 我的   (/workbench/account)
  */
-export const PRIMARY_NAV_ITEMS: SharedNavItem[] = [
-  { href: "/console", label: "首页", icon: Home, tone: "bg-[#F7F1E7] text-[#3F5F31]", status: "live", group: "core" },
-  { href: "/dashboard", label: "名片", icon: Palette, tone: "bg-[#DDE8CD] text-[#3F5F31]", status: "live", group: "core", badge: "推荐", badgeTone: "bg-[#FFFDF8] text-[#6F8F4E]" },
-  { href: "/workbench/leads", label: "客户", icon: Users, tone: "bg-[#FFE6E2] text-[#B42318]", status: "live", group: "growth" },
-  { href: "/workbench/ai", label: "AI", icon: Bot, tone: "bg-[#F6E7C8] text-[#8C612E]", status: "beta", group: "ai", badge: "Beta", badgeTone: "bg-[#F6E7C8] text-[#8C612E]" },
-  { href: "/workbench/account", label: "我的", icon: UserCog, tone: "bg-[#F5F0E6] text-[#2B241E]", status: "live", group: "settings" },
-];
+const PRIMARY_VIEW: Record<
+  MainlineNavId,
+  Pick<
+    SharedNavItem,
+    "icon" | "tone" | "status" | "group" | "badge" | "badgeTone"
+  >
+> = {
+  home: {
+    icon: Home,
+    tone: "bg-[#F7F1E7] text-[#3F5F31]",
+    status: "live",
+    group: "core",
+  },
+  card: {
+    icon: Palette,
+    tone: "bg-[#DDE8CD] text-[#3F5F31]",
+    status: "live",
+    group: "core",
+  },
+  customers: {
+    icon: Users,
+    tone: "bg-[#FFE6E2] text-[#B42318]",
+    status: "live",
+    group: "growth",
+  },
+  ai: {
+    icon: Bot,
+    tone: "bg-[#F6E7C8] text-[#8C612E]",
+    status: "beta",
+    group: "ai",
+    badge: "Beta",
+    badgeTone: "bg-[#F6E7C8] text-[#8C612E]",
+  },
+  me: {
+    icon: UserCog,
+    tone: "bg-[#F5F0E6] text-[#2B241E]",
+    status: "live",
+    group: "settings",
+  },
+};
+
+export const PRIMARY_NAV_ITEMS: SharedNavItem[] =
+  MAINLINE_PRIMARY_ROUTES.map((route) => ({
+    ...route,
+    ...PRIMARY_VIEW[route.id],
+  }));
 
 /** 二级功能入口（仅出现在桌面端侧边栏次级区域或「更多」菜单） */
 export const SECONDARY_NAV_ITEMS: SharedNavItem[] = [

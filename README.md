@@ -1,57 +1,18 @@
 # Link168
 
-Link168 is a personal digital identity homepage and QR-code marketing tool for Chinese users.
+Link168 是面向服务型个体创业者的经营型 SaaS：专业商业名片 + 24 小时接待 + 真实 Lead + 轻量跟进。
 
-Brand slogan:
+当前唯一经营闭环：
 
-- Link168 链接一路发
-- 一个人，一个链接，连接全网
+`注册 → 建名片 → 发布/分享 → 访客访问 → 预设或 AI 接待 → 真实 Lead → 跟进 → 成交`
 
-## V0.1 Scope
+## Current authority
 
-V0.1 only supports the core path:
-
-1. Register
-2. Log in
-3. Create one public profile
-4. Edit profile information
-5. Add, edit, and delete links
-6. Visit the public profile by username
-7. Submit reports through the report center
-8. Review basic reports in the admin area
-
-Users can aggregate WeChat official accounts, Xiaohongshu, Douyin, WeChat Channels, website links, product links, consultation bookings, and other destinations into one public page.
-
-## Tech Stack
-
-- Next.js App Router
-- Tailwind CSS
-- Prisma
-- PostgreSQL
-- Self-built register and login flow
-- bcrypt password hashing
-- HttpOnly Cookie Session
-
-## Pages
-
-- `/` V0.1 entry page
-- `/register` register page
-- `/login` login page
-- `/dashboard` user dashboard
-- `/[username]` public profile route
-- `/report` report center
-- `/admin/reports` basic admin report area
-
-## Product Rules
-
-- Brand name: Link168
-- Official URL: `https://link168.me`
-- Free plan: one profile and one username
-- Free public profiles must show a clickable `Powered by Link168` brand footer
-- Logo asset: `public/brand/link168-logo.png`
-- Logo should be rendered through a clickable `BrandLogo` component that returns to `/`
-- V0.1 does not include membership, payment, AI, complex analytics, a template marketplace, or real WeChat login
-- VLink is only a functional layout reference. Do not copy its brand, images, copy, or colors.
+- Approved product specification: `docs/superpowers/specs/2026-07-18-link168-saas-product-mainline-design.md`
+- Program roadmap: `docs/superpowers/roadmaps/2026-07-18-link168-saas-mainline-program.md`
+- Ordinary-user navigation: 首页、名片、客户、AI、我的
+- Public plans: Free、Plus、Pro; exact paid price and quota are not approved
+- Production status: not yet verified for Bailian, Alipay, mail, object storage, production database or deployment
 
 ## Deployment Direction
 

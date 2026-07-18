@@ -7,6 +7,10 @@ import {
   getLegacyAvatarDirs,
   isSafeAvatarFileName,
 } from "@/lib/upload-storage";
+import {
+  createAvatarImageResponse,
+  resolveAvatarAccess,
+} from "@/lib/avatar-access";
 import { db } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -124,11 +128,23 @@ export async function GET(
 
   const profile = await db.profile.findUnique({
     where: { username: safeUsername },
-    select: { avatarUrl: true, updatedAt: true, avatarModerationStatus: true },
+    select: {
+      userId: true,
+      isPublic: true,
+      avatarUrl: true,
+      updatedAt: true,
+      avatarModerationStatus: true,
+      user: { select: { emailVerified: true } },
+    },
   }).catch(() => null);
 
   if (!profile) {
     return NextResponse.json({ error: "用户不存在。" }, { status: 404 });
+  }
+
+  const access = await resolveAvatarAccess(request, profile);
+  if (!access.allowed) {
+    return NextResponse.json({ error: "头像不存在。" }, { status: 404 });
   }
 
   if (profile.avatarModerationStatus && !ALLOWED_MODERATION_STATUSES.has(profile.avatarModerationStatus)) {
@@ -145,13 +161,7 @@ export async function GET(
           const filePath = path.join(dir, fileName);
           const data = await readFile(filePath);
           const contentType = getAvatarContentType(fileName);
-          return new NextResponse(data, {
-            headers: {
-              "Content-Type": contentType,
-              "Cache-Control": "public, max-age=86400, must-revalidate",
-              "X-Content-Type-Options": "nosniff",
-            },
-          });
+          return createAvatarImageResponse(data, contentType, access.publiclyVisible);
         } catch {
           // continue
         }
@@ -168,13 +178,7 @@ export async function GET(
   try {
     const data = await readFile(avatarFilePath);
     const contentType = getAvatarContentType(fileName);
-    return new NextResponse(data, {
-      headers: {
-        "Content-Type": contentType,
-        "Cache-Control": "public, max-age=86400, must-revalidate",
-        "X-Content-Type-Options": "nosniff",
-      },
-    });
+    return createAvatarImageResponse(data, contentType, access.publiclyVisible);
   } catch {
     return NextResponse.json({ error: "头像读取失败。" }, { status: 500 });
   }

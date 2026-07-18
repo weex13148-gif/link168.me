@@ -1,11 +1,35 @@
+import fs from "node:fs";
+import path from "node:path";
 import {
   PRIMARY_NAV_ITEMS,
   SECONDARY_NAV_ITEMS,
   SHARED_NAV_ITEMS,
   SHARED_MOBILE_NAV,
 } from "@/components/layout/console-navigation";
+import { MAINLINE_PRIMARY_ROUTES } from "@/lib/product/mainline";
+
+const navigationSource = fs.readFileSync(
+  path.join(process.cwd(), "src/components/layout/console-navigation.ts"),
+  "utf8",
+);
 
 describe("Console navigation contract", () => {
+  test("React navigation derives labels and hrefs from product facts", () => {
+    expect(
+      PRIMARY_NAV_ITEMS.map(({ label, href }) => ({ label, href })),
+    ).toEqual(
+      MAINLINE_PRIMARY_ROUTES.map(({ label, href }) => ({ label, href })),
+    );
+  });
+
+  test("React navigation structurally derives primary items from product facts", () => {
+    expect(navigationSource).toContain("MAINLINE_PRIMARY_ROUTES.map");
+    expect(navigationSource).toContain("type MainlineNavId");
+    expect(navigationSource).not.toMatch(
+      /\bPRIMARY_NAV_ITEMS\s*(?::[^=]+)?=\s*\[/,
+    );
+  });
+
   test("PRIMARY_NAV_ITEMS must have exactly 5 entries", () => {
     expect(PRIMARY_NAV_ITEMS).toHaveLength(5);
   });

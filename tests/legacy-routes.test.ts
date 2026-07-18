@@ -19,6 +19,27 @@ describe("Legacy route compatibility", () => {
     expect(content).toContain("DashboardV1Client");
   });
 
+  test("dashboard uses ConsoleShell and editor frame has no global nav", () => {
+    const dashboard = fs.readFileSync(
+      path.join(srcRoot, "app", "dashboard", "page.tsx"),
+      "utf8",
+    );
+    const frame = fs.readFileSync(
+      path.join(
+        srcRoot,
+        "components",
+        "dashboard-v1",
+        "DashboardFrame.tsx",
+      ),
+      "utf8",
+    );
+    expect(dashboard).toContain("ConsoleShell");
+    expect(frame).not.toContain("PRIMARY_NAV_ITEMS");
+    expect(frame).not.toContain("MODULE_NAV_ITEMS");
+    expect(frame).not.toContain('label: "数据中心"');
+    expect(frame).not.toContain('label: "账户与安全"');
+  });
+
   test("/console page exists as the sole user shell", () => {
     const consolePage = path.join(srcRoot, "app", "console", "page.tsx");
     expect(fs.existsSync(consolePage)).toBe(true);

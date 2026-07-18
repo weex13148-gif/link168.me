@@ -495,6 +495,7 @@ exports.Prisma.AiServiceConfigScalarFieldEnum = {
   allowReport: 'allowReport',
   allowTransferToHuman: 'allowTransferToHuman',
   privacyNoticeText: 'privacyNoticeText',
+  quickActionsJson: 'quickActionsJson',
   providerMode: 'providerMode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

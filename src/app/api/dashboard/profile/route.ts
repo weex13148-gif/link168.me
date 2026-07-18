@@ -174,7 +174,7 @@ export async function PUT(request: Request) {
       theme: themeValue || "Link168 草木默认",
       language: languageValue || DEFAULT_LANGUAGE,
       customTheme: customThemeValue === undefined ? null : customThemeValue,
-      isPublic: isPublicValue ?? true,
+      isPublic: isPublicValue ?? false,
       company: normalizeNullableString(body.company),
       jobTitle: normalizeNullableString(body.jobTitle),
       phone: normalizeNullableString(body.phone),

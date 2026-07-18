@@ -28,6 +28,8 @@ const STATIC_PATHS = [
   "/sitemap.xml",
 ];
 
+const LEGACY_AVATAR_PATH_PATTERN = /^\/uploads\/avatars\/([a-zA-Z0-9_-]+\.(?:jpg|jpeg|png|webp|gif))$/i;
+
 // 企业官网保留路径 → 内部路由映射
 // 这些路径不能被员工注册为 slug，且对应企业官网专属页面
 const ENTERPRISE_ROUTE_MAP: Record<string, string> = {
@@ -89,6 +91,14 @@ function rewriteRequest(
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  // Historical avatars may still live under public/uploads. Route every
+  // matching request through the same publication and restriction checks as
+  // the canonical avatar API so static-file serving cannot bypass consent.
+  const legacyAvatar = pathname.match(LEGACY_AVATAR_PATH_PATTERN);
+  if (legacyAvatar) {
+    return rewriteRequest(request, `/api/avatar/legacy/${legacyAvatar[1]}`);
+  }
 
   // 静态资源直接放行
   for (const staticPath of STATIC_PATHS) {

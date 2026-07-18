@@ -3,6 +3,7 @@ import { ShieldCheck, Mail, Key, Smartphone, Bell } from "lucide-react";
 import WorkbenchShell from "@/components/workbench/WorkbenchShell";
 import { db } from "@/lib/db";
 import { getCurrentUserFromCookies } from "@/lib/auth";
+import { toMainlinePlanLabel } from "@/lib/product/mainline";
 
 export const runtime = "nodejs";
 
@@ -16,9 +17,7 @@ export default async function WorkbenchAccountPage() {
   ]);
 
   const isMember = membership?.status === "active";
-  const planName = isMember
-    ? { free: "免费版", starter: "初创版", pro: "专业版", enterprise: "企业版" }[membership?.planCode ?? "free"] ?? "免费版"
-    : "免费版";
+  const planName = toMainlinePlanLabel(membership?.planCode);
 
   const rows = [
     { label: "登录邮箱", value: user.email, icon: Mail, tone: "bg-[#DDE8CD] text-[#3F5F31]", action: null },
@@ -95,6 +94,11 @@ export default async function WorkbenchAccountPage() {
             登录历史仅超级管理员可见。如需查看，请联系超级管理员或在超级管理员后台的审计记录中查阅。
           </p>
         </div>
+      </section>
+
+      <section className="mt-6 rounded-[28px] border border-[#E8DCCB] bg-white p-5 shadow-sm sm:p-6">
+        <p className="text-sm font-black text-[#3F5F31]">未来能力</p>
+        <p className="mt-1 text-sm text-[#7A6D5E]">未来能力暂未开放</p>
       </section>
     </WorkbenchShell>
   );

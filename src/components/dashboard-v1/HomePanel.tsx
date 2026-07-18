@@ -11,6 +11,7 @@ export function HomePanel({
   links,
   publicUrl,
   onNavigate,
+  onAccount,
   onCopy,
   onShare,
   onQr,
@@ -20,16 +21,17 @@ export function HomePanel({
   links: DashboardLink[];
   publicUrl: string;
   onNavigate: (tab: DashboardTab) => void;
+  onAccount: () => void;
   onCopy: () => void;
   onShare: () => void;
   onQr: () => void;
 }) {
   const activeLinks = links.filter((link) => link.is_active);
   const checklist = [
-    { label: "设置公开主页地址", done: Boolean(profile && !isTemporaryUsername(profile.username)), tab: "profile" as const },
-    { label: "上传头像并填写名片资料", done: Boolean(profile?.avatar_url && profile.display_name), tab: "profile" as const },
-    { label: "至少添加一个公开链接", done: activeLinks.length > 0, tab: "links" as const },
-    { label: "完成邮箱验证", done: user.emailVerified, tab: "account" as const },
+    { label: "设置公开主页地址", done: Boolean(profile && !isTemporaryUsername(profile.username)), onClick: () => onNavigate("profile") },
+    { label: "上传头像并填写名片资料", done: Boolean(profile?.avatar_url && profile.display_name), onClick: () => onNavigate("profile") },
+    { label: "至少添加一个公开链接", done: activeLinks.length > 0, onClick: () => onNavigate("links") },
+    { label: "完成邮箱验证", done: user.emailVerified, onClick: onAccount },
   ];
   const completeCount = checklist.filter((item) => item.done).length;
   const recentLinks = links.slice(0, 4);
@@ -79,7 +81,7 @@ export function HomePanel({
 
           <div className="mt-5 grid gap-2">
             {checklist.map((item) => (
-              <button key={item.label} type="button" onClick={() => onNavigate(item.tab)} className="flex min-h-12 items-center gap-3 rounded-xl border border-[var(--ui-line)] bg-white px-4 text-left transition hover:border-[color:var(--ui-brand)]/35">
+              <button key={item.label} type="button" onClick={item.onClick} className="flex min-h-12 items-center gap-3 rounded-xl border border-[var(--ui-line)] bg-white px-4 text-left transition hover:border-[color:var(--ui-brand)]/35">
                 <span className={`grid size-7 shrink-0 place-items-center rounded-full ${item.done ? "bg-[var(--ui-success-soft)] text-[var(--ui-success)]" : "bg-[var(--ui-surface-muted)] text-[var(--ui-faint)]"}`}>
                   {item.done ? <Check className="size-4" /> : <Circle className="size-3" />}
                 </span>

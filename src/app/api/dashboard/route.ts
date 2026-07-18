@@ -338,7 +338,7 @@ export async function PUT(request: Request) {
       template: templateValue || "business",
       language: languageValue || "zh",
       customTheme: customThemeValue,
-      isPublic: true,
+      isPublic: false,
     },
     update: {
       displayName,
@@ -347,7 +347,6 @@ export async function PUT(request: Request) {
       ...(templateValue ? { template: templateValue } : {}),
       ...(languageValue ? { language: languageValue } : {}),
       ...(customThemeValue ? { customTheme: customThemeValue } : {}),
-      isPublic: true,
       ...(newUsername && newUsername !== currentUsername ? { username: newUsername } : {}),
     },
   });

@@ -10,6 +10,13 @@ describe("Mobile layout safety at 360px–430px", () => {
     expect(css).toMatch(/min-width:\s*360px/);
   });
 
+  test("anchor reset stays in Tailwind base layer so utility link colors can win", () => {
+    const cssPath = path.join(srcRoot, "app", "globals.css");
+    const css = fs.readFileSync(cssPath, "utf-8");
+    expect(css).toMatch(/@layer\s+base\s*\{[\s\S]*?a\s*\{[\s\S]*?color:\s*inherit;[\s\S]*?text-decoration:\s*none;[\s\S]*?\}/);
+    expect(css).not.toMatch(/^a\s*\{\s*color:\s*inherit;/m);
+  });
+
   test("ConsoleShell has bottom padding to avoid nav overlap", () => {
     const shellPath = path.join(
       srcRoot,
@@ -22,15 +29,23 @@ describe("Mobile layout safety at 360px–430px", () => {
     expect(content).toContain("safe-area-pb");
   });
 
-  test("ConsoleShell mobile nav is fixed at bottom", () => {
+  test("only ConsoleShell owns fixed mobile navigation", () => {
     const shellPath = path.join(
       srcRoot,
       "components",
       "layout",
       "ConsoleShell.tsx",
     );
-    const content = fs.readFileSync(shellPath, "utf-8");
-    expect(content).toContain("fixed inset-x-0 bottom-0");
+    const editorPath = path.join(
+      srcRoot,
+      "components",
+      "dashboard-v1",
+      "DashboardFrame.tsx",
+    );
+    const shell = fs.readFileSync(shellPath, "utf8");
+    const editor = fs.readFileSync(editorPath, "utf8");
+    expect(shell).toContain("MOBILE_BOTTOM_NAV.map");
+    expect(editor).not.toContain("fixed inset-x-0 bottom-0");
   });
 
   test("ConsoleShell mobile menu has no more than 5 primary bottom items", () => {
