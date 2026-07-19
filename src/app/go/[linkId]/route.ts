@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { NextRequest, NextResponse } from "next/server";
+import { resolvePublicProfileAccess } from "@/infrastructure/profile/prisma-public-profile-access";
 import { db } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -8,7 +9,11 @@ type RouteContext = {
   params: Promise<{ linkId: string }>;
 };
 
-function parseDeviceOsBrowser(userAgent: string | null): { device: string; os: string; browser: string } {
+function parseDeviceOsBrowser(userAgent: string | null): {
+  device: string;
+  os: string;
+  browser: string;
+} {
   const ua = (userAgent || "").toLowerCase();
 
   let device = "desktop";
@@ -51,16 +56,32 @@ function getClientIp(request: NextRequest): string {
   return "unknown";
 }
 
+function redirectHome(request: NextRequest) {
+  return NextResponse.redirect(new URL("/", request.url), 302);
+}
+
 export async function GET(request: NextRequest, context: RouteContext) {
   const { linkId } = await context.params;
 
   const link = await db.link.findUnique({
     where: { id: linkId, isActive: true },
-    include: { profile: true },
+    select: {
+      id: true,
+      profileId: true,
+      url: true,
+      profile: { select: { username: true } },
+    },
   });
 
-  if (!link) {
-    return NextResponse.redirect(new URL("/", request.url), 302);
+  if (!link) return redirectHome(request);
+
+  const resolution = await resolvePublicProfileAccess(link.profile.username);
+  if (
+    resolution.type !== "current" ||
+    !resolution.access.allowed ||
+    resolution.profile.id !== link.profileId
+  ) {
+    return redirectHome(request);
   }
 
   const userAgent = request.headers.get("user-agent");
