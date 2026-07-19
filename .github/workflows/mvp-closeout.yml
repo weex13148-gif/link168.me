@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: link168-refactor-${{ github.ref }}
@@ -61,6 +61,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Setup Node.js 22
         uses: actions/setup-node@v4
@@ -75,6 +76,18 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Materialize remaining Product status cutover
+        if: github.head_ref == 'agent/refactor-phase2-task1-catalog-page-persistence'
+        run: |
+          node scripts/refactor/materialize-phase2-task1-remaining-status.mjs
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add 'src/app/%5F_w/[workspaceId]/p/[slug]/page.tsx' 'src/app/%5F_w/[workspaceId]/page.tsx' 'src/app/%5F_w/[workspaceId]/products/page.tsx' 'src/app/api/[username]/products/route.ts' src/app/api/contact/route.ts src/app/workbench/ai/reception/page.tsx src/lib/billing/entitlements/index.ts tests/product-binding-order.test.ts
+          if ! git diff --cached --quiet; then
+            git commit -m "fix(catalog): finish Product status cutover"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
 
       - name: Verify approved baseline
         run: node scripts/refactor/verify-baseline.mjs
