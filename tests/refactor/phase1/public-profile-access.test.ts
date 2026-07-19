@@ -154,9 +154,18 @@ describe("Phase 1 public profile access policy", () => {
     }
   });
 
+  test("resolver awaits capability loading so rejected restriction queries fail closed", () => {
+    const resolver = fs.readFileSync(
+      "src/infrastructure/profile/prisma-public-profile-access.ts",
+      "utf8",
+    );
+    expect(resolver).toContain("if (direct) return await loadCurrentProfile(direct);");
+    expect(resolver).toContain("if (profile) return await loadCurrentProfile(profile);");
+  });
+
   test("page and metadata share the infrastructure resolver instead of split policy reads", () => {
     const page = fs.readFileSync("src/app/[username]/page.tsx", "utf8");
-    expect(page).toContain('resolvePublicProfileAccess');
+    expect(page).toContain("resolvePublicProfileAccess");
     expect(page.match(/resolvePublicProfileAccess\(username\)/g)).toHaveLength(2);
     expect(page).not.toContain("canShowPublicProfile");
     expect(page).not.toContain("syncEmailVerificationRestriction");
