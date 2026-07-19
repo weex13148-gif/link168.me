@@ -6,6 +6,9 @@ import { isTemporaryUsername } from "@/components/dashboard-v1/types";
 import { deleteAvatarRequest, fetchDashboard, fetchPlan, saveAppearanceRequest, saveProfileRequest, uploadAvatarRequest, saveCustomThemeRequest, saveProfileSettingsRequest, deactivateAccountRequest, logoutRequest } from "@/components/dashboard-v1/dashboard-api";
 import type { CustomTheme } from "@/components/theme/types";
 
+const MAX_AVATAR_SOURCE_BYTES = 10 * 1024 * 1024;
+const MAX_AVATAR_UPLOAD_BYTES = 2 * 1024 * 1024;
+
 async function compressAvatarImage(file: File): Promise<File> {
   return new Promise((resolve, reject) => {
     if (typeof window === "undefined" || !window.FileReader || !window.Image || !window.HTMLCanvasElement) {
@@ -201,7 +204,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
 
   const uploadAvatar = useCallback(async (file: File | null) => {
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { showToast("头像图片不能超过 2MB。", "error"); return; }
+    if (file.size > MAX_AVATAR_SOURCE_BYTES) { showToast("原始头像图片不能超过 10MB。", "error"); return; }
     if (!file.type.startsWith("image/")) { showToast("请选择图片文件。", "error"); return; }
 
     setUploadingAvatar(true);
@@ -211,18 +214,30 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
       try {
         uploadFile = await compressAvatarImage(file);
       } catch {
-        uploadFile = file;
+        if (file.size > MAX_AVATAR_UPLOAD_BYTES) {
+          setSaveState("error");
+          showToast("头像压缩失败，请更换图片后重试。", "error");
+          return;
+        }
+      }
+
+      if (uploadFile.size > MAX_AVATAR_UPLOAD_BYTES) {
+        setSaveState("error");
+        showToast("压缩后的头像仍超过 2MB，请更换图片后重试。", "error");
+        return;
       }
 
       const result = await uploadAvatarRequest(uploadFile);
       if (!result.ok) { setSaveState("error"); showToast(result.error, "error"); return; }
-      const nextProfile = withAvatarCacheBust(result.data);
+      const nextProfile = withAvatarCacheBust(result.data.profile);
       setProfile(nextProfile);
       setUsername(nextProfile.username);
       setDisplayName(nextProfile.display_name || "");
       setBio(nextProfile.bio || "");
       setSaveState("saved");
-      showToast("头像已更新，并已同步到预览和公开主页。");
+      showToast(result.message || (result.data.moderationStatus === "approved"
+        ? "头像已更新。"
+        : "头像已上传，审核通过后将在公开主页生效。"));
     } catch {
       setSaveState("error");
       showToast("头像上传失败，请稍后重试。", "error");

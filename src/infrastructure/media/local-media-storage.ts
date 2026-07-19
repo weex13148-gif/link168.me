@@ -37,8 +37,14 @@ export function createLocalMediaStorage(root: string) {
       return readFile(resolveStoragePath(root, storageKey));
     },
 
-    async delete(storageKey: string) {
-      await rm(resolveStoragePath(root, storageKey), { force: true });
+    async delete(storageKey: string): Promise<"deleted" | "not_found"> {
+      try {
+        await rm(resolveStoragePath(root, storageKey));
+        return "deleted";
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "ENOENT") return "not_found";
+        throw error;
+      }
     },
 
     resolve(storageKey: string) {

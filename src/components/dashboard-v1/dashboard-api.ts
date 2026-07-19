@@ -75,13 +75,36 @@ export async function saveProfileRequest(payload: { username: string; displayNam
   return { ok: true, data: data.profile, message: data.message };
 }
 
-export async function uploadAvatarRequest(file: File): Promise<ApiResult<DashboardProfile>> {
+export type AvatarUploadData = {
+  profile: DashboardProfile;
+  moderationStatus: "approved" | "pending_review";
+  publicEffective: boolean;
+};
+
+export async function uploadAvatarRequest(file: File): Promise<ApiResult<AvatarUploadData>> {
   const formData = new FormData();
   formData.append("avatar", file);
   const response = await fetch("/api/dashboard/avatar", { method: "POST", body: formData, cache: "no-store" });
-  const data = await readJson<{ success?: boolean; profile?: DashboardProfile; error?: string }>(response);
-  if (!response.ok || !data.success || !data.profile) return { ok: false, error: data.error || "头像上传失败。", status: response.status };
-  return { ok: true, data: data.profile };
+  const data = await readJson<{
+    success?: boolean;
+    profile?: DashboardProfile;
+    moderationStatus?: "approved" | "pending_review";
+    publicEffective?: boolean;
+    error?: string;
+    message?: string;
+  }>(response);
+  if (!response.ok || !data.success || !data.profile || !data.moderationStatus) {
+    return { ok: false, error: data.error || "头像上传失败。", status: response.status };
+  }
+  return {
+    ok: true,
+    data: {
+      profile: data.profile,
+      moderationStatus: data.moderationStatus,
+      publicEffective: Boolean(data.publicEffective),
+    },
+    message: data.message,
+  };
 }
 
 export async function deleteAvatarRequest(): Promise<ApiResult<DashboardProfile>> {
