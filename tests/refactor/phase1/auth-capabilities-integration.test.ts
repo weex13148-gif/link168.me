@@ -4,6 +4,14 @@ const authSource = fs.readFileSync("src/lib/auth.ts", "utf8");
 const loginSource = fs.readFileSync("src/app/api/auth/login/route.ts", "utf8");
 const dashboardSource = fs.readFileSync("src/app/api/dashboard/route.ts", "utf8");
 
+function between(source: string, start: string, end: string) {
+  const startIndex = source.indexOf(start);
+  const endIndex = source.indexOf(end, startIndex + start.length);
+  expect(startIndex).toBeGreaterThanOrEqual(0);
+  expect(endIndex).toBeGreaterThan(startIndex);
+  return source.slice(startIndex, endIndex);
+}
+
 describe("Phase 1 capability-backed ordinary authentication", () => {
   test("session users carry account status and inactive sessions fail closed", () => {
     expect(authSource).toContain('accountStatus: string;');
@@ -20,9 +28,14 @@ describe("Phase 1 capability-backed ordinary authentication", () => {
   });
 
   test("dashboard and sensitive guards delegate to capabilities", () => {
-    expect(authSource).toContain('if (!capabilities.canEnterDashboard)');
+    const dashboardGuard = between(
+      authSource,
+      'export async function requireDashboardUser',
+      'export async function requireActiveUser',
+    );
+    expect(dashboardGuard).toContain('if (!capabilities.canEnterDashboard)');
+    expect(dashboardGuard).not.toContain('const hardBlock = restrictions.find');
     expect(authSource).toContain('if (!dashboard.capabilities?.canModifySensitiveData)');
-    expect(authSource).not.toContain('const hardBlock = restrictions.find');
   });
 
   test("login uses the shared access context instead of a separate account decision tree", () => {
