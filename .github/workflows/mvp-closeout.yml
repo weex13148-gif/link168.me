@@ -114,7 +114,11 @@ jobs:
         run: npx prisma migrate deploy
 
       - name: Typecheck
-        run: npm run typecheck
+        shell: bash
+        run: |
+          mkdir -p test-results
+          set -o pipefail
+          npm run typecheck 2>&1 | tee test-results/typecheck.log
 
       - name: Lint
         run: npm run lint
@@ -132,11 +136,11 @@ jobs:
           fi
           tail -n 40 test-results/jest.log
 
-      - name: Upload Jest diagnostics
+      - name: Upload diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: jest-diagnostics
+          name: phase2-task1-diagnostics
           path: test-results
           retention-days: 7
 
