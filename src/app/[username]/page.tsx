@@ -19,12 +19,8 @@ import {
 } from "@/lib/seo/json-ld";
 import type { SharePageTemplate } from "@/components/share/SharePageRenderer";
 import { getThemeClasses } from "@/components/theme/presetThemes";
-import {
-  canShowPublicProfile,
-  getActiveRestrictions,
-  syncEmailVerificationRestriction,
-  type ActiveRestriction,
-} from "@/lib/auth";
+import type { PublicProfileAccessReason } from "@/domains/profile/public-profile-access";
+import { resolvePublicProfileAccess } from "@/infrastructure/profile/prisma-public-profile-access";
 import { db } from "@/lib/db";
 import { sanitizePublicUrl } from "@/lib/public-url-security";
 
@@ -37,110 +33,20 @@ type PublicProfilePageProps = {
   searchParams?: Promise<{ preview?: string; template?: string }>;
 };
 
-function normalizeUsername(value: string) {
-  return value.trim().toLowerCase();
-}
-
-async function loadProfileByUserId(userId: string) {
-  return db.profile.findUnique({
-    where: { userId },
-    include: {
-      links: {
-        where: { isActive: true },
-        orderBy: { position: "asc" },
-      },
-    },
-  });
-}
-
-async function resolveUsername(rawUsername: string) {
-  const normalized = normalizeUsername(rawUsername);
-  if (!normalized) return { type: "missing" as const };
-
-  const direct = await db.profile
-    .findUnique({
-      where: { username: normalized },
-      include: {
-        links: {
-          where: { isActive: true },
-          orderBy: { position: "asc" },
-        },
-      },
-    })
-    .catch(() => null);
-  if (direct) return { type: "current" as const, profile: direct };
-
-  const registry = await db.usernameRegistry
-    .findUnique({
-      where: { normalizedUsername: normalized },
-      select: { userId: true, status: true, reservedUntil: true },
-    })
-    .catch(() => null);
-
-  if (registry?.status === "CURRENT" && registry.userId) {
-    const profile = await loadProfileByUserId(registry.userId).catch(() => null);
-    if (profile) return { type: "current" as const, profile };
-  }
-
-  if (registry?.status === "PERMANENTLY_RESERVED") {
-    return { type: "reserved" as const };
-  }
-
-  if (
-    registry?.status === "RESERVED_90_DAYS" &&
-    registry.userId &&
-    registry.reservedUntil &&
-    registry.reservedUntil > new Date()
-  ) {
-    const currentProfile = await db.profile
-      .findUnique({
-        where: { userId: registry.userId },
-        select: { username: true },
-      })
-      .catch(() => null);
-    if (currentProfile && normalizeUsername(currentProfile.username) !== normalized) {
-      return { type: "redirect" as const, username: currentProfile.username };
-    }
-  }
-
-  const history = await db.usernameHistory
-    .findFirst({
-      where: { normalizedUsername: normalized },
-      orderBy: { createdAt: "desc" },
-    })
-    .catch(() => null);
-  if (history?.replacedBy && history.reservedUntil && history.reservedUntil > new Date()) {
-    return { type: "redirect" as const, username: history.replacedBy };
-  }
-
-  return { type: "missing" as const };
-}
-
 type CurrentProfile = Extract<
-  Awaited<ReturnType<typeof resolveUsername>>,
+  Awaited<ReturnType<typeof resolvePublicProfileAccess>>,
   { type: "current" }
 >["profile"];
 
 export async function generateMetadata({ params }: PublicProfilePageProps): Promise<Metadata> {
   const { username } = await params;
-  const result = await resolveUsername(username);
+  const result = await resolvePublicProfileAccess(username);
 
-  if (result.type !== "current") {
+  if (result.type !== "current" || !result.access.allowed) {
     return buildRestrictedProfileMetadata(username, appUrl);
   }
 
   const profile = result.profile;
-  let indexable = profile.isPublic;
-  try {
-    const [owner, restrictions] = await Promise.all([
-      db.user.findUnique({ where: { id: profile.userId }, select: { emailVerified: true } }),
-      getActiveRestrictions(profile.userId),
-    ]);
-    indexable = Boolean(profile.isPublic && owner?.emailVerified && canShowPublicProfile(restrictions).ok);
-  } catch {
-    indexable = false;
-  }
-
   const avatarUrl = profile.avatarUrl
     ? `${profile.avatarUrl.split("?")[0]}?v=${profile.updatedAt.getTime()}`
     : null;
@@ -150,8 +56,8 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
     displayName: profile.displayName,
     bio: profile.bio,
     avatarUrl,
-    isPublic: profile.isPublic,
-    isIndexable: indexable,
+    isPublic: true,
+    isIndexable: true,
     updatedAt: profile.updatedAt,
     pageUrl: `${appUrl}/${profile.username}`,
     appUrl,
@@ -165,22 +71,21 @@ function resolveTemplate(profile: CurrentProfile, requested?: string): SharePage
   return "business";
 }
 
-function restrictionPage(restrictions: ActiveRestriction[]) {
-  const types = restrictions.map((item) => item.type);
-  if (types.includes("BANNED")) {
+function restrictionPage(reason: PublicProfileAccessReason | null) {
+  if (reason === "BANNED") {
     return <BannedState />;
   }
-  if (types.includes("ADMIN_FREEZE")) {
+  if (reason === "ADMIN_FREEZE") {
     return <FrozenState reason="管理员已暂停该主页展示。" />;
   }
-  if (types.includes("SECURITY_RISK")) {
+  if (reason === "SECURITY_RISK") {
     return <FrozenState reason="为保障用户安全，该主页暂时停止公开展示。" />;
   }
-  if (types.includes("EMAIL_UNVERIFIED")) {
+  if (reason === "EMAIL_UNVERIFIED") {
     return (
       <StatePage
         title="该主页尚未完成邮箱验证"
-        description="注册超过 30 天仍未验证邮箱的主页会暂停公开展示。请主页所有者登录后台完成验证。"
+        description="主页所有者完成邮箱验证并重新发布后，访客即可访问该主页。"
         action={
           <Link
             href="/login"
@@ -192,15 +97,24 @@ function restrictionPage(restrictions: ActiveRestriction[]) {
       />
     );
   }
-  return null;
+  if (reason === "ACCOUNT_INACTIVE") {
+    return <StatePage title="该主页当前不可用" description="主页所有者账号当前不可用，页面已停止公开展示。" />;
+  }
+  if (reason === "PROFILE_NOT_PUBLIC") {
+    return <NotPublishedState />;
+  }
+  return <FrozenState />;
 }
 
 export default async function PublicProfilePage({ params, searchParams }: PublicProfilePageProps) {
   const { username } = await params;
   const query = searchParams ? await searchParams : {};
-  const result = await resolveUsername(username);
+  const result = await resolvePublicProfileAccess(username);
 
   if (result.type === "missing") notFound();
+  if (result.type === "unavailable") {
+    return <StatePage title="服务暂时不可用" description="系统暂时无法确认该主页状态，请稍后再试。" />;
+  }
   if (result.type === "reserved") {
     return (
       <StatePage
@@ -227,32 +141,11 @@ export default async function PublicProfilePage({ params, searchParams }: Public
   }
 
   const profile = result.profile;
-  let restrictions: ActiveRestriction[] = [];
-  try {
-    const user = await db.user.findUnique({
-      where: { id: profile.userId },
-      select: { emailVerified: true },
-    });
-    if (user && !user.emailVerified) {
-      await syncEmailVerificationRestriction(profile.userId).catch(() => undefined);
-    }
-    restrictions = await getActiveRestrictions(profile.userId);
-  } catch {
-    return <StatePage title="服务暂时不可用" description="系统暂时无法确认该主页状态，请稍后再试。" />;
-  }
-
-  const visibility = canShowPublicProfile(restrictions);
-  if (!visibility.ok) {
-    return restrictionPage(restrictions) || <FrozenState />;
-  }
-
-  if (!profile.isPublic) {
-    return <NotPublishedState />;
+  if (!result.access.allowed) {
+    return restrictionPage(result.access.reason);
   }
 
   const links = profile.links.map((item) => {
-    // D7 读取侧：图标 moderationStatus !== "approved" 时显示占位（不显示原图）
-    // 历史兼容：null / "legacy_approved" 视为 approved
     const iconModerationApproved =
       !item.iconModerationStatus ||
       item.iconModerationStatus === "approved" ||
@@ -307,7 +200,6 @@ export default async function PublicProfilePage({ params, searchParams }: Public
     : null;
   const contactIsPublic = profile.contactVisibility === "public";
 
-  // JSON-LD 结构化数据
   const personSchema = generatePersonSchema({
     name: profile.displayName || `@${profile.username}`,
     username: profile.username,
