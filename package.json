@@ -19,7 +19,8 @@
     "db:create-users": "node scripts/db/create-system-users.js",
     "check:dependencies": "node scripts/refactor/pin-direct-dependencies.mjs --check",
     "check:boundaries": "node scripts/refactor/check-domain-boundaries.mjs",
-    "verify:phase0": "node scripts/refactor/run-phase0-verification.mjs"
+    "verify:phase0": "node scripts/refactor/run-phase0-verification.mjs",
+    "backfill:avatars": "node scripts/refactor/backfill-avatar-media-assets.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
