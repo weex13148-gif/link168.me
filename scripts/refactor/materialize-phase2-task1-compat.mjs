@@ -95,8 +95,26 @@ replaceExact(
 );
 replaceExact(
   "src/components/workbench/ProductsClient.tsx",
-  "            isActive: data.product.is_active,\n",
-  '            status: data.product.is_active ? "published" : "archived",\n',
+  `          {
+            ...data.product,
+            userId: data.product.user_id,
+            sortOrder: data.product.sort_order,
+            isActive: data.product.is_active,
+            allowAiRecommendation: data.product.allow_ai_recommendation,
+            createdAt: new Date(data.product.created_at),
+            updatedAt: new Date(),
+          } as ProductWithDates,
+`,
+  `          {
+            ...data.product,
+            userId: data.product.user_id,
+            sortOrder: data.product.sort_order,
+            status: data.product.is_active ? "published" : "archived",
+            allowAiRecommendation: data.product.allow_ai_recommendation,
+            createdAt: new Date(data.product.created_at),
+            updatedAt: new Date(),
+          } as ProductWithDates,
+`,
 );
 replaceExact(
   "src/components/workbench/ProductsClient.tsx",
