@@ -88,7 +88,7 @@ describe("Phase 1 private-by-default profile publishing", () => {
     expect((await db.profile.findUniqueOrThrow({ where: { userId } })).isPublic).toBe(false);
   });
 
-  test("unverified user cannot publish", async () => {
+  test("unverified user cannot publish and the page remains private", async () => {
     const { userId, token } = await createAccount(false);
     const response = await putProfileSettings(
       jsonRequest("/api/dashboard/profile", token, { isPublic: true }),
