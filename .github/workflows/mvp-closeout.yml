@@ -153,12 +153,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate and normalize Prisma client
-        run: |
-          npx prisma generate
-          find src/generated/prisma -type f \( -name '*.ts' -o -name '*.js' -o -name '*.d.ts' -o -name '*.json' \) -print0 \
-            | xargs -0 -r sed -i 's/[[:blank:]]\+$//'
-          git diff --check
+      - name: Generate Prisma client
+        run: npx prisma generate
 
       - name: Restore standard gate and commit generated client
         run: |
