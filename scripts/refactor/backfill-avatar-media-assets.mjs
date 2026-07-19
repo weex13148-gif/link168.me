@@ -119,7 +119,7 @@ async function applyCandidate({ db, profile, uploadRoot, candidate }) {
         asset.ownerUserId !== profile.userId ||
         asset.profileId !== profile.id ||
         asset.purpose !== "avatar" ||
-        asset.status === "deleted"
+        asset.status !== "approved"
       ) {
         throw new Error("LEGACY_STORAGE_KEY_CONFLICT");
       }
@@ -216,7 +216,6 @@ export async function runAvatarMediaAssetBackfill({ db, uploadRoot, apply = fals
       }
       if (matches.length > 1) {
         summary.duplicates += 1;
-        continue;
       }
 
       if (!apply) {
