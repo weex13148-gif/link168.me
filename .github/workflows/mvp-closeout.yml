@@ -1,13 +1,13 @@
-name: MVP Closeout
+name: Link168 Refactor Gate
 
 on:
   push:
     branches:
-      - integration/mvp-closeout-r1
+      - master
       - refactor/link168-modular-monolith-r1
   pull_request:
     branches:
-      - integration/mvp-closeout-r1
+      - master
       - refactor/link168-modular-monolith-r1
   workflow_dispatch:
 
@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: mvp-closeout-${{ github.ref }}
+  group: link168-refactor-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -37,10 +37,20 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     env:
       NODE_ENV: test
       DATABASE_URL: postgresql://link168@127.0.0.1:5432/link168_ci
+      REDIS_URL: redis://127.0.0.1:6379
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       MAIL_ENABLED: "false"
       COOKIE_SECURE: "false"
@@ -65,6 +75,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Verify approved baseline
+        run: node scripts/refactor/verify-baseline.mjs
+
+      - name: Verify direct dependency policy
+        run: npm run check:dependencies
 
       - name: Validate Prisma schema
         run: npx prisma validate
