@@ -51,28 +51,42 @@ export async function transitionMediaAsset(input: {
 }): Promise<TransitionMediaAssetResult> {
   assertMediaAssetTransition(input.from, input.to);
   const now = input.now ?? new Date();
-  const claimed = await db.mediaAsset.updateMany({
-    where: {
-      id: input.assetId,
-      ownerUserId: input.ownerUserId,
-      status: input.from,
-    },
-    data: {
-      status: input.to,
-      moderationReason:
-        input.moderationReason === undefined ? undefined : input.moderationReason,
-      deletedAt: input.to === "deleted" ? now : undefined,
-    },
-  });
 
-  if (claimed.count !== 1) {
-    return Object.freeze({ ok: false, reason: "STALE_OR_NOT_OWNED" });
-  }
+  return db.$transaction(async (tx) => {
+    const claimed = await tx.mediaAsset.updateMany({
+      where: {
+        id: input.assetId,
+        ownerUserId: input.ownerUserId,
+        status: input.from,
+      },
+      data: {
+        status: input.to,
+        moderationReason:
+          input.moderationReason === undefined ? undefined : input.moderationReason,
+        deletedAt: input.to === "deleted" ? now : undefined,
+      },
+    });
 
-  const asset = await db.mediaAsset.findUniqueOrThrow({
-    where: { id: input.assetId },
+    if (claimed.count !== 1) {
+      return Object.freeze({ ok: false, reason: "STALE_OR_NOT_OWNED" as const });
+    }
+
+    if (input.to === "deleted") {
+      await tx.profile.updateMany({
+        where: { avatarAssetId: input.assetId },
+        data: {
+          avatarAssetId: null,
+          avatarUrl: null,
+          avatarModerationStatus: "pending",
+        },
+      });
+    }
+
+    const asset = await tx.mediaAsset.findUniqueOrThrow({
+      where: { id: input.assetId },
+    });
+    return Object.freeze({ ok: true, asset });
   });
-  return Object.freeze({ ok: true, asset });
 }
 
 export async function setProfileAvatarAsset(input: {
