@@ -139,7 +139,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: agent/refactor-phase1-task5-private-publishing
-          fetch-depth: 0
+          fetch-depth: 1
           show-progress: false
 
       - name: Setup Node.js 22
@@ -155,7 +155,8 @@ jobs:
 
       - name: Restore read-only gate and commit
         run: |
-          git checkout origin/refactor/link168-modular-monolith-r1 -- .github/workflows/mvp-closeout.yml
+          git fetch --depth=1 origin refactor/link168-modular-monolith-r1
+          git checkout FETCH_HEAD -- .github/workflows/mvp-closeout.yml
           rm -f scripts/refactor/apply-phase1-task5.py
           git diff --check
           git config user.name "github-actions[bot]"
