@@ -20,6 +20,7 @@
     "check:dependencies": "node scripts/refactor/pin-direct-dependencies.mjs --check",
     "check:boundaries": "node scripts/refactor/check-domain-boundaries.mjs",
     "verify:phase0": "node scripts/refactor/run-phase0-verification.mjs",
+    "verify:phase1": "node scripts/refactor/run-phase1-verification.mjs",
     "backfill:avatar-assets": "node scripts/refactor/backfill-avatar-media-assets.mjs"
   },
   "dependencies": {
