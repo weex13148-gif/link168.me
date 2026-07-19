@@ -23,11 +23,12 @@ const reportPath = path.join(
   root,
   "docs/superpowers/reports/2026-07-19-phase-0-verification.json",
 );
-const tailLength = 4000;
+const tailLength = 1200;
 const maxBuffer = 64 * 1024 * 1024;
+const ansiPattern = /\u001B\[[0-?]*[ -/]*[@-~]/g;
 
 function tail(value) {
-  const text = typeof value === "string" ? value : "";
+  const text = typeof value === "string" ? value.replace(ansiPattern, "") : "";
   return text.length <= tailLength ? text : text.slice(-tailLength);
 }
 
