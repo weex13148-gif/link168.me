@@ -17,7 +17,8 @@
     "db:migrate": "node scripts/db/migrate-db.js",
     "db:verify": "node scripts/db/verify-db.js",
     "db:create-users": "node scripts/db/create-system-users.js",
-    "check:dependencies": "node scripts/refactor/pin-direct-dependencies.mjs --check"
+    "check:dependencies": "node scripts/refactor/pin-direct-dependencies.mjs --check",
+    "check:boundaries": "node scripts/refactor/check-domain-boundaries.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
