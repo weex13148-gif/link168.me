@@ -1,3 +1,5 @@
+import { NoopAuditRecorder } from "@/infrastructure/audit/noop-audit-recorder";
+import type { AuditEvent, AuditRecorder } from "@/shared/audit";
 import { DomainError } from "@/shared/domain-error";
 import {
   assertSingleWriter,
@@ -129,5 +131,26 @@ describe("Phase 0 refactor feature flags", () => {
       expect((error as DomainError).message).toBe("MULTIPLE_WRITERS_ENABLED");
       expect((error as DomainError).details).toEqual({ label: "profile" });
     }
+  });
+});
+
+describe("Phase 0 audit recorder contract", () => {
+  it("accepts a complete immutable audit event without side effects", async () => {
+    const metadata = Object.freeze({ route: "/api/profile/publish" });
+    const event: AuditEvent = Object.freeze({
+      eventId: "audit-1",
+      occurredAt: new Date("2026-07-19T00:00:00.000Z"),
+      actorUserId: "user-1",
+      action: "profile.publish",
+      resourceType: "profile",
+      resourceId: "profile-1",
+      outcome: "success",
+      metadata,
+    });
+    const recorder: AuditRecorder = new NoopAuditRecorder();
+
+    await expect(recorder.record(event)).resolves.toBeUndefined();
+    expect(Object.isFrozen(event)).toBe(true);
+    expect(Object.isFrozen(event.metadata)).toBe(true);
   });
 });
