@@ -129,3 +129,15 @@ jobs:
 
       - name: Diff check
         run: git diff --check
+
+      - name: Run reproducible Phase 0 verification
+        run: npm run verify:phase0
+
+      - name: Upload Phase 0 verification report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase0-verification-report
+          path: docs/superpowers/reports/2026-07-19-phase-0-verification.json
+          if-no-files-found: error
+          retention-days: 7
