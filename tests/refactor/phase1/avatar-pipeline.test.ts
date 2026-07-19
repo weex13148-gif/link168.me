@@ -230,7 +230,7 @@ describe("Phase 1 avatar MediaAsset pipeline", () => {
 describe("Phase 1 avatar route and client contracts", () => {
   test("public avatar route performs exact MediaAsset lookup without recursive directory scans", async () => {
     const source = await readFile(
-      path.join(process.cwd(), "src/app/api/avatar/[username]/route.ts"),
+      path.join(process.cwd(), "src/infrastructure/media/avatar-read.ts"),
       "utf8",
     );
     expect(source).toContain("getCurrentAvatarAssetByUsername");
