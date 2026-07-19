@@ -1,0 +1,51 @@
+{
+  "phase": 1,
+  "status": "READY_FOR_NEXT_PHASE",
+  "verifiedImplementationSha": "9292469a184571642297cf9081f14991a7045055",
+  "workflow": "Link168 Refactor Gate",
+  "workflowRunId": 29691528986,
+  "orderedVerificationJobId": 88205016366,
+  "standardGateJobId": 88205016424,
+  "sourceArtifact": {
+    "name": "phase1-verification-report",
+    "artifactId": 8443747214,
+    "sha256": "ecf7dd2b56d906cea331002a6625442a2a954b7e2ae18549893e313525e5b532",
+    "generatedAt": "2026-07-19T14:50:30.399Z"
+  },
+  "runtime": {
+    "node": "v22.23.1",
+    "npm": "10.9.8",
+    "postgresql": "16",
+    "redis": "7"
+  },
+  "tests": {
+    "suitesPassed": 42,
+    "suitesTotal": 42,
+    "testsPassed": 429,
+    "testsTotal": 429,
+    "snapshots": 0
+  },
+  "commands": [
+    { "command": "npm ci", "exitCode": 0 },
+    { "command": "node scripts/refactor/verify-baseline.mjs", "exitCode": 0 },
+    { "command": "npm run check:dependencies", "exitCode": 0 },
+    { "command": "npm run check:boundaries", "exitCode": 0 },
+    { "command": "node scripts/refactor/schema-fingerprint.mjs --check", "exitCode": 0 },
+    { "command": "npx prisma validate", "exitCode": 0 },
+    { "command": "npx prisma generate", "exitCode": 0 },
+    { "command": "npx prisma migrate deploy", "exitCode": 0 },
+    { "command": "npm run typecheck", "exitCode": 0 },
+    { "command": "npm run lint", "exitCode": 0 },
+    { "command": "npm test -- --runInBand", "exitCode": 0 },
+    { "command": "npm run build", "exitCode": 0 },
+    { "command": "git diff --check", "exitCode": 0 }
+  ],
+  "warnings": [
+    "npm audit reports 5 moderate-severity dependency findings; no destructive automatic upgrade was applied.",
+    "Deprecated transitive packages include inflight 1.0.6, glob 7.2.3 and glob 10.5.0.",
+    "Next.js 16.2.9 Turbopack reports one NFT tracing warning involving next.config.ts and src/app/api/dashboard/media/[type]/[...path]/route.ts."
+  ],
+  "productionChanges": "none",
+  "masterChanges": "none",
+  "userVisibleBehaviorChanges": "private-by-default and truthful media states in the refactor branch only"
+}
