@@ -45,6 +45,7 @@ model User {
   ownedWorkspaces             Workspace[]                  @relation("WorkspaceOwner")
   workspacePublicProfiles     WorkspacePublicProfile[]
   enterpriseQuotaConsumptions EnterpriseQuotaConsumption[]
+  mediaAssets                 MediaAsset[]
 
   @@map("users")
 }
@@ -116,6 +117,7 @@ model Profile {
   displayNameAnonymized      Boolean          @default(false) @map("display_name_anonymized")
   bio                        String?
   avatarUrl                  String?          @map("avatar_url")
+  avatarAssetId             String?          @unique @map("avatar_asset_id") @db.Uuid
   avatarModerationStatus     String           @default("legacy_approved") @map("avatar_moderation_status")
   coverImageUrl              String?          @map("cover_image_url")
   coverImageModerationStatus String           @default("pending") @map("cover_image_moderation_status")
@@ -146,8 +148,35 @@ model Profile {
   // AI 对话：公开主页访客与 AI 客服的对话记录
   aiConversations            AiConversation[]
   visits                     ProfileVisit[]
+  avatarAsset               MediaAsset?      @relation("CurrentProfileAvatar", fields: [avatarAssetId], references: [id], onDelete: SetNull)
+  mediaAssets               MediaAsset[]     @relation("ProfileMediaAssets")
 
   @@map("profiles")
+}
+
+model MediaAsset {
+  id               String    @id @default(uuid()) @db.Uuid
+  ownerUserId      String    @map("owner_user_id") @db.Uuid
+  profileId        String?   @map("profile_id") @db.Uuid
+  purpose          String
+  storageProvider  String    @default("local") @map("storage_provider")
+  storageKey       String    @unique @map("storage_key")
+  originalName     String?   @map("original_name")
+  mimeType         String    @map("mime_type")
+  sizeBytes        Int       @map("size_bytes")
+  checksumSha256   String    @map("checksum_sha256")
+  status           String    @default("uploading")
+  moderationReason String?   @map("moderation_reason")
+  deletedAt        DateTime? @map("deleted_at") @db.Timestamptz(6)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  owner            User      @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  profile          Profile?  @relation("ProfileMediaAssets", fields: [profileId], references: [id], onDelete: SetNull)
+  currentAvatarFor Profile?  @relation("CurrentProfileAvatar")
+
+  @@index([ownerUserId, purpose, status])
+  @@index([profileId, purpose, status])
+  @@map("media_assets")
 }
 
 // ============================================
