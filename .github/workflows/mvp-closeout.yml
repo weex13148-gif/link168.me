@@ -151,8 +151,12 @@ jobs:
         shell: bash
         run: |
           set +e
-          python3 scripts/refactor/apply-phase1-task5.py > task5-patch.log 2>&1
+          python3 scripts/refactor/fix-phase1-task5-script.py > task5-patch.log 2>&1
           status=$?
+          if [ "$status" -eq 0 ]; then
+            python3 scripts/refactor/apply-phase1-task5.py >> task5-patch.log 2>&1
+            status=$?
+          fi
           cat task5-patch.log
           if [ "$status" -ne 0 ]; then
             exit "$status"
@@ -172,7 +176,7 @@ jobs:
         run: |
           git fetch --depth=1 origin refactor/link168-modular-monolith-r1
           git checkout FETCH_HEAD -- .github/workflows/mvp-closeout.yml
-          rm -f scripts/refactor/apply-phase1-task5.py task5-patch.log
+          rm -f scripts/refactor/apply-phase1-task5.py scripts/refactor/fix-phase1-task5-script.py task5-patch.log
           git diff --check
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
