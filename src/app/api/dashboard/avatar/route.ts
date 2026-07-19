@@ -111,8 +111,16 @@ export async function POST(request: Request) {
     );
   }
 
+  const updatedProfile = result.profile;
+  if (!updatedProfile) {
+    return NextResponse.json(
+      { success: false, error: "头像已处理，但主页状态读取失败，请稍后重试。" },
+      { status: 500, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+
   await revalidatePublicProfileByUser(user.id);
-  const avatarUrl = `${AVATAR_API_PREFIX}${profile.username}?v=${result.profile.updatedAt.getTime()}`;
+  const avatarUrl = `${AVATAR_API_PREFIX}${profile.username}?v=${updatedProfile.updatedAt.getTime()}`;
   const publicEffective = result.publicEffective && Boolean(capabilities?.canExposePublicResources);
   const message = result.moderationStatus === "approved"
     ? "头像已更新。"
@@ -121,7 +129,7 @@ export async function POST(request: Request) {
   return NextResponse.json(
     {
       success: true,
-      profile: { ...toProfileDto(result.profile), avatar_url: avatarUrl },
+      profile: { ...toProfileDto(updatedProfile), avatar_url: avatarUrl },
       avatarUrl,
       moderationStatus: result.moderationStatus,
       publicEffective,
