@@ -133,11 +133,26 @@ describe("Phase 1 MediaAsset lifecycle", () => {
       profileId: owner.profileId,
       assetId: asset.id,
     });
-    const profile = await db.profile.findUniqueOrThrow({
-      where: { id: owner.profileId },
-      select: { avatarAssetId: true },
+    expect(
+      await db.profile.findUniqueOrThrow({
+        where: { id: owner.profileId },
+        select: { avatarAssetId: true },
+      }),
+    ).toEqual({ avatarAssetId: asset.id });
+
+    const deleted = await transitionMediaAsset({
+      assetId: asset.id,
+      ownerUserId: owner.userId,
+      from: "approved",
+      to: "deleted",
     });
-    expect(profile.avatarAssetId).toBe(asset.id);
+    expect(deleted.ok).toBe(true);
+    expect(
+      await db.profile.findUniqueOrThrow({
+        where: { id: owner.profileId },
+        select: { avatarAssetId: true },
+      }),
+    ).toEqual({ avatarAssetId: null });
   });
 });
 
