@@ -66,7 +66,7 @@ describe("Phase 1 MediaAsset lifecycle", () => {
     );
   });
 
-  test("Prisma repository atomically claims one lifecycle transition", async () => {
+  test("Prisma repository permits exactly one concurrent lifecycle claim", async () => {
     const owner = await createOwner();
     const asset = await createUploadingMediaAsset({
       ownerUserId: owner.userId,
