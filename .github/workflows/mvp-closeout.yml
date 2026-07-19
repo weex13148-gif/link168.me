@@ -98,7 +98,22 @@ jobs:
         run: npx prisma migrate deploy
 
       - name: Typecheck
-        run: npm run typecheck
+        shell: bash
+        run: |
+          mkdir -p test-results
+          set +e
+          npm run typecheck > test-results/typecheck.log 2>&1
+          status=$?
+          cat test-results/typecheck.log
+          exit "$status"
+
+      - name: Upload Typecheck diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: task9-typecheck-diagnostics
+          path: test-results/typecheck.log
+          retention-days: 1
 
       - name: Lint
         run: npm run lint
