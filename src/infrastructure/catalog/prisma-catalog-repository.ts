@@ -131,7 +131,12 @@ export class PrismaCatalogRepository implements CatalogRepository {
     input: CreateCatalogRecordInput,
   ): Promise<CatalogItemRecord> {
     return this.client.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`catalog:${ownerUserId}`}))`;
       await assertOwnedCoverAsset(tx, ownerUserId, input.coverAssetId);
+      const order = await tx.product.aggregate({
+        where: { userId: ownerUserId },
+        _max: { sortOrder: true },
+      });
       const row = await tx.product.create({
         data: {
           id: crypto.randomUUID(),
@@ -146,13 +151,13 @@ export class PrismaCatalogRepository implements CatalogRepository {
           coverAssetId: input.coverAssetId,
           ctaLabel: input.ctaLabel,
           ctaUrl: input.ctaUrl,
-          sortOrder: input.sortOrder,
+          sortOrder: (order._max.sortOrder ?? -1) + 1,
           allowAiRecommendation: input.allowAiRecommendation,
         },
         include: catalogInclude,
       });
       return mapRow(row);
-    });
+    }, { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted });
   }
 
   async updateOwned(
