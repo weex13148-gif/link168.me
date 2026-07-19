@@ -198,7 +198,7 @@ describe("PrismaCatalogRepository", () => {
 
     const finalItems = await repository.listOwned(owner.userId);
     expect(finalItems.map((item) => item.sortOrder).sort((a, b) => a - b)).toEqual([0, 1, 2]);
-    expect(new Set(finalItems.map((item) => item.sortOrder))).toHaveLength(3);
+    expect(new Set(finalItems.map((item) => item.sortOrder)).size).toBe(3);
   });
 
   test("rejects incomplete, duplicate, and cross-owner reorder sets", async () => {
