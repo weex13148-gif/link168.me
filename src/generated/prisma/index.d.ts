@@ -5097,10 +5097,12 @@ export namespace Prisma {
 
   export type ProductCountOutputType = {
     leads: number
+    pageModules: number
   }
 
   export type ProductCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     leads?: boolean | ProductCountOutputTypeCountLeadsArgs
+    pageModules?: boolean | ProductCountOutputTypeCountPageModulesArgs
   }
 
   // Custom InputTypes
@@ -5119,6 +5121,13 @@ export namespace Prisma {
    */
   export type ProductCountOutputTypeCountLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: LeadWhereInput
+  }
+
+  /**
+   * ProductCountOutputType without action
+   */
+  export type ProductCountOutputTypeCountPageModulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LinkWhereInput
   }
 
 
@@ -12085,6 +12094,7 @@ export namespace Prisma {
     owner?: boolean | UserDefaultArgs<ExtArgs>
     profile?: boolean | MediaAsset$profileArgs<ExtArgs>
     currentAvatarFor?: boolean | MediaAsset$currentAvatarForArgs<ExtArgs>
+    currentCatalogCoverFor?: boolean | MediaAsset$currentCatalogCoverForArgs<ExtArgs>
   }, ExtArgs["result"]["mediaAsset"]>
 
   export type MediaAssetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -12150,6 +12160,7 @@ export namespace Prisma {
     owner?: boolean | UserDefaultArgs<ExtArgs>
     profile?: boolean | MediaAsset$profileArgs<ExtArgs>
     currentAvatarFor?: boolean | MediaAsset$currentAvatarForArgs<ExtArgs>
+    currentCatalogCoverFor?: boolean | MediaAsset$currentCatalogCoverForArgs<ExtArgs>
   }
   export type MediaAssetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
@@ -12166,6 +12177,7 @@ export namespace Prisma {
       owner: Prisma.$UserPayload<ExtArgs>
       profile: Prisma.$ProfilePayload<ExtArgs> | null
       currentAvatarFor: Prisma.$ProfilePayload<ExtArgs> | null
+      currentCatalogCoverFor: Prisma.$ProductPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -12580,6 +12592,7 @@ export namespace Prisma {
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     profile<T extends MediaAsset$profileArgs<ExtArgs> = {}>(args?: Subset<T, MediaAsset$profileArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     currentAvatarFor<T extends MediaAsset$currentAvatarForArgs<ExtArgs> = {}>(args?: Subset<T, MediaAsset$currentAvatarForArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    currentCatalogCoverFor<T extends MediaAsset$currentCatalogCoverForArgs<ExtArgs> = {}>(args?: Subset<T, MediaAsset$currentCatalogCoverForArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13060,6 +13073,25 @@ export namespace Prisma {
      */
     include?: ProfileInclude<ExtArgs> | null
     where?: ProfileWhereInput
+  }
+
+  /**
+   * MediaAsset.currentCatalogCoverFor
+   */
+  export type MediaAsset$currentCatalogCoverForArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+    where?: ProductWhereInput
   }
 
   /**
@@ -15371,11 +15403,13 @@ export namespace Prisma {
   }
 
   export type LinkAvgAggregateOutputType = {
+    schemaVersion: number | null
     position: number | null
     totalClicks: number | null
   }
 
   export type LinkSumAggregateOutputType = {
+    schemaVersion: number | null
     position: number | null
     totalClicks: number | null
   }
@@ -15385,6 +15419,8 @@ export namespace Prisma {
     profileId: string | null
     type: string | null
     payloadJson: string | null
+    catalogItemId: string | null
+    schemaVersion: number | null
     title: string | null
     url: string | null
     description: string | null
@@ -15404,6 +15440,8 @@ export namespace Prisma {
     profileId: string | null
     type: string | null
     payloadJson: string | null
+    catalogItemId: string | null
+    schemaVersion: number | null
     title: string | null
     url: string | null
     description: string | null
@@ -15423,6 +15461,8 @@ export namespace Prisma {
     profileId: number
     type: number
     payloadJson: number
+    catalogItemId: number
+    schemaVersion: number
     title: number
     url: number
     description: number
@@ -15440,11 +15480,13 @@ export namespace Prisma {
 
 
   export type LinkAvgAggregateInputType = {
+    schemaVersion?: true
     position?: true
     totalClicks?: true
   }
 
   export type LinkSumAggregateInputType = {
+    schemaVersion?: true
     position?: true
     totalClicks?: true
   }
@@ -15454,6 +15496,8 @@ export namespace Prisma {
     profileId?: true
     type?: true
     payloadJson?: true
+    catalogItemId?: true
+    schemaVersion?: true
     title?: true
     url?: true
     description?: true
@@ -15473,6 +15517,8 @@ export namespace Prisma {
     profileId?: true
     type?: true
     payloadJson?: true
+    catalogItemId?: true
+    schemaVersion?: true
     title?: true
     url?: true
     description?: true
@@ -15492,6 +15538,8 @@ export namespace Prisma {
     profileId?: true
     type?: true
     payloadJson?: true
+    catalogItemId?: true
+    schemaVersion?: true
     title?: true
     url?: true
     description?: true
@@ -15598,6 +15646,8 @@ export namespace Prisma {
     profileId: string
     type: string
     payloadJson: string | null
+    catalogItemId: string | null
+    schemaVersion: number
     title: string
     url: string
     description: string | null
@@ -15636,6 +15686,8 @@ export namespace Prisma {
     profileId?: boolean
     type?: boolean
     payloadJson?: boolean
+    catalogItemId?: boolean
+    schemaVersion?: boolean
     title?: boolean
     url?: boolean
     description?: boolean
@@ -15649,6 +15701,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    catalogItem?: boolean | Link$catalogItemArgs<ExtArgs>
     clicks?: boolean | Link$clicksArgs<ExtArgs>
     _count?: boolean | LinkCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["link"]>
@@ -15658,6 +15711,8 @@ export namespace Prisma {
     profileId?: boolean
     type?: boolean
     payloadJson?: boolean
+    catalogItemId?: boolean
+    schemaVersion?: boolean
     title?: boolean
     url?: boolean
     description?: boolean
@@ -15671,6 +15726,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    catalogItem?: boolean | Link$catalogItemArgs<ExtArgs>
   }, ExtArgs["result"]["link"]>
 
   export type LinkSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -15678,6 +15734,8 @@ export namespace Prisma {
     profileId?: boolean
     type?: boolean
     payloadJson?: boolean
+    catalogItemId?: boolean
+    schemaVersion?: boolean
     title?: boolean
     url?: boolean
     description?: boolean
@@ -15691,6 +15749,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    catalogItem?: boolean | Link$catalogItemArgs<ExtArgs>
   }, ExtArgs["result"]["link"]>
 
   export type LinkSelectScalar = {
@@ -15698,6 +15757,8 @@ export namespace Prisma {
     profileId?: boolean
     type?: boolean
     payloadJson?: boolean
+    catalogItemId?: boolean
+    schemaVersion?: boolean
     title?: boolean
     url?: boolean
     description?: boolean
@@ -15712,23 +15773,27 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type LinkOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "profileId" | "type" | "payloadJson" | "title" | "url" | "description" | "iconType" | "iconValue" | "iconUrl" | "iconModerationStatus" | "position" | "isActive" | "totalClicks" | "createdAt" | "updatedAt", ExtArgs["result"]["link"]>
+  export type LinkOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "profileId" | "type" | "payloadJson" | "catalogItemId" | "schemaVersion" | "title" | "url" | "description" | "iconType" | "iconValue" | "iconUrl" | "iconModerationStatus" | "position" | "isActive" | "totalClicks" | "createdAt" | "updatedAt", ExtArgs["result"]["link"]>
   export type LinkInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    catalogItem?: boolean | Link$catalogItemArgs<ExtArgs>
     clicks?: boolean | Link$clicksArgs<ExtArgs>
     _count?: boolean | LinkCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type LinkIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    catalogItem?: boolean | Link$catalogItemArgs<ExtArgs>
   }
   export type LinkIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    catalogItem?: boolean | Link$catalogItemArgs<ExtArgs>
   }
 
   export type $LinkPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Link"
     objects: {
       profile: Prisma.$ProfilePayload<ExtArgs>
+      catalogItem: Prisma.$ProductPayload<ExtArgs> | null
       clicks: Prisma.$LinkClickPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -15736,6 +15801,8 @@ export namespace Prisma {
       profileId: string
       type: string
       payloadJson: string | null
+      catalogItemId: string | null
+      schemaVersion: number
       title: string
       url: string
       description: string | null
@@ -16143,6 +16210,7 @@ export namespace Prisma {
   export interface Prisma__LinkClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     profile<T extends ProfileDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProfileDefaultArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    catalogItem<T extends Link$catalogItemArgs<ExtArgs> = {}>(args?: Subset<T, Link$catalogItemArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     clicks<T extends Link$clicksArgs<ExtArgs> = {}>(args?: Subset<T, Link$clicksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkClickPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -16177,6 +16245,8 @@ export namespace Prisma {
     readonly profileId: FieldRef<"Link", 'String'>
     readonly type: FieldRef<"Link", 'String'>
     readonly payloadJson: FieldRef<"Link", 'String'>
+    readonly catalogItemId: FieldRef<"Link", 'String'>
+    readonly schemaVersion: FieldRef<"Link", 'Int'>
     readonly title: FieldRef<"Link", 'String'>
     readonly url: FieldRef<"Link", 'String'>
     readonly description: FieldRef<"Link", 'String'>
@@ -16587,6 +16657,25 @@ export namespace Prisma {
      * Limit how many Links to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Link.catalogItem
+   */
+  export type Link$catalogItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+    where?: ProductWhereInput
   }
 
   /**
@@ -33520,16 +33609,19 @@ export namespace Prisma {
   export type ProductMinAggregateOutputType = {
     id: string | null
     userId: string | null
+    kind: string | null
+    status: string | null
     name: string | null
     category: string | null
     description: string | null
     priceText: string | null
     coverImageUrl: string | null
+    coverAssetId: string | null
     ctaLabel: string | null
     ctaUrl: string | null
     sortOrder: number | null
-    isActive: boolean | null
     allowAiRecommendation: boolean | null
+    archivedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -33537,16 +33629,19 @@ export namespace Prisma {
   export type ProductMaxAggregateOutputType = {
     id: string | null
     userId: string | null
+    kind: string | null
+    status: string | null
     name: string | null
     category: string | null
     description: string | null
     priceText: string | null
     coverImageUrl: string | null
+    coverAssetId: string | null
     ctaLabel: string | null
     ctaUrl: string | null
     sortOrder: number | null
-    isActive: boolean | null
     allowAiRecommendation: boolean | null
+    archivedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -33554,16 +33649,19 @@ export namespace Prisma {
   export type ProductCountAggregateOutputType = {
     id: number
     userId: number
+    kind: number
+    status: number
     name: number
     category: number
     description: number
     priceText: number
     coverImageUrl: number
+    coverAssetId: number
     ctaLabel: number
     ctaUrl: number
     sortOrder: number
-    isActive: number
     allowAiRecommendation: number
+    archivedAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -33581,16 +33679,19 @@ export namespace Prisma {
   export type ProductMinAggregateInputType = {
     id?: true
     userId?: true
+    kind?: true
+    status?: true
     name?: true
     category?: true
     description?: true
     priceText?: true
     coverImageUrl?: true
+    coverAssetId?: true
     ctaLabel?: true
     ctaUrl?: true
     sortOrder?: true
-    isActive?: true
     allowAiRecommendation?: true
+    archivedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -33598,16 +33699,19 @@ export namespace Prisma {
   export type ProductMaxAggregateInputType = {
     id?: true
     userId?: true
+    kind?: true
+    status?: true
     name?: true
     category?: true
     description?: true
     priceText?: true
     coverImageUrl?: true
+    coverAssetId?: true
     ctaLabel?: true
     ctaUrl?: true
     sortOrder?: true
-    isActive?: true
     allowAiRecommendation?: true
+    archivedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -33615,16 +33719,19 @@ export namespace Prisma {
   export type ProductCountAggregateInputType = {
     id?: true
     userId?: true
+    kind?: true
+    status?: true
     name?: true
     category?: true
     description?: true
     priceText?: true
     coverImageUrl?: true
+    coverAssetId?: true
     ctaLabel?: true
     ctaUrl?: true
     sortOrder?: true
-    isActive?: true
     allowAiRecommendation?: true
+    archivedAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -33719,16 +33826,19 @@ export namespace Prisma {
   export type ProductGroupByOutputType = {
     id: string
     userId: string
+    kind: string
+    status: string
     name: string
     category: string | null
     description: string | null
     priceText: string | null
     coverImageUrl: string | null
+    coverAssetId: string | null
     ctaLabel: string | null
     ctaUrl: string | null
     sortOrder: number
-    isActive: boolean
     allowAiRecommendation: boolean
+    archivedAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: ProductCountAggregateOutputType | null
@@ -33755,108 +33865,133 @@ export namespace Prisma {
   export type ProductSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    kind?: boolean
+    status?: boolean
     name?: boolean
     category?: boolean
     description?: boolean
     priceText?: boolean
     coverImageUrl?: boolean
+    coverAssetId?: boolean
     ctaLabel?: boolean
     ctaUrl?: boolean
     sortOrder?: boolean
-    isActive?: boolean
     allowAiRecommendation?: boolean
+    archivedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    coverAsset?: boolean | Product$coverAssetArgs<ExtArgs>
     leads?: boolean | Product$leadsArgs<ExtArgs>
+    pageModules?: boolean | Product$pageModulesArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
   export type ProductSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    kind?: boolean
+    status?: boolean
     name?: boolean
     category?: boolean
     description?: boolean
     priceText?: boolean
     coverImageUrl?: boolean
+    coverAssetId?: boolean
     ctaLabel?: boolean
     ctaUrl?: boolean
     sortOrder?: boolean
-    isActive?: boolean
     allowAiRecommendation?: boolean
+    archivedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    coverAsset?: boolean | Product$coverAssetArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
   export type ProductSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    kind?: boolean
+    status?: boolean
     name?: boolean
     category?: boolean
     description?: boolean
     priceText?: boolean
     coverImageUrl?: boolean
+    coverAssetId?: boolean
     ctaLabel?: boolean
     ctaUrl?: boolean
     sortOrder?: boolean
-    isActive?: boolean
     allowAiRecommendation?: boolean
+    archivedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    coverAsset?: boolean | Product$coverAssetArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
   export type ProductSelectScalar = {
     id?: boolean
     userId?: boolean
+    kind?: boolean
+    status?: boolean
     name?: boolean
     category?: boolean
     description?: boolean
     priceText?: boolean
     coverImageUrl?: boolean
+    coverAssetId?: boolean
     ctaLabel?: boolean
     ctaUrl?: boolean
     sortOrder?: boolean
-    isActive?: boolean
     allowAiRecommendation?: boolean
+    archivedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "name" | "category" | "description" | "priceText" | "coverImageUrl" | "ctaLabel" | "ctaUrl" | "sortOrder" | "isActive" | "allowAiRecommendation" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "kind" | "status" | "name" | "category" | "description" | "priceText" | "coverImageUrl" | "coverAssetId" | "ctaLabel" | "ctaUrl" | "sortOrder" | "allowAiRecommendation" | "archivedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
   export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    coverAsset?: boolean | Product$coverAssetArgs<ExtArgs>
     leads?: boolean | Product$leadsArgs<ExtArgs>
+    pageModules?: boolean | Product$pageModulesArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProductIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    coverAsset?: boolean | Product$coverAssetArgs<ExtArgs>
   }
   export type ProductIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    coverAsset?: boolean | Product$coverAssetArgs<ExtArgs>
   }
 
   export type $ProductPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Product"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
+      coverAsset: Prisma.$MediaAssetPayload<ExtArgs> | null
       leads: Prisma.$LeadPayload<ExtArgs>[]
+      pageModules: Prisma.$LinkPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       userId: string
+      kind: string
+      status: string
       name: string
       category: string | null
       description: string | null
       priceText: string | null
       coverImageUrl: string | null
+      coverAssetId: string | null
       ctaLabel: string | null
       ctaUrl: string | null
       sortOrder: number
-      isActive: boolean
       allowAiRecommendation: boolean
+      archivedAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["product"]>
@@ -34254,7 +34389,9 @@ export namespace Prisma {
   export interface Prisma__ProductClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    coverAsset<T extends Product$coverAssetArgs<ExtArgs> = {}>(args?: Subset<T, Product$coverAssetArgs<ExtArgs>>): Prisma__MediaAssetClient<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     leads<T extends Product$leadsArgs<ExtArgs> = {}>(args?: Subset<T, Product$leadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    pageModules<T extends Product$pageModulesArgs<ExtArgs> = {}>(args?: Subset<T, Product$pageModulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -34286,16 +34423,19 @@ export namespace Prisma {
   interface ProductFieldRefs {
     readonly id: FieldRef<"Product", 'String'>
     readonly userId: FieldRef<"Product", 'String'>
+    readonly kind: FieldRef<"Product", 'String'>
+    readonly status: FieldRef<"Product", 'String'>
     readonly name: FieldRef<"Product", 'String'>
     readonly category: FieldRef<"Product", 'String'>
     readonly description: FieldRef<"Product", 'String'>
     readonly priceText: FieldRef<"Product", 'String'>
     readonly coverImageUrl: FieldRef<"Product", 'String'>
+    readonly coverAssetId: FieldRef<"Product", 'String'>
     readonly ctaLabel: FieldRef<"Product", 'String'>
     readonly ctaUrl: FieldRef<"Product", 'String'>
     readonly sortOrder: FieldRef<"Product", 'Int'>
-    readonly isActive: FieldRef<"Product", 'Boolean'>
     readonly allowAiRecommendation: FieldRef<"Product", 'Boolean'>
+    readonly archivedAt: FieldRef<"Product", 'DateTime'>
     readonly createdAt: FieldRef<"Product", 'DateTime'>
     readonly updatedAt: FieldRef<"Product", 'DateTime'>
   }
@@ -34699,6 +34839,25 @@ export namespace Prisma {
   }
 
   /**
+   * Product.coverAsset
+   */
+  export type Product$coverAssetArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetInclude<ExtArgs> | null
+    where?: MediaAssetWhereInput
+  }
+
+  /**
    * Product.leads
    */
   export type Product$leadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -34720,6 +34879,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
+  }
+
+  /**
+   * Product.pageModules
+   */
+  export type Product$pageModulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Link
+     */
+    select?: LinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Link
+     */
+    omit?: LinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkInclude<ExtArgs> | null
+    where?: LinkWhereInput
+    orderBy?: LinkOrderByWithRelationInput | LinkOrderByWithRelationInput[]
+    cursor?: LinkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LinkScalarFieldEnum | LinkScalarFieldEnum[]
   }
 
   /**
@@ -56882,6 +57065,8 @@ export namespace Prisma {
     profileId: 'profileId',
     type: 'type',
     payloadJson: 'payloadJson',
+    catalogItemId: 'catalogItemId',
+    schemaVersion: 'schemaVersion',
     title: 'title',
     url: 'url',
     description: 'description',
@@ -57148,16 +57333,19 @@ export namespace Prisma {
   export const ProductScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
+    kind: 'kind',
+    status: 'status',
     name: 'name',
     category: 'category',
     description: 'description',
     priceText: 'priceText',
     coverImageUrl: 'coverImageUrl',
+    coverAssetId: 'coverAssetId',
     ctaLabel: 'ctaLabel',
     ctaUrl: 'ctaUrl',
     sortOrder: 'sortOrder',
-    isActive: 'isActive',
     allowAiRecommendation: 'allowAiRecommendation',
+    archivedAt: 'archivedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -58229,6 +58417,7 @@ export namespace Prisma {
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     profile?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
     currentAvatarFor?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
+    currentCatalogCoverFor?: XOR<ProductNullableScalarRelationFilter, ProductWhereInput> | null
   }
 
   export type MediaAssetOrderByWithRelationInput = {
@@ -58250,6 +58439,7 @@ export namespace Prisma {
     owner?: UserOrderByWithRelationInput
     profile?: ProfileOrderByWithRelationInput
     currentAvatarFor?: ProfileOrderByWithRelationInput
+    currentCatalogCoverFor?: ProductOrderByWithRelationInput
   }
 
   export type MediaAssetWhereUniqueInput = Prisma.AtLeast<{
@@ -58274,6 +58464,7 @@ export namespace Prisma {
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     profile?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
     currentAvatarFor?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
+    currentCatalogCoverFor?: XOR<ProductNullableScalarRelationFilter, ProductWhereInput> | null
   }, "id" | "storageKey">
 
   export type MediaAssetOrderByWithAggregationInput = {
@@ -58498,6 +58689,8 @@ export namespace Prisma {
     profileId?: UuidFilter<"Link"> | string
     type?: StringFilter<"Link"> | string
     payloadJson?: StringNullableFilter<"Link"> | string | null
+    catalogItemId?: UuidNullableFilter<"Link"> | string | null
+    schemaVersion?: IntFilter<"Link"> | number
     title?: StringFilter<"Link"> | string
     url?: StringFilter<"Link"> | string
     description?: StringNullableFilter<"Link"> | string | null
@@ -58511,6 +58704,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Link"> | Date | string
     updatedAt?: DateTimeFilter<"Link"> | Date | string
     profile?: XOR<ProfileScalarRelationFilter, ProfileWhereInput>
+    catalogItem?: XOR<ProductNullableScalarRelationFilter, ProductWhereInput> | null
     clicks?: LinkClickListRelationFilter
   }
 
@@ -58519,6 +58713,8 @@ export namespace Prisma {
     profileId?: SortOrder
     type?: SortOrder
     payloadJson?: SortOrderInput | SortOrder
+    catalogItemId?: SortOrderInput | SortOrder
+    schemaVersion?: SortOrder
     title?: SortOrder
     url?: SortOrder
     description?: SortOrderInput | SortOrder
@@ -58532,6 +58728,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     profile?: ProfileOrderByWithRelationInput
+    catalogItem?: ProductOrderByWithRelationInput
     clicks?: LinkClickOrderByRelationAggregateInput
   }
 
@@ -58543,6 +58740,8 @@ export namespace Prisma {
     profileId?: UuidFilter<"Link"> | string
     type?: StringFilter<"Link"> | string
     payloadJson?: StringNullableFilter<"Link"> | string | null
+    catalogItemId?: UuidNullableFilter<"Link"> | string | null
+    schemaVersion?: IntFilter<"Link"> | number
     title?: StringFilter<"Link"> | string
     url?: StringFilter<"Link"> | string
     description?: StringNullableFilter<"Link"> | string | null
@@ -58556,6 +58755,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Link"> | Date | string
     updatedAt?: DateTimeFilter<"Link"> | Date | string
     profile?: XOR<ProfileScalarRelationFilter, ProfileWhereInput>
+    catalogItem?: XOR<ProductNullableScalarRelationFilter, ProductWhereInput> | null
     clicks?: LinkClickListRelationFilter
   }, "id">
 
@@ -58564,6 +58764,8 @@ export namespace Prisma {
     profileId?: SortOrder
     type?: SortOrder
     payloadJson?: SortOrderInput | SortOrder
+    catalogItemId?: SortOrderInput | SortOrder
+    schemaVersion?: SortOrder
     title?: SortOrder
     url?: SortOrder
     description?: SortOrderInput | SortOrder
@@ -58591,6 +58793,8 @@ export namespace Prisma {
     profileId?: UuidWithAggregatesFilter<"Link"> | string
     type?: StringWithAggregatesFilter<"Link"> | string
     payloadJson?: StringNullableWithAggregatesFilter<"Link"> | string | null
+    catalogItemId?: UuidNullableWithAggregatesFilter<"Link"> | string | null
+    schemaVersion?: IntWithAggregatesFilter<"Link"> | number
     title?: StringWithAggregatesFilter<"Link"> | string
     url?: StringWithAggregatesFilter<"Link"> | string
     description?: StringNullableWithAggregatesFilter<"Link"> | string | null
@@ -59843,47 +60047,60 @@ export namespace Prisma {
     NOT?: ProductWhereInput | ProductWhereInput[]
     id?: UuidFilter<"Product"> | string
     userId?: UuidFilter<"Product"> | string
+    kind?: StringFilter<"Product"> | string
+    status?: StringFilter<"Product"> | string
     name?: StringFilter<"Product"> | string
     category?: StringNullableFilter<"Product"> | string | null
     description?: StringNullableFilter<"Product"> | string | null
     priceText?: StringNullableFilter<"Product"> | string | null
     coverImageUrl?: StringNullableFilter<"Product"> | string | null
+    coverAssetId?: UuidNullableFilter<"Product"> | string | null
     ctaLabel?: StringNullableFilter<"Product"> | string | null
     ctaUrl?: StringNullableFilter<"Product"> | string | null
     sortOrder?: IntFilter<"Product"> | number
-    isActive?: BoolFilter<"Product"> | boolean
     allowAiRecommendation?: BoolFilter<"Product"> | boolean
+    archivedAt?: DateTimeNullableFilter<"Product"> | Date | string | null
     createdAt?: DateTimeFilter<"Product"> | Date | string
     updatedAt?: DateTimeFilter<"Product"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    coverAsset?: XOR<MediaAssetNullableScalarRelationFilter, MediaAssetWhereInput> | null
     leads?: LeadListRelationFilter
+    pageModules?: LinkListRelationFilter
   }
 
   export type ProductOrderByWithRelationInput = {
     id?: SortOrder
     userId?: SortOrder
+    kind?: SortOrder
+    status?: SortOrder
     name?: SortOrder
     category?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     priceText?: SortOrderInput | SortOrder
     coverImageUrl?: SortOrderInput | SortOrder
+    coverAssetId?: SortOrderInput | SortOrder
     ctaLabel?: SortOrderInput | SortOrder
     ctaUrl?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
-    isActive?: SortOrder
     allowAiRecommendation?: SortOrder
+    archivedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
+    coverAsset?: MediaAssetOrderByWithRelationInput
     leads?: LeadOrderByRelationAggregateInput
+    pageModules?: LinkOrderByRelationAggregateInput
   }
 
   export type ProductWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    coverAssetId?: string
     AND?: ProductWhereInput | ProductWhereInput[]
     OR?: ProductWhereInput[]
     NOT?: ProductWhereInput | ProductWhereInput[]
     userId?: UuidFilter<"Product"> | string
+    kind?: StringFilter<"Product"> | string
+    status?: StringFilter<"Product"> | string
     name?: StringFilter<"Product"> | string
     category?: StringNullableFilter<"Product"> | string | null
     description?: StringNullableFilter<"Product"> | string | null
@@ -59892,27 +60109,32 @@ export namespace Prisma {
     ctaLabel?: StringNullableFilter<"Product"> | string | null
     ctaUrl?: StringNullableFilter<"Product"> | string | null
     sortOrder?: IntFilter<"Product"> | number
-    isActive?: BoolFilter<"Product"> | boolean
     allowAiRecommendation?: BoolFilter<"Product"> | boolean
+    archivedAt?: DateTimeNullableFilter<"Product"> | Date | string | null
     createdAt?: DateTimeFilter<"Product"> | Date | string
     updatedAt?: DateTimeFilter<"Product"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    coverAsset?: XOR<MediaAssetNullableScalarRelationFilter, MediaAssetWhereInput> | null
     leads?: LeadListRelationFilter
-  }, "id">
+    pageModules?: LinkListRelationFilter
+  }, "id" | "coverAssetId">
 
   export type ProductOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrder
+    kind?: SortOrder
+    status?: SortOrder
     name?: SortOrder
     category?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     priceText?: SortOrderInput | SortOrder
     coverImageUrl?: SortOrderInput | SortOrder
+    coverAssetId?: SortOrderInput | SortOrder
     ctaLabel?: SortOrderInput | SortOrder
     ctaUrl?: SortOrderInput | SortOrder
     sortOrder?: SortOrder
-    isActive?: SortOrder
     allowAiRecommendation?: SortOrder
+    archivedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ProductCountOrderByAggregateInput
@@ -59928,16 +60150,19 @@ export namespace Prisma {
     NOT?: ProductScalarWhereWithAggregatesInput | ProductScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"Product"> | string
     userId?: UuidWithAggregatesFilter<"Product"> | string
+    kind?: StringWithAggregatesFilter<"Product"> | string
+    status?: StringWithAggregatesFilter<"Product"> | string
     name?: StringWithAggregatesFilter<"Product"> | string
     category?: StringNullableWithAggregatesFilter<"Product"> | string | null
     description?: StringNullableWithAggregatesFilter<"Product"> | string | null
     priceText?: StringNullableWithAggregatesFilter<"Product"> | string | null
     coverImageUrl?: StringNullableWithAggregatesFilter<"Product"> | string | null
+    coverAssetId?: UuidNullableWithAggregatesFilter<"Product"> | string | null
     ctaLabel?: StringNullableWithAggregatesFilter<"Product"> | string | null
     ctaUrl?: StringNullableWithAggregatesFilter<"Product"> | string | null
     sortOrder?: IntWithAggregatesFilter<"Product"> | number
-    isActive?: BoolWithAggregatesFilter<"Product"> | boolean
     allowAiRecommendation?: BoolWithAggregatesFilter<"Product"> | boolean
+    archivedAt?: DateTimeNullableWithAggregatesFilter<"Product"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
   }
@@ -62367,6 +62592,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutMediaAssetsInput
     profile?: ProfileCreateNestedOneWithoutMediaAssetsInput
     currentAvatarFor?: ProfileCreateNestedOneWithoutAvatarAssetInput
+    currentCatalogCoverFor?: ProductCreateNestedOneWithoutCoverAssetInput
   }
 
   export type MediaAssetUncheckedCreateInput = {
@@ -62386,6 +62612,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     currentAvatarFor?: ProfileUncheckedCreateNestedOneWithoutAvatarAssetInput
+    currentCatalogCoverFor?: ProductUncheckedCreateNestedOneWithoutCoverAssetInput
   }
 
   export type MediaAssetUpdateInput = {
@@ -62405,6 +62632,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutMediaAssetsNestedInput
     profile?: ProfileUpdateOneWithoutMediaAssetsNestedInput
     currentAvatarFor?: ProfileUpdateOneWithoutAvatarAssetNestedInput
+    currentCatalogCoverFor?: ProductUpdateOneWithoutCoverAssetNestedInput
   }
 
   export type MediaAssetUncheckedUpdateInput = {
@@ -62424,6 +62652,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentAvatarFor?: ProfileUncheckedUpdateOneWithoutAvatarAssetNestedInput
+    currentCatalogCoverFor?: ProductUncheckedUpdateOneWithoutCoverAssetNestedInput
   }
 
   export type MediaAssetCreateManyInput = {
@@ -62668,6 +62897,7 @@ export namespace Prisma {
     id: string
     type?: string
     payloadJson?: string | null
+    schemaVersion?: number
     title: string
     url: string
     description?: string | null
@@ -62681,6 +62911,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     profile: ProfileCreateNestedOneWithoutLinksInput
+    catalogItem?: ProductCreateNestedOneWithoutPageModulesInput
     clicks?: LinkClickCreateNestedManyWithoutLinkInput
   }
 
@@ -62689,6 +62920,8 @@ export namespace Prisma {
     profileId: string
     type?: string
     payloadJson?: string | null
+    catalogItemId?: string | null
+    schemaVersion?: number
     title: string
     url: string
     description?: string | null
@@ -62708,6 +62941,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    schemaVersion?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62721,6 +62955,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profile?: ProfileUpdateOneRequiredWithoutLinksNestedInput
+    catalogItem?: ProductUpdateOneWithoutPageModulesNestedInput
     clicks?: LinkClickUpdateManyWithoutLinkNestedInput
   }
 
@@ -62729,6 +62964,8 @@ export namespace Prisma {
     profileId?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    catalogItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    schemaVersion?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62749,6 +62986,8 @@ export namespace Prisma {
     profileId: string
     type?: string
     payloadJson?: string | null
+    catalogItemId?: string | null
+    schemaVersion?: number
     title: string
     url: string
     description?: string | null
@@ -62767,6 +63006,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    schemaVersion?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62786,6 +63026,8 @@ export namespace Prisma {
     profileId?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    catalogItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    schemaVersion?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -64205,6 +64447,8 @@ export namespace Prisma {
 
   export type ProductCreateInput = {
     id?: string
+    kind?: string
+    status?: string
     name: string
     category?: string | null
     description?: string | null
@@ -64213,34 +64457,42 @@ export namespace Prisma {
     ctaLabel?: string | null
     ctaUrl?: string | null
     sortOrder?: number
-    isActive?: boolean
     allowAiRecommendation?: boolean
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProductsInput
+    coverAsset?: MediaAssetCreateNestedOneWithoutCurrentCatalogCoverForInput
     leads?: LeadCreateNestedManyWithoutInterestedProductInput
+    pageModules?: LinkCreateNestedManyWithoutCatalogItemInput
   }
 
   export type ProductUncheckedCreateInput = {
     id?: string
     userId: string
+    kind?: string
+    status?: string
     name: string
     category?: string | null
     description?: string | null
     priceText?: string | null
     coverImageUrl?: string | null
+    coverAssetId?: string | null
     ctaLabel?: string | null
     ctaUrl?: string | null
     sortOrder?: number
-    isActive?: boolean
     allowAiRecommendation?: boolean
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     leads?: LeadUncheckedCreateNestedManyWithoutInterestedProductInput
+    pageModules?: LinkUncheckedCreateNestedManyWithoutCatalogItemInput
   }
 
   export type ProductUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -64249,51 +64501,62 @@ export namespace Prisma {
     ctaLabel?: NullableStringFieldUpdateOperationsInput | string | null
     ctaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     allowAiRecommendation?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProductsNestedInput
+    coverAsset?: MediaAssetUpdateOneWithoutCurrentCatalogCoverForNestedInput
     leads?: LeadUpdateManyWithoutInterestedProductNestedInput
+    pageModules?: LinkUpdateManyWithoutCatalogItemNestedInput
   }
 
   export type ProductUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priceText?: NullableStringFieldUpdateOperationsInput | string | null
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverAssetId?: NullableStringFieldUpdateOperationsInput | string | null
     ctaLabel?: NullableStringFieldUpdateOperationsInput | string | null
     ctaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     allowAiRecommendation?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leads?: LeadUncheckedUpdateManyWithoutInterestedProductNestedInput
+    pageModules?: LinkUncheckedUpdateManyWithoutCatalogItemNestedInput
   }
 
   export type ProductCreateManyInput = {
     id?: string
     userId: string
+    kind?: string
+    status?: string
     name: string
     category?: string | null
     description?: string | null
     priceText?: string | null
     coverImageUrl?: string | null
+    coverAssetId?: string | null
     ctaLabel?: string | null
     ctaUrl?: string | null
     sortOrder?: number
-    isActive?: boolean
     allowAiRecommendation?: boolean
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type ProductUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -64302,8 +64565,8 @@ export namespace Prisma {
     ctaLabel?: NullableStringFieldUpdateOperationsInput | string | null
     ctaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     allowAiRecommendation?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -64311,16 +64574,19 @@ export namespace Prisma {
   export type ProductUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priceText?: NullableStringFieldUpdateOperationsInput | string | null
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverAssetId?: NullableStringFieldUpdateOperationsInput | string | null
     ctaLabel?: NullableStringFieldUpdateOperationsInput | string | null
     ctaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     allowAiRecommendation?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -67040,6 +67306,11 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
+  export type ProductNullableScalarRelationFilter = {
+    is?: ProductWhereInput | null
+    isNot?: ProductWhereInput | null
+  }
+
   export type MediaAssetCountOrderByAggregateInput = {
     id?: SortOrder
     ownerUserId?: SortOrder
@@ -67218,6 +67489,8 @@ export namespace Prisma {
     profileId?: SortOrder
     type?: SortOrder
     payloadJson?: SortOrder
+    catalogItemId?: SortOrder
+    schemaVersion?: SortOrder
     title?: SortOrder
     url?: SortOrder
     description?: SortOrder
@@ -67233,6 +67506,7 @@ export namespace Prisma {
   }
 
   export type LinkAvgOrderByAggregateInput = {
+    schemaVersion?: SortOrder
     position?: SortOrder
     totalClicks?: SortOrder
   }
@@ -67242,6 +67516,8 @@ export namespace Prisma {
     profileId?: SortOrder
     type?: SortOrder
     payloadJson?: SortOrder
+    catalogItemId?: SortOrder
+    schemaVersion?: SortOrder
     title?: SortOrder
     url?: SortOrder
     description?: SortOrder
@@ -67261,6 +67537,8 @@ export namespace Prisma {
     profileId?: SortOrder
     type?: SortOrder
     payloadJson?: SortOrder
+    catalogItemId?: SortOrder
+    schemaVersion?: SortOrder
     title?: SortOrder
     url?: SortOrder
     description?: SortOrder
@@ -67276,6 +67554,7 @@ export namespace Prisma {
   }
 
   export type LinkSumOrderByAggregateInput = {
+    schemaVersion?: SortOrder
     position?: SortOrder
     totalClicks?: SortOrder
   }
@@ -67787,11 +68066,6 @@ export namespace Prisma {
     success?: SortOrder
   }
 
-  export type ProductNullableScalarRelationFilter = {
-    is?: ProductWhereInput | null
-    isNot?: ProductWhereInput | null
-  }
-
   export type AiConversationNullableScalarRelationFilter = {
     is?: AiConversationWhereInput | null
     isNot?: AiConversationWhereInput | null
@@ -67953,16 +68227,19 @@ export namespace Prisma {
   export type ProductCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    kind?: SortOrder
+    status?: SortOrder
     name?: SortOrder
     category?: SortOrder
     description?: SortOrder
     priceText?: SortOrder
     coverImageUrl?: SortOrder
+    coverAssetId?: SortOrder
     ctaLabel?: SortOrder
     ctaUrl?: SortOrder
     sortOrder?: SortOrder
-    isActive?: SortOrder
     allowAiRecommendation?: SortOrder
+    archivedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -67974,16 +68251,19 @@ export namespace Prisma {
   export type ProductMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    kind?: SortOrder
+    status?: SortOrder
     name?: SortOrder
     category?: SortOrder
     description?: SortOrder
     priceText?: SortOrder
     coverImageUrl?: SortOrder
+    coverAssetId?: SortOrder
     ctaLabel?: SortOrder
     ctaUrl?: SortOrder
     sortOrder?: SortOrder
-    isActive?: SortOrder
     allowAiRecommendation?: SortOrder
+    archivedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -67991,16 +68271,19 @@ export namespace Prisma {
   export type ProductMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    kind?: SortOrder
+    status?: SortOrder
     name?: SortOrder
     category?: SortOrder
     description?: SortOrder
     priceText?: SortOrder
     coverImageUrl?: SortOrder
+    coverAssetId?: SortOrder
     ctaLabel?: SortOrder
     ctaUrl?: SortOrder
     sortOrder?: SortOrder
-    isActive?: SortOrder
     allowAiRecommendation?: SortOrder
+    archivedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -70085,10 +70368,22 @@ export namespace Prisma {
     connect?: ProfileWhereUniqueInput
   }
 
+  export type ProductCreateNestedOneWithoutCoverAssetInput = {
+    create?: XOR<ProductCreateWithoutCoverAssetInput, ProductUncheckedCreateWithoutCoverAssetInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutCoverAssetInput
+    connect?: ProductWhereUniqueInput
+  }
+
   export type ProfileUncheckedCreateNestedOneWithoutAvatarAssetInput = {
     create?: XOR<ProfileCreateWithoutAvatarAssetInput, ProfileUncheckedCreateWithoutAvatarAssetInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutAvatarAssetInput
     connect?: ProfileWhereUniqueInput
+  }
+
+  export type ProductUncheckedCreateNestedOneWithoutCoverAssetInput = {
+    create?: XOR<ProductCreateWithoutCoverAssetInput, ProductUncheckedCreateWithoutCoverAssetInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutCoverAssetInput
+    connect?: ProductWhereUniqueInput
   }
 
   export type UserUpdateOneRequiredWithoutMediaAssetsNestedInput = {
@@ -70119,6 +70414,16 @@ export namespace Prisma {
     update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutAvatarAssetInput, ProfileUpdateWithoutAvatarAssetInput>, ProfileUncheckedUpdateWithoutAvatarAssetInput>
   }
 
+  export type ProductUpdateOneWithoutCoverAssetNestedInput = {
+    create?: XOR<ProductCreateWithoutCoverAssetInput, ProductUncheckedCreateWithoutCoverAssetInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutCoverAssetInput
+    upsert?: ProductUpsertWithoutCoverAssetInput
+    disconnect?: ProductWhereInput | boolean
+    delete?: ProductWhereInput | boolean
+    connect?: ProductWhereUniqueInput
+    update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutCoverAssetInput, ProductUpdateWithoutCoverAssetInput>, ProductUncheckedUpdateWithoutCoverAssetInput>
+  }
+
   export type ProfileUncheckedUpdateOneWithoutAvatarAssetNestedInput = {
     create?: XOR<ProfileCreateWithoutAvatarAssetInput, ProfileUncheckedCreateWithoutAvatarAssetInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutAvatarAssetInput
@@ -70127,6 +70432,16 @@ export namespace Prisma {
     delete?: ProfileWhereInput | boolean
     connect?: ProfileWhereUniqueInput
     update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutAvatarAssetInput, ProfileUpdateWithoutAvatarAssetInput>, ProfileUncheckedUpdateWithoutAvatarAssetInput>
+  }
+
+  export type ProductUncheckedUpdateOneWithoutCoverAssetNestedInput = {
+    create?: XOR<ProductCreateWithoutCoverAssetInput, ProductUncheckedCreateWithoutCoverAssetInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutCoverAssetInput
+    upsert?: ProductUpsertWithoutCoverAssetInput
+    disconnect?: ProductWhereInput | boolean
+    delete?: ProductWhereInput | boolean
+    connect?: ProductWhereUniqueInput
+    update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutCoverAssetInput, ProductUpdateWithoutCoverAssetInput>, ProductUncheckedUpdateWithoutCoverAssetInput>
   }
 
   export type WorkspaceCreateNestedOneWithoutDomainsInput = {
@@ -70177,6 +70492,12 @@ export namespace Prisma {
     connect?: ProfileWhereUniqueInput
   }
 
+  export type ProductCreateNestedOneWithoutPageModulesInput = {
+    create?: XOR<ProductCreateWithoutPageModulesInput, ProductUncheckedCreateWithoutPageModulesInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutPageModulesInput
+    connect?: ProductWhereUniqueInput
+  }
+
   export type LinkClickCreateNestedManyWithoutLinkInput = {
     create?: XOR<LinkClickCreateWithoutLinkInput, LinkClickUncheckedCreateWithoutLinkInput> | LinkClickCreateWithoutLinkInput[] | LinkClickUncheckedCreateWithoutLinkInput[]
     connectOrCreate?: LinkClickCreateOrConnectWithoutLinkInput | LinkClickCreateOrConnectWithoutLinkInput[]
@@ -70197,6 +70518,16 @@ export namespace Prisma {
     upsert?: ProfileUpsertWithoutLinksInput
     connect?: ProfileWhereUniqueInput
     update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutLinksInput, ProfileUpdateWithoutLinksInput>, ProfileUncheckedUpdateWithoutLinksInput>
+  }
+
+  export type ProductUpdateOneWithoutPageModulesNestedInput = {
+    create?: XOR<ProductCreateWithoutPageModulesInput, ProductUncheckedCreateWithoutPageModulesInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutPageModulesInput
+    upsert?: ProductUpsertWithoutPageModulesInput
+    disconnect?: ProductWhereInput | boolean
+    delete?: ProductWhereInput | boolean
+    connect?: ProductWhereUniqueInput
+    update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutPageModulesInput, ProductUpdateWithoutPageModulesInput>, ProductUncheckedUpdateWithoutPageModulesInput>
   }
 
   export type LinkClickUpdateManyWithoutLinkNestedInput = {
@@ -70489,11 +70820,24 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type MediaAssetCreateNestedOneWithoutCurrentCatalogCoverForInput = {
+    create?: XOR<MediaAssetCreateWithoutCurrentCatalogCoverForInput, MediaAssetUncheckedCreateWithoutCurrentCatalogCoverForInput>
+    connectOrCreate?: MediaAssetCreateOrConnectWithoutCurrentCatalogCoverForInput
+    connect?: MediaAssetWhereUniqueInput
+  }
+
   export type LeadCreateNestedManyWithoutInterestedProductInput = {
     create?: XOR<LeadCreateWithoutInterestedProductInput, LeadUncheckedCreateWithoutInterestedProductInput> | LeadCreateWithoutInterestedProductInput[] | LeadUncheckedCreateWithoutInterestedProductInput[]
     connectOrCreate?: LeadCreateOrConnectWithoutInterestedProductInput | LeadCreateOrConnectWithoutInterestedProductInput[]
     createMany?: LeadCreateManyInterestedProductInputEnvelope
     connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+  }
+
+  export type LinkCreateNestedManyWithoutCatalogItemInput = {
+    create?: XOR<LinkCreateWithoutCatalogItemInput, LinkUncheckedCreateWithoutCatalogItemInput> | LinkCreateWithoutCatalogItemInput[] | LinkUncheckedCreateWithoutCatalogItemInput[]
+    connectOrCreate?: LinkCreateOrConnectWithoutCatalogItemInput | LinkCreateOrConnectWithoutCatalogItemInput[]
+    createMany?: LinkCreateManyCatalogItemInputEnvelope
+    connect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
   }
 
   export type LeadUncheckedCreateNestedManyWithoutInterestedProductInput = {
@@ -70503,12 +70847,29 @@ export namespace Prisma {
     connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
   }
 
+  export type LinkUncheckedCreateNestedManyWithoutCatalogItemInput = {
+    create?: XOR<LinkCreateWithoutCatalogItemInput, LinkUncheckedCreateWithoutCatalogItemInput> | LinkCreateWithoutCatalogItemInput[] | LinkUncheckedCreateWithoutCatalogItemInput[]
+    connectOrCreate?: LinkCreateOrConnectWithoutCatalogItemInput | LinkCreateOrConnectWithoutCatalogItemInput[]
+    createMany?: LinkCreateManyCatalogItemInputEnvelope
+    connect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+  }
+
   export type UserUpdateOneRequiredWithoutProductsNestedInput = {
     create?: XOR<UserCreateWithoutProductsInput, UserUncheckedCreateWithoutProductsInput>
     connectOrCreate?: UserCreateOrConnectWithoutProductsInput
     upsert?: UserUpsertWithoutProductsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutProductsInput, UserUpdateWithoutProductsInput>, UserUncheckedUpdateWithoutProductsInput>
+  }
+
+  export type MediaAssetUpdateOneWithoutCurrentCatalogCoverForNestedInput = {
+    create?: XOR<MediaAssetCreateWithoutCurrentCatalogCoverForInput, MediaAssetUncheckedCreateWithoutCurrentCatalogCoverForInput>
+    connectOrCreate?: MediaAssetCreateOrConnectWithoutCurrentCatalogCoverForInput
+    upsert?: MediaAssetUpsertWithoutCurrentCatalogCoverForInput
+    disconnect?: MediaAssetWhereInput | boolean
+    delete?: MediaAssetWhereInput | boolean
+    connect?: MediaAssetWhereUniqueInput
+    update?: XOR<XOR<MediaAssetUpdateToOneWithWhereWithoutCurrentCatalogCoverForInput, MediaAssetUpdateWithoutCurrentCatalogCoverForInput>, MediaAssetUncheckedUpdateWithoutCurrentCatalogCoverForInput>
   }
 
   export type LeadUpdateManyWithoutInterestedProductNestedInput = {
@@ -70525,6 +70886,20 @@ export namespace Prisma {
     deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
+  export type LinkUpdateManyWithoutCatalogItemNestedInput = {
+    create?: XOR<LinkCreateWithoutCatalogItemInput, LinkUncheckedCreateWithoutCatalogItemInput> | LinkCreateWithoutCatalogItemInput[] | LinkUncheckedCreateWithoutCatalogItemInput[]
+    connectOrCreate?: LinkCreateOrConnectWithoutCatalogItemInput | LinkCreateOrConnectWithoutCatalogItemInput[]
+    upsert?: LinkUpsertWithWhereUniqueWithoutCatalogItemInput | LinkUpsertWithWhereUniqueWithoutCatalogItemInput[]
+    createMany?: LinkCreateManyCatalogItemInputEnvelope
+    set?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    disconnect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    delete?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    connect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    update?: LinkUpdateWithWhereUniqueWithoutCatalogItemInput | LinkUpdateWithWhereUniqueWithoutCatalogItemInput[]
+    updateMany?: LinkUpdateManyWithWhereWithoutCatalogItemInput | LinkUpdateManyWithWhereWithoutCatalogItemInput[]
+    deleteMany?: LinkScalarWhereInput | LinkScalarWhereInput[]
+  }
+
   export type LeadUncheckedUpdateManyWithoutInterestedProductNestedInput = {
     create?: XOR<LeadCreateWithoutInterestedProductInput, LeadUncheckedCreateWithoutInterestedProductInput> | LeadCreateWithoutInterestedProductInput[] | LeadUncheckedCreateWithoutInterestedProductInput[]
     connectOrCreate?: LeadCreateOrConnectWithoutInterestedProductInput | LeadCreateOrConnectWithoutInterestedProductInput[]
@@ -70537,6 +70912,20 @@ export namespace Prisma {
     update?: LeadUpdateWithWhereUniqueWithoutInterestedProductInput | LeadUpdateWithWhereUniqueWithoutInterestedProductInput[]
     updateMany?: LeadUpdateManyWithWhereWithoutInterestedProductInput | LeadUpdateManyWithWhereWithoutInterestedProductInput[]
     deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
+  }
+
+  export type LinkUncheckedUpdateManyWithoutCatalogItemNestedInput = {
+    create?: XOR<LinkCreateWithoutCatalogItemInput, LinkUncheckedCreateWithoutCatalogItemInput> | LinkCreateWithoutCatalogItemInput[] | LinkUncheckedCreateWithoutCatalogItemInput[]
+    connectOrCreate?: LinkCreateOrConnectWithoutCatalogItemInput | LinkCreateOrConnectWithoutCatalogItemInput[]
+    upsert?: LinkUpsertWithWhereUniqueWithoutCatalogItemInput | LinkUpsertWithWhereUniqueWithoutCatalogItemInput[]
+    createMany?: LinkCreateManyCatalogItemInputEnvelope
+    set?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    disconnect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    delete?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    connect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    update?: LinkUpdateWithWhereUniqueWithoutCatalogItemInput | LinkUpdateWithWhereUniqueWithoutCatalogItemInput[]
+    updateMany?: LinkUpdateManyWithWhereWithoutCatalogItemInput | LinkUpdateManyWithWhereWithoutCatalogItemInput[]
+    deleteMany?: LinkScalarWhereInput | LinkScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutKnowledgeDocsInput = {
@@ -71630,6 +72019,8 @@ export namespace Prisma {
 
   export type ProductCreateWithoutUserInput = {
     id?: string
+    kind?: string
+    status?: string
     name: string
     category?: string | null
     description?: string | null
@@ -71638,28 +72029,34 @@ export namespace Prisma {
     ctaLabel?: string | null
     ctaUrl?: string | null
     sortOrder?: number
-    isActive?: boolean
     allowAiRecommendation?: boolean
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    coverAsset?: MediaAssetCreateNestedOneWithoutCurrentCatalogCoverForInput
     leads?: LeadCreateNestedManyWithoutInterestedProductInput
+    pageModules?: LinkCreateNestedManyWithoutCatalogItemInput
   }
 
   export type ProductUncheckedCreateWithoutUserInput = {
     id?: string
+    kind?: string
+    status?: string
     name: string
     category?: string | null
     description?: string | null
     priceText?: string | null
     coverImageUrl?: string | null
+    coverAssetId?: string | null
     ctaLabel?: string | null
     ctaUrl?: string | null
     sortOrder?: number
-    isActive?: boolean
     allowAiRecommendation?: boolean
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     leads?: LeadUncheckedCreateNestedManyWithoutInterestedProductInput
+    pageModules?: LinkUncheckedCreateNestedManyWithoutCatalogItemInput
   }
 
   export type ProductCreateOrConnectWithoutUserInput = {
@@ -72015,6 +72412,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     profile?: ProfileCreateNestedOneWithoutMediaAssetsInput
     currentAvatarFor?: ProfileCreateNestedOneWithoutAvatarAssetInput
+    currentCatalogCoverFor?: ProductCreateNestedOneWithoutCoverAssetInput
   }
 
   export type MediaAssetUncheckedCreateWithoutOwnerInput = {
@@ -72033,6 +72431,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     currentAvatarFor?: ProfileUncheckedCreateNestedOneWithoutAvatarAssetInput
+    currentCatalogCoverFor?: ProductUncheckedCreateNestedOneWithoutCoverAssetInput
   }
 
   export type MediaAssetCreateOrConnectWithoutOwnerInput = {
@@ -72362,16 +72761,19 @@ export namespace Prisma {
     NOT?: ProductScalarWhereInput | ProductScalarWhereInput[]
     id?: UuidFilter<"Product"> | string
     userId?: UuidFilter<"Product"> | string
+    kind?: StringFilter<"Product"> | string
+    status?: StringFilter<"Product"> | string
     name?: StringFilter<"Product"> | string
     category?: StringNullableFilter<"Product"> | string | null
     description?: StringNullableFilter<"Product"> | string | null
     priceText?: StringNullableFilter<"Product"> | string | null
     coverImageUrl?: StringNullableFilter<"Product"> | string | null
+    coverAssetId?: UuidNullableFilter<"Product"> | string | null
     ctaLabel?: StringNullableFilter<"Product"> | string | null
     ctaUrl?: StringNullableFilter<"Product"> | string | null
     sortOrder?: IntFilter<"Product"> | number
-    isActive?: BoolFilter<"Product"> | boolean
     allowAiRecommendation?: BoolFilter<"Product"> | boolean
+    archivedAt?: DateTimeNullableFilter<"Product"> | Date | string | null
     createdAt?: DateTimeFilter<"Product"> | Date | string
     updatedAt?: DateTimeFilter<"Product"> | Date | string
   }
@@ -73114,6 +73516,7 @@ export namespace Prisma {
     id: string
     type?: string
     payloadJson?: string | null
+    schemaVersion?: number
     title: string
     url: string
     description?: string | null
@@ -73126,6 +73529,7 @@ export namespace Prisma {
     totalClicks?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    catalogItem?: ProductCreateNestedOneWithoutPageModulesInput
     clicks?: LinkClickCreateNestedManyWithoutLinkInput
   }
 
@@ -73133,6 +73537,8 @@ export namespace Prisma {
     id: string
     type?: string
     payloadJson?: string | null
+    catalogItemId?: string | null
+    schemaVersion?: number
     title: string
     url: string
     description?: string | null
@@ -73302,6 +73708,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutMediaAssetsInput
     profile?: ProfileCreateNestedOneWithoutMediaAssetsInput
+    currentCatalogCoverFor?: ProductCreateNestedOneWithoutCoverAssetInput
   }
 
   export type MediaAssetUncheckedCreateWithoutCurrentAvatarForInput = {
@@ -73320,6 +73727,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    currentCatalogCoverFor?: ProductUncheckedCreateNestedOneWithoutCoverAssetInput
   }
 
   export type MediaAssetCreateOrConnectWithoutCurrentAvatarForInput = {
@@ -73343,6 +73751,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutMediaAssetsInput
     currentAvatarFor?: ProfileCreateNestedOneWithoutAvatarAssetInput
+    currentCatalogCoverFor?: ProductCreateNestedOneWithoutCoverAssetInput
   }
 
   export type MediaAssetUncheckedCreateWithoutProfileInput = {
@@ -73361,6 +73770,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     currentAvatarFor?: ProfileUncheckedCreateNestedOneWithoutAvatarAssetInput
+    currentCatalogCoverFor?: ProductUncheckedCreateNestedOneWithoutCoverAssetInput
   }
 
   export type MediaAssetCreateOrConnectWithoutProfileInput = {
@@ -73478,6 +73888,8 @@ export namespace Prisma {
     profileId?: UuidFilter<"Link"> | string
     type?: StringFilter<"Link"> | string
     payloadJson?: StringNullableFilter<"Link"> | string | null
+    catalogItemId?: UuidNullableFilter<"Link"> | string | null
+    schemaVersion?: IntFilter<"Link"> | number
     title?: StringFilter<"Link"> | string
     url?: StringFilter<"Link"> | string
     description?: StringNullableFilter<"Link"> | string | null
@@ -73625,6 +74037,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutMediaAssetsNestedInput
     profile?: ProfileUpdateOneWithoutMediaAssetsNestedInput
+    currentCatalogCoverFor?: ProductUpdateOneWithoutCoverAssetNestedInput
   }
 
   export type MediaAssetUncheckedUpdateWithoutCurrentAvatarForInput = {
@@ -73643,6 +74056,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    currentCatalogCoverFor?: ProductUncheckedUpdateOneWithoutCoverAssetNestedInput
   }
 
   export type MediaAssetUpsertWithWhereUniqueWithoutProfileInput = {
@@ -73886,6 +74300,53 @@ export namespace Prisma {
     create: XOR<ProfileCreateWithoutAvatarAssetInput, ProfileUncheckedCreateWithoutAvatarAssetInput>
   }
 
+  export type ProductCreateWithoutCoverAssetInput = {
+    id?: string
+    kind?: string
+    status?: string
+    name: string
+    category?: string | null
+    description?: string | null
+    priceText?: string | null
+    coverImageUrl?: string | null
+    ctaLabel?: string | null
+    ctaUrl?: string | null
+    sortOrder?: number
+    allowAiRecommendation?: boolean
+    archivedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutProductsInput
+    leads?: LeadCreateNestedManyWithoutInterestedProductInput
+    pageModules?: LinkCreateNestedManyWithoutCatalogItemInput
+  }
+
+  export type ProductUncheckedCreateWithoutCoverAssetInput = {
+    id?: string
+    userId: string
+    kind?: string
+    status?: string
+    name: string
+    category?: string | null
+    description?: string | null
+    priceText?: string | null
+    coverImageUrl?: string | null
+    ctaLabel?: string | null
+    ctaUrl?: string | null
+    sortOrder?: number
+    allowAiRecommendation?: boolean
+    archivedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    leads?: LeadUncheckedCreateNestedManyWithoutInterestedProductInput
+    pageModules?: LinkUncheckedCreateNestedManyWithoutCatalogItemInput
+  }
+
+  export type ProductCreateOrConnectWithoutCoverAssetInput = {
+    where: ProductWhereUniqueInput
+    create: XOR<ProductCreateWithoutCoverAssetInput, ProductUncheckedCreateWithoutCoverAssetInput>
+  }
+
   export type UserUpsertWithoutMediaAssetsInput = {
     update: XOR<UserUpdateWithoutMediaAssetsInput, UserUncheckedUpdateWithoutMediaAssetsInput>
     create: XOR<UserCreateWithoutMediaAssetsInput, UserUncheckedCreateWithoutMediaAssetsInput>
@@ -74127,6 +74588,59 @@ export namespace Prisma {
     aiConversations?: AiConversationUncheckedUpdateManyWithoutProfileNestedInput
     visits?: ProfileVisitUncheckedUpdateManyWithoutProfileNestedInput
     mediaAssets?: MediaAssetUncheckedUpdateManyWithoutProfileNestedInput
+  }
+
+  export type ProductUpsertWithoutCoverAssetInput = {
+    update: XOR<ProductUpdateWithoutCoverAssetInput, ProductUncheckedUpdateWithoutCoverAssetInput>
+    create: XOR<ProductCreateWithoutCoverAssetInput, ProductUncheckedCreateWithoutCoverAssetInput>
+    where?: ProductWhereInput
+  }
+
+  export type ProductUpdateToOneWithWhereWithoutCoverAssetInput = {
+    where?: ProductWhereInput
+    data: XOR<ProductUpdateWithoutCoverAssetInput, ProductUncheckedUpdateWithoutCoverAssetInput>
+  }
+
+  export type ProductUpdateWithoutCoverAssetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priceText?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    ctaLabel?: NullableStringFieldUpdateOperationsInput | string | null
+    ctaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    allowAiRecommendation?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutProductsNestedInput
+    leads?: LeadUpdateManyWithoutInterestedProductNestedInput
+    pageModules?: LinkUpdateManyWithoutCatalogItemNestedInput
+  }
+
+  export type ProductUncheckedUpdateWithoutCoverAssetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priceText?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    ctaLabel?: NullableStringFieldUpdateOperationsInput | string | null
+    ctaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    allowAiRecommendation?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    leads?: LeadUncheckedUpdateManyWithoutInterestedProductNestedInput
+    pageModules?: LinkUncheckedUpdateManyWithoutCatalogItemNestedInput
   }
 
   export type WorkspaceCreateWithoutDomainsInput = {
@@ -74528,6 +75042,53 @@ export namespace Prisma {
     create: XOR<ProfileCreateWithoutLinksInput, ProfileUncheckedCreateWithoutLinksInput>
   }
 
+  export type ProductCreateWithoutPageModulesInput = {
+    id?: string
+    kind?: string
+    status?: string
+    name: string
+    category?: string | null
+    description?: string | null
+    priceText?: string | null
+    coverImageUrl?: string | null
+    ctaLabel?: string | null
+    ctaUrl?: string | null
+    sortOrder?: number
+    allowAiRecommendation?: boolean
+    archivedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutProductsInput
+    coverAsset?: MediaAssetCreateNestedOneWithoutCurrentCatalogCoverForInput
+    leads?: LeadCreateNestedManyWithoutInterestedProductInput
+  }
+
+  export type ProductUncheckedCreateWithoutPageModulesInput = {
+    id?: string
+    userId: string
+    kind?: string
+    status?: string
+    name: string
+    category?: string | null
+    description?: string | null
+    priceText?: string | null
+    coverImageUrl?: string | null
+    coverAssetId?: string | null
+    ctaLabel?: string | null
+    ctaUrl?: string | null
+    sortOrder?: number
+    allowAiRecommendation?: boolean
+    archivedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    leads?: LeadUncheckedCreateNestedManyWithoutInterestedProductInput
+  }
+
+  export type ProductCreateOrConnectWithoutPageModulesInput = {
+    where: ProductWhereUniqueInput
+    create: XOR<ProductCreateWithoutPageModulesInput, ProductUncheckedCreateWithoutPageModulesInput>
+  }
+
   export type LinkClickCreateWithoutLinkInput = {
     id: string
     profileId: string
@@ -74645,6 +75206,59 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedUpdateManyWithoutProfileNestedInput
   }
 
+  export type ProductUpsertWithoutPageModulesInput = {
+    update: XOR<ProductUpdateWithoutPageModulesInput, ProductUncheckedUpdateWithoutPageModulesInput>
+    create: XOR<ProductCreateWithoutPageModulesInput, ProductUncheckedCreateWithoutPageModulesInput>
+    where?: ProductWhereInput
+  }
+
+  export type ProductUpdateToOneWithWhereWithoutPageModulesInput = {
+    where?: ProductWhereInput
+    data: XOR<ProductUpdateWithoutPageModulesInput, ProductUncheckedUpdateWithoutPageModulesInput>
+  }
+
+  export type ProductUpdateWithoutPageModulesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priceText?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    ctaLabel?: NullableStringFieldUpdateOperationsInput | string | null
+    ctaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    allowAiRecommendation?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutProductsNestedInput
+    coverAsset?: MediaAssetUpdateOneWithoutCurrentCatalogCoverForNestedInput
+    leads?: LeadUpdateManyWithoutInterestedProductNestedInput
+  }
+
+  export type ProductUncheckedUpdateWithoutPageModulesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priceText?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverAssetId?: NullableStringFieldUpdateOperationsInput | string | null
+    ctaLabel?: NullableStringFieldUpdateOperationsInput | string | null
+    ctaUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    allowAiRecommendation?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    leads?: LeadUncheckedUpdateManyWithoutInterestedProductNestedInput
+  }
+
   export type LinkClickUpsertWithWhereUniqueWithoutLinkInput = {
     where: LinkClickWhereUniqueInput
     update: XOR<LinkClickUpdateWithoutLinkInput, LinkClickUncheckedUpdateWithoutLinkInput>
@@ -74682,6 +75296,7 @@ export namespace Prisma {
     id: string
     type?: string
     payloadJson?: string | null
+    schemaVersion?: number
     title: string
     url: string
     description?: string | null
@@ -74695,6 +75310,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     profile: ProfileCreateNestedOneWithoutLinksInput
+    catalogItem?: ProductCreateNestedOneWithoutPageModulesInput
   }
 
   export type LinkUncheckedCreateWithoutClicksInput = {
@@ -74702,6 +75318,8 @@ export namespace Prisma {
     profileId: string
     type?: string
     payloadJson?: string | null
+    catalogItemId?: string | null
+    schemaVersion?: number
     title: string
     url: string
     description?: string | null
@@ -74736,6 +75354,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    schemaVersion?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74749,6 +75368,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profile?: ProfileUpdateOneRequiredWithoutLinksNestedInput
+    catalogItem?: ProductUpdateOneWithoutPageModulesNestedInput
   }
 
   export type LinkUncheckedUpdateWithoutClicksInput = {
@@ -74756,6 +75376,8 @@ export namespace Prisma {
     profileId?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    catalogItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    schemaVersion?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -75950,6 +76572,8 @@ export namespace Prisma {
 
   export type ProductCreateWithoutLeadsInput = {
     id?: string
+    kind?: string
+    status?: string
     name: string
     category?: string | null
     description?: string | null
@@ -75958,28 +76582,34 @@ export namespace Prisma {
     ctaLabel?: string | null
     ctaUrl?: string | null
     sortOrder?: number
-    isActive?: boolean
     allowAiRecommendation?: boolean
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProductsInput
+    coverAsset?: MediaAssetCreateNestedOneWithoutCurrentCatalogCoverForInput
+    pageModules?: LinkCreateNestedManyWithoutCatalogItemInput
   }
 
   export type ProductUncheckedCreateWithoutLeadsInput = {
     id?: string
     userId: string
+    kind?: string
+    status?: string
     name: string
     category?: string | null
     description?: string | null
     priceText?: string | null
     coverImageUrl?: string | null
+    coverAssetId?: string | null
     ctaLabel?: string | null
     ctaUrl?: string | null
     sortOrder?: number
-    isActive?: boolean
     allowAiRecommendation?: boolean
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    pageModules?: LinkUncheckedCreateNestedManyWithoutCatalogItemInput
   }
 
   export type ProductCreateOrConnectWithoutLeadsInput = {
@@ -76140,6 +76770,8 @@ export namespace Prisma {
 
   export type ProductUpdateWithoutLeadsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76148,28 +76780,34 @@ export namespace Prisma {
     ctaLabel?: NullableStringFieldUpdateOperationsInput | string | null
     ctaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     allowAiRecommendation?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProductsNestedInput
+    coverAsset?: MediaAssetUpdateOneWithoutCurrentCatalogCoverForNestedInput
+    pageModules?: LinkUpdateManyWithoutCatalogItemNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutLeadsInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priceText?: NullableStringFieldUpdateOperationsInput | string | null
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverAssetId?: NullableStringFieldUpdateOperationsInput | string | null
     ctaLabel?: NullableStringFieldUpdateOperationsInput | string | null
     ctaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     allowAiRecommendation?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pageModules?: LinkUncheckedUpdateManyWithoutCatalogItemNestedInput
   }
 
   export type AiConversationUpsertWithoutLeadInput = {
@@ -76419,6 +77057,49 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutProductsInput, UserUncheckedCreateWithoutProductsInput>
   }
 
+  export type MediaAssetCreateWithoutCurrentCatalogCoverForInput = {
+    id?: string
+    purpose: string
+    storageProvider?: string
+    storageKey: string
+    originalName?: string | null
+    mimeType: string
+    sizeBytes: number
+    checksumSha256: string
+    status?: string
+    moderationReason?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutMediaAssetsInput
+    profile?: ProfileCreateNestedOneWithoutMediaAssetsInput
+    currentAvatarFor?: ProfileCreateNestedOneWithoutAvatarAssetInput
+  }
+
+  export type MediaAssetUncheckedCreateWithoutCurrentCatalogCoverForInput = {
+    id?: string
+    ownerUserId: string
+    profileId?: string | null
+    purpose: string
+    storageProvider?: string
+    storageKey: string
+    originalName?: string | null
+    mimeType: string
+    sizeBytes: number
+    checksumSha256: string
+    status?: string
+    moderationReason?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    currentAvatarFor?: ProfileUncheckedCreateNestedOneWithoutAvatarAssetInput
+  }
+
+  export type MediaAssetCreateOrConnectWithoutCurrentCatalogCoverForInput = {
+    where: MediaAssetWhereUniqueInput
+    create: XOR<MediaAssetCreateWithoutCurrentCatalogCoverForInput, MediaAssetUncheckedCreateWithoutCurrentCatalogCoverForInput>
+  }
+
   export type LeadCreateWithoutInterestedProductInput = {
     id: string
     name: string
@@ -76472,6 +77153,58 @@ export namespace Prisma {
 
   export type LeadCreateManyInterestedProductInputEnvelope = {
     data: LeadCreateManyInterestedProductInput | LeadCreateManyInterestedProductInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type LinkCreateWithoutCatalogItemInput = {
+    id: string
+    type?: string
+    payloadJson?: string | null
+    schemaVersion?: number
+    title: string
+    url: string
+    description?: string | null
+    iconType?: string
+    iconValue?: string | null
+    iconUrl?: string | null
+    iconModerationStatus?: string
+    position?: number
+    isActive?: boolean
+    totalClicks?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile: ProfileCreateNestedOneWithoutLinksInput
+    clicks?: LinkClickCreateNestedManyWithoutLinkInput
+  }
+
+  export type LinkUncheckedCreateWithoutCatalogItemInput = {
+    id: string
+    profileId: string
+    type?: string
+    payloadJson?: string | null
+    schemaVersion?: number
+    title: string
+    url: string
+    description?: string | null
+    iconType?: string
+    iconValue?: string | null
+    iconUrl?: string | null
+    iconModerationStatus?: string
+    position?: number
+    isActive?: boolean
+    totalClicks?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    clicks?: LinkClickUncheckedCreateNestedManyWithoutLinkInput
+  }
+
+  export type LinkCreateOrConnectWithoutCatalogItemInput = {
+    where: LinkWhereUniqueInput
+    create: XOR<LinkCreateWithoutCatalogItemInput, LinkUncheckedCreateWithoutCatalogItemInput>
+  }
+
+  export type LinkCreateManyCatalogItemInputEnvelope = {
+    data: LinkCreateManyCatalogItemInput | LinkCreateManyCatalogItemInput[]
     skipDuplicates?: boolean
   }
 
@@ -76556,6 +77289,55 @@ export namespace Prisma {
     mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
+  export type MediaAssetUpsertWithoutCurrentCatalogCoverForInput = {
+    update: XOR<MediaAssetUpdateWithoutCurrentCatalogCoverForInput, MediaAssetUncheckedUpdateWithoutCurrentCatalogCoverForInput>
+    create: XOR<MediaAssetCreateWithoutCurrentCatalogCoverForInput, MediaAssetUncheckedCreateWithoutCurrentCatalogCoverForInput>
+    where?: MediaAssetWhereInput
+  }
+
+  export type MediaAssetUpdateToOneWithWhereWithoutCurrentCatalogCoverForInput = {
+    where?: MediaAssetWhereInput
+    data: XOR<MediaAssetUpdateWithoutCurrentCatalogCoverForInput, MediaAssetUncheckedUpdateWithoutCurrentCatalogCoverForInput>
+  }
+
+  export type MediaAssetUpdateWithoutCurrentCatalogCoverForInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    purpose?: StringFieldUpdateOperationsInput | string
+    storageProvider?: StringFieldUpdateOperationsInput | string
+    storageKey?: StringFieldUpdateOperationsInput | string
+    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    mimeType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    checksumSha256?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutMediaAssetsNestedInput
+    profile?: ProfileUpdateOneWithoutMediaAssetsNestedInput
+    currentAvatarFor?: ProfileUpdateOneWithoutAvatarAssetNestedInput
+  }
+
+  export type MediaAssetUncheckedUpdateWithoutCurrentCatalogCoverForInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ownerUserId?: StringFieldUpdateOperationsInput | string
+    profileId?: NullableStringFieldUpdateOperationsInput | string | null
+    purpose?: StringFieldUpdateOperationsInput | string
+    storageProvider?: StringFieldUpdateOperationsInput | string
+    storageKey?: StringFieldUpdateOperationsInput | string
+    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    mimeType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    checksumSha256?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    currentAvatarFor?: ProfileUncheckedUpdateOneWithoutAvatarAssetNestedInput
+  }
+
   export type LeadUpsertWithWhereUniqueWithoutInterestedProductInput = {
     where: LeadWhereUniqueInput
     update: XOR<LeadUpdateWithoutInterestedProductInput, LeadUncheckedUpdateWithoutInterestedProductInput>
@@ -76570,6 +77352,22 @@ export namespace Prisma {
   export type LeadUpdateManyWithWhereWithoutInterestedProductInput = {
     where: LeadScalarWhereInput
     data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyWithoutInterestedProductInput>
+  }
+
+  export type LinkUpsertWithWhereUniqueWithoutCatalogItemInput = {
+    where: LinkWhereUniqueInput
+    update: XOR<LinkUpdateWithoutCatalogItemInput, LinkUncheckedUpdateWithoutCatalogItemInput>
+    create: XOR<LinkCreateWithoutCatalogItemInput, LinkUncheckedCreateWithoutCatalogItemInput>
+  }
+
+  export type LinkUpdateWithWhereUniqueWithoutCatalogItemInput = {
+    where: LinkWhereUniqueInput
+    data: XOR<LinkUpdateWithoutCatalogItemInput, LinkUncheckedUpdateWithoutCatalogItemInput>
+  }
+
+  export type LinkUpdateManyWithWhereWithoutCatalogItemInput = {
+    where: LinkScalarWhereInput
+    data: XOR<LinkUpdateManyMutationInput, LinkUncheckedUpdateManyWithoutCatalogItemInput>
   }
 
   export type UserCreateWithoutKnowledgeDocsInput = {
@@ -78936,16 +79734,19 @@ export namespace Prisma {
 
   export type ProductCreateManyUserInput = {
     id?: string
+    kind?: string
+    status?: string
     name: string
     category?: string | null
     description?: string | null
     priceText?: string | null
     coverImageUrl?: string | null
+    coverAssetId?: string | null
     ctaLabel?: string | null
     ctaUrl?: string | null
     sortOrder?: number
-    isActive?: boolean
     allowAiRecommendation?: boolean
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -79278,6 +80079,8 @@ export namespace Prisma {
 
   export type ProductUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79286,42 +80089,51 @@ export namespace Prisma {
     ctaLabel?: NullableStringFieldUpdateOperationsInput | string | null
     ctaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     allowAiRecommendation?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    coverAsset?: MediaAssetUpdateOneWithoutCurrentCatalogCoverForNestedInput
     leads?: LeadUpdateManyWithoutInterestedProductNestedInput
+    pageModules?: LinkUpdateManyWithoutCatalogItemNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priceText?: NullableStringFieldUpdateOperationsInput | string | null
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverAssetId?: NullableStringFieldUpdateOperationsInput | string | null
     ctaLabel?: NullableStringFieldUpdateOperationsInput | string | null
     ctaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     allowAiRecommendation?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leads?: LeadUncheckedUpdateManyWithoutInterestedProductNestedInput
+    pageModules?: LinkUncheckedUpdateManyWithoutCatalogItemNestedInput
   }
 
   export type ProductUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     priceText?: NullableStringFieldUpdateOperationsInput | string | null
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverAssetId?: NullableStringFieldUpdateOperationsInput | string | null
     ctaLabel?: NullableStringFieldUpdateOperationsInput | string | null
     ctaUrl?: NullableStringFieldUpdateOperationsInput | string | null
     sortOrder?: IntFieldUpdateOperationsInput | number
-    isActive?: BoolFieldUpdateOperationsInput | boolean
     allowAiRecommendation?: BoolFieldUpdateOperationsInput | boolean
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -79607,6 +80419,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profile?: ProfileUpdateOneWithoutMediaAssetsNestedInput
     currentAvatarFor?: ProfileUpdateOneWithoutAvatarAssetNestedInput
+    currentCatalogCoverFor?: ProductUpdateOneWithoutCoverAssetNestedInput
   }
 
   export type MediaAssetUncheckedUpdateWithoutOwnerInput = {
@@ -79625,6 +80438,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentAvatarFor?: ProfileUncheckedUpdateOneWithoutAvatarAssetNestedInput
+    currentCatalogCoverFor?: ProductUncheckedUpdateOneWithoutCoverAssetNestedInput
   }
 
   export type MediaAssetUncheckedUpdateManyWithoutOwnerInput = {
@@ -79648,6 +80462,8 @@ export namespace Prisma {
     id: string
     type?: string
     payloadJson?: string | null
+    catalogItemId?: string | null
+    schemaVersion?: number
     title: string
     url: string
     description?: string | null
@@ -79729,6 +80545,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    schemaVersion?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79741,6 +80558,7 @@ export namespace Prisma {
     totalClicks?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    catalogItem?: ProductUpdateOneWithoutPageModulesNestedInput
     clicks?: LinkClickUpdateManyWithoutLinkNestedInput
   }
 
@@ -79748,6 +80566,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    catalogItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    schemaVersion?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79767,6 +80587,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    catalogItemId?: NullableStringFieldUpdateOperationsInput | string | null
+    schemaVersion?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79941,6 +80763,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutMediaAssetsNestedInput
     currentAvatarFor?: ProfileUpdateOneWithoutAvatarAssetNestedInput
+    currentCatalogCoverFor?: ProductUpdateOneWithoutCoverAssetNestedInput
   }
 
   export type MediaAssetUncheckedUpdateWithoutProfileInput = {
@@ -79959,6 +80782,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentAvatarFor?: ProfileUncheckedUpdateOneWithoutAvatarAssetNestedInput
+    currentCatalogCoverFor?: ProductUncheckedUpdateOneWithoutCoverAssetNestedInput
   }
 
   export type MediaAssetUncheckedUpdateManyWithoutProfileInput = {
@@ -80188,6 +81012,26 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type LinkCreateManyCatalogItemInput = {
+    id: string
+    profileId: string
+    type?: string
+    payloadJson?: string | null
+    schemaVersion?: number
+    title: string
+    url: string
+    description?: string | null
+    iconType?: string
+    iconValue?: string | null
+    iconUrl?: string | null
+    iconModerationStatus?: string
+    position?: number
+    isActive?: boolean
+    totalClicks?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type LeadUpdateWithoutInterestedProductInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -80252,6 +81096,68 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
     handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LinkUpdateWithoutCatalogItemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    schemaVersion?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconType?: StringFieldUpdateOperationsInput | string
+    iconValue?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconModerationStatus?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    totalClicks?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneRequiredWithoutLinksNestedInput
+    clicks?: LinkClickUpdateManyWithoutLinkNestedInput
+  }
+
+  export type LinkUncheckedUpdateWithoutCatalogItemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    schemaVersion?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconType?: StringFieldUpdateOperationsInput | string
+    iconValue?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconModerationStatus?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    totalClicks?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clicks?: LinkClickUncheckedUpdateManyWithoutLinkNestedInput
+  }
+
+  export type LinkUncheckedUpdateManyWithoutCatalogItemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    schemaVersion?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconType?: StringFieldUpdateOperationsInput | string
+    iconValue?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconModerationStatus?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    totalClicks?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

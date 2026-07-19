@@ -172,7 +172,8 @@ model MediaAsset {
   updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
   owner            User      @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
   profile          Profile?  @relation("ProfileMediaAssets", fields: [profileId], references: [id], onDelete: SetNull)
-  currentAvatarFor Profile?  @relation("CurrentProfileAvatar")
+  currentAvatarFor       Profile? @relation("CurrentProfileAvatar")
+  currentCatalogCoverFor Product? @relation("CatalogCoverAsset")
 
   @@index([ownerUserId, purpose, status])
   @@index([profileId, purpose, status])
@@ -244,6 +245,8 @@ model Link {
   type                 String      @default("link")
   // V2-005: 组件扩展字段（微信账号、商品价格、预约时间段、地图坐标等）
   payloadJson          String?     @map("payload_json")
+  catalogItemId        String?     @map("catalog_item_id") @db.Uuid
+  schemaVersion        Int         @default(1) @map("schema_version")
   title                String
   url                  String
   description          String?
@@ -257,9 +260,11 @@ model Link {
   createdAt            DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt            DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
   profile              Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  catalogItem          Product?    @relation(fields: [catalogItemId], references: [id], onDelete: SetNull)
   clicks               LinkClick[]
 
   @@index([profileId, type])
+  @@index([catalogItemId])
   @@map("links")
 }
 
@@ -558,24 +563,29 @@ model EmailSendLog {
 
 // 产品与服务
 model Product {
-  id                    String   @id @default(uuid()) @db.Uuid
-  userId                String   @map("user_id") @db.Uuid
+  id                    String      @id @default(uuid()) @db.Uuid
+  userId                String      @map("user_id") @db.Uuid
+  kind                  String      @default("product")
+  status                String      @default("draft")
   name                  String
   category              String?
   description           String?
-  priceText             String?  @map("price_text")
-  coverImageUrl         String?  @map("cover_image_url")
-  ctaLabel              String?  @map("cta_label")
-  ctaUrl                String?  @map("cta_url")
-  sortOrder             Int      @default(0) @map("sort_order")
-  isActive              Boolean  @default(true) @map("is_active")
-  allowAiRecommendation Boolean  @default(true) @map("allow_ai_recommendation")
-  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt             DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  priceText             String?     @map("price_text")
+  coverImageUrl         String?     @map("cover_image_url")
+  coverAssetId          String?     @unique @map("cover_asset_id") @db.Uuid
+  ctaLabel              String?     @map("cta_label")
+  ctaUrl                String?     @map("cta_url")
+  sortOrder             Int         @default(0) @map("sort_order")
+  allowAiRecommendation Boolean     @default(true) @map("allow_ai_recommendation")
+  archivedAt            DateTime?   @map("archived_at") @db.Timestamptz(6)
+  createdAt             DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user                  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coverAsset            MediaAsset? @relation("CatalogCoverAsset", fields: [coverAssetId], references: [id], onDelete: SetNull)
   leads                 Lead[]
+  pageModules           Link[]
 
-  @@index([userId, isActive, sortOrder])
+  @@index([userId, status, sortOrder])
   @@index([userId, category])
   @@map("products")
 }
