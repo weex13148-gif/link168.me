@@ -79,19 +79,24 @@ jobs:
 
       - name: Materialize Phase 2 Task 1 artifacts
         if: github.head_ref == 'agent/refactor-phase2-task1-catalog-page-persistence'
+        shell: bash
         run: |
-          node scripts/refactor/materialize-phase2-task1.mjs
-          node scripts/refactor/materialize-phase2-task1-compat.mjs
-          npx prisma validate
-          npx prisma generate
-          node scripts/refactor/schema-fingerprint.mjs
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add prisma/schema.prisma src/generated/prisma docs/superpowers/reports/2026-07-19-schema-baseline.json src/lib/dashboard-data.ts src/app/api/dashboard/products/route.ts 'src/app/api/dashboard/products/[id]/route.ts' src/app/console/page.tsx src/app/workbench/products/page.tsx src/components/workbench/ProductsClient.tsx
-          if ! git diff --cached --quiet; then
-            git commit -m "fix(catalog): map legacy Product UI to status"
-            git push origin HEAD:${{ github.head_ref }}
-          fi
+          mkdir -p test-results
+          set -o pipefail
+          {
+            node scripts/refactor/materialize-phase2-task1.mjs
+            node scripts/refactor/materialize-phase2-task1-compat.mjs
+            npx prisma validate
+            npx prisma generate
+            node scripts/refactor/schema-fingerprint.mjs
+            git config user.name github-actions[bot]
+            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+            git add prisma/schema.prisma src/generated/prisma docs/superpowers/reports/2026-07-19-schema-baseline.json src/lib/dashboard-data.ts src/app/api/dashboard/products/route.ts 'src/app/api/dashboard/products/[id]/route.ts' src/app/console/page.tsx src/app/workbench/products/page.tsx src/components/workbench/ProductsClient.tsx
+            if ! git diff --cached --quiet; then
+              git commit -m "fix(catalog): map legacy Product UI to status"
+              git push origin HEAD:${{ github.head_ref }}
+            fi
+          } 2>&1 | tee test-results/materialize.log
 
       - name: Verify approved baseline
         run: node scripts/refactor/verify-baseline.mjs
