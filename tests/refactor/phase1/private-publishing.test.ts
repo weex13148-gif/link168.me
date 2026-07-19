@@ -1,5 +1,10 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
+
+jest.mock("@/lib/cache/public-profile", () => ({
+  revalidatePublicProfileByUser: jest.fn(async () => undefined),
+}));
+
 import { createSession, SESSION_COOKIE_NAME } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { PUT as putDashboard } from "@/app/api/dashboard/route";
