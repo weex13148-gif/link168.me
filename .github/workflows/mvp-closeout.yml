@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: link168-refactor-${{ github.ref }}
@@ -129,57 +129,3 @@ jobs:
 
       - name: Diff check
         run: git diff --check
-
-  patch-task5:
-    if: github.event_name == 'pull_request' && github.head_ref == 'agent/refactor-phase1-task5-private-publishing'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout task branch
-        uses: actions/checkout@v4
-        with:
-          ref: agent/refactor-phase1-task5-private-publishing
-          fetch-depth: 1
-          show-progress: false
-
-      - name: Setup Node.js 22
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Apply reviewed exact patch
-        shell: bash
-        run: |
-          set +e
-          python3 scripts/refactor/fix-phase1-task5-script.py > task5-patch.log 2>&1
-          status=$?
-          if [ "$status" -eq 0 ]; then
-            python3 scripts/refactor/apply-phase1-task5.py >> task5-patch.log 2>&1
-            status=$?
-          fi
-          cat task5-patch.log
-          if [ "$status" -ne 0 ]; then
-            exit "$status"
-          fi
-          node scripts/refactor/schema-fingerprint.mjs
-          node scripts/refactor/schema-fingerprint.mjs --check
-
-      - name: Upload task5 patch diagnostics
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: task5-patch-diagnostics
-          path: task5-patch.log
-          retention-days: 1
-
-      - name: Restore read-only gate and commit
-        run: |
-          git fetch --depth=1 origin refactor/link168-modular-monolith-r1
-          git checkout FETCH_HEAD -- .github/workflows/mvp-closeout.yml
-          rm -f scripts/refactor/apply-phase1-task5.py scripts/refactor/fix-phase1-task5-script.py task5-patch.log
-          git diff --check
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "fix(profile): keep new pages private until verified"
-          git push origin HEAD:agent/refactor-phase1-task5-private-publishing

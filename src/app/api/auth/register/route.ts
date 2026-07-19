@@ -83,7 +83,7 @@ export async function POST(request: Request) {
           id: profileId,
           userId,
           username: initialUsername,
-          isPublic: true,
+          isPublic: false,
           theme: "Link168 草木默认",
           template: "business",
           language: "zh",

@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
-import { requireActiveUser } from "@/lib/auth";
+import { requireDashboardUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { newId, normalizeNullableString, toProfileDto } from "@/lib/dashboard-data";
 import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from "@/lib/i18n";
@@ -48,7 +48,7 @@ function hasField(body: SaveProfileRequest, field: keyof SaveProfileRequest) {
 }
 
 export async function PUT(request: Request) {
-  const { user, response } = await requireActiveUser(request);
+  const { user, response, capabilities } = await requireDashboardUser(request);
   if (response || !user) return response;
 
   let body: SaveProfileRequest;
@@ -86,6 +86,16 @@ export async function PUT(request: Request) {
       return NextResponse.json({ success: false, error: "公开状态格式不正确。" }, { status: 400 });
     }
     isPublicValue = body.isPublic;
+    if (isPublicValue && !capabilities?.canPublishProfile) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "邮箱验证完成前，主页保持未发布；你仍可继续编辑资料。",
+          errorCode: "PROFILE_PUBLISH_NOT_ALLOWED",
+        },
+        { status: 403 },
+      );
+    }
   }
 
   let contactVisibilityValue: string | undefined;
@@ -174,7 +184,7 @@ export async function PUT(request: Request) {
       theme: themeValue || "Link168 草木默认",
       language: languageValue || DEFAULT_LANGUAGE,
       customTheme: customThemeValue === undefined ? null : customThemeValue,
-      isPublic: isPublicValue ?? true,
+      isPublic: isPublicValue ?? false,
       company: normalizeNullableString(body.company),
       jobTitle: normalizeNullableString(body.jobTitle),
       phone: normalizeNullableString(body.phone),

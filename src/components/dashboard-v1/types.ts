@@ -9,6 +9,16 @@ export type DashboardUser = {
   role?: string;
 };
 
+export type DashboardCapabilities = {
+  canLogin: boolean;
+  canEnterDashboard: boolean;
+  canModifySensitiveData: boolean;
+  canPublishProfile: boolean;
+  canExposePublicResources: boolean;
+  canEnterJeepwork: boolean;
+  blockedBy: string | null;
+};
+
 export type DashboardProfile = {
   id: string;
   username: string;
@@ -67,6 +77,7 @@ export type DashboardResponse = {
   success?: boolean;
   error?: string;
   user?: DashboardUser;
+  capabilities?: DashboardCapabilities;
   profile?: DashboardProfile | null;
   links?: DashboardLink[];
   leadsCount?: number;

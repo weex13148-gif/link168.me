@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState, type FormEvent } from "react";
-import type { DashboardLink, DashboardProfile, DashboardUser, SaveState } from "@/components/dashboard-v1/types";
+import type { DashboardCapabilities, DashboardLink, DashboardProfile, DashboardUser, SaveState } from "@/components/dashboard-v1/types";
 import { isTemporaryUsername } from "@/components/dashboard-v1/types";
 import { deleteAvatarRequest, fetchDashboard, fetchPlan, saveAppearanceRequest, saveProfileRequest, uploadAvatarRequest, saveCustomThemeRequest, saveProfileSettingsRequest, deactivateAccountRequest, logoutRequest } from "@/components/dashboard-v1/dashboard-api";
 import type { CustomTheme } from "@/components/theme/types";
@@ -70,6 +70,15 @@ async function compressAvatarImage(file: File): Promise<File> {
 }
 
 const emptyUser: DashboardUser = { email: "", emailVerified: false };
+const emptyCapabilities: DashboardCapabilities = {
+  canLogin: false,
+  canEnterDashboard: false,
+  canModifySensitiveData: false,
+  canPublishProfile: false,
+  canExposePublicResources: false,
+  canEnterJeepwork: false,
+  blockedBy: "UNKNOWN",
+};
 
 type PlanEntitlements = {
   planCode: string;
@@ -124,6 +133,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [user, setUser] = useState<DashboardUser>(emptyUser);
+  const [capabilities, setCapabilities] = useState<DashboardCapabilities>(emptyCapabilities);
   const [profile, setProfile] = useState<DashboardProfile | null>(null);
   const [planCode, setPlanCode] = useState("free");
   const [planEntitlements, setPlanEntitlements] = useState<PlanEntitlements>(emptyPlan);
@@ -148,6 +158,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
       const result = dashboard.data;
       const nextProfile = result.profile ? withAvatarCacheBust(result.profile) : null;
       setUser({ id: result.user?.id, email: result.user?.email || "", emailVerified: Boolean(result.user?.emailVerified), role: result.user?.role });
+      setCapabilities(result.capabilities || emptyCapabilities);
       setProfile(nextProfile);
       setUsername(nextProfile && !isTemporaryUsername(nextProfile.username) ? nextProfile.username : "");
       setDisplayName(nextProfile?.display_name || "");
@@ -280,6 +291,10 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
   }, [onUpgrade, showToast]);
 
   const saveProfileSettings = useCallback(async (settings: { isPublic?: boolean; language?: string; contactVisibility?: string }) => {
+    if (settings.isPublic === true && !capabilities.canPublishProfile) {
+      showToast("邮箱验证完成前，主页保持未发布；你仍可继续编辑资料。", "error");
+      return false;
+    }
     setAppearanceSaving(true);
     setSaveState("saving");
     try {
@@ -296,7 +311,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
     } finally {
       setAppearanceSaving(false);
     }
-  }, [showToast]);
+  }, [capabilities.canPublishProfile, showToast]);
 
   const refreshEntitlements = useCallback(async () => {
     try {
@@ -333,7 +348,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
   }, [showToast]);
 
   return {
-    loading, loadError, user, profile, planCode, planEntitlements,
+    loading, loadError, user, capabilities, profile, planCode, planEntitlements,
     username, displayName, bio, saveState, uploadingAvatar, appearanceSaving, deactivating,
     setUsername, setDisplayName, setBio, setSaveState,
     load, markDirty, saveProfile, uploadAvatar, deleteAvatar, saveAppearance, saveCustomTheme, saveProfileSettings,
