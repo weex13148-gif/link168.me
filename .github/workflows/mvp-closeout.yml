@@ -82,6 +82,12 @@ jobs:
       - name: Verify direct dependency policy
         run: npm run check:dependencies
 
+      - name: Verify domain boundaries
+        run: npm run check:boundaries
+
+      - name: Verify schema fingerprint
+        run: node scripts/refactor/schema-fingerprint.mjs --check
+
       - name: Validate Prisma schema
         run: npx prisma validate
 
