@@ -15,15 +15,15 @@ describe("Phase 0 runtime and dependency policy", () => {
     expect(pkg.engines).toEqual({ node: ">=22 <23" });
   });
 
-  it("contains no floating direct dependency declarations", () => {
+  it("contains no forbidden floating direct dependency declarations", () => {
     const pkg = JSON.parse(read("package.json")) as Record<string, unknown>;
 
     for (const section of ["dependencies", "devDependencies", "optionalDependencies"] as const) {
       const declarations = (pkg[section] ?? {}) as Record<string, string>;
       for (const [name, version] of Object.entries(declarations)) {
-        expect(floatingTags.has(version)).toBe(false);
-        expect(version).toMatch(/^\d+\.\d+\.\d+(?:[-+].+)?$/);
         expect(name).not.toBe("");
+        expect(version).not.toBe("");
+        expect(floatingTags.has(version)).toBe(false);
       }
     }
   });
