@@ -62,6 +62,10 @@ for (const section of sections) {
   }
 }
 
+if (!checkOnly && violations.length > 0) {
+  fail("DEPENDENCY_POLICY_VIOLATION", violations.join(","));
+}
+
 if (checkOnly) {
   if (pkg.engines?.node !== nodeRange) {
     violations.push(`engines.node=${pkg.engines?.node ?? "MISSING"}`);
