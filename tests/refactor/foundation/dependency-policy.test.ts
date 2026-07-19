@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 
 const read = (file: string) => fs.readFileSync(file, "utf8");
@@ -28,12 +29,19 @@ describe("Phase 0 runtime and dependency policy", () => {
     }
   });
 
-  it("exposes a deterministic dependency policy check command", () => {
+  it("exposes and executes the deterministic dependency policy check", () => {
     const pkg = JSON.parse(read("package.json")) as {
       scripts?: Record<string, string>;
     };
     expect(pkg.scripts?.["check:dependencies"]).toBe(
       "node scripts/refactor/pin-direct-dependencies.mjs --check",
     );
+
+    const output = execFileSync(
+      process.execPath,
+      ["scripts/refactor/pin-direct-dependencies.mjs", "--check"],
+      { encoding: "utf8" },
+    );
+    expect(output.trim()).toBe("DEPENDENCY_POLICY_OK");
   });
 });
