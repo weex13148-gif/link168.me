@@ -1,0 +1,38 @@
+[
+  {
+    "path": "src/app/workbench",
+    "status": "MIGRATING",
+    "ownerPhase": 2,
+    "reason": "Consolidate ordinary user routes into the single six-entry dashboard."
+  },
+  {
+    "path": "src/app/api",
+    "status": "MIGRATING",
+    "ownerPhase": 1,
+    "reason": "Routes become protocol adapters and stop owning business policy."
+  },
+  {
+    "path": "src/components/share",
+    "status": "MIGRATING",
+    "ownerPhase": 2,
+    "reason": "Consolidate public rendering into one module interpreter and renderer."
+  },
+  {
+    "path": "src/lib/ai",
+    "status": "MIGRATING",
+    "ownerPhase": 3,
+    "reason": "Move conversation, knowledge and lead policy into Reception and CRM."
+  },
+  {
+    "path": "src/app/showcase",
+    "status": "KEEP",
+    "ownerPhase": 5,
+    "reason": "The approved product constitution explicitly forbids deleting the showcase surface."
+  },
+  {
+    "path": "src/app/jeepwork",
+    "status": "KEEP",
+    "ownerPhase": 1,
+    "reason": "Keep the separate super-administrator surface and apply unified account capabilities."
+  }
+]
