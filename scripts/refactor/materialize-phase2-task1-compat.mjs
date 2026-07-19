@@ -17,8 +17,8 @@ function replaceExact(path, before, after) {
 
 replaceExact(
   "src/lib/dashboard-data.ts",
-  "  isActive: boolean;\n",
-  "  status: string;\n",
+  "  sortOrder: number;\n  isActive: boolean;\n  allowAiRecommendation: boolean;\n",
+  "  sortOrder: number;\n  status: string;\n  allowAiRecommendation: boolean;\n",
 );
 replaceExact(
   "src/lib/dashboard-data.ts",
