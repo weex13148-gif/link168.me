@@ -21,7 +21,7 @@ export default async function AiReceptionPage() {
       where: { userId: user.id },
       select: { id: true, username: true, displayName: true },
     }),
-    db.product.count({ where: { userId: user.id, isActive: true } }),
+    db.product.count({ where: { userId: user.id, status: "published" } }),
   ]);
 
   return (

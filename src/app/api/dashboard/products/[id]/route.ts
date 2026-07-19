@@ -152,7 +152,9 @@ export async function PUT(
       ? Math.max(0, Math.floor(body.sortOrder))
       : existing.sortOrder;
 
-  const isActive = sanitizeBool(body.isActive, existing.isActive);
+  const status = sanitizeBool(body.isActive, existing.status === "published")
+    ? "published"
+    : "archived";
   const allowAiRecommendation = sanitizeBool(
     body.allowAiRecommendation,
     existing.allowAiRecommendation
@@ -169,7 +171,7 @@ export async function PUT(
       ctaLabel,
       ctaUrl,
       sortOrder,
-      isActive,
+      status,
       allowAiRecommendation,
     },
   });

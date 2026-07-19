@@ -88,7 +88,7 @@ export default function ProductsClient({ initialProducts }: Props) {
       priceText: product.priceText ?? "",
       ctaLabel: product.ctaLabel ?? "",
       ctaUrl: product.ctaUrl ?? "",
-      isActive: product.isActive,
+      isActive: product.status === "published",
       allowAiRecommendation: product.allowAiRecommendation,
     });
     setEditingId(product.id);
@@ -132,6 +132,7 @@ export default function ProductsClient({ initialProducts }: Props) {
               ? {
                   ...p,
                   ...data.product,
+                  status: data.product.is_active ? "published" : "archived",
                   createdAt: new Date(data.product.created_at),
                   updatedAt: new Date(),
                 }
@@ -145,7 +146,7 @@ export default function ProductsClient({ initialProducts }: Props) {
             ...data.product,
             userId: data.product.user_id,
             sortOrder: data.product.sort_order,
-            isActive: data.product.is_active,
+            status: data.product.is_active ? "published" : "archived",
             allowAiRecommendation: data.product.allow_ai_recommendation,
             createdAt: new Date(data.product.created_at),
             updatedAt: new Date(),
@@ -194,7 +195,7 @@ export default function ProductsClient({ initialProducts }: Props) {
             p.id === id
               ? {
                   ...p,
-                  isActive: data.product.is_active,
+                  status: data.product.is_active ? "published" : "archived",
                   updatedAt: new Date(),
                 }
               : p
@@ -294,10 +295,10 @@ export default function ProductsClient({ initialProducts }: Props) {
                   </div>
                   <span
                     className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-black ${
-                      product.isActive ? "bg-[#DDE8CD] text-[#3F5F31]" : "bg-[#F7F1E7] text-[#7A6D5E]"
+                      product.status === "published" ? "bg-[#DDE8CD] text-[#3F5F31]" : "bg-[#F7F1E7] text-[#7A6D5E]"
                     }`}
                   >
-                    {product.isActive ? "在售" : "已下架"}
+                    {product.status === "published" ? "在售" : "已下架"}
                   </span>
                 </div>
                 <p className="mt-3 text-base font-black text-[#2B241E]">{product.name}</p>
@@ -329,12 +330,12 @@ export default function ProductsClient({ initialProducts }: Props) {
                     <ChevronDown aria-hidden className="size-3" />
                   </button>
                   <button
-                    onClick={() => handleToggleActive(product.id, product.isActive)}
+                    onClick={() => handleToggleActive(product.id, product.status === "published")}
                     disabled={loading}
                     className="link168-button-press grid size-8 place-items-center rounded-xl bg-white text-xs text-[#3F5F31] ring-1 ring-[#E8DCCB]"
-                    title={product.isActive ? "下架" : "上架"}
+                    title={product.status === "published" ? "下架" : "上架"}
                   >
-                    {product.isActive ? <X aria-hidden className="size-3" /> : <Check aria-hidden className="size-3" />}
+                    {product.status === "published" ? <X aria-hidden className="size-3" /> : <Check aria-hidden className="size-3" />}
                   </button>
                   <button
                     onClick={() => openEdit(product)}

@@ -191,7 +191,7 @@ export function toProductDto(product: {
   ctaLabel: string | null;
   ctaUrl: string | null;
   sortOrder: number;
-  isActive: boolean;
+  status: string;
   allowAiRecommendation: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -207,7 +207,7 @@ export function toProductDto(product: {
     cta_label: product.ctaLabel,
     cta_url: product.ctaUrl,
     sort_order: product.sortOrder,
-    is_active: product.isActive,
+    is_active: product.status === "published",
     allow_ai_recommendation: product.allowAiRecommendation,
     created_at: product.createdAt.toISOString(),
     updated_at: product.updatedAt.toISOString(),

@@ -76,7 +76,7 @@ export async function GET(request: Request) {
   const activeOnly = new URL(request.url).searchParams.get("active") === "1";
 
   const products = await db.product.findMany({
-    where: { userId: user.id, ...(activeOnly ? { isActive: true } : {}) },
+    where: { userId: user.id, ...(activeOnly ? { status: "published" } : {}) },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
   });
 
@@ -170,7 +170,7 @@ export async function POST(request: Request) {
   });
   const sortOrder = (currentOrder._max.sortOrder ?? -1) + 1;
 
-  const isActive = sanitizeBool(body.isActive, true);
+  const status = sanitizeBool(body.isActive, true) ? "published" : "archived";
   const allowAiRecommendation = sanitizeBool(
     body.allowAiRecommendation,
     true
@@ -188,7 +188,7 @@ export async function POST(request: Request) {
       ctaLabel,
       ctaUrl,
       sortOrder,
-      isActive,
+      status,
       allowAiRecommendation,
     },
   });

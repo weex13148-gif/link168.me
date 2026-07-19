@@ -26,7 +26,7 @@ export async function hydrateOwnedActiveProductCardPayload(
   }
 
   const product = await db.product.findFirst({
-    where: { id: productId, userId, isActive: true },
+    where: { id: productId, userId, status: "published" },
     select: {
       id: true,
       name: true,

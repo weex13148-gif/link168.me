@@ -68,7 +68,7 @@ export default async function EnterpriseHomePage({ params }: Props) {
 
   // 读取企业产品（来自 owner 的 products）
   const productCount = await db.product.count({
-    where: { userId: workspace.ownerId, isActive: true },
+    where: { userId: workspace.ownerId, status: "published" },
   });
 
   const contactIsPublic = ownerProfile?.contactVisibility === "public";

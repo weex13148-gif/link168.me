@@ -320,7 +320,7 @@ export default async function ConsoleHomePage() {
                 >
                   <span className="truncate font-bold text-[#2B241E]">{p.name}</span>
                   <span className="shrink-0 text-xs text-[#7A6D5E]">
-                    {p.priceText || (p.isActive ? "在售" : "草稿")}
+                    {p.priceText || (p.status === "published" ? "在售" : "草稿")}
                   </span>
                 </li>
               ))}

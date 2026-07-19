@@ -167,7 +167,7 @@ export default async function PublicProfilePage({ params, searchParams }: Public
 
   const rawProducts = await db.product
     .findMany({
-      where: { userId: profile.userId, isActive: true },
+      where: { userId: profile.userId, status: "published" },
       orderBy: { sortOrder: "asc" },
       select: {
         id: true,
