@@ -136,6 +136,9 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: write
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://link168@127.0.0.1:5432/link168_ci
     steps:
       - name: Checkout task branch
         uses: actions/checkout@v4
