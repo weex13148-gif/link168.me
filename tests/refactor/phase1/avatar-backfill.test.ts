@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rm, utimes, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -48,7 +48,7 @@ async function writeLegacyAvatar(root: string, profile: { profileId: string; use
 }
 
 function runBackfill(root: string, args: string[] = []) {
-  const result = spawnSync(
+  return spawnSync(
     process.execPath,
     ["scripts/refactor/backfill-avatar-media-assets.mjs", ...args],
     {
@@ -61,7 +61,6 @@ function runBackfill(root: string, args: string[] = []) {
       encoding: "utf8",
     },
   );
-  return result;
 }
 
 function parseSummary(stdout: string) {
@@ -144,14 +143,15 @@ describe("Phase 1 legacy avatar backfill", () => {
     expect(await db.mediaAsset.count({ where: { profileId: profile.profileId } })).toBe(1);
   });
 
-  test("missing, duplicate and external avatars are reported without guessing", async () => {
+  test("missing and external avatars are skipped while duplicate matches use the newest mtime", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "link168-avatar-backfill-"));
     tempRoots.push(root);
     const missing = await createLegacyProfile({ avatarUrl: "/api/avatar/missing" });
     const duplicate = await createLegacyProfile({ avatarUrl: "/api/avatar/duplicate" });
-    await writeLegacyAvatar(root, duplicate, "older");
-    await new Promise((resolve) => setTimeout(resolve, 10));
-    await writeLegacyAvatar(root, duplicate, "newer");
+    const older = await writeLegacyAvatar(root, duplicate, "older");
+    const newer = await writeLegacyAvatar(root, duplicate, "newer");
+    await utimes(older, new Date("2026-07-18T00:00:00Z"), new Date("2026-07-18T00:00:00Z"));
+    await utimes(newer, new Date("2026-07-19T00:00:00Z"), new Date("2026-07-19T00:00:00Z"));
     await createLegacyProfile({ avatarUrl: "https://cdn.example.com/avatar.png" });
 
     const result = runBackfill(root, ["--apply"]);
@@ -159,13 +159,20 @@ describe("Phase 1 legacy avatar backfill", () => {
     expect(parseSummary(result.stdout)).toMatchObject({
       mode: "apply",
       scanned: 3,
-      created: 0,
+      created: 1,
       missing: 1,
       duplicates: 1,
       externalSkipped: 1,
       errors: 0,
     });
-    expect(await db.mediaAsset.count()).toBe(0);
+    const stored = await db.profile.findUniqueOrThrow({
+      where: { id: duplicate.profileId },
+      include: { avatarAsset: true },
+    });
+    expect(stored.avatarAsset?.storageKey).toBe(
+      path.relative(root, newer).split(path.sep).join("/"),
+    );
+    expect(await db.mediaAsset.count({ where: { profileId: duplicate.profileId } })).toBe(1);
     expect(
       await db.profile.findUniqueOrThrow({
         where: { id: missing.profileId },
@@ -179,5 +186,13 @@ describe("Phase 1 legacy avatar backfill", () => {
     const result = runBackfill(root, ["--database-url=postgresql://example"]);
     expect(result.status).not.toBe(0);
     expect(result.stderr).toContain("DATABASE_URL_OVERRIDE_FORBIDDEN");
+  });
+
+  test("the approved npm command uses the exact avatar-assets name", async () => {
+    const packageJson = JSON.parse(await readFile(path.join(process.cwd(), "package.json"), "utf8"));
+    expect(packageJson.scripts["backfill:avatar-assets"]).toBe(
+      "node scripts/refactor/backfill-avatar-media-assets.mjs",
+    );
+    expect(packageJson.scripts["backfill:avatars"]).toBeUndefined();
   });
 });
