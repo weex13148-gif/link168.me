@@ -1,0 +1,47 @@
+name: Refactor Task 2 Lockfile Generator
+
+on:
+  push:
+    branches:
+      - agent/refactor-phase0-task2-dependencies
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout task branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Pin floating direct dependencies from lockfile
+        run: node scripts/refactor/pin-direct-dependencies.mjs
+
+      - name: Verify dependency policy
+        run: node scripts/refactor/pin-direct-dependencies.mjs --check
+
+      - name: Verify lockfile installation
+        run: npm ci
+
+      - name: Commit generated package metadata
+        run: |
+          if git diff --quiet -- package.json package-lock.json; then
+            echo "Package metadata already synchronized."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "build(refactor): pin runtime and direct dependencies"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
