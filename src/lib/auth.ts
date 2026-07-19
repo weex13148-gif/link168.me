@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { evaluateAccountCapabilities, type AccountCapabilities } from "@/domains/identity/account-capabilities";
 import { db } from "@/lib/db";
 
 export const SESSION_COOKIE_NAME = "link168_session";
@@ -17,6 +18,7 @@ export type CurrentUser = {
   email: string;
   emailVerified: boolean;
   role: string;
+  accountStatus: string;
 };
 
 function hashToken(token: string) {
@@ -103,18 +105,21 @@ export async function getCurrentUserByToken(token: string | undefined): Promise<
           email: true,
           emailVerified: true,
           role: true,
+          accountStatus: true,
         },
       },
     },
   });
 
   if (!session?.user) return null;
+  if (session.user.accountStatus !== "active") return null;
 
   return {
     id: session.user.id,
     email: session.user.email,
     emailVerified: session.user.emailVerified,
     role: session.user.role || ROLE_USER,
+    accountStatus: session.user.accountStatus,
   };
 }
 
@@ -132,6 +137,31 @@ export async function getCurrentUserFromRequest(request: Request) {
 export async function getCurrentUserFromCookies() {
   const cookieStore = await cookies();
   return getCurrentUserByToken(cookieStore.get(SESSION_COOKIE_NAME)?.value);
+}
+
+type AccountContextUser = Pick<
+  CurrentUser,
+  "id" | "emailVerified" | "role" | "accountStatus"
+>;
+
+export async function getAccountAccessContextForUser(user: AccountContextUser): Promise<{
+  restrictions: ActiveRestriction[];
+  capabilities: AccountCapabilities;
+}> {
+  const restrictions = await getActiveRestrictions(user.id);
+  const capabilities = evaluateAccountCapabilities({
+    accountStatus: user.accountStatus,
+    emailVerified: user.emailVerified,
+    role: user.role,
+    restrictionTypes: restrictions.map((restriction) => restriction.type),
+  });
+  return { restrictions, capabilities };
+}
+
+export async function getAccountCapabilitiesForUser(
+  user: AccountContextUser,
+): Promise<AccountCapabilities> {
+  return (await getAccountAccessContextForUser(user)).capabilities;
 }
 
 export async function requireUser(request: Request) {
@@ -168,37 +198,36 @@ export async function requireDashboardUser(request: Request) {
     return {
       user: null,
       restrictions: null,
+      capabilities: null,
       response: NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 }),
     };
   }
-  let restrictions: ActiveRestriction[];
+
   try {
-    restrictions = await getActiveRestrictions(user.id);
+    const { restrictions, capabilities } = await getAccountAccessContextForUser(user);
+    if (!capabilities.canEnterDashboard) {
+      return {
+        user,
+        restrictions,
+        capabilities,
+        response: NextResponse.json(
+          { success: false, error: "账号受限，无法进入后台", blockedType: capabilities.blockedBy },
+          { status: 403 },
+        ),
+      };
+    }
+    return { user, restrictions, capabilities, response: null };
   } catch {
     return {
       user,
       restrictions: null,
+      capabilities: null,
       response: NextResponse.json(
         { success: false, error: "限制服务暂时不可用，请稍后重试" },
         { status: 503 },
       ),
     };
   }
-  // ADMIN_FREEZE 不阻止后台访问，只阻止公开主页展示；BANNED 和 SECURITY_RISK 阻止后台
-  const hardBlock = restrictions.find((r) =>
-    [RESTRICTION_TYPE_SECURITY_RISK, RESTRICTION_TYPE_BANNED].includes(r.type),
-  );
-  if (hardBlock) {
-    return {
-      user,
-      restrictions,
-      response: NextResponse.json(
-        { success: false, error: "账号受限，无法进入后台", blockedType: hardBlock.type },
-        { status: 403 },
-      ),
-    };
-  }
-  return { user, restrictions, response: null };
 }
 
 // 最严格：用于发布公开主页、修改 username、其他敏感写入
@@ -206,18 +235,24 @@ export async function requireDashboardUser(request: Request) {
 export async function requireActiveUser(request: Request) {
   const dashboard = await requireDashboardUser(request);
   if (dashboard.response) return dashboard;
-  const emailFrozen = dashboard.restrictions?.find((r) => r.type === RESTRICTION_TYPE_EMAIL_UNVERIFIED);
-  if (emailFrozen) {
+  if (!dashboard.capabilities?.canModifySensitiveData) {
     return {
       user: dashboard.user,
       restrictions: dashboard.restrictions,
+      capabilities: dashboard.capabilities,
       response: NextResponse.json(
-        { success: false, error: "请先验证邮箱后再执行此操作", blockedType: RESTRICTION_TYPE_EMAIL_UNVERIFIED },
+        {
+          success: false,
+          error: dashboard.capabilities?.blockedBy === "EMAIL_UNVERIFIED"
+            ? "请先验证邮箱后再执行此操作"
+            : "账号当前无法执行此操作",
+          blockedType: dashboard.capabilities?.blockedBy,
+        },
         { status: 403 },
       ),
     };
   }
-  return { user: dashboard.user, restrictions: dashboard.restrictions, response: null };
+  return dashboard;
 }
 
 // ====== 密码重置相关 ======

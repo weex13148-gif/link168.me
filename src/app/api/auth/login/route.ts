@@ -5,10 +5,7 @@ import {
   setSessionCookie,
   isLoginRateLimited,
   recordLoginAttempt,
-  getActiveRestrictions,
-  syncEmailVerificationRestriction,
-  canUserLogin,
-  ActiveRestriction,
+  getAccountAccessContextForUser,
   RESTRICTION_TYPE_BANNED,
   RESTRICTION_TYPE_SECURITY_RISK,
 } from "@/lib/auth";
@@ -39,13 +36,11 @@ export async function POST(request: Request) {
 
   const email = normalizeEmail(body.email);
   const password = typeof body.password === "string" ? body.password : "";
-
   if (!email || !password) {
     return NextResponse.json({ success: false, error: "邮箱和密码不能为空。" }, { status: 400 });
   }
 
-  const limited = await isLoginRateLimited(email, request);
-  if (limited) {
+  if (await isLoginRateLimited(email, request)) {
     return NextResponse.json({
       success: false,
       error: "登录尝试过于频繁，请 15 分钟后重试，或使用忘记密码功能重置。",
@@ -63,65 +58,55 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "邮箱或密码错误。" }, { status: 401 });
   }
 
-  if (user.accountStatus === "deactivated") {
-    await recordLoginAttempt(email, false, request);
-    return NextResponse.json(
-      { success: false, error: "账号已注销", errorCode: "ACCOUNT_DEACTIVATED" },
-      { status: 403 },
-    );
-  }
-
-  await recordLoginAttempt(email, true, request);
-
-  let restrictions: ActiveRestriction[] = [];
-  let restrictionQueryFailed = false;
-
+  let access;
   try {
-    if (!user.emailVerified) {
-      try {
-        await syncEmailVerificationRestriction(user.id);
-      } catch {
-        // 同步失败不阻止继续查询限制
-      }
-    }
-    restrictions = await getActiveRestrictions(user.id);
+    access = await getAccountAccessContextForUser(user);
   } catch {
-    restrictionQueryFailed = true;
-  }
-
-  if (restrictionQueryFailed) {
+    await recordLoginAttempt(email, false, request);
     return NextResponse.json(
       { success: false, error: "限制服务暂时不可用，请稍后重试", errorCode: "RESTRICTION_SERVICE_UNAVAILABLE" },
       { status: 503 },
     );
   }
 
-  const loginCheck = canUserLogin(restrictions);
-
-  if (!loginCheck.ok) {
-    const blockedType = loginCheck.blockedType;
-    if (blockedType === RESTRICTION_TYPE_BANNED) {
+  const { restrictions, capabilities } = access;
+  if (!capabilities.canLogin) {
+    await recordLoginAttempt(email, false, request);
+    if (capabilities.blockedBy === "ACCOUNT_INACTIVE") {
+      return NextResponse.json(
+        { success: false, error: "账号已注销", errorCode: "ACCOUNT_DEACTIVATED" },
+        { status: 403 },
+      );
+    }
+    if (capabilities.blockedBy === RESTRICTION_TYPE_BANNED) {
       return NextResponse.json(
         { success: false, error: "账号已封禁", errorCode: "ACCOUNT_BANNED" },
         { status: 403 },
       );
     }
-    if (blockedType === RESTRICTION_TYPE_SECURITY_RISK) {
+    if (capabilities.blockedBy === RESTRICTION_TYPE_SECURITY_RISK) {
       return NextResponse.json(
         { success: false, error: "账号处于安全限制状态", errorCode: "SECURITY_RESTRICTED" },
         { status: 403 },
       );
     }
     return NextResponse.json(
-      { success: false, error: "登录失败" },
+      { success: false, error: "账号受限", errorCode: "ACCOUNT_RESTRICTED" },
       { status: 403 },
     );
   }
 
+  await recordLoginAttempt(email, true, request);
   const { token, expiresAt } = await createSession(user.id, request);
   const response = NextResponse.json({
     success: true,
-    user: { id: user.id, email: user.email, emailVerified: user.emailVerified },
+    user: {
+      id: user.id,
+      email: user.email,
+      emailVerified: user.emailVerified,
+      accountStatus: user.accountStatus,
+    },
+    capabilities,
     restrictions: { items: restrictions, blockedType: null, loginBlocked: false, reason: null },
   });
   setSessionCookie(response, token, expiresAt);
