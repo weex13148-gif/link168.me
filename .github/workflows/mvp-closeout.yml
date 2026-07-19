@@ -129,3 +129,69 @@ jobs:
 
       - name: Diff check
         run: git diff --check
+
+  phase1-report:
+    if: github.event_name == 'pull_request' && github.head_ref == 'agent/refactor-phase1-report-capture'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: link168
+          POSTGRES_DB: link168_ci
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U link168 -d link168_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://link168@127.0.0.1:5432/link168_ci
+      REDIS_URL: redis://127.0.0.1:6379
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      MAIL_ENABLED: "false"
+      COOKIE_SECURE: "false"
+      RATE_LIMIT_STORE: memory
+
+    steps:
+      - name: Checkout exact Phase 1 implementation tree
+        uses: actions/checkout@v4
+        with:
+          ref: 9292469a184571642297cf9081f14991a7045055
+          fetch-depth: 0
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Prepare CI-only runtime values
+        run: |
+          echo "SESSION_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+          echo "CONFIG_ENCRYPTION_KEY=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+
+      - name: Run ordered Phase 1 verification
+        run: npm run verify:phase1
+
+      - name: Upload Phase 1 report
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase1-verification-report
+          path: docs/superpowers/reports/2026-07-19-phase-1-verification.json
+          retention-days: 7
