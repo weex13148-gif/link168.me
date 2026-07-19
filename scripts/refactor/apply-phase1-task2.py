@@ -2,6 +2,8 @@ from pathlib import Path
 import subprocess
 import sys
 
+REVIEWED_PATCH_COMMIT = "6503c0a24a2c414eb6ebe6d492924318e0042f0d"
+
 
 def replace_named_block(source: str, label: str, replacement: str) -> str:
     label_marker = f'    "{label}",'
@@ -13,8 +15,12 @@ def replace_named_block(source: str, label: str, replacement: str) -> str:
     return source[:start] + replacement + source[end:]
 
 
+subprocess.run(
+    ["git", "fetch", "--depth=20", "origin", "agent/refactor-phase1-task2-auth-capabilities"],
+    check=True,
+)
 previous = subprocess.check_output(
-    ["git", "show", "HEAD^:scripts/refactor/apply-phase1-task2.py"],
+    ["git", "show", f"{REVIEWED_PATCH_COMMIT}:scripts/refactor/apply-phase1-task2.py"],
     text=True,
 )
 
