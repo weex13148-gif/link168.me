@@ -184,6 +184,7 @@ exports.Prisma.ProfileScalarFieldEnum = {
   displayNameAnonymized: 'displayNameAnonymized',
   bio: 'bio',
   avatarUrl: 'avatarUrl',
+  avatarAssetId: 'avatarAssetId',
   avatarModerationStatus: 'avatarModerationStatus',
   coverImageUrl: 'coverImageUrl',
   coverImageModerationStatus: 'coverImageModerationStatus',
@@ -202,6 +203,24 @@ exports.Prisma.ProfileScalarFieldEnum = {
   website: 'website',
   socialLinks: 'socialLinks',
   contactVisibility: 'contactVisibility',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.MediaAssetScalarFieldEnum = {
+  id: 'id',
+  ownerUserId: 'ownerUserId',
+  profileId: 'profileId',
+  purpose: 'purpose',
+  storageProvider: 'storageProvider',
+  storageKey: 'storageKey',
+  originalName: 'originalName',
+  mimeType: 'mimeType',
+  sizeBytes: 'sizeBytes',
+  checksumSha256: 'checksumSha256',
+  status: 'status',
+  moderationReason: 'moderationReason',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -495,6 +514,7 @@ exports.Prisma.AiServiceConfigScalarFieldEnum = {
   allowReport: 'allowReport',
   allowTransferToHuman: 'allowTransferToHuman',
   privacyNoticeText: 'privacyNoticeText',
+  quickActionsJson: 'quickActionsJson',
   providerMode: 'providerMode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -780,6 +800,7 @@ exports.Prisma.ModelName = {
   UsernameHistory: 'UsernameHistory',
   UsernameRegistry: 'UsernameRegistry',
   Profile: 'Profile',
+  MediaAsset: 'MediaAsset',
   Domain: 'Domain',
   WorkspacePublicProfile: 'WorkspacePublicProfile',
   Link: 'Link',

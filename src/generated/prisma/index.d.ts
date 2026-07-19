@@ -39,6 +39,11 @@ export type UsernameRegistry = $Result.DefaultSelection<Prisma.$UsernameRegistry
  */
 export type Profile = $Result.DefaultSelection<Prisma.$ProfilePayload>
 /**
+ * Model MediaAsset
+ * 
+ */
+export type MediaAsset = $Result.DefaultSelection<Prisma.$MediaAssetPayload>
+/**
  * Model Domain
  * 
  */
@@ -399,6 +404,16 @@ export class PrismaClient<
     * ```
     */
   get profile(): Prisma.ProfileDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.mediaAsset`: Exposes CRUD operations for the **MediaAsset** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MediaAssets
+    * const mediaAssets = await prisma.mediaAsset.findMany()
+    * ```
+    */
+  get mediaAsset(): Prisma.MediaAssetDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.domain`: Exposes CRUD operations for the **Domain** model.
@@ -1218,6 +1233,7 @@ export namespace Prisma {
     UsernameHistory: 'UsernameHistory',
     UsernameRegistry: 'UsernameRegistry',
     Profile: 'Profile',
+    MediaAsset: 'MediaAsset',
     Domain: 'Domain',
     WorkspacePublicProfile: 'WorkspacePublicProfile',
     Link: 'Link',
@@ -1271,7 +1287,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "freezeRecord" | "usernameHistory" | "usernameRegistry" | "profile" | "domain" | "workspacePublicProfile" | "link" | "linkClick" | "profileVisit" | "shortLink" | "shortLinkClick" | "session" | "report" | "passwordResetToken" | "emailVerificationToken" | "loginAttempt" | "appConfig" | "aiUsageLog" | "adminAuditLog" | "lead" | "leadFollowUp" | "emailSendLog" | "product" | "knowledgeDoc" | "aiServiceConfig" | "aiConversation" | "aiMessage" | "aiCreditAccount" | "aiCreditLedger" | "membershipSubscription" | "order" | "competitionFile" | "showcaseContent" | "showcaseSequence" | "showcaseAIDemoCall" | "showcaseAIDebugLog" | "showcasePromptDraft" | "contentModerationRecord" | "workspace" | "workspaceMember" | "enterpriseQuotaPool" | "enterpriseQuotaConsumption"
+      modelProps: "user" | "freezeRecord" | "usernameHistory" | "usernameRegistry" | "profile" | "mediaAsset" | "domain" | "workspacePublicProfile" | "link" | "linkClick" | "profileVisit" | "shortLink" | "shortLinkClick" | "session" | "report" | "passwordResetToken" | "emailVerificationToken" | "loginAttempt" | "appConfig" | "aiUsageLog" | "adminAuditLog" | "lead" | "leadFollowUp" | "emailSendLog" | "product" | "knowledgeDoc" | "aiServiceConfig" | "aiConversation" | "aiMessage" | "aiCreditAccount" | "aiCreditLedger" | "membershipSubscription" | "order" | "competitionFile" | "showcaseContent" | "showcaseSequence" | "showcaseAIDemoCall" | "showcaseAIDebugLog" | "showcasePromptDraft" | "contentModerationRecord" | "workspace" | "workspaceMember" | "enterpriseQuotaPool" | "enterpriseQuotaConsumption"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1642,6 +1658,80 @@ export namespace Prisma {
           count: {
             args: Prisma.ProfileCountArgs<ExtArgs>
             result: $Utils.Optional<ProfileCountAggregateOutputType> | number
+          }
+        }
+      }
+      MediaAsset: {
+        payload: Prisma.$MediaAssetPayload<ExtArgs>
+        fields: Prisma.MediaAssetFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MediaAssetFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MediaAssetPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MediaAssetFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MediaAssetPayload>
+          }
+          findFirst: {
+            args: Prisma.MediaAssetFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MediaAssetPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MediaAssetFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MediaAssetPayload>
+          }
+          findMany: {
+            args: Prisma.MediaAssetFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MediaAssetPayload>[]
+          }
+          create: {
+            args: Prisma.MediaAssetCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MediaAssetPayload>
+          }
+          createMany: {
+            args: Prisma.MediaAssetCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MediaAssetCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MediaAssetPayload>[]
+          }
+          delete: {
+            args: Prisma.MediaAssetDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MediaAssetPayload>
+          }
+          update: {
+            args: Prisma.MediaAssetUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MediaAssetPayload>
+          }
+          deleteMany: {
+            args: Prisma.MediaAssetDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MediaAssetUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.MediaAssetUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MediaAssetPayload>[]
+          }
+          upsert: {
+            args: Prisma.MediaAssetUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MediaAssetPayload>
+          }
+          aggregate: {
+            args: Prisma.MediaAssetAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMediaAsset>
+          }
+          groupBy: {
+            args: Prisma.MediaAssetGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MediaAssetGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MediaAssetCountArgs<ExtArgs>
+            result: $Utils.Optional<MediaAssetCountAggregateOutputType> | number
           }
         }
       }
@@ -4570,6 +4660,7 @@ export namespace Prisma {
     usernameHistory?: UsernameHistoryOmit
     usernameRegistry?: UsernameRegistryOmit
     profile?: ProfileOmit
+    mediaAsset?: MediaAssetOmit
     domain?: DomainOmit
     workspacePublicProfile?: WorkspacePublicProfileOmit
     link?: LinkOmit
@@ -4702,6 +4793,7 @@ export namespace Prisma {
     ownedWorkspaces: number
     workspacePublicProfiles: number
     enterpriseQuotaConsumptions: number
+    mediaAssets: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4719,6 +4811,7 @@ export namespace Prisma {
     ownedWorkspaces?: boolean | UserCountOutputTypeCountOwnedWorkspacesArgs
     workspacePublicProfiles?: boolean | UserCountOutputTypeCountWorkspacePublicProfilesArgs
     enterpriseQuotaConsumptions?: boolean | UserCountOutputTypeCountEnterpriseQuotaConsumptionsArgs
+    mediaAssets?: boolean | UserCountOutputTypeCountMediaAssetsArgs
   }
 
   // Custom InputTypes
@@ -4830,6 +4923,13 @@ export namespace Prisma {
     where?: EnterpriseQuotaConsumptionWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountMediaAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MediaAssetWhereInput
+  }
+
 
   /**
    * Count Type ProfileCountOutputType
@@ -4840,6 +4940,7 @@ export namespace Prisma {
     leads: number
     aiConversations: number
     visits: number
+    mediaAssets: number
   }
 
   export type ProfileCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4847,6 +4948,7 @@ export namespace Prisma {
     leads?: boolean | ProfileCountOutputTypeCountLeadsArgs
     aiConversations?: boolean | ProfileCountOutputTypeCountAiConversationsArgs
     visits?: boolean | ProfileCountOutputTypeCountVisitsArgs
+    mediaAssets?: boolean | ProfileCountOutputTypeCountMediaAssetsArgs
   }
 
   // Custom InputTypes
@@ -4886,6 +4988,13 @@ export namespace Prisma {
    */
   export type ProfileCountOutputTypeCountVisitsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProfileVisitWhereInput
+  }
+
+  /**
+   * ProfileCountOutputType without action
+   */
+  export type ProfileCountOutputTypeCountMediaAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MediaAssetWhereInput
   }
 
 
@@ -5425,6 +5534,7 @@ export namespace Prisma {
     ownedWorkspaces?: boolean | User$ownedWorkspacesArgs<ExtArgs>
     workspacePublicProfiles?: boolean | User$workspacePublicProfilesArgs<ExtArgs>
     enterpriseQuotaConsumptions?: boolean | User$enterpriseQuotaConsumptionsArgs<ExtArgs>
+    mediaAssets?: boolean | User$mediaAssetsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -5499,6 +5609,7 @@ export namespace Prisma {
     ownedWorkspaces?: boolean | User$ownedWorkspacesArgs<ExtArgs>
     workspacePublicProfiles?: boolean | User$workspacePublicProfilesArgs<ExtArgs>
     enterpriseQuotaConsumptions?: boolean | User$enterpriseQuotaConsumptionsArgs<ExtArgs>
+    mediaAssets?: boolean | User$mediaAssetsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5525,6 +5636,7 @@ export namespace Prisma {
       ownedWorkspaces: Prisma.$WorkspacePayload<ExtArgs>[]
       workspacePublicProfiles: Prisma.$WorkspacePublicProfilePayload<ExtArgs>[]
       enterpriseQuotaConsumptions: Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>[]
+      mediaAssets: Prisma.$MediaAssetPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5953,6 +6065,7 @@ export namespace Prisma {
     ownedWorkspaces<T extends User$ownedWorkspacesArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedWorkspacesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     workspacePublicProfiles<T extends User$workspacePublicProfilesArgs<ExtArgs> = {}>(args?: Subset<T, User$workspacePublicProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     enterpriseQuotaConsumptions<T extends User$enterpriseQuotaConsumptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$enterpriseQuotaConsumptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    mediaAssets<T extends User$mediaAssetsArgs<ExtArgs> = {}>(args?: Subset<T, User$mediaAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6798,6 +6911,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: EnterpriseQuotaConsumptionScalarFieldEnum | EnterpriseQuotaConsumptionScalarFieldEnum[]
+  }
+
+  /**
+   * User.mediaAssets
+   */
+  export type User$mediaAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetInclude<ExtArgs> | null
+    where?: MediaAssetWhereInput
+    orderBy?: MediaAssetOrderByWithRelationInput | MediaAssetOrderByWithRelationInput[]
+    cursor?: MediaAssetWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MediaAssetScalarFieldEnum | MediaAssetScalarFieldEnum[]
   }
 
   /**
@@ -10158,6 +10295,7 @@ export namespace Prisma {
     displayNameAnonymized: boolean | null
     bio: string | null
     avatarUrl: string | null
+    avatarAssetId: string | null
     avatarModerationStatus: string | null
     coverImageUrl: string | null
     coverImageModerationStatus: string | null
@@ -10187,6 +10325,7 @@ export namespace Prisma {
     displayNameAnonymized: boolean | null
     bio: string | null
     avatarUrl: string | null
+    avatarAssetId: string | null
     avatarModerationStatus: string | null
     coverImageUrl: string | null
     coverImageModerationStatus: string | null
@@ -10216,6 +10355,7 @@ export namespace Prisma {
     displayNameAnonymized: number
     bio: number
     avatarUrl: number
+    avatarAssetId: number
     avatarModerationStatus: number
     coverImageUrl: number
     coverImageModerationStatus: number
@@ -10248,6 +10388,7 @@ export namespace Prisma {
     displayNameAnonymized?: true
     bio?: true
     avatarUrl?: true
+    avatarAssetId?: true
     avatarModerationStatus?: true
     coverImageUrl?: true
     coverImageModerationStatus?: true
@@ -10277,6 +10418,7 @@ export namespace Prisma {
     displayNameAnonymized?: true
     bio?: true
     avatarUrl?: true
+    avatarAssetId?: true
     avatarModerationStatus?: true
     coverImageUrl?: true
     coverImageModerationStatus?: true
@@ -10306,6 +10448,7 @@ export namespace Prisma {
     displayNameAnonymized?: true
     bio?: true
     avatarUrl?: true
+    avatarAssetId?: true
     avatarModerationStatus?: true
     coverImageUrl?: true
     coverImageModerationStatus?: true
@@ -10409,6 +10552,7 @@ export namespace Prisma {
     displayNameAnonymized: boolean
     bio: string | null
     avatarUrl: string | null
+    avatarAssetId: string | null
     avatarModerationStatus: string
     coverImageUrl: string | null
     coverImageModerationStatus: string
@@ -10456,6 +10600,7 @@ export namespace Prisma {
     displayNameAnonymized?: boolean
     bio?: boolean
     avatarUrl?: boolean
+    avatarAssetId?: boolean
     avatarModerationStatus?: boolean
     coverImageUrl?: boolean
     coverImageModerationStatus?: boolean
@@ -10481,6 +10626,8 @@ export namespace Prisma {
     leads?: boolean | Profile$leadsArgs<ExtArgs>
     aiConversations?: boolean | Profile$aiConversationsArgs<ExtArgs>
     visits?: boolean | Profile$visitsArgs<ExtArgs>
+    avatarAsset?: boolean | Profile$avatarAssetArgs<ExtArgs>
+    mediaAssets?: boolean | Profile$mediaAssetsArgs<ExtArgs>
     _count?: boolean | ProfileCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["profile"]>
 
@@ -10492,6 +10639,7 @@ export namespace Prisma {
     displayNameAnonymized?: boolean
     bio?: boolean
     avatarUrl?: boolean
+    avatarAssetId?: boolean
     avatarModerationStatus?: boolean
     coverImageUrl?: boolean
     coverImageModerationStatus?: boolean
@@ -10513,6 +10661,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    avatarAsset?: boolean | Profile$avatarAssetArgs<ExtArgs>
   }, ExtArgs["result"]["profile"]>
 
   export type ProfileSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -10523,6 +10672,7 @@ export namespace Prisma {
     displayNameAnonymized?: boolean
     bio?: boolean
     avatarUrl?: boolean
+    avatarAssetId?: boolean
     avatarModerationStatus?: boolean
     coverImageUrl?: boolean
     coverImageModerationStatus?: boolean
@@ -10544,6 +10694,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    avatarAsset?: boolean | Profile$avatarAssetArgs<ExtArgs>
   }, ExtArgs["result"]["profile"]>
 
   export type ProfileSelectScalar = {
@@ -10554,6 +10705,7 @@ export namespace Prisma {
     displayNameAnonymized?: boolean
     bio?: boolean
     avatarUrl?: boolean
+    avatarAssetId?: boolean
     avatarModerationStatus?: boolean
     coverImageUrl?: boolean
     coverImageModerationStatus?: boolean
@@ -10576,20 +10728,24 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "username" | "displayName" | "displayNameAnonymized" | "bio" | "avatarUrl" | "avatarModerationStatus" | "coverImageUrl" | "coverImageModerationStatus" | "theme" | "customTheme" | "template" | "language" | "isPublic" | "company" | "jobTitle" | "phone" | "email" | "wechat" | "city" | "address" | "website" | "socialLinks" | "contactVisibility" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
+  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "username" | "displayName" | "displayNameAnonymized" | "bio" | "avatarUrl" | "avatarAssetId" | "avatarModerationStatus" | "coverImageUrl" | "coverImageModerationStatus" | "theme" | "customTheme" | "template" | "language" | "isPublic" | "company" | "jobTitle" | "phone" | "email" | "wechat" | "city" | "address" | "website" | "socialLinks" | "contactVisibility" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
   export type ProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     links?: boolean | Profile$linksArgs<ExtArgs>
     leads?: boolean | Profile$leadsArgs<ExtArgs>
     aiConversations?: boolean | Profile$aiConversationsArgs<ExtArgs>
     visits?: boolean | Profile$visitsArgs<ExtArgs>
+    avatarAsset?: boolean | Profile$avatarAssetArgs<ExtArgs>
+    mediaAssets?: boolean | Profile$mediaAssetsArgs<ExtArgs>
     _count?: boolean | ProfileCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProfileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    avatarAsset?: boolean | Profile$avatarAssetArgs<ExtArgs>
   }
   export type ProfileIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    avatarAsset?: boolean | Profile$avatarAssetArgs<ExtArgs>
   }
 
   export type $ProfilePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10600,6 +10756,8 @@ export namespace Prisma {
       leads: Prisma.$LeadPayload<ExtArgs>[]
       aiConversations: Prisma.$AiConversationPayload<ExtArgs>[]
       visits: Prisma.$ProfileVisitPayload<ExtArgs>[]
+      avatarAsset: Prisma.$MediaAssetPayload<ExtArgs> | null
+      mediaAssets: Prisma.$MediaAssetPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -10609,6 +10767,7 @@ export namespace Prisma {
       displayNameAnonymized: boolean
       bio: string | null
       avatarUrl: string | null
+      avatarAssetId: string | null
       avatarModerationStatus: string
       coverImageUrl: string | null
       coverImageModerationStatus: string
@@ -11028,6 +11187,8 @@ export namespace Prisma {
     leads<T extends Profile$leadsArgs<ExtArgs> = {}>(args?: Subset<T, Profile$leadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     aiConversations<T extends Profile$aiConversationsArgs<ExtArgs> = {}>(args?: Subset<T, Profile$aiConversationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     visits<T extends Profile$visitsArgs<ExtArgs> = {}>(args?: Subset<T, Profile$visitsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfileVisitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    avatarAsset<T extends Profile$avatarAssetArgs<ExtArgs> = {}>(args?: Subset<T, Profile$avatarAssetArgs<ExtArgs>>): Prisma__MediaAssetClient<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    mediaAssets<T extends Profile$mediaAssetsArgs<ExtArgs> = {}>(args?: Subset<T, Profile$mediaAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11064,6 +11225,7 @@ export namespace Prisma {
     readonly displayNameAnonymized: FieldRef<"Profile", 'Boolean'>
     readonly bio: FieldRef<"Profile", 'String'>
     readonly avatarUrl: FieldRef<"Profile", 'String'>
+    readonly avatarAssetId: FieldRef<"Profile", 'String'>
     readonly avatarModerationStatus: FieldRef<"Profile", 'String'>
     readonly coverImageUrl: FieldRef<"Profile", 'String'>
     readonly coverImageModerationStatus: FieldRef<"Profile", 'String'>
@@ -11581,6 +11743,49 @@ export namespace Prisma {
   }
 
   /**
+   * Profile.avatarAsset
+   */
+  export type Profile$avatarAssetArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetInclude<ExtArgs> | null
+    where?: MediaAssetWhereInput
+  }
+
+  /**
+   * Profile.mediaAssets
+   */
+  export type Profile$mediaAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetInclude<ExtArgs> | null
+    where?: MediaAssetWhereInput
+    orderBy?: MediaAssetOrderByWithRelationInput | MediaAssetOrderByWithRelationInput[]
+    cursor?: MediaAssetWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MediaAssetScalarFieldEnum | MediaAssetScalarFieldEnum[]
+  }
+
+  /**
    * Profile without action
    */
   export type ProfileDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -11596,6 +11801,1283 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ProfileInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model MediaAsset
+   */
+
+  export type AggregateMediaAsset = {
+    _count: MediaAssetCountAggregateOutputType | null
+    _avg: MediaAssetAvgAggregateOutputType | null
+    _sum: MediaAssetSumAggregateOutputType | null
+    _min: MediaAssetMinAggregateOutputType | null
+    _max: MediaAssetMaxAggregateOutputType | null
+  }
+
+  export type MediaAssetAvgAggregateOutputType = {
+    sizeBytes: number | null
+  }
+
+  export type MediaAssetSumAggregateOutputType = {
+    sizeBytes: number | null
+  }
+
+  export type MediaAssetMinAggregateOutputType = {
+    id: string | null
+    ownerUserId: string | null
+    profileId: string | null
+    purpose: string | null
+    storageProvider: string | null
+    storageKey: string | null
+    originalName: string | null
+    mimeType: string | null
+    sizeBytes: number | null
+    checksumSha256: string | null
+    status: string | null
+    moderationReason: string | null
+    deletedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type MediaAssetMaxAggregateOutputType = {
+    id: string | null
+    ownerUserId: string | null
+    profileId: string | null
+    purpose: string | null
+    storageProvider: string | null
+    storageKey: string | null
+    originalName: string | null
+    mimeType: string | null
+    sizeBytes: number | null
+    checksumSha256: string | null
+    status: string | null
+    moderationReason: string | null
+    deletedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type MediaAssetCountAggregateOutputType = {
+    id: number
+    ownerUserId: number
+    profileId: number
+    purpose: number
+    storageProvider: number
+    storageKey: number
+    originalName: number
+    mimeType: number
+    sizeBytes: number
+    checksumSha256: number
+    status: number
+    moderationReason: number
+    deletedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type MediaAssetAvgAggregateInputType = {
+    sizeBytes?: true
+  }
+
+  export type MediaAssetSumAggregateInputType = {
+    sizeBytes?: true
+  }
+
+  export type MediaAssetMinAggregateInputType = {
+    id?: true
+    ownerUserId?: true
+    profileId?: true
+    purpose?: true
+    storageProvider?: true
+    storageKey?: true
+    originalName?: true
+    mimeType?: true
+    sizeBytes?: true
+    checksumSha256?: true
+    status?: true
+    moderationReason?: true
+    deletedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type MediaAssetMaxAggregateInputType = {
+    id?: true
+    ownerUserId?: true
+    profileId?: true
+    purpose?: true
+    storageProvider?: true
+    storageKey?: true
+    originalName?: true
+    mimeType?: true
+    sizeBytes?: true
+    checksumSha256?: true
+    status?: true
+    moderationReason?: true
+    deletedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type MediaAssetCountAggregateInputType = {
+    id?: true
+    ownerUserId?: true
+    profileId?: true
+    purpose?: true
+    storageProvider?: true
+    storageKey?: true
+    originalName?: true
+    mimeType?: true
+    sizeBytes?: true
+    checksumSha256?: true
+    status?: true
+    moderationReason?: true
+    deletedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type MediaAssetAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MediaAsset to aggregate.
+     */
+    where?: MediaAssetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MediaAssets to fetch.
+     */
+    orderBy?: MediaAssetOrderByWithRelationInput | MediaAssetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MediaAssetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MediaAssets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MediaAssets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned MediaAssets
+    **/
+    _count?: true | MediaAssetCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: MediaAssetAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MediaAssetSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MediaAssetMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MediaAssetMaxAggregateInputType
+  }
+
+  export type GetMediaAssetAggregateType<T extends MediaAssetAggregateArgs> = {
+        [P in keyof T & keyof AggregateMediaAsset]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMediaAsset[P]>
+      : GetScalarType<T[P], AggregateMediaAsset[P]>
+  }
+
+
+
+
+  export type MediaAssetGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MediaAssetWhereInput
+    orderBy?: MediaAssetOrderByWithAggregationInput | MediaAssetOrderByWithAggregationInput[]
+    by: MediaAssetScalarFieldEnum[] | MediaAssetScalarFieldEnum
+    having?: MediaAssetScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MediaAssetCountAggregateInputType | true
+    _avg?: MediaAssetAvgAggregateInputType
+    _sum?: MediaAssetSumAggregateInputType
+    _min?: MediaAssetMinAggregateInputType
+    _max?: MediaAssetMaxAggregateInputType
+  }
+
+  export type MediaAssetGroupByOutputType = {
+    id: string
+    ownerUserId: string
+    profileId: string | null
+    purpose: string
+    storageProvider: string
+    storageKey: string
+    originalName: string | null
+    mimeType: string
+    sizeBytes: number
+    checksumSha256: string
+    status: string
+    moderationReason: string | null
+    deletedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: MediaAssetCountAggregateOutputType | null
+    _avg: MediaAssetAvgAggregateOutputType | null
+    _sum: MediaAssetSumAggregateOutputType | null
+    _min: MediaAssetMinAggregateOutputType | null
+    _max: MediaAssetMaxAggregateOutputType | null
+  }
+
+  type GetMediaAssetGroupByPayload<T extends MediaAssetGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MediaAssetGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MediaAssetGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MediaAssetGroupByOutputType[P]>
+            : GetScalarType<T[P], MediaAssetGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MediaAssetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ownerUserId?: boolean
+    profileId?: boolean
+    purpose?: boolean
+    storageProvider?: boolean
+    storageKey?: boolean
+    originalName?: boolean
+    mimeType?: boolean
+    sizeBytes?: boolean
+    checksumSha256?: boolean
+    status?: boolean
+    moderationReason?: boolean
+    deletedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+    profile?: boolean | MediaAsset$profileArgs<ExtArgs>
+    currentAvatarFor?: boolean | MediaAsset$currentAvatarForArgs<ExtArgs>
+  }, ExtArgs["result"]["mediaAsset"]>
+
+  export type MediaAssetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ownerUserId?: boolean
+    profileId?: boolean
+    purpose?: boolean
+    storageProvider?: boolean
+    storageKey?: boolean
+    originalName?: boolean
+    mimeType?: boolean
+    sizeBytes?: boolean
+    checksumSha256?: boolean
+    status?: boolean
+    moderationReason?: boolean
+    deletedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+    profile?: boolean | MediaAsset$profileArgs<ExtArgs>
+  }, ExtArgs["result"]["mediaAsset"]>
+
+  export type MediaAssetSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ownerUserId?: boolean
+    profileId?: boolean
+    purpose?: boolean
+    storageProvider?: boolean
+    storageKey?: boolean
+    originalName?: boolean
+    mimeType?: boolean
+    sizeBytes?: boolean
+    checksumSha256?: boolean
+    status?: boolean
+    moderationReason?: boolean
+    deletedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+    profile?: boolean | MediaAsset$profileArgs<ExtArgs>
+  }, ExtArgs["result"]["mediaAsset"]>
+
+  export type MediaAssetSelectScalar = {
+    id?: boolean
+    ownerUserId?: boolean
+    profileId?: boolean
+    purpose?: boolean
+    storageProvider?: boolean
+    storageKey?: boolean
+    originalName?: boolean
+    mimeType?: boolean
+    sizeBytes?: boolean
+    checksumSha256?: boolean
+    status?: boolean
+    moderationReason?: boolean
+    deletedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type MediaAssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerUserId" | "profileId" | "purpose" | "storageProvider" | "storageKey" | "originalName" | "mimeType" | "sizeBytes" | "checksumSha256" | "status" | "moderationReason" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["mediaAsset"]>
+  export type MediaAssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+    profile?: boolean | MediaAsset$profileArgs<ExtArgs>
+    currentAvatarFor?: boolean | MediaAsset$currentAvatarForArgs<ExtArgs>
+  }
+  export type MediaAssetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+    profile?: boolean | MediaAsset$profileArgs<ExtArgs>
+  }
+  export type MediaAssetIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+    profile?: boolean | MediaAsset$profileArgs<ExtArgs>
+  }
+
+  export type $MediaAssetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "MediaAsset"
+    objects: {
+      owner: Prisma.$UserPayload<ExtArgs>
+      profile: Prisma.$ProfilePayload<ExtArgs> | null
+      currentAvatarFor: Prisma.$ProfilePayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      ownerUserId: string
+      profileId: string | null
+      purpose: string
+      storageProvider: string
+      storageKey: string
+      originalName: string | null
+      mimeType: string
+      sizeBytes: number
+      checksumSha256: string
+      status: string
+      moderationReason: string | null
+      deletedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["mediaAsset"]>
+    composites: {}
+  }
+
+  type MediaAssetGetPayload<S extends boolean | null | undefined | MediaAssetDefaultArgs> = $Result.GetResult<Prisma.$MediaAssetPayload, S>
+
+  type MediaAssetCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<MediaAssetFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: MediaAssetCountAggregateInputType | true
+    }
+
+  export interface MediaAssetDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MediaAsset'], meta: { name: 'MediaAsset' } }
+    /**
+     * Find zero or one MediaAsset that matches the filter.
+     * @param {MediaAssetFindUniqueArgs} args - Arguments to find a MediaAsset
+     * @example
+     * // Get one MediaAsset
+     * const mediaAsset = await prisma.mediaAsset.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MediaAssetFindUniqueArgs>(args: SelectSubset<T, MediaAssetFindUniqueArgs<ExtArgs>>): Prisma__MediaAssetClient<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one MediaAsset that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {MediaAssetFindUniqueOrThrowArgs} args - Arguments to find a MediaAsset
+     * @example
+     * // Get one MediaAsset
+     * const mediaAsset = await prisma.mediaAsset.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MediaAssetFindUniqueOrThrowArgs>(args: SelectSubset<T, MediaAssetFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MediaAssetClient<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MediaAsset that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MediaAssetFindFirstArgs} args - Arguments to find a MediaAsset
+     * @example
+     * // Get one MediaAsset
+     * const mediaAsset = await prisma.mediaAsset.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MediaAssetFindFirstArgs>(args?: SelectSubset<T, MediaAssetFindFirstArgs<ExtArgs>>): Prisma__MediaAssetClient<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first MediaAsset that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MediaAssetFindFirstOrThrowArgs} args - Arguments to find a MediaAsset
+     * @example
+     * // Get one MediaAsset
+     * const mediaAsset = await prisma.mediaAsset.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MediaAssetFindFirstOrThrowArgs>(args?: SelectSubset<T, MediaAssetFindFirstOrThrowArgs<ExtArgs>>): Prisma__MediaAssetClient<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more MediaAssets that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MediaAssetFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MediaAssets
+     * const mediaAssets = await prisma.mediaAsset.findMany()
+     * 
+     * // Get first 10 MediaAssets
+     * const mediaAssets = await prisma.mediaAsset.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const mediaAssetWithIdOnly = await prisma.mediaAsset.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MediaAssetFindManyArgs>(args?: SelectSubset<T, MediaAssetFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a MediaAsset.
+     * @param {MediaAssetCreateArgs} args - Arguments to create a MediaAsset.
+     * @example
+     * // Create one MediaAsset
+     * const MediaAsset = await prisma.mediaAsset.create({
+     *   data: {
+     *     // ... data to create a MediaAsset
+     *   }
+     * })
+     * 
+     */
+    create<T extends MediaAssetCreateArgs>(args: SelectSubset<T, MediaAssetCreateArgs<ExtArgs>>): Prisma__MediaAssetClient<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many MediaAssets.
+     * @param {MediaAssetCreateManyArgs} args - Arguments to create many MediaAssets.
+     * @example
+     * // Create many MediaAssets
+     * const mediaAsset = await prisma.mediaAsset.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MediaAssetCreateManyArgs>(args?: SelectSubset<T, MediaAssetCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many MediaAssets and returns the data saved in the database.
+     * @param {MediaAssetCreateManyAndReturnArgs} args - Arguments to create many MediaAssets.
+     * @example
+     * // Create many MediaAssets
+     * const mediaAsset = await prisma.mediaAsset.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many MediaAssets and only return the `id`
+     * const mediaAssetWithIdOnly = await prisma.mediaAsset.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MediaAssetCreateManyAndReturnArgs>(args?: SelectSubset<T, MediaAssetCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a MediaAsset.
+     * @param {MediaAssetDeleteArgs} args - Arguments to delete one MediaAsset.
+     * @example
+     * // Delete one MediaAsset
+     * const MediaAsset = await prisma.mediaAsset.delete({
+     *   where: {
+     *     // ... filter to delete one MediaAsset
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MediaAssetDeleteArgs>(args: SelectSubset<T, MediaAssetDeleteArgs<ExtArgs>>): Prisma__MediaAssetClient<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one MediaAsset.
+     * @param {MediaAssetUpdateArgs} args - Arguments to update one MediaAsset.
+     * @example
+     * // Update one MediaAsset
+     * const mediaAsset = await prisma.mediaAsset.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MediaAssetUpdateArgs>(args: SelectSubset<T, MediaAssetUpdateArgs<ExtArgs>>): Prisma__MediaAssetClient<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more MediaAssets.
+     * @param {MediaAssetDeleteManyArgs} args - Arguments to filter MediaAssets to delete.
+     * @example
+     * // Delete a few MediaAssets
+     * const { count } = await prisma.mediaAsset.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MediaAssetDeleteManyArgs>(args?: SelectSubset<T, MediaAssetDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MediaAssets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MediaAssetUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MediaAssets
+     * const mediaAsset = await prisma.mediaAsset.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MediaAssetUpdateManyArgs>(args: SelectSubset<T, MediaAssetUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MediaAssets and returns the data updated in the database.
+     * @param {MediaAssetUpdateManyAndReturnArgs} args - Arguments to update many MediaAssets.
+     * @example
+     * // Update many MediaAssets
+     * const mediaAsset = await prisma.mediaAsset.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more MediaAssets and only return the `id`
+     * const mediaAssetWithIdOnly = await prisma.mediaAsset.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends MediaAssetUpdateManyAndReturnArgs>(args: SelectSubset<T, MediaAssetUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one MediaAsset.
+     * @param {MediaAssetUpsertArgs} args - Arguments to update or create a MediaAsset.
+     * @example
+     * // Update or create a MediaAsset
+     * const mediaAsset = await prisma.mediaAsset.upsert({
+     *   create: {
+     *     // ... data to create a MediaAsset
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MediaAsset we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MediaAssetUpsertArgs>(args: SelectSubset<T, MediaAssetUpsertArgs<ExtArgs>>): Prisma__MediaAssetClient<$Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of MediaAssets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MediaAssetCountArgs} args - Arguments to filter MediaAssets to count.
+     * @example
+     * // Count the number of MediaAssets
+     * const count = await prisma.mediaAsset.count({
+     *   where: {
+     *     // ... the filter for the MediaAssets we want to count
+     *   }
+     * })
+    **/
+    count<T extends MediaAssetCountArgs>(
+      args?: Subset<T, MediaAssetCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MediaAssetCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a MediaAsset.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MediaAssetAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MediaAssetAggregateArgs>(args: Subset<T, MediaAssetAggregateArgs>): Prisma.PrismaPromise<GetMediaAssetAggregateType<T>>
+
+    /**
+     * Group by MediaAsset.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MediaAssetGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MediaAssetGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MediaAssetGroupByArgs['orderBy'] }
+        : { orderBy?: MediaAssetGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MediaAssetGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMediaAssetGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the MediaAsset model
+   */
+  readonly fields: MediaAssetFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MediaAsset.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MediaAssetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    profile<T extends MediaAsset$profileArgs<ExtArgs> = {}>(args?: Subset<T, MediaAsset$profileArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    currentAvatarFor<T extends MediaAsset$currentAvatarForArgs<ExtArgs> = {}>(args?: Subset<T, MediaAsset$currentAvatarForArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the MediaAsset model
+   */
+  interface MediaAssetFieldRefs {
+    readonly id: FieldRef<"MediaAsset", 'String'>
+    readonly ownerUserId: FieldRef<"MediaAsset", 'String'>
+    readonly profileId: FieldRef<"MediaAsset", 'String'>
+    readonly purpose: FieldRef<"MediaAsset", 'String'>
+    readonly storageProvider: FieldRef<"MediaAsset", 'String'>
+    readonly storageKey: FieldRef<"MediaAsset", 'String'>
+    readonly originalName: FieldRef<"MediaAsset", 'String'>
+    readonly mimeType: FieldRef<"MediaAsset", 'String'>
+    readonly sizeBytes: FieldRef<"MediaAsset", 'Int'>
+    readonly checksumSha256: FieldRef<"MediaAsset", 'String'>
+    readonly status: FieldRef<"MediaAsset", 'String'>
+    readonly moderationReason: FieldRef<"MediaAsset", 'String'>
+    readonly deletedAt: FieldRef<"MediaAsset", 'DateTime'>
+    readonly createdAt: FieldRef<"MediaAsset", 'DateTime'>
+    readonly updatedAt: FieldRef<"MediaAsset", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * MediaAsset findUnique
+   */
+  export type MediaAssetFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetInclude<ExtArgs> | null
+    /**
+     * Filter, which MediaAsset to fetch.
+     */
+    where: MediaAssetWhereUniqueInput
+  }
+
+  /**
+   * MediaAsset findUniqueOrThrow
+   */
+  export type MediaAssetFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetInclude<ExtArgs> | null
+    /**
+     * Filter, which MediaAsset to fetch.
+     */
+    where: MediaAssetWhereUniqueInput
+  }
+
+  /**
+   * MediaAsset findFirst
+   */
+  export type MediaAssetFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetInclude<ExtArgs> | null
+    /**
+     * Filter, which MediaAsset to fetch.
+     */
+    where?: MediaAssetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MediaAssets to fetch.
+     */
+    orderBy?: MediaAssetOrderByWithRelationInput | MediaAssetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MediaAssets.
+     */
+    cursor?: MediaAssetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MediaAssets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MediaAssets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MediaAssets.
+     */
+    distinct?: MediaAssetScalarFieldEnum | MediaAssetScalarFieldEnum[]
+  }
+
+  /**
+   * MediaAsset findFirstOrThrow
+   */
+  export type MediaAssetFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetInclude<ExtArgs> | null
+    /**
+     * Filter, which MediaAsset to fetch.
+     */
+    where?: MediaAssetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MediaAssets to fetch.
+     */
+    orderBy?: MediaAssetOrderByWithRelationInput | MediaAssetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MediaAssets.
+     */
+    cursor?: MediaAssetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MediaAssets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MediaAssets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MediaAssets.
+     */
+    distinct?: MediaAssetScalarFieldEnum | MediaAssetScalarFieldEnum[]
+  }
+
+  /**
+   * MediaAsset findMany
+   */
+  export type MediaAssetFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetInclude<ExtArgs> | null
+    /**
+     * Filter, which MediaAssets to fetch.
+     */
+    where?: MediaAssetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MediaAssets to fetch.
+     */
+    orderBy?: MediaAssetOrderByWithRelationInput | MediaAssetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing MediaAssets.
+     */
+    cursor?: MediaAssetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MediaAssets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MediaAssets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MediaAssets.
+     */
+    distinct?: MediaAssetScalarFieldEnum | MediaAssetScalarFieldEnum[]
+  }
+
+  /**
+   * MediaAsset create
+   */
+  export type MediaAssetCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetInclude<ExtArgs> | null
+    /**
+     * The data needed to create a MediaAsset.
+     */
+    data: XOR<MediaAssetCreateInput, MediaAssetUncheckedCreateInput>
+  }
+
+  /**
+   * MediaAsset createMany
+   */
+  export type MediaAssetCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many MediaAssets.
+     */
+    data: MediaAssetCreateManyInput | MediaAssetCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * MediaAsset createManyAndReturn
+   */
+  export type MediaAssetCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * The data used to create many MediaAssets.
+     */
+    data: MediaAssetCreateManyInput | MediaAssetCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MediaAsset update
+   */
+  export type MediaAssetUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetInclude<ExtArgs> | null
+    /**
+     * The data needed to update a MediaAsset.
+     */
+    data: XOR<MediaAssetUpdateInput, MediaAssetUncheckedUpdateInput>
+    /**
+     * Choose, which MediaAsset to update.
+     */
+    where: MediaAssetWhereUniqueInput
+  }
+
+  /**
+   * MediaAsset updateMany
+   */
+  export type MediaAssetUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update MediaAssets.
+     */
+    data: XOR<MediaAssetUpdateManyMutationInput, MediaAssetUncheckedUpdateManyInput>
+    /**
+     * Filter which MediaAssets to update
+     */
+    where?: MediaAssetWhereInput
+    /**
+     * Limit how many MediaAssets to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * MediaAsset updateManyAndReturn
+   */
+  export type MediaAssetUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * The data used to update MediaAssets.
+     */
+    data: XOR<MediaAssetUpdateManyMutationInput, MediaAssetUncheckedUpdateManyInput>
+    /**
+     * Filter which MediaAssets to update
+     */
+    where?: MediaAssetWhereInput
+    /**
+     * Limit how many MediaAssets to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MediaAsset upsert
+   */
+  export type MediaAssetUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetInclude<ExtArgs> | null
+    /**
+     * The filter to search for the MediaAsset to update in case it exists.
+     */
+    where: MediaAssetWhereUniqueInput
+    /**
+     * In case the MediaAsset found by the `where` argument doesn't exist, create a new MediaAsset with this data.
+     */
+    create: XOR<MediaAssetCreateInput, MediaAssetUncheckedCreateInput>
+    /**
+     * In case the MediaAsset was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MediaAssetUpdateInput, MediaAssetUncheckedUpdateInput>
+  }
+
+  /**
+   * MediaAsset delete
+   */
+  export type MediaAssetDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetInclude<ExtArgs> | null
+    /**
+     * Filter which MediaAsset to delete.
+     */
+    where: MediaAssetWhereUniqueInput
+  }
+
+  /**
+   * MediaAsset deleteMany
+   */
+  export type MediaAssetDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MediaAssets to delete
+     */
+    where?: MediaAssetWhereInput
+    /**
+     * Limit how many MediaAssets to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * MediaAsset.profile
+   */
+  export type MediaAsset$profileArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Profile
+     */
+    select?: ProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Profile
+     */
+    omit?: ProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProfileInclude<ExtArgs> | null
+    where?: ProfileWhereInput
+  }
+
+  /**
+   * MediaAsset.currentAvatarFor
+   */
+  export type MediaAsset$currentAvatarForArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Profile
+     */
+    select?: ProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Profile
+     */
+    omit?: ProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProfileInclude<ExtArgs> | null
+    where?: ProfileWhereInput
+  }
+
+  /**
+   * MediaAsset without action
+   */
+  export type MediaAssetDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MediaAsset
+     */
+    select?: MediaAssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the MediaAsset
+     */
+    omit?: MediaAssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MediaAssetInclude<ExtArgs> | null
   }
 
 
@@ -34409,6 +35891,7 @@ export namespace Prisma {
     allowReport: boolean | null
     allowTransferToHuman: boolean | null
     privacyNoticeText: string | null
+    quickActionsJson: string | null
     providerMode: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -34426,6 +35909,7 @@ export namespace Prisma {
     allowReport: boolean | null
     allowTransferToHuman: boolean | null
     privacyNoticeText: string | null
+    quickActionsJson: string | null
     providerMode: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -34443,6 +35927,7 @@ export namespace Prisma {
     allowReport: number
     allowTransferToHuman: number
     privacyNoticeText: number
+    quickActionsJson: number
     providerMode: number
     createdAt: number
     updatedAt: number
@@ -34462,6 +35947,7 @@ export namespace Prisma {
     allowReport?: true
     allowTransferToHuman?: true
     privacyNoticeText?: true
+    quickActionsJson?: true
     providerMode?: true
     createdAt?: true
     updatedAt?: true
@@ -34479,6 +35965,7 @@ export namespace Prisma {
     allowReport?: true
     allowTransferToHuman?: true
     privacyNoticeText?: true
+    quickActionsJson?: true
     providerMode?: true
     createdAt?: true
     updatedAt?: true
@@ -34496,6 +35983,7 @@ export namespace Prisma {
     allowReport?: true
     allowTransferToHuman?: true
     privacyNoticeText?: true
+    quickActionsJson?: true
     providerMode?: true
     createdAt?: true
     updatedAt?: true
@@ -34586,6 +36074,7 @@ export namespace Prisma {
     allowReport: boolean
     allowTransferToHuman: boolean
     privacyNoticeText: string | null
+    quickActionsJson: string | null
     providerMode: string
     createdAt: Date
     updatedAt: Date
@@ -34620,6 +36109,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -34638,6 +36128,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -34656,6 +36147,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -34674,12 +36166,13 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type AiServiceConfigOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "enabled" | "assistantName" | "welcomeMessage" | "tone" | "allowProductRecommendation" | "collectLead" | "allowReport" | "allowTransferToHuman" | "privacyNoticeText" | "providerMode" | "createdAt" | "updatedAt", ExtArgs["result"]["aiServiceConfig"]>
+  export type AiServiceConfigOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "enabled" | "assistantName" | "welcomeMessage" | "tone" | "allowProductRecommendation" | "collectLead" | "allowReport" | "allowTransferToHuman" | "privacyNoticeText" | "quickActionsJson" | "providerMode" | "createdAt" | "updatedAt", ExtArgs["result"]["aiServiceConfig"]>
   export type AiServiceConfigInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -34707,6 +36200,7 @@ export namespace Prisma {
       allowReport: boolean
       allowTransferToHuman: boolean
       privacyNoticeText: string | null
+      quickActionsJson: string | null
       providerMode: string
       createdAt: Date
       updatedAt: Date
@@ -35145,6 +36639,7 @@ export namespace Prisma {
     readonly allowReport: FieldRef<"AiServiceConfig", 'Boolean'>
     readonly allowTransferToHuman: FieldRef<"AiServiceConfig", 'Boolean'>
     readonly privacyNoticeText: FieldRef<"AiServiceConfig", 'String'>
+    readonly quickActionsJson: FieldRef<"AiServiceConfig", 'String'>
     readonly providerMode: FieldRef<"AiServiceConfig", 'String'>
     readonly createdAt: FieldRef<"AiServiceConfig", 'DateTime'>
     readonly updatedAt: FieldRef<"AiServiceConfig", 'DateTime'>
@@ -55302,6 +56797,7 @@ export namespace Prisma {
     displayNameAnonymized: 'displayNameAnonymized',
     bio: 'bio',
     avatarUrl: 'avatarUrl',
+    avatarAssetId: 'avatarAssetId',
     avatarModerationStatus: 'avatarModerationStatus',
     coverImageUrl: 'coverImageUrl',
     coverImageModerationStatus: 'coverImageModerationStatus',
@@ -55325,6 +56821,27 @@ export namespace Prisma {
   };
 
   export type ProfileScalarFieldEnum = (typeof ProfileScalarFieldEnum)[keyof typeof ProfileScalarFieldEnum]
+
+
+  export const MediaAssetScalarFieldEnum: {
+    id: 'id',
+    ownerUserId: 'ownerUserId',
+    profileId: 'profileId',
+    purpose: 'purpose',
+    storageProvider: 'storageProvider',
+    storageKey: 'storageKey',
+    originalName: 'originalName',
+    mimeType: 'mimeType',
+    sizeBytes: 'sizeBytes',
+    checksumSha256: 'checksumSha256',
+    status: 'status',
+    moderationReason: 'moderationReason',
+    deletedAt: 'deletedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type MediaAssetScalarFieldEnum = (typeof MediaAssetScalarFieldEnum)[keyof typeof MediaAssetScalarFieldEnum]
 
 
   export const DomainScalarFieldEnum: {
@@ -55676,6 +57193,7 @@ export namespace Prisma {
     allowReport: 'allowReport',
     allowTransferToHuman: 'allowTransferToHuman',
     privacyNoticeText: 'privacyNoticeText',
+    quickActionsJson: 'quickActionsJson',
     providerMode: 'providerMode',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -56144,6 +57662,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceListRelationFilter
     workspacePublicProfiles?: WorkspacePublicProfileListRelationFilter
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
+    mediaAssets?: MediaAssetListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -56179,6 +57698,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceOrderByRelationAggregateInput
     workspacePublicProfiles?: WorkspacePublicProfileOrderByRelationAggregateInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionOrderByRelationAggregateInput
+    mediaAssets?: MediaAssetOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -56217,6 +57737,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceListRelationFilter
     workspacePublicProfiles?: WorkspacePublicProfileListRelationFilter
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
+    mediaAssets?: MediaAssetListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -56509,6 +58030,7 @@ export namespace Prisma {
     displayNameAnonymized?: BoolFilter<"Profile"> | boolean
     bio?: StringNullableFilter<"Profile"> | string | null
     avatarUrl?: StringNullableFilter<"Profile"> | string | null
+    avatarAssetId?: UuidNullableFilter<"Profile"> | string | null
     avatarModerationStatus?: StringFilter<"Profile"> | string
     coverImageUrl?: StringNullableFilter<"Profile"> | string | null
     coverImageModerationStatus?: StringFilter<"Profile"> | string
@@ -56534,6 +58056,8 @@ export namespace Prisma {
     leads?: LeadListRelationFilter
     aiConversations?: AiConversationListRelationFilter
     visits?: ProfileVisitListRelationFilter
+    avatarAsset?: XOR<MediaAssetNullableScalarRelationFilter, MediaAssetWhereInput> | null
+    mediaAssets?: MediaAssetListRelationFilter
   }
 
   export type ProfileOrderByWithRelationInput = {
@@ -56544,6 +58068,7 @@ export namespace Prisma {
     displayNameAnonymized?: SortOrder
     bio?: SortOrderInput | SortOrder
     avatarUrl?: SortOrderInput | SortOrder
+    avatarAssetId?: SortOrderInput | SortOrder
     avatarModerationStatus?: SortOrder
     coverImageUrl?: SortOrderInput | SortOrder
     coverImageModerationStatus?: SortOrder
@@ -56569,12 +58094,15 @@ export namespace Prisma {
     leads?: LeadOrderByRelationAggregateInput
     aiConversations?: AiConversationOrderByRelationAggregateInput
     visits?: ProfileVisitOrderByRelationAggregateInput
+    avatarAsset?: MediaAssetOrderByWithRelationInput
+    mediaAssets?: MediaAssetOrderByRelationAggregateInput
   }
 
   export type ProfileWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     userId?: string
     username?: string
+    avatarAssetId?: string
     AND?: ProfileWhereInput | ProfileWhereInput[]
     OR?: ProfileWhereInput[]
     NOT?: ProfileWhereInput | ProfileWhereInput[]
@@ -56607,7 +58135,9 @@ export namespace Prisma {
     leads?: LeadListRelationFilter
     aiConversations?: AiConversationListRelationFilter
     visits?: ProfileVisitListRelationFilter
-  }, "id" | "userId" | "username">
+    avatarAsset?: XOR<MediaAssetNullableScalarRelationFilter, MediaAssetWhereInput> | null
+    mediaAssets?: MediaAssetListRelationFilter
+  }, "id" | "userId" | "username" | "avatarAssetId">
 
   export type ProfileOrderByWithAggregationInput = {
     id?: SortOrder
@@ -56617,6 +58147,7 @@ export namespace Prisma {
     displayNameAnonymized?: SortOrder
     bio?: SortOrderInput | SortOrder
     avatarUrl?: SortOrderInput | SortOrder
+    avatarAssetId?: SortOrderInput | SortOrder
     avatarModerationStatus?: SortOrder
     coverImageUrl?: SortOrderInput | SortOrder
     coverImageModerationStatus?: SortOrder
@@ -56653,6 +58184,7 @@ export namespace Prisma {
     displayNameAnonymized?: BoolWithAggregatesFilter<"Profile"> | boolean
     bio?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     avatarUrl?: StringNullableWithAggregatesFilter<"Profile"> | string | null
+    avatarAssetId?: UuidNullableWithAggregatesFilter<"Profile"> | string | null
     avatarModerationStatus?: StringWithAggregatesFilter<"Profile"> | string
     coverImageUrl?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     coverImageModerationStatus?: StringWithAggregatesFilter<"Profile"> | string
@@ -56673,6 +58205,119 @@ export namespace Prisma {
     contactVisibility?: StringWithAggregatesFilter<"Profile"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Profile"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Profile"> | Date | string
+  }
+
+  export type MediaAssetWhereInput = {
+    AND?: MediaAssetWhereInput | MediaAssetWhereInput[]
+    OR?: MediaAssetWhereInput[]
+    NOT?: MediaAssetWhereInput | MediaAssetWhereInput[]
+    id?: UuidFilter<"MediaAsset"> | string
+    ownerUserId?: UuidFilter<"MediaAsset"> | string
+    profileId?: UuidNullableFilter<"MediaAsset"> | string | null
+    purpose?: StringFilter<"MediaAsset"> | string
+    storageProvider?: StringFilter<"MediaAsset"> | string
+    storageKey?: StringFilter<"MediaAsset"> | string
+    originalName?: StringNullableFilter<"MediaAsset"> | string | null
+    mimeType?: StringFilter<"MediaAsset"> | string
+    sizeBytes?: IntFilter<"MediaAsset"> | number
+    checksumSha256?: StringFilter<"MediaAsset"> | string
+    status?: StringFilter<"MediaAsset"> | string
+    moderationReason?: StringNullableFilter<"MediaAsset"> | string | null
+    deletedAt?: DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+    createdAt?: DateTimeFilter<"MediaAsset"> | Date | string
+    updatedAt?: DateTimeFilter<"MediaAsset"> | Date | string
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    profile?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
+    currentAvatarFor?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
+  }
+
+  export type MediaAssetOrderByWithRelationInput = {
+    id?: SortOrder
+    ownerUserId?: SortOrder
+    profileId?: SortOrderInput | SortOrder
+    purpose?: SortOrder
+    storageProvider?: SortOrder
+    storageKey?: SortOrder
+    originalName?: SortOrderInput | SortOrder
+    mimeType?: SortOrder
+    sizeBytes?: SortOrder
+    checksumSha256?: SortOrder
+    status?: SortOrder
+    moderationReason?: SortOrderInput | SortOrder
+    deletedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    owner?: UserOrderByWithRelationInput
+    profile?: ProfileOrderByWithRelationInput
+    currentAvatarFor?: ProfileOrderByWithRelationInput
+  }
+
+  export type MediaAssetWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    storageKey?: string
+    AND?: MediaAssetWhereInput | MediaAssetWhereInput[]
+    OR?: MediaAssetWhereInput[]
+    NOT?: MediaAssetWhereInput | MediaAssetWhereInput[]
+    ownerUserId?: UuidFilter<"MediaAsset"> | string
+    profileId?: UuidNullableFilter<"MediaAsset"> | string | null
+    purpose?: StringFilter<"MediaAsset"> | string
+    storageProvider?: StringFilter<"MediaAsset"> | string
+    originalName?: StringNullableFilter<"MediaAsset"> | string | null
+    mimeType?: StringFilter<"MediaAsset"> | string
+    sizeBytes?: IntFilter<"MediaAsset"> | number
+    checksumSha256?: StringFilter<"MediaAsset"> | string
+    status?: StringFilter<"MediaAsset"> | string
+    moderationReason?: StringNullableFilter<"MediaAsset"> | string | null
+    deletedAt?: DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+    createdAt?: DateTimeFilter<"MediaAsset"> | Date | string
+    updatedAt?: DateTimeFilter<"MediaAsset"> | Date | string
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    profile?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
+    currentAvatarFor?: XOR<ProfileNullableScalarRelationFilter, ProfileWhereInput> | null
+  }, "id" | "storageKey">
+
+  export type MediaAssetOrderByWithAggregationInput = {
+    id?: SortOrder
+    ownerUserId?: SortOrder
+    profileId?: SortOrderInput | SortOrder
+    purpose?: SortOrder
+    storageProvider?: SortOrder
+    storageKey?: SortOrder
+    originalName?: SortOrderInput | SortOrder
+    mimeType?: SortOrder
+    sizeBytes?: SortOrder
+    checksumSha256?: SortOrder
+    status?: SortOrder
+    moderationReason?: SortOrderInput | SortOrder
+    deletedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: MediaAssetCountOrderByAggregateInput
+    _avg?: MediaAssetAvgOrderByAggregateInput
+    _max?: MediaAssetMaxOrderByAggregateInput
+    _min?: MediaAssetMinOrderByAggregateInput
+    _sum?: MediaAssetSumOrderByAggregateInput
+  }
+
+  export type MediaAssetScalarWhereWithAggregatesInput = {
+    AND?: MediaAssetScalarWhereWithAggregatesInput | MediaAssetScalarWhereWithAggregatesInput[]
+    OR?: MediaAssetScalarWhereWithAggregatesInput[]
+    NOT?: MediaAssetScalarWhereWithAggregatesInput | MediaAssetScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"MediaAsset"> | string
+    ownerUserId?: UuidWithAggregatesFilter<"MediaAsset"> | string
+    profileId?: UuidNullableWithAggregatesFilter<"MediaAsset"> | string | null
+    purpose?: StringWithAggregatesFilter<"MediaAsset"> | string
+    storageProvider?: StringWithAggregatesFilter<"MediaAsset"> | string
+    storageKey?: StringWithAggregatesFilter<"MediaAsset"> | string
+    originalName?: StringNullableWithAggregatesFilter<"MediaAsset"> | string | null
+    mimeType?: StringWithAggregatesFilter<"MediaAsset"> | string
+    sizeBytes?: IntWithAggregatesFilter<"MediaAsset"> | number
+    checksumSha256?: StringWithAggregatesFilter<"MediaAsset"> | string
+    status?: StringWithAggregatesFilter<"MediaAsset"> | string
+    moderationReason?: StringNullableWithAggregatesFilter<"MediaAsset"> | string | null
+    deletedAt?: DateTimeNullableWithAggregatesFilter<"MediaAsset"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"MediaAsset"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"MediaAsset"> | Date | string
   }
 
   export type DomainWhereInput = {
@@ -58392,6 +60037,7 @@ export namespace Prisma {
     allowReport?: BoolFilter<"AiServiceConfig"> | boolean
     allowTransferToHuman?: BoolFilter<"AiServiceConfig"> | boolean
     privacyNoticeText?: StringNullableFilter<"AiServiceConfig"> | string | null
+    quickActionsJson?: StringNullableFilter<"AiServiceConfig"> | string | null
     providerMode?: StringFilter<"AiServiceConfig"> | string
     createdAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
     updatedAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
@@ -58410,6 +60056,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrderInput | SortOrder
+    quickActionsJson?: SortOrderInput | SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -58431,6 +60078,7 @@ export namespace Prisma {
     allowReport?: BoolFilter<"AiServiceConfig"> | boolean
     allowTransferToHuman?: BoolFilter<"AiServiceConfig"> | boolean
     privacyNoticeText?: StringNullableFilter<"AiServiceConfig"> | string | null
+    quickActionsJson?: StringNullableFilter<"AiServiceConfig"> | string | null
     providerMode?: StringFilter<"AiServiceConfig"> | string
     createdAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
     updatedAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
@@ -58449,6 +60097,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrderInput | SortOrder
+    quickActionsJson?: SortOrderInput | SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -58472,6 +60121,7 @@ export namespace Prisma {
     allowReport?: BoolWithAggregatesFilter<"AiServiceConfig"> | boolean
     allowTransferToHuman?: BoolWithAggregatesFilter<"AiServiceConfig"> | boolean
     privacyNoticeText?: StringNullableWithAggregatesFilter<"AiServiceConfig"> | string | null
+    quickActionsJson?: StringNullableWithAggregatesFilter<"AiServiceConfig"> | string | null
     providerMode?: StringWithAggregatesFilter<"AiServiceConfig"> | string
     createdAt?: DateTimeWithAggregatesFilter<"AiServiceConfig"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"AiServiceConfig"> | Date | string
@@ -60032,6 +61682,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -60067,6 +61718,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUpdateInput = {
@@ -60102,6 +61754,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -60137,6 +61790,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -60493,6 +62147,8 @@ export namespace Prisma {
     leads?: LeadCreateNestedManyWithoutProfileInput
     aiConversations?: AiConversationCreateNestedManyWithoutProfileInput
     visits?: ProfileVisitCreateNestedManyWithoutProfileInput
+    avatarAsset?: MediaAssetCreateNestedOneWithoutCurrentAvatarForInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutProfileInput
   }
 
   export type ProfileUncheckedCreateInput = {
@@ -60503,6 +62159,7 @@ export namespace Prisma {
     displayNameAnonymized?: boolean
     bio?: string | null
     avatarUrl?: string | null
+    avatarAssetId?: string | null
     avatarModerationStatus?: string
     coverImageUrl?: string | null
     coverImageModerationStatus?: string
@@ -60527,6 +62184,7 @@ export namespace Prisma {
     leads?: LeadUncheckedCreateNestedManyWithoutProfileInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutProfileInput
     visits?: ProfileVisitUncheckedCreateNestedManyWithoutProfileInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutProfileInput
   }
 
   export type ProfileUpdateInput = {
@@ -60561,6 +62219,8 @@ export namespace Prisma {
     leads?: LeadUpdateManyWithoutProfileNestedInput
     aiConversations?: AiConversationUpdateManyWithoutProfileNestedInput
     visits?: ProfileVisitUpdateManyWithoutProfileNestedInput
+    avatarAsset?: MediaAssetUpdateOneWithoutCurrentAvatarForNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutProfileNestedInput
   }
 
   export type ProfileUncheckedUpdateInput = {
@@ -60571,6 +62231,7 @@ export namespace Prisma {
     displayNameAnonymized?: BoolFieldUpdateOperationsInput | boolean
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarAssetId?: NullableStringFieldUpdateOperationsInput | string | null
     avatarModerationStatus?: StringFieldUpdateOperationsInput | string
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     coverImageModerationStatus?: StringFieldUpdateOperationsInput | string
@@ -60595,6 +62256,7 @@ export namespace Prisma {
     leads?: LeadUncheckedUpdateManyWithoutProfileNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutProfileNestedInput
     visits?: ProfileVisitUncheckedUpdateManyWithoutProfileNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutProfileNestedInput
   }
 
   export type ProfileCreateManyInput = {
@@ -60605,6 +62267,7 @@ export namespace Prisma {
     displayNameAnonymized?: boolean
     bio?: string | null
     avatarUrl?: string | null
+    avatarAssetId?: string | null
     avatarModerationStatus?: string
     coverImageUrl?: string | null
     coverImageModerationStatus?: string
@@ -60664,6 +62327,7 @@ export namespace Prisma {
     displayNameAnonymized?: BoolFieldUpdateOperationsInput | boolean
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarAssetId?: NullableStringFieldUpdateOperationsInput | string | null
     avatarModerationStatus?: StringFieldUpdateOperationsInput | string
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     coverImageModerationStatus?: StringFieldUpdateOperationsInput | string
@@ -60682,6 +62346,134 @@ export namespace Prisma {
     website?: NullableStringFieldUpdateOperationsInput | string | null
     socialLinks?: NullableJsonNullValueInput | InputJsonValue
     contactVisibility?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MediaAssetCreateInput = {
+    id?: string
+    purpose: string
+    storageProvider?: string
+    storageKey: string
+    originalName?: string | null
+    mimeType: string
+    sizeBytes: number
+    checksumSha256: string
+    status?: string
+    moderationReason?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutMediaAssetsInput
+    profile?: ProfileCreateNestedOneWithoutMediaAssetsInput
+    currentAvatarFor?: ProfileCreateNestedOneWithoutAvatarAssetInput
+  }
+
+  export type MediaAssetUncheckedCreateInput = {
+    id?: string
+    ownerUserId: string
+    profileId?: string | null
+    purpose: string
+    storageProvider?: string
+    storageKey: string
+    originalName?: string | null
+    mimeType: string
+    sizeBytes: number
+    checksumSha256: string
+    status?: string
+    moderationReason?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    currentAvatarFor?: ProfileUncheckedCreateNestedOneWithoutAvatarAssetInput
+  }
+
+  export type MediaAssetUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    purpose?: StringFieldUpdateOperationsInput | string
+    storageProvider?: StringFieldUpdateOperationsInput | string
+    storageKey?: StringFieldUpdateOperationsInput | string
+    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    mimeType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    checksumSha256?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutMediaAssetsNestedInput
+    profile?: ProfileUpdateOneWithoutMediaAssetsNestedInput
+    currentAvatarFor?: ProfileUpdateOneWithoutAvatarAssetNestedInput
+  }
+
+  export type MediaAssetUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ownerUserId?: StringFieldUpdateOperationsInput | string
+    profileId?: NullableStringFieldUpdateOperationsInput | string | null
+    purpose?: StringFieldUpdateOperationsInput | string
+    storageProvider?: StringFieldUpdateOperationsInput | string
+    storageKey?: StringFieldUpdateOperationsInput | string
+    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    mimeType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    checksumSha256?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    currentAvatarFor?: ProfileUncheckedUpdateOneWithoutAvatarAssetNestedInput
+  }
+
+  export type MediaAssetCreateManyInput = {
+    id?: string
+    ownerUserId: string
+    profileId?: string | null
+    purpose: string
+    storageProvider?: string
+    storageKey: string
+    originalName?: string | null
+    mimeType: string
+    sizeBytes: number
+    checksumSha256: string
+    status?: string
+    moderationReason?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MediaAssetUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    purpose?: StringFieldUpdateOperationsInput | string
+    storageProvider?: StringFieldUpdateOperationsInput | string
+    storageKey?: StringFieldUpdateOperationsInput | string
+    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    mimeType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    checksumSha256?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MediaAssetUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ownerUserId?: StringFieldUpdateOperationsInput | string
+    profileId?: NullableStringFieldUpdateOperationsInput | string | null
+    purpose?: StringFieldUpdateOperationsInput | string
+    storageProvider?: StringFieldUpdateOperationsInput | string
+    storageKey?: StringFieldUpdateOperationsInput | string
+    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    mimeType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    checksumSha256?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -62634,6 +64426,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62652,6 +64445,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62668,6 +64462,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62686,6 +64481,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62703,6 +64499,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62719,6 +64516,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62736,6 +64534,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64674,6 +66473,12 @@ export namespace Prisma {
     none?: EnterpriseQuotaConsumptionWhereInput
   }
 
+  export type MediaAssetListRelationFilter = {
+    every?: MediaAssetWhereInput
+    some?: MediaAssetWhereInput
+    none?: MediaAssetWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -64732,6 +66537,10 @@ export namespace Prisma {
   }
 
   export type EnterpriseQuotaConsumptionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type MediaAssetOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -65093,6 +66902,11 @@ export namespace Prisma {
     none?: ProfileVisitWhereInput
   }
 
+  export type MediaAssetNullableScalarRelationFilter = {
+    is?: MediaAssetWhereInput | null
+    isNot?: MediaAssetWhereInput | null
+  }
+
   export type LinkOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -65117,6 +66931,7 @@ export namespace Prisma {
     displayNameAnonymized?: SortOrder
     bio?: SortOrder
     avatarUrl?: SortOrder
+    avatarAssetId?: SortOrder
     avatarModerationStatus?: SortOrder
     coverImageUrl?: SortOrder
     coverImageModerationStatus?: SortOrder
@@ -65147,6 +66962,7 @@ export namespace Prisma {
     displayNameAnonymized?: SortOrder
     bio?: SortOrder
     avatarUrl?: SortOrder
+    avatarAssetId?: SortOrder
     avatarModerationStatus?: SortOrder
     coverImageUrl?: SortOrder
     coverImageModerationStatus?: SortOrder
@@ -65176,6 +66992,7 @@ export namespace Prisma {
     displayNameAnonymized?: SortOrder
     bio?: SortOrder
     avatarUrl?: SortOrder
+    avatarAssetId?: SortOrder
     avatarModerationStatus?: SortOrder
     coverImageUrl?: SortOrder
     coverImageModerationStatus?: SortOrder
@@ -65221,6 +67038,68 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedJsonNullableFilter<$PrismaModel>
     _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type MediaAssetCountOrderByAggregateInput = {
+    id?: SortOrder
+    ownerUserId?: SortOrder
+    profileId?: SortOrder
+    purpose?: SortOrder
+    storageProvider?: SortOrder
+    storageKey?: SortOrder
+    originalName?: SortOrder
+    mimeType?: SortOrder
+    sizeBytes?: SortOrder
+    checksumSha256?: SortOrder
+    status?: SortOrder
+    moderationReason?: SortOrder
+    deletedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MediaAssetAvgOrderByAggregateInput = {
+    sizeBytes?: SortOrder
+  }
+
+  export type MediaAssetMaxOrderByAggregateInput = {
+    id?: SortOrder
+    ownerUserId?: SortOrder
+    profileId?: SortOrder
+    purpose?: SortOrder
+    storageProvider?: SortOrder
+    storageKey?: SortOrder
+    originalName?: SortOrder
+    mimeType?: SortOrder
+    sizeBytes?: SortOrder
+    checksumSha256?: SortOrder
+    status?: SortOrder
+    moderationReason?: SortOrder
+    deletedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MediaAssetMinOrderByAggregateInput = {
+    id?: SortOrder
+    ownerUserId?: SortOrder
+    profileId?: SortOrder
+    purpose?: SortOrder
+    storageProvider?: SortOrder
+    storageKey?: SortOrder
+    originalName?: SortOrder
+    mimeType?: SortOrder
+    sizeBytes?: SortOrder
+    checksumSha256?: SortOrder
+    status?: SortOrder
+    moderationReason?: SortOrder
+    deletedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MediaAssetSumOrderByAggregateInput = {
+    sizeBytes?: SortOrder
   }
 
   export type WorkspaceScalarRelationFilter = {
@@ -66181,6 +68060,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrder
+    quickActionsJson?: SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -66198,6 +68078,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrder
+    quickActionsJson?: SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -66215,6 +68096,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrder
+    quickActionsJson?: SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -67253,6 +69135,13 @@ export namespace Prisma {
     connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
   }
 
+  export type MediaAssetCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<MediaAssetCreateWithoutOwnerInput, MediaAssetUncheckedCreateWithoutOwnerInput> | MediaAssetCreateWithoutOwnerInput[] | MediaAssetUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: MediaAssetCreateOrConnectWithoutOwnerInput | MediaAssetCreateOrConnectWithoutOwnerInput[]
+    createMany?: MediaAssetCreateManyOwnerInputEnvelope
+    connect?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+  }
+
   export type ProfileUncheckedCreateNestedOneWithoutUserInput = {
     create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
@@ -67373,6 +69262,13 @@ export namespace Prisma {
     connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput[]
     createMany?: EnterpriseQuotaConsumptionCreateManyUserInputEnvelope
     connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+  }
+
+  export type MediaAssetUncheckedCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<MediaAssetCreateWithoutOwnerInput, MediaAssetUncheckedCreateWithoutOwnerInput> | MediaAssetCreateWithoutOwnerInput[] | MediaAssetUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: MediaAssetCreateOrConnectWithoutOwnerInput | MediaAssetCreateOrConnectWithoutOwnerInput[]
+    createMany?: MediaAssetCreateManyOwnerInputEnvelope
+    connect?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -67639,6 +69535,20 @@ export namespace Prisma {
     deleteMany?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
   }
 
+  export type MediaAssetUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<MediaAssetCreateWithoutOwnerInput, MediaAssetUncheckedCreateWithoutOwnerInput> | MediaAssetCreateWithoutOwnerInput[] | MediaAssetUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: MediaAssetCreateOrConnectWithoutOwnerInput | MediaAssetCreateOrConnectWithoutOwnerInput[]
+    upsert?: MediaAssetUpsertWithWhereUniqueWithoutOwnerInput | MediaAssetUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: MediaAssetCreateManyOwnerInputEnvelope
+    set?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    disconnect?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    delete?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    connect?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    update?: MediaAssetUpdateWithWhereUniqueWithoutOwnerInput | MediaAssetUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: MediaAssetUpdateManyWithWhereWithoutOwnerInput | MediaAssetUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: MediaAssetScalarWhereInput | MediaAssetScalarWhereInput[]
+  }
+
   export type ProfileUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
@@ -67875,6 +69785,20 @@ export namespace Prisma {
     deleteMany?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
   }
 
+  export type MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<MediaAssetCreateWithoutOwnerInput, MediaAssetUncheckedCreateWithoutOwnerInput> | MediaAssetCreateWithoutOwnerInput[] | MediaAssetUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: MediaAssetCreateOrConnectWithoutOwnerInput | MediaAssetCreateOrConnectWithoutOwnerInput[]
+    upsert?: MediaAssetUpsertWithWhereUniqueWithoutOwnerInput | MediaAssetUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: MediaAssetCreateManyOwnerInputEnvelope
+    set?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    disconnect?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    delete?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    connect?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    update?: MediaAssetUpdateWithWhereUniqueWithoutOwnerInput | MediaAssetUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: MediaAssetUpdateManyWithWhereWithoutOwnerInput | MediaAssetUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: MediaAssetScalarWhereInput | MediaAssetScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutFreezeRecordsInput = {
     create?: XOR<UserCreateWithoutFreezeRecordsInput, UserUncheckedCreateWithoutFreezeRecordsInput>
     connectOrCreate?: UserCreateOrConnectWithoutFreezeRecordsInput
@@ -67937,6 +69861,19 @@ export namespace Prisma {
     connect?: ProfileVisitWhereUniqueInput | ProfileVisitWhereUniqueInput[]
   }
 
+  export type MediaAssetCreateNestedOneWithoutCurrentAvatarForInput = {
+    create?: XOR<MediaAssetCreateWithoutCurrentAvatarForInput, MediaAssetUncheckedCreateWithoutCurrentAvatarForInput>
+    connectOrCreate?: MediaAssetCreateOrConnectWithoutCurrentAvatarForInput
+    connect?: MediaAssetWhereUniqueInput
+  }
+
+  export type MediaAssetCreateNestedManyWithoutProfileInput = {
+    create?: XOR<MediaAssetCreateWithoutProfileInput, MediaAssetUncheckedCreateWithoutProfileInput> | MediaAssetCreateWithoutProfileInput[] | MediaAssetUncheckedCreateWithoutProfileInput[]
+    connectOrCreate?: MediaAssetCreateOrConnectWithoutProfileInput | MediaAssetCreateOrConnectWithoutProfileInput[]
+    createMany?: MediaAssetCreateManyProfileInputEnvelope
+    connect?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+  }
+
   export type LinkUncheckedCreateNestedManyWithoutProfileInput = {
     create?: XOR<LinkCreateWithoutProfileInput, LinkUncheckedCreateWithoutProfileInput> | LinkCreateWithoutProfileInput[] | LinkUncheckedCreateWithoutProfileInput[]
     connectOrCreate?: LinkCreateOrConnectWithoutProfileInput | LinkCreateOrConnectWithoutProfileInput[]
@@ -67963,6 +69900,13 @@ export namespace Prisma {
     connectOrCreate?: ProfileVisitCreateOrConnectWithoutProfileInput | ProfileVisitCreateOrConnectWithoutProfileInput[]
     createMany?: ProfileVisitCreateManyProfileInputEnvelope
     connect?: ProfileVisitWhereUniqueInput | ProfileVisitWhereUniqueInput[]
+  }
+
+  export type MediaAssetUncheckedCreateNestedManyWithoutProfileInput = {
+    create?: XOR<MediaAssetCreateWithoutProfileInput, MediaAssetUncheckedCreateWithoutProfileInput> | MediaAssetCreateWithoutProfileInput[] | MediaAssetUncheckedCreateWithoutProfileInput[]
+    connectOrCreate?: MediaAssetCreateOrConnectWithoutProfileInput | MediaAssetCreateOrConnectWithoutProfileInput[]
+    createMany?: MediaAssetCreateManyProfileInputEnvelope
+    connect?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
   }
 
   export type UserUpdateOneRequiredWithoutProfileNestedInput = {
@@ -68029,6 +69973,30 @@ export namespace Prisma {
     deleteMany?: ProfileVisitScalarWhereInput | ProfileVisitScalarWhereInput[]
   }
 
+  export type MediaAssetUpdateOneWithoutCurrentAvatarForNestedInput = {
+    create?: XOR<MediaAssetCreateWithoutCurrentAvatarForInput, MediaAssetUncheckedCreateWithoutCurrentAvatarForInput>
+    connectOrCreate?: MediaAssetCreateOrConnectWithoutCurrentAvatarForInput
+    upsert?: MediaAssetUpsertWithoutCurrentAvatarForInput
+    disconnect?: MediaAssetWhereInput | boolean
+    delete?: MediaAssetWhereInput | boolean
+    connect?: MediaAssetWhereUniqueInput
+    update?: XOR<XOR<MediaAssetUpdateToOneWithWhereWithoutCurrentAvatarForInput, MediaAssetUpdateWithoutCurrentAvatarForInput>, MediaAssetUncheckedUpdateWithoutCurrentAvatarForInput>
+  }
+
+  export type MediaAssetUpdateManyWithoutProfileNestedInput = {
+    create?: XOR<MediaAssetCreateWithoutProfileInput, MediaAssetUncheckedCreateWithoutProfileInput> | MediaAssetCreateWithoutProfileInput[] | MediaAssetUncheckedCreateWithoutProfileInput[]
+    connectOrCreate?: MediaAssetCreateOrConnectWithoutProfileInput | MediaAssetCreateOrConnectWithoutProfileInput[]
+    upsert?: MediaAssetUpsertWithWhereUniqueWithoutProfileInput | MediaAssetUpsertWithWhereUniqueWithoutProfileInput[]
+    createMany?: MediaAssetCreateManyProfileInputEnvelope
+    set?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    disconnect?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    delete?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    connect?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    update?: MediaAssetUpdateWithWhereUniqueWithoutProfileInput | MediaAssetUpdateWithWhereUniqueWithoutProfileInput[]
+    updateMany?: MediaAssetUpdateManyWithWhereWithoutProfileInput | MediaAssetUpdateManyWithWhereWithoutProfileInput[]
+    deleteMany?: MediaAssetScalarWhereInput | MediaAssetScalarWhereInput[]
+  }
+
   export type LinkUncheckedUpdateManyWithoutProfileNestedInput = {
     create?: XOR<LinkCreateWithoutProfileInput, LinkUncheckedCreateWithoutProfileInput> | LinkCreateWithoutProfileInput[] | LinkUncheckedCreateWithoutProfileInput[]
     connectOrCreate?: LinkCreateOrConnectWithoutProfileInput | LinkCreateOrConnectWithoutProfileInput[]
@@ -68083,6 +70051,82 @@ export namespace Prisma {
     update?: ProfileVisitUpdateWithWhereUniqueWithoutProfileInput | ProfileVisitUpdateWithWhereUniqueWithoutProfileInput[]
     updateMany?: ProfileVisitUpdateManyWithWhereWithoutProfileInput | ProfileVisitUpdateManyWithWhereWithoutProfileInput[]
     deleteMany?: ProfileVisitScalarWhereInput | ProfileVisitScalarWhereInput[]
+  }
+
+  export type MediaAssetUncheckedUpdateManyWithoutProfileNestedInput = {
+    create?: XOR<MediaAssetCreateWithoutProfileInput, MediaAssetUncheckedCreateWithoutProfileInput> | MediaAssetCreateWithoutProfileInput[] | MediaAssetUncheckedCreateWithoutProfileInput[]
+    connectOrCreate?: MediaAssetCreateOrConnectWithoutProfileInput | MediaAssetCreateOrConnectWithoutProfileInput[]
+    upsert?: MediaAssetUpsertWithWhereUniqueWithoutProfileInput | MediaAssetUpsertWithWhereUniqueWithoutProfileInput[]
+    createMany?: MediaAssetCreateManyProfileInputEnvelope
+    set?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    disconnect?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    delete?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    connect?: MediaAssetWhereUniqueInput | MediaAssetWhereUniqueInput[]
+    update?: MediaAssetUpdateWithWhereUniqueWithoutProfileInput | MediaAssetUpdateWithWhereUniqueWithoutProfileInput[]
+    updateMany?: MediaAssetUpdateManyWithWhereWithoutProfileInput | MediaAssetUpdateManyWithWhereWithoutProfileInput[]
+    deleteMany?: MediaAssetScalarWhereInput | MediaAssetScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutMediaAssetsInput = {
+    create?: XOR<UserCreateWithoutMediaAssetsInput, UserUncheckedCreateWithoutMediaAssetsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutMediaAssetsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ProfileCreateNestedOneWithoutMediaAssetsInput = {
+    create?: XOR<ProfileCreateWithoutMediaAssetsInput, ProfileUncheckedCreateWithoutMediaAssetsInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutMediaAssetsInput
+    connect?: ProfileWhereUniqueInput
+  }
+
+  export type ProfileCreateNestedOneWithoutAvatarAssetInput = {
+    create?: XOR<ProfileCreateWithoutAvatarAssetInput, ProfileUncheckedCreateWithoutAvatarAssetInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutAvatarAssetInput
+    connect?: ProfileWhereUniqueInput
+  }
+
+  export type ProfileUncheckedCreateNestedOneWithoutAvatarAssetInput = {
+    create?: XOR<ProfileCreateWithoutAvatarAssetInput, ProfileUncheckedCreateWithoutAvatarAssetInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutAvatarAssetInput
+    connect?: ProfileWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutMediaAssetsNestedInput = {
+    create?: XOR<UserCreateWithoutMediaAssetsInput, UserUncheckedCreateWithoutMediaAssetsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutMediaAssetsInput
+    upsert?: UserUpsertWithoutMediaAssetsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutMediaAssetsInput, UserUpdateWithoutMediaAssetsInput>, UserUncheckedUpdateWithoutMediaAssetsInput>
+  }
+
+  export type ProfileUpdateOneWithoutMediaAssetsNestedInput = {
+    create?: XOR<ProfileCreateWithoutMediaAssetsInput, ProfileUncheckedCreateWithoutMediaAssetsInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutMediaAssetsInput
+    upsert?: ProfileUpsertWithoutMediaAssetsInput
+    disconnect?: ProfileWhereInput | boolean
+    delete?: ProfileWhereInput | boolean
+    connect?: ProfileWhereUniqueInput
+    update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutMediaAssetsInput, ProfileUpdateWithoutMediaAssetsInput>, ProfileUncheckedUpdateWithoutMediaAssetsInput>
+  }
+
+  export type ProfileUpdateOneWithoutAvatarAssetNestedInput = {
+    create?: XOR<ProfileCreateWithoutAvatarAssetInput, ProfileUncheckedCreateWithoutAvatarAssetInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutAvatarAssetInput
+    upsert?: ProfileUpsertWithoutAvatarAssetInput
+    disconnect?: ProfileWhereInput | boolean
+    delete?: ProfileWhereInput | boolean
+    connect?: ProfileWhereUniqueInput
+    update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutAvatarAssetInput, ProfileUpdateWithoutAvatarAssetInput>, ProfileUncheckedUpdateWithoutAvatarAssetInput>
+  }
+
+  export type ProfileUncheckedUpdateOneWithoutAvatarAssetNestedInput = {
+    create?: XOR<ProfileCreateWithoutAvatarAssetInput, ProfileUncheckedCreateWithoutAvatarAssetInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutAvatarAssetInput
+    upsert?: ProfileUpsertWithoutAvatarAssetInput
+    disconnect?: ProfileWhereInput | boolean
+    delete?: ProfileWhereInput | boolean
+    connect?: ProfileWhereUniqueInput
+    update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutAvatarAssetInput, ProfileUpdateWithoutAvatarAssetInput>, ProfileUncheckedUpdateWithoutAvatarAssetInput>
   }
 
   export type WorkspaceCreateNestedOneWithoutDomainsInput = {
@@ -69320,6 +71364,8 @@ export namespace Prisma {
     leads?: LeadCreateNestedManyWithoutProfileInput
     aiConversations?: AiConversationCreateNestedManyWithoutProfileInput
     visits?: ProfileVisitCreateNestedManyWithoutProfileInput
+    avatarAsset?: MediaAssetCreateNestedOneWithoutCurrentAvatarForInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutProfileInput
   }
 
   export type ProfileUncheckedCreateWithoutUserInput = {
@@ -69329,6 +71375,7 @@ export namespace Prisma {
     displayNameAnonymized?: boolean
     bio?: string | null
     avatarUrl?: string | null
+    avatarAssetId?: string | null
     avatarModerationStatus?: string
     coverImageUrl?: string | null
     coverImageModerationStatus?: string
@@ -69353,6 +71400,7 @@ export namespace Prisma {
     leads?: LeadUncheckedCreateNestedManyWithoutProfileInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutProfileInput
     visits?: ProfileVisitUncheckedCreateNestedManyWithoutProfileInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutProfileInput
   }
 
   export type ProfileCreateOrConnectWithoutUserInput = {
@@ -69669,6 +71717,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -69685,6 +71734,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -69949,6 +71999,52 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type MediaAssetCreateWithoutOwnerInput = {
+    id?: string
+    purpose: string
+    storageProvider?: string
+    storageKey: string
+    originalName?: string | null
+    mimeType: string
+    sizeBytes: number
+    checksumSha256: string
+    status?: string
+    moderationReason?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile?: ProfileCreateNestedOneWithoutMediaAssetsInput
+    currentAvatarFor?: ProfileCreateNestedOneWithoutAvatarAssetInput
+  }
+
+  export type MediaAssetUncheckedCreateWithoutOwnerInput = {
+    id?: string
+    profileId?: string | null
+    purpose: string
+    storageProvider?: string
+    storageKey: string
+    originalName?: string | null
+    mimeType: string
+    sizeBytes: number
+    checksumSha256: string
+    status?: string
+    moderationReason?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    currentAvatarFor?: ProfileUncheckedCreateNestedOneWithoutAvatarAssetInput
+  }
+
+  export type MediaAssetCreateOrConnectWithoutOwnerInput = {
+    where: MediaAssetWhereUniqueInput
+    create: XOR<MediaAssetCreateWithoutOwnerInput, MediaAssetUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type MediaAssetCreateManyOwnerInputEnvelope = {
+    data: MediaAssetCreateManyOwnerInput | MediaAssetCreateManyOwnerInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ProfileUpsertWithoutUserInput = {
     update: XOR<ProfileUpdateWithoutUserInput, ProfileUncheckedUpdateWithoutUserInput>
     create: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
@@ -69991,6 +72087,8 @@ export namespace Prisma {
     leads?: LeadUpdateManyWithoutProfileNestedInput
     aiConversations?: AiConversationUpdateManyWithoutProfileNestedInput
     visits?: ProfileVisitUpdateManyWithoutProfileNestedInput
+    avatarAsset?: MediaAssetUpdateOneWithoutCurrentAvatarForNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutProfileNestedInput
   }
 
   export type ProfileUncheckedUpdateWithoutUserInput = {
@@ -70000,6 +72098,7 @@ export namespace Prisma {
     displayNameAnonymized?: BoolFieldUpdateOperationsInput | boolean
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarAssetId?: NullableStringFieldUpdateOperationsInput | string | null
     avatarModerationStatus?: StringFieldUpdateOperationsInput | string
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     coverImageModerationStatus?: StringFieldUpdateOperationsInput | string
@@ -70024,6 +72123,7 @@ export namespace Prisma {
     leads?: LeadUncheckedUpdateManyWithoutProfileNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutProfileNestedInput
     visits?: ProfileVisitUncheckedUpdateManyWithoutProfileNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutProfileNestedInput
   }
 
   export type UsernameHistoryUpsertWithWhereUniqueWithoutUserInput = {
@@ -70330,6 +72430,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70346,6 +72447,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70584,6 +72686,43 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"EnterpriseQuotaConsumption"> | Date | string
   }
 
+  export type MediaAssetUpsertWithWhereUniqueWithoutOwnerInput = {
+    where: MediaAssetWhereUniqueInput
+    update: XOR<MediaAssetUpdateWithoutOwnerInput, MediaAssetUncheckedUpdateWithoutOwnerInput>
+    create: XOR<MediaAssetCreateWithoutOwnerInput, MediaAssetUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type MediaAssetUpdateWithWhereUniqueWithoutOwnerInput = {
+    where: MediaAssetWhereUniqueInput
+    data: XOR<MediaAssetUpdateWithoutOwnerInput, MediaAssetUncheckedUpdateWithoutOwnerInput>
+  }
+
+  export type MediaAssetUpdateManyWithWhereWithoutOwnerInput = {
+    where: MediaAssetScalarWhereInput
+    data: XOR<MediaAssetUpdateManyMutationInput, MediaAssetUncheckedUpdateManyWithoutOwnerInput>
+  }
+
+  export type MediaAssetScalarWhereInput = {
+    AND?: MediaAssetScalarWhereInput | MediaAssetScalarWhereInput[]
+    OR?: MediaAssetScalarWhereInput[]
+    NOT?: MediaAssetScalarWhereInput | MediaAssetScalarWhereInput[]
+    id?: UuidFilter<"MediaAsset"> | string
+    ownerUserId?: UuidFilter<"MediaAsset"> | string
+    profileId?: UuidNullableFilter<"MediaAsset"> | string | null
+    purpose?: StringFilter<"MediaAsset"> | string
+    storageProvider?: StringFilter<"MediaAsset"> | string
+    storageKey?: StringFilter<"MediaAsset"> | string
+    originalName?: StringNullableFilter<"MediaAsset"> | string | null
+    mimeType?: StringFilter<"MediaAsset"> | string
+    sizeBytes?: IntFilter<"MediaAsset"> | number
+    checksumSha256?: StringFilter<"MediaAsset"> | string
+    status?: StringFilter<"MediaAsset"> | string
+    moderationReason?: StringNullableFilter<"MediaAsset"> | string | null
+    deletedAt?: DateTimeNullableFilter<"MediaAsset"> | Date | string | null
+    createdAt?: DateTimeFilter<"MediaAsset"> | Date | string
+    updatedAt?: DateTimeFilter<"MediaAsset"> | Date | string
+  }
+
   export type UserCreateWithoutFreezeRecordsInput = {
     id: string
     email: string
@@ -70616,6 +72755,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutFreezeRecordsInput = {
@@ -70650,6 +72790,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutFreezeRecordsInput = {
@@ -70700,6 +72841,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFreezeRecordsInput = {
@@ -70734,6 +72876,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserCreateWithoutUsernameHistoryInput = {
@@ -70768,6 +72911,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutUsernameHistoryInput = {
@@ -70802,6 +72946,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutUsernameHistoryInput = {
@@ -70852,6 +72997,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUsernameHistoryInput = {
@@ -70886,6 +73032,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserCreateWithoutProfileInput = {
@@ -70920,6 +73067,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutProfileInput = {
@@ -70954,6 +73102,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutProfileInput = {
@@ -71137,6 +73286,93 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type MediaAssetCreateWithoutCurrentAvatarForInput = {
+    id?: string
+    purpose: string
+    storageProvider?: string
+    storageKey: string
+    originalName?: string | null
+    mimeType: string
+    sizeBytes: number
+    checksumSha256: string
+    status?: string
+    moderationReason?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutMediaAssetsInput
+    profile?: ProfileCreateNestedOneWithoutMediaAssetsInput
+  }
+
+  export type MediaAssetUncheckedCreateWithoutCurrentAvatarForInput = {
+    id?: string
+    ownerUserId: string
+    profileId?: string | null
+    purpose: string
+    storageProvider?: string
+    storageKey: string
+    originalName?: string | null
+    mimeType: string
+    sizeBytes: number
+    checksumSha256: string
+    status?: string
+    moderationReason?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MediaAssetCreateOrConnectWithoutCurrentAvatarForInput = {
+    where: MediaAssetWhereUniqueInput
+    create: XOR<MediaAssetCreateWithoutCurrentAvatarForInput, MediaAssetUncheckedCreateWithoutCurrentAvatarForInput>
+  }
+
+  export type MediaAssetCreateWithoutProfileInput = {
+    id?: string
+    purpose: string
+    storageProvider?: string
+    storageKey: string
+    originalName?: string | null
+    mimeType: string
+    sizeBytes: number
+    checksumSha256: string
+    status?: string
+    moderationReason?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutMediaAssetsInput
+    currentAvatarFor?: ProfileCreateNestedOneWithoutAvatarAssetInput
+  }
+
+  export type MediaAssetUncheckedCreateWithoutProfileInput = {
+    id?: string
+    ownerUserId: string
+    purpose: string
+    storageProvider?: string
+    storageKey: string
+    originalName?: string | null
+    mimeType: string
+    sizeBytes: number
+    checksumSha256: string
+    status?: string
+    moderationReason?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    currentAvatarFor?: ProfileUncheckedCreateNestedOneWithoutAvatarAssetInput
+  }
+
+  export type MediaAssetCreateOrConnectWithoutProfileInput = {
+    where: MediaAssetWhereUniqueInput
+    create: XOR<MediaAssetCreateWithoutProfileInput, MediaAssetUncheckedCreateWithoutProfileInput>
+  }
+
+  export type MediaAssetCreateManyProfileInputEnvelope = {
+    data: MediaAssetCreateManyProfileInput | MediaAssetCreateManyProfileInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutProfileInput = {
     update: XOR<UserUpdateWithoutProfileInput, UserUncheckedUpdateWithoutProfileInput>
     create: XOR<UserCreateWithoutProfileInput, UserUncheckedCreateWithoutProfileInput>
@@ -71180,6 +73416,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProfileInput = {
@@ -71214,6 +73451,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type LinkUpsertWithWhereUniqueWithoutProfileInput = {
@@ -71358,6 +73596,537 @@ export namespace Prisma {
     browser?: StringNullableFilter<"ProfileVisit"> | string | null
     isBot?: BoolFilter<"ProfileVisit"> | boolean
     createdAt?: DateTimeFilter<"ProfileVisit"> | Date | string
+  }
+
+  export type MediaAssetUpsertWithoutCurrentAvatarForInput = {
+    update: XOR<MediaAssetUpdateWithoutCurrentAvatarForInput, MediaAssetUncheckedUpdateWithoutCurrentAvatarForInput>
+    create: XOR<MediaAssetCreateWithoutCurrentAvatarForInput, MediaAssetUncheckedCreateWithoutCurrentAvatarForInput>
+    where?: MediaAssetWhereInput
+  }
+
+  export type MediaAssetUpdateToOneWithWhereWithoutCurrentAvatarForInput = {
+    where?: MediaAssetWhereInput
+    data: XOR<MediaAssetUpdateWithoutCurrentAvatarForInput, MediaAssetUncheckedUpdateWithoutCurrentAvatarForInput>
+  }
+
+  export type MediaAssetUpdateWithoutCurrentAvatarForInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    purpose?: StringFieldUpdateOperationsInput | string
+    storageProvider?: StringFieldUpdateOperationsInput | string
+    storageKey?: StringFieldUpdateOperationsInput | string
+    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    mimeType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    checksumSha256?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutMediaAssetsNestedInput
+    profile?: ProfileUpdateOneWithoutMediaAssetsNestedInput
+  }
+
+  export type MediaAssetUncheckedUpdateWithoutCurrentAvatarForInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ownerUserId?: StringFieldUpdateOperationsInput | string
+    profileId?: NullableStringFieldUpdateOperationsInput | string | null
+    purpose?: StringFieldUpdateOperationsInput | string
+    storageProvider?: StringFieldUpdateOperationsInput | string
+    storageKey?: StringFieldUpdateOperationsInput | string
+    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    mimeType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    checksumSha256?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MediaAssetUpsertWithWhereUniqueWithoutProfileInput = {
+    where: MediaAssetWhereUniqueInput
+    update: XOR<MediaAssetUpdateWithoutProfileInput, MediaAssetUncheckedUpdateWithoutProfileInput>
+    create: XOR<MediaAssetCreateWithoutProfileInput, MediaAssetUncheckedCreateWithoutProfileInput>
+  }
+
+  export type MediaAssetUpdateWithWhereUniqueWithoutProfileInput = {
+    where: MediaAssetWhereUniqueInput
+    data: XOR<MediaAssetUpdateWithoutProfileInput, MediaAssetUncheckedUpdateWithoutProfileInput>
+  }
+
+  export type MediaAssetUpdateManyWithWhereWithoutProfileInput = {
+    where: MediaAssetScalarWhereInput
+    data: XOR<MediaAssetUpdateManyMutationInput, MediaAssetUncheckedUpdateManyWithoutProfileInput>
+  }
+
+  export type UserCreateWithoutMediaAssetsInput = {
+    id: string
+    email: string
+    passwordHash: string
+    emailVerified?: boolean
+    frozenReason?: string | null
+    frozenAt?: Date | string | null
+    usernameChanges?: number
+    role?: string
+    isSystem?: boolean
+    accountStatus?: string
+    deactivatedAt?: Date | string | null
+    deactivationReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    usernameHistory?: UsernameHistoryCreateNestedManyWithoutUserInput
+    freezeRecords?: FreezeRecordCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    resetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    verifyTokens?: EmailVerificationTokenCreateNestedManyWithoutUserInput
+    aiUsageLogs?: AiUsageLogCreateNestedManyWithoutUserInput
+    shortLinks?: ShortLinkCreateNestedManyWithoutUserInput
+    products?: ProductCreateNestedManyWithoutUserInput
+    knowledgeDocs?: KnowledgeDocCreateNestedManyWithoutUserInput
+    aiServiceConfig?: AiServiceConfigCreateNestedOneWithoutUserInput
+    aiCreditAccount?: AiCreditAccountCreateNestedOneWithoutUserInput
+    membershipSubscription?: MembershipSubscriptionCreateNestedOneWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutUserInput
+    workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
+    ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutMediaAssetsInput = {
+    id: string
+    email: string
+    passwordHash: string
+    emailVerified?: boolean
+    frozenReason?: string | null
+    frozenAt?: Date | string | null
+    usernameChanges?: number
+    role?: string
+    isSystem?: boolean
+    accountStatus?: string
+    deactivatedAt?: Date | string | null
+    deactivationReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    usernameHistory?: UsernameHistoryUncheckedCreateNestedManyWithoutUserInput
+    freezeRecords?: FreezeRecordUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    resetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    verifyTokens?: EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
+    aiUsageLogs?: AiUsageLogUncheckedCreateNestedManyWithoutUserInput
+    shortLinks?: ShortLinkUncheckedCreateNestedManyWithoutUserInput
+    products?: ProductUncheckedCreateNestedManyWithoutUserInput
+    knowledgeDocs?: KnowledgeDocUncheckedCreateNestedManyWithoutUserInput
+    aiServiceConfig?: AiServiceConfigUncheckedCreateNestedOneWithoutUserInput
+    aiCreditAccount?: AiCreditAccountUncheckedCreateNestedOneWithoutUserInput
+    membershipSubscription?: MembershipSubscriptionUncheckedCreateNestedOneWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutUserInput
+    workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+    ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutMediaAssetsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutMediaAssetsInput, UserUncheckedCreateWithoutMediaAssetsInput>
+  }
+
+  export type ProfileCreateWithoutMediaAssetsInput = {
+    id: string
+    username: string
+    displayName?: string | null
+    displayNameAnonymized?: boolean
+    bio?: string | null
+    avatarUrl?: string | null
+    avatarModerationStatus?: string
+    coverImageUrl?: string | null
+    coverImageModerationStatus?: string
+    theme?: string
+    customTheme?: string | null
+    template?: string
+    language?: string
+    isPublic?: boolean
+    company?: string | null
+    jobTitle?: string | null
+    phone?: string | null
+    email?: string | null
+    wechat?: string | null
+    city?: string | null
+    address?: string | null
+    website?: string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    contactVisibility?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutProfileInput
+    links?: LinkCreateNestedManyWithoutProfileInput
+    leads?: LeadCreateNestedManyWithoutProfileInput
+    aiConversations?: AiConversationCreateNestedManyWithoutProfileInput
+    visits?: ProfileVisitCreateNestedManyWithoutProfileInput
+    avatarAsset?: MediaAssetCreateNestedOneWithoutCurrentAvatarForInput
+  }
+
+  export type ProfileUncheckedCreateWithoutMediaAssetsInput = {
+    id: string
+    userId: string
+    username: string
+    displayName?: string | null
+    displayNameAnonymized?: boolean
+    bio?: string | null
+    avatarUrl?: string | null
+    avatarAssetId?: string | null
+    avatarModerationStatus?: string
+    coverImageUrl?: string | null
+    coverImageModerationStatus?: string
+    theme?: string
+    customTheme?: string | null
+    template?: string
+    language?: string
+    isPublic?: boolean
+    company?: string | null
+    jobTitle?: string | null
+    phone?: string | null
+    email?: string | null
+    wechat?: string | null
+    city?: string | null
+    address?: string | null
+    website?: string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    contactVisibility?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    links?: LinkUncheckedCreateNestedManyWithoutProfileInput
+    leads?: LeadUncheckedCreateNestedManyWithoutProfileInput
+    aiConversations?: AiConversationUncheckedCreateNestedManyWithoutProfileInput
+    visits?: ProfileVisitUncheckedCreateNestedManyWithoutProfileInput
+  }
+
+  export type ProfileCreateOrConnectWithoutMediaAssetsInput = {
+    where: ProfileWhereUniqueInput
+    create: XOR<ProfileCreateWithoutMediaAssetsInput, ProfileUncheckedCreateWithoutMediaAssetsInput>
+  }
+
+  export type ProfileCreateWithoutAvatarAssetInput = {
+    id: string
+    username: string
+    displayName?: string | null
+    displayNameAnonymized?: boolean
+    bio?: string | null
+    avatarUrl?: string | null
+    avatarModerationStatus?: string
+    coverImageUrl?: string | null
+    coverImageModerationStatus?: string
+    theme?: string
+    customTheme?: string | null
+    template?: string
+    language?: string
+    isPublic?: boolean
+    company?: string | null
+    jobTitle?: string | null
+    phone?: string | null
+    email?: string | null
+    wechat?: string | null
+    city?: string | null
+    address?: string | null
+    website?: string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    contactVisibility?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutProfileInput
+    links?: LinkCreateNestedManyWithoutProfileInput
+    leads?: LeadCreateNestedManyWithoutProfileInput
+    aiConversations?: AiConversationCreateNestedManyWithoutProfileInput
+    visits?: ProfileVisitCreateNestedManyWithoutProfileInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutProfileInput
+  }
+
+  export type ProfileUncheckedCreateWithoutAvatarAssetInput = {
+    id: string
+    userId: string
+    username: string
+    displayName?: string | null
+    displayNameAnonymized?: boolean
+    bio?: string | null
+    avatarUrl?: string | null
+    avatarModerationStatus?: string
+    coverImageUrl?: string | null
+    coverImageModerationStatus?: string
+    theme?: string
+    customTheme?: string | null
+    template?: string
+    language?: string
+    isPublic?: boolean
+    company?: string | null
+    jobTitle?: string | null
+    phone?: string | null
+    email?: string | null
+    wechat?: string | null
+    city?: string | null
+    address?: string | null
+    website?: string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    contactVisibility?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    links?: LinkUncheckedCreateNestedManyWithoutProfileInput
+    leads?: LeadUncheckedCreateNestedManyWithoutProfileInput
+    aiConversations?: AiConversationUncheckedCreateNestedManyWithoutProfileInput
+    visits?: ProfileVisitUncheckedCreateNestedManyWithoutProfileInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutProfileInput
+  }
+
+  export type ProfileCreateOrConnectWithoutAvatarAssetInput = {
+    where: ProfileWhereUniqueInput
+    create: XOR<ProfileCreateWithoutAvatarAssetInput, ProfileUncheckedCreateWithoutAvatarAssetInput>
+  }
+
+  export type UserUpsertWithoutMediaAssetsInput = {
+    update: XOR<UserUpdateWithoutMediaAssetsInput, UserUncheckedUpdateWithoutMediaAssetsInput>
+    create: XOR<UserCreateWithoutMediaAssetsInput, UserUncheckedCreateWithoutMediaAssetsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutMediaAssetsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutMediaAssetsInput, UserUncheckedUpdateWithoutMediaAssetsInput>
+  }
+
+  export type UserUpdateWithoutMediaAssetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    frozenReason?: NullableStringFieldUpdateOperationsInput | string | null
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    usernameChanges?: IntFieldUpdateOperationsInput | number
+    role?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    accountStatus?: StringFieldUpdateOperationsInput | string
+    deactivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deactivationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    usernameHistory?: UsernameHistoryUpdateManyWithoutUserNestedInput
+    freezeRecords?: FreezeRecordUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    resetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    verifyTokens?: EmailVerificationTokenUpdateManyWithoutUserNestedInput
+    aiUsageLogs?: AiUsageLogUpdateManyWithoutUserNestedInput
+    shortLinks?: ShortLinkUpdateManyWithoutUserNestedInput
+    products?: ProductUpdateManyWithoutUserNestedInput
+    knowledgeDocs?: KnowledgeDocUpdateManyWithoutUserNestedInput
+    aiServiceConfig?: AiServiceConfigUpdateOneWithoutUserNestedInput
+    aiCreditAccount?: AiCreditAccountUpdateOneWithoutUserNestedInput
+    membershipSubscription?: MembershipSubscriptionUpdateOneWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutUserNestedInput
+    workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
+    ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutMediaAssetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    frozenReason?: NullableStringFieldUpdateOperationsInput | string | null
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    usernameChanges?: IntFieldUpdateOperationsInput | number
+    role?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    accountStatus?: StringFieldUpdateOperationsInput | string
+    deactivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deactivationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    usernameHistory?: UsernameHistoryUncheckedUpdateManyWithoutUserNestedInput
+    freezeRecords?: FreezeRecordUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    resetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    verifyTokens?: EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+    aiUsageLogs?: AiUsageLogUncheckedUpdateManyWithoutUserNestedInput
+    shortLinks?: ShortLinkUncheckedUpdateManyWithoutUserNestedInput
+    products?: ProductUncheckedUpdateManyWithoutUserNestedInput
+    knowledgeDocs?: KnowledgeDocUncheckedUpdateManyWithoutUserNestedInput
+    aiServiceConfig?: AiServiceConfigUncheckedUpdateOneWithoutUserNestedInput
+    aiCreditAccount?: AiCreditAccountUncheckedUpdateOneWithoutUserNestedInput
+    membershipSubscription?: MembershipSubscriptionUncheckedUpdateOneWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
+    workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+    ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ProfileUpsertWithoutMediaAssetsInput = {
+    update: XOR<ProfileUpdateWithoutMediaAssetsInput, ProfileUncheckedUpdateWithoutMediaAssetsInput>
+    create: XOR<ProfileCreateWithoutMediaAssetsInput, ProfileUncheckedCreateWithoutMediaAssetsInput>
+    where?: ProfileWhereInput
+  }
+
+  export type ProfileUpdateToOneWithWhereWithoutMediaAssetsInput = {
+    where?: ProfileWhereInput
+    data: XOR<ProfileUpdateWithoutMediaAssetsInput, ProfileUncheckedUpdateWithoutMediaAssetsInput>
+  }
+
+  export type ProfileUpdateWithoutMediaAssetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    displayNameAnonymized?: BoolFieldUpdateOperationsInput | boolean
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarModerationStatus?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageModerationStatus?: StringFieldUpdateOperationsInput | string
+    theme?: StringFieldUpdateOperationsInput | string
+    customTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    template?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    contactVisibility?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutProfileNestedInput
+    links?: LinkUpdateManyWithoutProfileNestedInput
+    leads?: LeadUpdateManyWithoutProfileNestedInput
+    aiConversations?: AiConversationUpdateManyWithoutProfileNestedInput
+    visits?: ProfileVisitUpdateManyWithoutProfileNestedInput
+    avatarAsset?: MediaAssetUpdateOneWithoutCurrentAvatarForNestedInput
+  }
+
+  export type ProfileUncheckedUpdateWithoutMediaAssetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    displayNameAnonymized?: BoolFieldUpdateOperationsInput | boolean
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarAssetId?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarModerationStatus?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageModerationStatus?: StringFieldUpdateOperationsInput | string
+    theme?: StringFieldUpdateOperationsInput | string
+    customTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    template?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    contactVisibility?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    links?: LinkUncheckedUpdateManyWithoutProfileNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutProfileNestedInput
+    aiConversations?: AiConversationUncheckedUpdateManyWithoutProfileNestedInput
+    visits?: ProfileVisitUncheckedUpdateManyWithoutProfileNestedInput
+  }
+
+  export type ProfileUpsertWithoutAvatarAssetInput = {
+    update: XOR<ProfileUpdateWithoutAvatarAssetInput, ProfileUncheckedUpdateWithoutAvatarAssetInput>
+    create: XOR<ProfileCreateWithoutAvatarAssetInput, ProfileUncheckedCreateWithoutAvatarAssetInput>
+    where?: ProfileWhereInput
+  }
+
+  export type ProfileUpdateToOneWithWhereWithoutAvatarAssetInput = {
+    where?: ProfileWhereInput
+    data: XOR<ProfileUpdateWithoutAvatarAssetInput, ProfileUncheckedUpdateWithoutAvatarAssetInput>
+  }
+
+  export type ProfileUpdateWithoutAvatarAssetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    displayNameAnonymized?: BoolFieldUpdateOperationsInput | boolean
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarModerationStatus?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageModerationStatus?: StringFieldUpdateOperationsInput | string
+    theme?: StringFieldUpdateOperationsInput | string
+    customTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    template?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    contactVisibility?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutProfileNestedInput
+    links?: LinkUpdateManyWithoutProfileNestedInput
+    leads?: LeadUpdateManyWithoutProfileNestedInput
+    aiConversations?: AiConversationUpdateManyWithoutProfileNestedInput
+    visits?: ProfileVisitUpdateManyWithoutProfileNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutProfileNestedInput
+  }
+
+  export type ProfileUncheckedUpdateWithoutAvatarAssetInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    displayNameAnonymized?: BoolFieldUpdateOperationsInput | boolean
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarModerationStatus?: StringFieldUpdateOperationsInput | string
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageModerationStatus?: StringFieldUpdateOperationsInput | string
+    theme?: StringFieldUpdateOperationsInput | string
+    customTheme?: NullableStringFieldUpdateOperationsInput | string | null
+    template?: StringFieldUpdateOperationsInput | string
+    language?: StringFieldUpdateOperationsInput | string
+    isPublic?: BoolFieldUpdateOperationsInput | boolean
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    socialLinks?: NullableJsonNullValueInput | InputJsonValue
+    contactVisibility?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    links?: LinkUncheckedUpdateManyWithoutProfileNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutProfileNestedInput
+    aiConversations?: AiConversationUncheckedUpdateManyWithoutProfileNestedInput
+    visits?: ProfileVisitUncheckedUpdateManyWithoutProfileNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutProfileNestedInput
   }
 
   export type WorkspaceCreateWithoutDomainsInput = {
@@ -71515,6 +74284,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutWorkspacePublicProfilesInput = {
@@ -71549,6 +74319,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutWorkspacePublicProfilesInput = {
@@ -71644,6 +74415,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWorkspacePublicProfilesInput = {
@@ -71678,6 +74450,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type ProfileCreateWithoutLinksInput = {
@@ -71711,6 +74484,8 @@ export namespace Prisma {
     leads?: LeadCreateNestedManyWithoutProfileInput
     aiConversations?: AiConversationCreateNestedManyWithoutProfileInput
     visits?: ProfileVisitCreateNestedManyWithoutProfileInput
+    avatarAsset?: MediaAssetCreateNestedOneWithoutCurrentAvatarForInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutProfileInput
   }
 
   export type ProfileUncheckedCreateWithoutLinksInput = {
@@ -71721,6 +74496,7 @@ export namespace Prisma {
     displayNameAnonymized?: boolean
     bio?: string | null
     avatarUrl?: string | null
+    avatarAssetId?: string | null
     avatarModerationStatus?: string
     coverImageUrl?: string | null
     coverImageModerationStatus?: string
@@ -71744,6 +74520,7 @@ export namespace Prisma {
     leads?: LeadUncheckedCreateNestedManyWithoutProfileInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutProfileInput
     visits?: ProfileVisitUncheckedCreateNestedManyWithoutProfileInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutProfileInput
   }
 
   export type ProfileCreateOrConnectWithoutLinksInput = {
@@ -71829,6 +74606,8 @@ export namespace Prisma {
     leads?: LeadUpdateManyWithoutProfileNestedInput
     aiConversations?: AiConversationUpdateManyWithoutProfileNestedInput
     visits?: ProfileVisitUpdateManyWithoutProfileNestedInput
+    avatarAsset?: MediaAssetUpdateOneWithoutCurrentAvatarForNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutProfileNestedInput
   }
 
   export type ProfileUncheckedUpdateWithoutLinksInput = {
@@ -71839,6 +74618,7 @@ export namespace Prisma {
     displayNameAnonymized?: BoolFieldUpdateOperationsInput | boolean
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarAssetId?: NullableStringFieldUpdateOperationsInput | string | null
     avatarModerationStatus?: StringFieldUpdateOperationsInput | string
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     coverImageModerationStatus?: StringFieldUpdateOperationsInput | string
@@ -71862,6 +74642,7 @@ export namespace Prisma {
     leads?: LeadUncheckedUpdateManyWithoutProfileNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutProfileNestedInput
     visits?: ProfileVisitUncheckedUpdateManyWithoutProfileNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutProfileNestedInput
   }
 
   export type LinkClickUpsertWithWhereUniqueWithoutLinkInput = {
@@ -72020,6 +74801,8 @@ export namespace Prisma {
     links?: LinkCreateNestedManyWithoutProfileInput
     leads?: LeadCreateNestedManyWithoutProfileInput
     aiConversations?: AiConversationCreateNestedManyWithoutProfileInput
+    avatarAsset?: MediaAssetCreateNestedOneWithoutCurrentAvatarForInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutProfileInput
   }
 
   export type ProfileUncheckedCreateWithoutVisitsInput = {
@@ -72030,6 +74813,7 @@ export namespace Prisma {
     displayNameAnonymized?: boolean
     bio?: string | null
     avatarUrl?: string | null
+    avatarAssetId?: string | null
     avatarModerationStatus?: string
     coverImageUrl?: string | null
     coverImageModerationStatus?: string
@@ -72053,6 +74837,7 @@ export namespace Prisma {
     links?: LinkUncheckedCreateNestedManyWithoutProfileInput
     leads?: LeadUncheckedCreateNestedManyWithoutProfileInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutProfileInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutProfileInput
   }
 
   export type ProfileCreateOrConnectWithoutVisitsInput = {
@@ -72102,6 +74887,8 @@ export namespace Prisma {
     links?: LinkUpdateManyWithoutProfileNestedInput
     leads?: LeadUpdateManyWithoutProfileNestedInput
     aiConversations?: AiConversationUpdateManyWithoutProfileNestedInput
+    avatarAsset?: MediaAssetUpdateOneWithoutCurrentAvatarForNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutProfileNestedInput
   }
 
   export type ProfileUncheckedUpdateWithoutVisitsInput = {
@@ -72112,6 +74899,7 @@ export namespace Prisma {
     displayNameAnonymized?: BoolFieldUpdateOperationsInput | boolean
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarAssetId?: NullableStringFieldUpdateOperationsInput | string | null
     avatarModerationStatus?: StringFieldUpdateOperationsInput | string
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     coverImageModerationStatus?: StringFieldUpdateOperationsInput | string
@@ -72135,6 +74923,7 @@ export namespace Prisma {
     links?: LinkUncheckedUpdateManyWithoutProfileNestedInput
     leads?: LeadUncheckedUpdateManyWithoutProfileNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutProfileNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutProfileNestedInput
   }
 
   export type UserCreateWithoutShortLinksInput = {
@@ -72169,6 +74958,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutShortLinksInput = {
@@ -72203,6 +74993,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutShortLinksInput = {
@@ -72309,6 +75100,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutShortLinksInput = {
@@ -72343,6 +75135,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type ShortLinkClickUpsertWithWhereUniqueWithoutShortLinkInput = {
@@ -72488,6 +75281,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -72522,6 +75316,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -72572,6 +75367,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -72606,6 +75402,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserCreateWithoutResetTokensInput = {
@@ -72640,6 +75437,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutResetTokensInput = {
@@ -72674,6 +75472,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutResetTokensInput = {
@@ -72724,6 +75523,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutResetTokensInput = {
@@ -72758,6 +75558,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserCreateWithoutVerifyTokensInput = {
@@ -72792,6 +75593,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutVerifyTokensInput = {
@@ -72826,6 +75628,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutVerifyTokensInput = {
@@ -72876,6 +75679,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVerifyTokensInput = {
@@ -72910,6 +75714,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserCreateWithoutAiUsageLogsInput = {
@@ -72944,6 +75749,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutAiUsageLogsInput = {
@@ -72978,6 +75784,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutAiUsageLogsInput = {
@@ -73028,6 +75835,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiUsageLogsInput = {
@@ -73062,6 +75870,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type ProfileCreateWithoutLeadsInput = {
@@ -73095,6 +75904,8 @@ export namespace Prisma {
     links?: LinkCreateNestedManyWithoutProfileInput
     aiConversations?: AiConversationCreateNestedManyWithoutProfileInput
     visits?: ProfileVisitCreateNestedManyWithoutProfileInput
+    avatarAsset?: MediaAssetCreateNestedOneWithoutCurrentAvatarForInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutProfileInput
   }
 
   export type ProfileUncheckedCreateWithoutLeadsInput = {
@@ -73105,6 +75916,7 @@ export namespace Prisma {
     displayNameAnonymized?: boolean
     bio?: string | null
     avatarUrl?: string | null
+    avatarAssetId?: string | null
     avatarModerationStatus?: string
     coverImageUrl?: string | null
     coverImageModerationStatus?: string
@@ -73128,6 +75940,7 @@ export namespace Prisma {
     links?: LinkUncheckedCreateNestedManyWithoutProfileInput
     aiConversations?: AiConversationUncheckedCreateNestedManyWithoutProfileInput
     visits?: ProfileVisitUncheckedCreateNestedManyWithoutProfileInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutProfileInput
   }
 
   export type ProfileCreateOrConnectWithoutLeadsInput = {
@@ -73275,6 +76088,8 @@ export namespace Prisma {
     links?: LinkUpdateManyWithoutProfileNestedInput
     aiConversations?: AiConversationUpdateManyWithoutProfileNestedInput
     visits?: ProfileVisitUpdateManyWithoutProfileNestedInput
+    avatarAsset?: MediaAssetUpdateOneWithoutCurrentAvatarForNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutProfileNestedInput
   }
 
   export type ProfileUncheckedUpdateWithoutLeadsInput = {
@@ -73285,6 +76100,7 @@ export namespace Prisma {
     displayNameAnonymized?: BoolFieldUpdateOperationsInput | boolean
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarAssetId?: NullableStringFieldUpdateOperationsInput | string | null
     avatarModerationStatus?: StringFieldUpdateOperationsInput | string
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     coverImageModerationStatus?: StringFieldUpdateOperationsInput | string
@@ -73308,6 +76124,7 @@ export namespace Prisma {
     links?: LinkUncheckedUpdateManyWithoutProfileNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutProfileNestedInput
     visits?: ProfileVisitUncheckedUpdateManyWithoutProfileNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutProfileNestedInput
   }
 
   export type ProductUpsertWithoutLeadsInput = {
@@ -73559,6 +76376,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutProductsInput = {
@@ -73593,6 +76411,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutProductsInput = {
@@ -73699,6 +76518,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProductsInput = {
@@ -73733,6 +76553,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type LeadUpsertWithWhereUniqueWithoutInterestedProductInput = {
@@ -73783,6 +76604,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutKnowledgeDocsInput = {
@@ -73817,6 +76639,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutKnowledgeDocsInput = {
@@ -73867,6 +76690,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutKnowledgeDocsInput = {
@@ -73901,6 +76725,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserCreateWithoutAiServiceConfigInput = {
@@ -73935,6 +76760,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutAiServiceConfigInput = {
@@ -73969,6 +76795,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutAiServiceConfigInput = {
@@ -74019,6 +76846,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiServiceConfigInput = {
@@ -74053,6 +76881,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type ProfileCreateWithoutAiConversationsInput = {
@@ -74086,6 +76915,8 @@ export namespace Prisma {
     links?: LinkCreateNestedManyWithoutProfileInput
     leads?: LeadCreateNestedManyWithoutProfileInput
     visits?: ProfileVisitCreateNestedManyWithoutProfileInput
+    avatarAsset?: MediaAssetCreateNestedOneWithoutCurrentAvatarForInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutProfileInput
   }
 
   export type ProfileUncheckedCreateWithoutAiConversationsInput = {
@@ -74096,6 +76927,7 @@ export namespace Prisma {
     displayNameAnonymized?: boolean
     bio?: string | null
     avatarUrl?: string | null
+    avatarAssetId?: string | null
     avatarModerationStatus?: string
     coverImageUrl?: string | null
     coverImageModerationStatus?: string
@@ -74119,6 +76951,7 @@ export namespace Prisma {
     links?: LinkUncheckedCreateNestedManyWithoutProfileInput
     leads?: LeadUncheckedCreateNestedManyWithoutProfileInput
     visits?: ProfileVisitUncheckedCreateNestedManyWithoutProfileInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutProfileInput
   }
 
   export type ProfileCreateOrConnectWithoutAiConversationsInput = {
@@ -74247,6 +77080,8 @@ export namespace Prisma {
     links?: LinkUpdateManyWithoutProfileNestedInput
     leads?: LeadUpdateManyWithoutProfileNestedInput
     visits?: ProfileVisitUpdateManyWithoutProfileNestedInput
+    avatarAsset?: MediaAssetUpdateOneWithoutCurrentAvatarForNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutProfileNestedInput
   }
 
   export type ProfileUncheckedUpdateWithoutAiConversationsInput = {
@@ -74257,6 +77092,7 @@ export namespace Prisma {
     displayNameAnonymized?: BoolFieldUpdateOperationsInput | boolean
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarAssetId?: NullableStringFieldUpdateOperationsInput | string | null
     avatarModerationStatus?: StringFieldUpdateOperationsInput | string
     coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     coverImageModerationStatus?: StringFieldUpdateOperationsInput | string
@@ -74280,6 +77116,7 @@ export namespace Prisma {
     links?: LinkUncheckedUpdateManyWithoutProfileNestedInput
     leads?: LeadUncheckedUpdateManyWithoutProfileNestedInput
     visits?: ProfileVisitUncheckedUpdateManyWithoutProfileNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutProfileNestedInput
   }
 
   export type AiMessageUpsertWithWhereUniqueWithoutConversationInput = {
@@ -74460,6 +77297,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutAiCreditAccountInput = {
@@ -74494,6 +77332,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutAiCreditAccountInput = {
@@ -74580,6 +77419,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiCreditAccountInput = {
@@ -74614,6 +77454,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type AiCreditLedgerUpsertWithWhereUniqueWithoutAccountInput = {
@@ -74733,6 +77574,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutMembershipSubscriptionInput = {
@@ -74767,6 +77609,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutMembershipSubscriptionInput = {
@@ -74817,6 +77660,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMembershipSubscriptionInput = {
@@ -74851,6 +77695,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserCreateWithoutOrdersInput = {
@@ -74885,6 +77730,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutOrdersInput = {
@@ -74919,6 +77765,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutOrdersInput = {
@@ -74969,6 +77816,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -75003,6 +77851,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserCreateWithoutOwnedWorkspacesInput = {
@@ -75037,6 +77886,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutOwnedWorkspacesInput = {
@@ -75071,6 +77921,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutOwnedWorkspacesInput = {
@@ -75290,6 +78141,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedWorkspacesInput = {
@@ -75324,6 +78176,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type WorkspaceMemberUpsertWithWhereUniqueWithoutWorkspaceInput = {
@@ -75514,6 +78367,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
@@ -75548,6 +78402,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutWorkspaceMembershipsInput = {
@@ -75643,6 +78498,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
@@ -75677,6 +78533,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type WorkspaceCreateWithoutQuotaPoolInput = {
@@ -75834,6 +78691,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetCreateNestedManyWithoutOwnerInput
   }
 
   export type UserUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput = {
@@ -75868,6 +78726,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    mediaAssets?: MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   }
 
   export type UserCreateOrConnectWithoutEnterpriseQuotaConsumptionsInput = {
@@ -75963,6 +78822,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUpdateManyWithoutOwnerNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput = {
@@ -75997,6 +78857,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    mediaAssets?: MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   }
 
   export type UsernameHistoryCreateManyUserInput = {
@@ -76172,6 +79033,23 @@ export namespace Prisma {
     failureReason?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+  }
+
+  export type MediaAssetCreateManyOwnerInput = {
+    id?: string
+    profileId?: string | null
+    purpose: string
+    storageProvider?: string
+    storageKey: string
+    originalName?: string | null
+    mimeType: string
+    sizeBytes: number
+    checksumSha256: string
+    status?: string
+    moderationReason?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type UsernameHistoryUpdateWithoutUserInput = {
@@ -76713,6 +79591,59 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type MediaAssetUpdateWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    purpose?: StringFieldUpdateOperationsInput | string
+    storageProvider?: StringFieldUpdateOperationsInput | string
+    storageKey?: StringFieldUpdateOperationsInput | string
+    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    mimeType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    checksumSha256?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneWithoutMediaAssetsNestedInput
+    currentAvatarFor?: ProfileUpdateOneWithoutAvatarAssetNestedInput
+  }
+
+  export type MediaAssetUncheckedUpdateWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: NullableStringFieldUpdateOperationsInput | string | null
+    purpose?: StringFieldUpdateOperationsInput | string
+    storageProvider?: StringFieldUpdateOperationsInput | string
+    storageKey?: StringFieldUpdateOperationsInput | string
+    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    mimeType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    checksumSha256?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    currentAvatarFor?: ProfileUncheckedUpdateOneWithoutAvatarAssetNestedInput
+  }
+
+  export type MediaAssetUncheckedUpdateManyWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: NullableStringFieldUpdateOperationsInput | string | null
+    purpose?: StringFieldUpdateOperationsInput | string
+    storageProvider?: StringFieldUpdateOperationsInput | string
+    storageKey?: StringFieldUpdateOperationsInput | string
+    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    mimeType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    checksumSha256?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type LinkCreateManyProfileInput = {
     id: string
     type?: string
@@ -76775,6 +79706,23 @@ export namespace Prisma {
     browser?: string | null
     isBot?: boolean
     createdAt?: Date | string
+  }
+
+  export type MediaAssetCreateManyProfileInput = {
+    id?: string
+    ownerUserId: string
+    purpose: string
+    storageProvider?: string
+    storageKey: string
+    originalName?: string | null
+    mimeType: string
+    sizeBytes: number
+    checksumSha256: string
+    status?: string
+    moderationReason?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type LinkUpdateWithoutProfileInput = {
@@ -76975,6 +79923,59 @@ export namespace Prisma {
     browser?: NullableStringFieldUpdateOperationsInput | string | null
     isBot?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MediaAssetUpdateWithoutProfileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    purpose?: StringFieldUpdateOperationsInput | string
+    storageProvider?: StringFieldUpdateOperationsInput | string
+    storageKey?: StringFieldUpdateOperationsInput | string
+    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    mimeType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    checksumSha256?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutMediaAssetsNestedInput
+    currentAvatarFor?: ProfileUpdateOneWithoutAvatarAssetNestedInput
+  }
+
+  export type MediaAssetUncheckedUpdateWithoutProfileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ownerUserId?: StringFieldUpdateOperationsInput | string
+    purpose?: StringFieldUpdateOperationsInput | string
+    storageProvider?: StringFieldUpdateOperationsInput | string
+    storageKey?: StringFieldUpdateOperationsInput | string
+    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    mimeType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    checksumSha256?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    currentAvatarFor?: ProfileUncheckedUpdateOneWithoutAvatarAssetNestedInput
+  }
+
+  export type MediaAssetUncheckedUpdateManyWithoutProfileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    ownerUserId?: StringFieldUpdateOperationsInput | string
+    purpose?: StringFieldUpdateOperationsInput | string
+    storageProvider?: StringFieldUpdateOperationsInput | string
+    storageKey?: StringFieldUpdateOperationsInput | string
+    originalName?: NullableStringFieldUpdateOperationsInput | string | null
+    mimeType?: StringFieldUpdateOperationsInput | string
+    sizeBytes?: IntFieldUpdateOperationsInput | number
+    checksumSha256?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    moderationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type LinkClickCreateManyLinkInput = {
