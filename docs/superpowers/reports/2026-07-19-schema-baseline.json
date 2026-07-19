@@ -1,0 +1,30 @@
+{
+  "algorithm": "sha256",
+  "digest": "ed50536a662717f4100b99cf674b52610f008a339d017c56f511c538b965cb9d",
+  "fileCount": 23,
+  "files": [
+    "prisma/migrations/20260611_init/migration.sql",
+    "prisma/migrations/202606160001_add_user_role/migration.sql",
+    "prisma/migrations/202606170001_add_system_account_protection/migration.sql",
+    "prisma/migrations/20260618_add_internal_beta_features/migration.sql",
+    "prisma/migrations/20260619_add_admin_audit_logs/migration.sql",
+    "prisma/migrations/20260620_security_restrictions/migration.sql",
+    "prisma/migrations/20260621_leads/migration.sql",
+    "prisma/migrations/20260621_schema_alignment/migration.sql",
+    "prisma/migrations/20260622_workbench_core/migration.sql",
+    "prisma/migrations/20260623_add_competition_files/migration.sql",
+    "prisma/migrations/20260624_add_lead_follow_ups_and_product_snapshot/migration.sql",
+    "prisma/migrations/20260624_add_showcase_v2/migration.sql",
+    "prisma/migrations/20260625_add_orders_table/migration.sql",
+    "prisma/migrations/20260702_add_profile_contact_fields/migration.sql",
+    "prisma/migrations/20260702_add_profile_visits/migration.sql",
+    "prisma/migrations/20260703_content_moderation_unique/migration.sql",
+    "prisma/migrations/20260703_content_safety_deactivation/migration.sql",
+    "prisma/migrations/20260705_workspace_and_shortlink_fields/migration.sql",
+    "prisma/migrations/20260713120000_domain_binding/migration.sql",
+    "prisma/migrations/20260713120100_enterprise_quota/migration.sql",
+    "prisma/migrations/20260716070000_ai_reception_quick_actions/migration.sql",
+    "prisma/reports.sql",
+    "prisma/schema.prisma"
+  ]
+}
