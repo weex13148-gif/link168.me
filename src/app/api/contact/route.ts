@@ -349,7 +349,7 @@ export async function POST(request: Request) {
       where: {
         id: interestedProductId,
         userId: profile.userId,
-        isActive: true,
+        status: "published",
       },
       select: { id: true, name: true, priceText: true, category: true },
     });

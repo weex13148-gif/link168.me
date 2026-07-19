@@ -90,7 +90,7 @@ describe("owned product binding and ordering", () => {
       ctaUrl: "https://example.com/product",
     });
     expect(mockDb.product.findFirst).toHaveBeenCalledWith(expect.objectContaining({
-      where: { id: productA, userId, isActive: true },
+      where: { id: productA, userId, status: "published" },
     }));
   });
 

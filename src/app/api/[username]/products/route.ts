@@ -51,7 +51,7 @@ export async function GET(
     const products = await db.product.findMany({
       where: {
         userId: profile.userId,
-        isActive: true,
+        status: "published",
       },
       orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
       take: 20,

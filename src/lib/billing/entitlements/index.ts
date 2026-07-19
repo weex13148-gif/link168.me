@@ -87,7 +87,7 @@ export async function getUserEntitlements(userId: string): Promise<UserEntitleme
 
   const plan = getPlanDefinition(effectivePlanCode);
   const [productsUsed, knowledgeDocsUsed, creditAccount] = await Promise.all([
-    db.product.count({ where: { userId, isActive: true } }),
+    db.product.count({ where: { userId, status: "published" } }),
     db.knowledgeDoc.count({ where: { userId, isActive: true } }),
     db.aiCreditAccount.findUnique({ where: { userId } }),
   ]);

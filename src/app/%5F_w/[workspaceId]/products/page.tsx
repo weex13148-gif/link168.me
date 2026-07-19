@@ -34,7 +34,7 @@ export default async function EnterpriseProductsPage({ params }: Props) {
   if (!workspace || !workspace.isActive) notFound();
 
   const rawProducts = await db.product.findMany({
-    where: { userId: workspace.ownerId, isActive: true },
+    where: { userId: workspace.ownerId, status: "published" },
     orderBy: { sortOrder: "asc" },
     select: {
       id: true,
