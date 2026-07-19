@@ -77,8 +77,21 @@ replaceExact(
 );
 replaceExact(
   "src/components/workbench/ProductsClient.tsx",
-  "                  updatedAt: new Date(),\n",
-  '                  status: data.product.is_active ? "published" : "archived",\n                  updatedAt: new Date(),\n',
+  `              ? {
+                  ...p,
+                  ...data.product,
+                  createdAt: new Date(data.product.created_at),
+                  updatedAt: new Date(),
+                }
+`,
+  `              ? {
+                  ...p,
+                  ...data.product,
+                  status: data.product.is_active ? "published" : "archived",
+                  createdAt: new Date(data.product.created_at),
+                  updatedAt: new Date(),
+                }
+`,
 );
 replaceExact(
   "src/components/workbench/ProductsClient.tsx",
@@ -87,8 +100,18 @@ replaceExact(
 );
 replaceExact(
   "src/components/workbench/ProductsClient.tsx",
-  "                  isActive: data.product.is_active,\n",
-  '                  status: data.product.is_active ? "published" : "archived",\n',
+  `              ? {
+                  ...p,
+                  isActive: data.product.is_active,
+                  updatedAt: new Date(),
+                }
+`,
+  `              ? {
+                  ...p,
+                  status: data.product.is_active ? "published" : "archived",
+                  updatedAt: new Date(),
+                }
+`,
 );
 replaceExact(
   "src/components/workbench/ProductsClient.tsx",
