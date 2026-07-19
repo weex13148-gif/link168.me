@@ -85,6 +85,14 @@ function optionalAssetId(value: unknown): string | null {
   return normalized;
 }
 
+function normalizeAiRecommendationFlag(value: unknown): boolean {
+  if (value === undefined) return true;
+  if (typeof value !== "boolean") {
+    throw new DomainError("VALIDATION_ERROR", "INVALID_CATALOG_AI_RECOMMENDATION_FLAG");
+  }
+  return value;
+}
+
 export function normalizeCatalogCtaUrl(value: unknown): string | null {
   const text = optionalText(value, 2048);
   if (!text) return null;
@@ -117,10 +125,7 @@ export function normalizeCreateCatalogItem(
     ctaLabel: optionalText(input.ctaLabel, MAX_CTA_LABEL_LENGTH),
     ctaUrl: normalizeCatalogCtaUrl(input.ctaUrl),
     sortOrder,
-    allowAiRecommendation:
-      input.allowAiRecommendation === undefined
-        ? true
-        : input.allowAiRecommendation === true,
+    allowAiRecommendation: normalizeAiRecommendationFlag(input.allowAiRecommendation),
   });
 }
 
