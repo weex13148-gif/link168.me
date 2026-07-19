@@ -45,6 +45,7 @@ previous = replace_named_block(
     "session result",
 )''',
 )
+previous = previous.replace("// 最严格:", "// 最严格：")
 
 temporary = Path("/tmp/apply-phase1-task2-corrected.py")
 temporary.write_text(previous)
