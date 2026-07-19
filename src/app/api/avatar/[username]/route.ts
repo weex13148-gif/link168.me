@@ -31,7 +31,7 @@ export async function GET(
 
   if (!result.ok) return privateError(result.error, result.status);
 
-  return new NextResponse(result.data, {
+  return new NextResponse(new Uint8Array(result.data), {
     headers: {
       "Content-Type": result.mimeType,
       "Cache-Control": result.ownerPreview
