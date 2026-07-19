@@ -96,18 +96,23 @@ describe("Phase 2 CatalogItem and PageModule migration", () => {
         );
         CREATE TABLE "products" (
           "id" UUID PRIMARY KEY,
+          "user_id" UUID NOT NULL,
+          "sort_order" INTEGER NOT NULL DEFAULT 0,
           "is_active" BOOLEAN NOT NULL DEFAULT TRUE
         );
+        CREATE INDEX "products_user_id_is_active_sort_order_idx"
+          ON "products"("user_id", "is_active", "sort_order");
         CREATE TABLE "links" (
           "id" UUID PRIMARY KEY
         );
       `);
 
+      const ownerUserId = crypto.randomUUID();
       const activeId = crypto.randomUUID();
       const inactiveId = crypto.randomUUID();
       await client.query(
-        `INSERT INTO "products" ("id", "is_active") VALUES ($1, TRUE), ($2, FALSE)`,
-        [activeId, inactiveId],
+        `INSERT INTO "products" ("id", "user_id", "sort_order", "is_active") VALUES ($1, $3, 0, TRUE), ($2, $3, 1, FALSE)`,
+        [activeId, inactiveId, ownerUserId],
       );
 
       const migrationSql = await readFile(MIGRATION_PATH, "utf8");
