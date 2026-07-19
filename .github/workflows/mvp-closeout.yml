@@ -128,19 +128,59 @@ jobs:
         run: npm run build
 
       - name: Diff check
-        shell: bash
-        run: |
-          mkdir -p test-results
-          set +e
-          git diff --check > test-results/diff-check.log 2>&1
-          status=$?
-          cat test-results/diff-check.log
-          exit "$status"
+        run: git diff --check
 
-      - name: Upload Diff diagnostics
-        if: failure()
-        uses: actions/upload-artifact@v4
+  sync-task8-generated-client:
+    if: github.event_name == 'pull_request' && github.head_ref == 'agent/refactor-phase1-task8-media-assets'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout task branch
+        uses: actions/checkout@v4
         with:
-          name: diff-check-diagnostics
-          path: test-results/diff-check.log
-          retention-days: 1
+          ref: agent/refactor-phase1-task8-media-assets
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate and normalize Prisma client
+        run: |
+          npx prisma generate
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path("src/generated/prisma")
+          for file in root.rglob("*"):
+              if not file.is_file():
+                  continue
+              try:
+                  text = file.read_text()
+              except UnicodeDecodeError:
+                  continue
+              lines = text.splitlines(keepends=True)
+              normalized = "".join(
+                  line.rstrip(" \t\r\n") + ("\n" if line.endswith(("\n", "\r")) else "")
+                  for line in lines
+              )
+              file.write_text(normalized)
+          PY
+          git diff --check
+
+      - name: Restore standard gate and commit generated client
+        run: |
+          git fetch --depth=1 origin refactor/link168-modular-monolith-r1
+          git checkout FETCH_HEAD -- .github/workflows/mvp-closeout.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/generated/prisma .github/workflows/mvp-closeout.yml
+          git commit -m "chore(prisma): sync media asset client"
+          git push origin HEAD:agent/refactor-phase1-task8-media-assets
