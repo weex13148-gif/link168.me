@@ -124,7 +124,7 @@ model Profile {
   // V2-004: 模板选择持久化 — business / creator / conversion
   template                   String           @default("business")
   language                   String           @default("zh")
-  isPublic                   Boolean          @default(true) @map("is_public")
+  isPublic                   Boolean          @default(false) @map("is_public")
   // 联系方式字段
   company                    String?          @map("company")
   jobTitle                   String?          @map("job_title")

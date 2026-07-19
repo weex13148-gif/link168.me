@@ -13,6 +13,8 @@ type AppearancePanelProps = {
   customThemes: string[];
   customTheme: string | null;
   isPublic: boolean;
+  canPublishProfile: boolean;
+  publishBlockedMessage: string;
   language: string;
   contactVisibility: string;
   saving: boolean;
@@ -131,6 +133,8 @@ export function AppearancePanel({
   customThemes,
   customTheme,
   isPublic,
+  canPublishProfile,
+  publishBlockedMessage,
   language,
   contactVisibility,
   saving,
@@ -346,13 +350,24 @@ export function AppearancePanel({
             <label className="grid gap-2">
               <span className="text-sm font-black">公开状态</span>
               <div className="flex items-center gap-3 rounded-xl border border-[var(--ui-line)] bg-white p-4">
-                <input type="checkbox" checked={systemDraft.isPublic} onChange={(event) => setSystemDraft((prev) => ({ ...prev, isPublic: event.target.checked }))} className="size-5 accent-[var(--ui-brand)]" />
+                <input
+                  type="checkbox"
+                  checked={systemDraft.isPublic}
+                  disabled={!canPublishProfile && !systemDraft.isPublic}
+                  onChange={(event) => {
+                    const nextIsPublic = event.target.checked;
+                    if (nextIsPublic && !canPublishProfile) return;
+                    setSystemDraft((prev) => ({ ...prev, isPublic: nextIsPublic }));
+                  }}
+                  className="size-5 accent-[var(--ui-brand)] disabled:cursor-not-allowed disabled:opacity-50"
+                />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <p className="font-black">{systemDraft.isPublic ? "主页公开中" : "主页已下线"}</p>
                     <span className={`rounded-full px-2 py-0.5 text-[10px] font-black ${systemDraft.isPublic ? "bg-[var(--ui-success-soft)] text-[var(--ui-success)]" : "bg-[var(--ui-surface-muted)] text-[var(--ui-muted)]"}`}>{systemDraft.isPublic ? "公开中" : "已下线"}</span>
                   </div>
                   <p className="text-xs ui-muted">{systemDraft.isPublic ? "任何人都可以访问你的主页" : "只有你自己可以查看"}</p>
+                  {!canPublishProfile && !systemDraft.isPublic ? <p className="mt-1 text-xs text-[var(--ui-danger)]">{publishBlockedMessage}</p> : null}
                 </div>
               </div>
             </label>

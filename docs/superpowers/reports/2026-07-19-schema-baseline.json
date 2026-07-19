@@ -1,7 +1,7 @@
 {
   "algorithm": "sha256",
-  "digest": "ed50536a662717f4100b99cf674b52610f008a339d017c56f511c538b965cb9d",
-  "fileCount": 23,
+  "digest": "d7f1d601eb798230216dbccba6b05c390fbf11ab982ab1cd7021af46503c77f7",
+  "fileCount": 24,
   "files": [
     "prisma/migrations/20260611_init/migration.sql",
     "prisma/migrations/202606160001_add_user_role/migration.sql",
@@ -24,6 +24,7 @@
     "prisma/migrations/20260713120000_domain_binding/migration.sql",
     "prisma/migrations/20260713120100_enterprise_quota/migration.sql",
     "prisma/migrations/20260716070000_ai_reception_quick_actions/migration.sql",
+    "prisma/migrations/20260719090000_profile_private_by_default/migration.sql",
     "prisma/reports.sql",
     "prisma/schema.prisma"
   ]
