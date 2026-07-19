@@ -23,9 +23,9 @@ export default async function WorkbenchProductsPage() {
 
   if (!profile) redirect("/dashboard");
 
-  const activeCount = products.filter((p) => p.isActive).length;
+  const activeCount = products.filter((p) => p.status === "published").length;
   const draftCount = 0; // 草稿概念暂不实现
-  const inactiveCount = products.filter((p) => !p.isActive).length;
+  const inactiveCount = products.filter((p) => p.status !== "published").length;
 
   return (
     <WorkbenchShell
