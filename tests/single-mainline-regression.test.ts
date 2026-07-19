@@ -7,7 +7,7 @@ function read(relativePath: string) {
   return fs.readFileSync(path.join(root, relativePath), "utf8");
 }
 
-describe("single-mainline closeout guardrails", () => {
+describe("single-mainline refactor guardrails", () => {
   test("package.json defines each test script once", () => {
     const raw = read("package.json");
     expect((raw.match(/"test"\s*:/g) ?? []).length).toBe(1);
@@ -15,24 +15,29 @@ describe("single-mainline closeout guardrails", () => {
     expect((raw.match(/"test:d4"\s*:/g) ?? []).length).toBe(1);
   });
 
-  test("MVP Closeout targets only the integration branch", () => {
+  test("Link168 Refactor Gate targets master and the unique refactor branch", () => {
     const workflow = read(".github/workflows/mvp-closeout.yml");
-    expect(workflow).toContain("name: MVP Closeout");
-    expect(workflow).toContain("integration/mvp-closeout-r1");
-    expect(workflow).not.toMatch(/^\s*-?\s*master\s*$/m);
+    expect(workflow).toContain("name: Link168 Refactor Gate");
+    expect(workflow).toContain("- master");
+    expect(workflow).toContain("- refactor/link168-modular-monolith-r1");
+    expect(workflow).not.toContain("integration/mvp-closeout-r1");
   });
 
-  test("MVP Closeout uses Node 22 and PostgreSQL 16", () => {
+  test("Link168 Refactor Gate uses Node 22, PostgreSQL 16 and Redis 7", () => {
     const workflow = read(".github/workflows/mvp-closeout.yml");
     expect(workflow).toContain("image: postgres:16");
+    expect(workflow).toContain("image: redis:7-alpine");
     expect(workflow).toMatch(/node-version:\s*["']?22["']?/);
     expect(workflow).toContain("pg_isready");
+    expect(workflow).toContain("redis-cli ping");
   });
 
-  test("MVP Closeout runs every hard gate in order", () => {
+  test("Link168 Refactor Gate runs every hard gate in order", () => {
     const workflow = read(".github/workflows/mvp-closeout.yml");
     const commands = [
       "npm ci",
+      "node scripts/refactor/verify-baseline.mjs",
+      "npm run check:dependencies",
       "npx prisma validate",
       "npx prisma generate",
       "npx prisma migrate deploy",
