@@ -154,44 +154,16 @@ jobs:
         run: npm ci
 
       - name: Generate and normalize Prisma client
-        shell: bash
         run: |
           npx prisma generate
-          python3 - <<'PY'
-          from pathlib import Path
-          root = Path("src/generated/prisma")
-          for file in root.rglob("*"):
-              if not file.is_file():
-                  continue
-              try:
-                  text = file.read_text()
-              except UnicodeDecodeError:
-                  continue
-              normalized = "\n".join(line.rstrip(" \t") for line in text.splitlines())
-              if text.endswith(("\n", "\r")):
-                  normalized += "\n"
-              file.write_text(normalized)
-          PY
-          mkdir -p task8-diagnostics
-          set +e
-          git diff --check > task8-diagnostics/generated-diff.log 2>&1
-          status=$?
-          cat task8-diagnostics/generated-diff.log
-          exit "$status"
-
-      - name: Upload generated client diagnostics
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: task8-generated-diff
-          path: task8-diagnostics/generated-diff.log
-          retention-days: 1
+          find src/generated/prisma -type f \( -name '*.ts' -o -name '*.js' -o -name '*.d.ts' -o -name '*.json' \) -print0 \
+            | xargs -0 -r sed -i 's/[[:blank:]]\+$//'
+          git diff --check
 
       - name: Restore standard gate and commit generated client
         run: |
           git fetch --depth=1 origin refactor/link168-modular-monolith-r1
           git checkout FETCH_HEAD -- .github/workflows/mvp-closeout.yml
-          rm -rf task8-diagnostics
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/generated/prisma .github/workflows/mvp-closeout.yml
