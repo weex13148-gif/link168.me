@@ -5,7 +5,7 @@ import { NextRequest } from "next/server";
 import { GET as followLink } from "@/app/go/[linkId]/route";
 import { GET as readAvatar } from "@/app/api/avatar/[username]/route";
 import { db } from "@/lib/db";
-import { getLegacyAvatarDirs } from "@/lib/upload-storage";
+import { getUploadRoot } from "@/lib/upload-storage";
 
 const createdUserIds: string[] = [];
 const createdFiles: string[] = [];
@@ -21,8 +21,6 @@ async function createOwner(input: {
   const profileId = crypto.randomUUID();
   const linkId = crypto.randomUUID();
   const username = `phase1-resource-${userId.slice(0, 10)}`;
-  const fileName = `${username}-${crypto.randomUUID().replaceAll("-", "")}.png`;
-  const avatarUrl = input.withAvatar ? `/uploads/avatars/${fileName}` : null;
   createdUserIds.push(userId);
 
   await db.user.create({
@@ -38,7 +36,7 @@ async function createOwner(input: {
           id: profileId,
           username,
           isPublic: input.isPublic ?? true,
-          avatarUrl,
+          avatarUrl: input.withAvatar ? `/api/avatar/${username}` : null,
           avatarModerationStatus: "approved",
           links: {
             create: {
@@ -66,14 +64,36 @@ async function createOwner(input: {
   });
 
   if (input.withAvatar) {
-    const avatarDir = getLegacyAvatarDirs()[0];
-    await mkdir(avatarDir, { recursive: true });
-    const filePath = path.join(avatarDir, fileName);
-    await writeFile(
-      filePath,
-      Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00]),
-    );
+    const assetId = crypto.randomUUID();
+    const storageKey = `avatars/${profileId}/${crypto.randomUUID()}.png`;
+    const filePath = path.join(getUploadRoot(), ...storageKey.split("/"));
+    const data = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00]);
+
+    await mkdir(path.dirname(filePath), { recursive: true });
+    await writeFile(filePath, data);
     createdFiles.push(filePath);
+
+    await db.$transaction([
+      db.mediaAsset.create({
+        data: {
+          id: assetId,
+          ownerUserId: userId,
+          profileId,
+          purpose: "avatar",
+          storageProvider: "local",
+          storageKey,
+          originalName: "avatar.png",
+          mimeType: "image/png",
+          sizeBytes: data.byteLength,
+          checksumSha256: crypto.createHash("sha256").update(data).digest("hex"),
+          status: "approved",
+        },
+      }),
+      db.profile.update({
+        where: { id: profileId },
+        data: { avatarAssetId: assetId },
+      }),
+    ]);
   }
 
   return { userId, profileId, linkId, username };
@@ -132,7 +152,7 @@ describe("Phase 1 public resource guards", () => {
     expect(await clickCount(owner.linkId)).toEqual({ clicks: 0, totalClicks: 0 });
   });
 
-  test("an allowed approved avatar is returned", async () => {
+  test("an allowed approved avatar is returned from its exact MediaAsset key", async () => {
     const owner = await createOwner({ withAvatar: true });
     const response = await avatar(owner.username);
     expect(response.status).toBe(200);
