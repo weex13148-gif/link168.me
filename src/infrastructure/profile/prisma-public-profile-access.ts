@@ -75,7 +75,7 @@ export async function resolvePublicProfileAccess(
         },
       },
     });
-    if (direct) return loadCurrentProfile(direct);
+    if (direct) return await loadCurrentProfile(direct);
 
     const now = new Date();
     const registry = await db.usernameRegistry.findUnique({
@@ -85,7 +85,7 @@ export async function resolvePublicProfileAccess(
 
     if (registry?.status === "CURRENT" && registry.userId) {
       const profile = await profileQueryByUserId(registry.userId);
-      if (profile) return loadCurrentProfile(profile);
+      if (profile) return await loadCurrentProfile(profile);
     }
 
     if (registry?.status === "PERMANENTLY_RESERVED") {
