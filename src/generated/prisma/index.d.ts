@@ -164,6 +164,11 @@ export type AiCreditAccount = $Result.DefaultSelection<Prisma.$AiCreditAccountPa
  */
 export type AiCreditLedger = $Result.DefaultSelection<Prisma.$AiCreditLedgerPayload>
 /**
+ * Model AiCreditBucket
+ * 
+ */
+export type AiCreditBucket = $Result.DefaultSelection<Prisma.$AiCreditBucketPayload>
+/**
  * Model MembershipSubscription
  * 
  */
@@ -269,7 +274,7 @@ export class PrismaClient<
    * Read more in our [docs](https://pris.ly/d/client).
    */
 
-  constructor(optionsArg ?: Prisma.Subset<ClientOptions, Prisma.PrismaClientOptions>);
+  constructor(optionsArg ?: Prisma.PrismaClientConstructorArgs<ClientOptions>);
   $on<V extends U>(eventType: V, callback: (event: V extends 'query' ? Prisma.QueryEvent : Prisma.LogEvent) => void): PrismaClient;
 
   /**
@@ -651,6 +656,16 @@ export class PrismaClient<
   get aiCreditLedger(): Prisma.AiCreditLedgerDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.aiCreditBucket`: Exposes CRUD operations for the **AiCreditBucket** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AiCreditBuckets
+    * const aiCreditBuckets = await prisma.aiCreditBucket.findMany()
+    * ```
+    */
+  get aiCreditBucket(): Prisma.AiCreditBucketDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.membershipSubscription`: Exposes CRUD operations for the **MembershipSubscription** model.
     * Example usage:
     * ```ts
@@ -829,8 +844,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 7.8.0
-   * Query Engine version: 3c6e192761c0362d496ed980de936e2f3cebcd3a
+   * Prisma Client JS version: 7.9.0
+   * Query Engine version: e922089b7d7502aff4249d5da3420f6fa55fc6ad
    */
   export type PrismaVersion = {
     client: string
@@ -965,6 +980,19 @@ export namespace Prisma {
   };
 
   /**
+   * Resolved type of the argument passed to the `PrismaClient` constructor.
+   *
+   * When called without a narrower options type (the common case), this resolves
+   * to `PrismaClientOptions` directly, which produces a clear TypeScript error
+   * message (`not assignable to parameter of type 'PrismaClientOptions'`) when
+   * the argument is missing or incomplete. When the user supplies a narrower
+   * options type (e.g. via a literal), it falls back to `Subset` to keep
+   * filtering out unknown properties.
+   */
+  export type PrismaClientConstructorArgs<Options extends PrismaClientOptions> =
+    [PrismaClientOptions] extends [Options] ? PrismaClientOptions : Subset<Options, PrismaClientOptions>;
+
+  /**
    * SelectSubset
    * @desc From `T` pick properties that exist in `U`. Simple version of Intersection.
    * Additionally, it validates, if both select and include are present. If the case, it errors.
@@ -996,7 +1024,7 @@ export namespace Prisma {
   type XOR<T, U> =
     T extends object ?
     U extends object ?
-      (Without<T, U> & U) | (Without<U, T> & T)
+      ((Without<T, U> & U) | (Without<U, T> & T)) & object
     : U : T
 
 
@@ -1243,6 +1271,7 @@ export namespace Prisma {
     AiMessage: 'AiMessage',
     AiCreditAccount: 'AiCreditAccount',
     AiCreditLedger: 'AiCreditLedger',
+    AiCreditBucket: 'AiCreditBucket',
     MembershipSubscription: 'MembershipSubscription',
     Order: 'Order',
     CompetitionFile: 'CompetitionFile',
@@ -1271,7 +1300,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "freezeRecord" | "usernameHistory" | "usernameRegistry" | "profile" | "domain" | "workspacePublicProfile" | "link" | "linkClick" | "profileVisit" | "shortLink" | "shortLinkClick" | "session" | "report" | "passwordResetToken" | "emailVerificationToken" | "loginAttempt" | "appConfig" | "aiUsageLog" | "adminAuditLog" | "lead" | "leadFollowUp" | "emailSendLog" | "product" | "knowledgeDoc" | "aiServiceConfig" | "aiConversation" | "aiMessage" | "aiCreditAccount" | "aiCreditLedger" | "membershipSubscription" | "order" | "competitionFile" | "showcaseContent" | "showcaseSequence" | "showcaseAIDemoCall" | "showcaseAIDebugLog" | "showcasePromptDraft" | "contentModerationRecord" | "workspace" | "workspaceMember" | "enterpriseQuotaPool" | "enterpriseQuotaConsumption"
+      modelProps: "user" | "freezeRecord" | "usernameHistory" | "usernameRegistry" | "profile" | "domain" | "workspacePublicProfile" | "link" | "linkClick" | "profileVisit" | "shortLink" | "shortLinkClick" | "session" | "report" | "passwordResetToken" | "emailVerificationToken" | "loginAttempt" | "appConfig" | "aiUsageLog" | "adminAuditLog" | "lead" | "leadFollowUp" | "emailSendLog" | "product" | "knowledgeDoc" | "aiServiceConfig" | "aiConversation" | "aiMessage" | "aiCreditAccount" | "aiCreditLedger" | "aiCreditBucket" | "membershipSubscription" | "order" | "competitionFile" | "showcaseContent" | "showcaseSequence" | "showcaseAIDemoCall" | "showcaseAIDebugLog" | "showcasePromptDraft" | "contentModerationRecord" | "workspace" | "workspaceMember" | "enterpriseQuotaPool" | "enterpriseQuotaConsumption"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3495,6 +3524,80 @@ export namespace Prisma {
           }
         }
       }
+      AiCreditBucket: {
+        payload: Prisma.$AiCreditBucketPayload<ExtArgs>
+        fields: Prisma.AiCreditBucketFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AiCreditBucketFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AiCreditBucketFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>
+          }
+          findFirst: {
+            args: Prisma.AiCreditBucketFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AiCreditBucketFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>
+          }
+          findMany: {
+            args: Prisma.AiCreditBucketFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>[]
+          }
+          create: {
+            args: Prisma.AiCreditBucketCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>
+          }
+          createMany: {
+            args: Prisma.AiCreditBucketCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AiCreditBucketCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>[]
+          }
+          delete: {
+            args: Prisma.AiCreditBucketDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>
+          }
+          update: {
+            args: Prisma.AiCreditBucketUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>
+          }
+          deleteMany: {
+            args: Prisma.AiCreditBucketDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AiCreditBucketUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AiCreditBucketUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>[]
+          }
+          upsert: {
+            args: Prisma.AiCreditBucketUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>
+          }
+          aggregate: {
+            args: Prisma.AiCreditBucketAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAiCreditBucket>
+          }
+          groupBy: {
+            args: Prisma.AiCreditBucketGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AiCreditBucketGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AiCreditBucketCountArgs<ExtArgs>
+            result: $Utils.Optional<AiCreditBucketCountAggregateOutputType> | number
+          }
+        }
+      }
       MembershipSubscription: {
         payload: Prisma.$MembershipSubscriptionPayload<ExtArgs>
         fields: Prisma.MembershipSubscriptionFieldRefs
@@ -4525,11 +4628,26 @@ export namespace Prisma {
       isolationLevel?: Prisma.TransactionIsolationLevel
     }
     /**
-     * Instance of a Driver Adapter, e.g., like one provided by `@prisma/adapter-planetscale`
+     * A driver adapter that PrismaClient uses to connect to your database, such as the ones provided by `@prisma/adapter-pg`, `@prisma/adapter-libsql`, `@prisma/adapter-planetscale`, etc.
+     * 
+     * A driver adapter is **required** unless you connect to your database through Prisma Accelerate (in which case use `accelerateUrl` instead).
+     * 
+     * Learn more: https://pris.ly/d/driver-adapters
+     * 
+     * @example
+     * ```ts
+     * import { PrismaPg } from '@prisma/adapter-pg'
+     * import { PrismaClient } from './generated/prisma/client'
+     * 
+     * const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+     * const prisma = new PrismaClient({ adapter })
+     * ```
      */
     adapter?: runtime.SqlDriverAdapterFactory
     /**
-     * Prisma Accelerate URL allowing the client to connect through Accelerate instead of a direct database.
+     * The Prisma Accelerate connection URL. Use this option to connect to your database through Prisma Accelerate instead of using a driver adapter to connect directly.
+     * 
+     * Learn more: https://pris.ly/d/accelerate
      */
     accelerateUrl?: string
     /**
@@ -4595,6 +4713,7 @@ export namespace Prisma {
     aiMessage?: AiMessageOmit
     aiCreditAccount?: AiCreditAccountOmit
     aiCreditLedger?: AiCreditLedgerOmit
+    aiCreditBucket?: AiCreditBucketOmit
     membershipSubscription?: MembershipSubscriptionOmit
     order?: OrderOmit
     competitionFile?: CompetitionFileOmit
@@ -5050,10 +5169,12 @@ export namespace Prisma {
 
   export type AiCreditAccountCountOutputType = {
     ledger: number
+    buckets: number
   }
 
   export type AiCreditAccountCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ledger?: boolean | AiCreditAccountCountOutputTypeCountLedgerArgs
+    buckets?: boolean | AiCreditAccountCountOutputTypeCountBucketsArgs
   }
 
   // Custom InputTypes
@@ -5072,6 +5193,13 @@ export namespace Prisma {
    */
   export type AiCreditAccountCountOutputTypeCountLedgerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AiCreditLedgerWhereInput
+  }
+
+  /**
+   * AiCreditAccountCountOutputType without action
+   */
+  export type AiCreditAccountCountOutputTypeCountBucketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AiCreditBucketWhereInput
   }
 
 
@@ -34409,6 +34537,7 @@ export namespace Prisma {
     allowReport: boolean | null
     allowTransferToHuman: boolean | null
     privacyNoticeText: string | null
+    quickActionsJson: string | null
     providerMode: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -34426,6 +34555,7 @@ export namespace Prisma {
     allowReport: boolean | null
     allowTransferToHuman: boolean | null
     privacyNoticeText: string | null
+    quickActionsJson: string | null
     providerMode: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -34443,6 +34573,7 @@ export namespace Prisma {
     allowReport: number
     allowTransferToHuman: number
     privacyNoticeText: number
+    quickActionsJson: number
     providerMode: number
     createdAt: number
     updatedAt: number
@@ -34462,6 +34593,7 @@ export namespace Prisma {
     allowReport?: true
     allowTransferToHuman?: true
     privacyNoticeText?: true
+    quickActionsJson?: true
     providerMode?: true
     createdAt?: true
     updatedAt?: true
@@ -34479,6 +34611,7 @@ export namespace Prisma {
     allowReport?: true
     allowTransferToHuman?: true
     privacyNoticeText?: true
+    quickActionsJson?: true
     providerMode?: true
     createdAt?: true
     updatedAt?: true
@@ -34496,6 +34629,7 @@ export namespace Prisma {
     allowReport?: true
     allowTransferToHuman?: true
     privacyNoticeText?: true
+    quickActionsJson?: true
     providerMode?: true
     createdAt?: true
     updatedAt?: true
@@ -34586,6 +34720,7 @@ export namespace Prisma {
     allowReport: boolean
     allowTransferToHuman: boolean
     privacyNoticeText: string | null
+    quickActionsJson: string | null
     providerMode: string
     createdAt: Date
     updatedAt: Date
@@ -34620,6 +34755,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -34638,6 +34774,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -34656,6 +34793,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -34674,12 +34812,13 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type AiServiceConfigOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "enabled" | "assistantName" | "welcomeMessage" | "tone" | "allowProductRecommendation" | "collectLead" | "allowReport" | "allowTransferToHuman" | "privacyNoticeText" | "providerMode" | "createdAt" | "updatedAt", ExtArgs["result"]["aiServiceConfig"]>
+  export type AiServiceConfigOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "enabled" | "assistantName" | "welcomeMessage" | "tone" | "allowProductRecommendation" | "collectLead" | "allowReport" | "allowTransferToHuman" | "privacyNoticeText" | "quickActionsJson" | "providerMode" | "createdAt" | "updatedAt", ExtArgs["result"]["aiServiceConfig"]>
   export type AiServiceConfigInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -34707,6 +34846,7 @@ export namespace Prisma {
       allowReport: boolean
       allowTransferToHuman: boolean
       privacyNoticeText: string | null
+      quickActionsJson: string | null
       providerMode: string
       createdAt: Date
       updatedAt: Date
@@ -35145,6 +35285,7 @@ export namespace Prisma {
     readonly allowReport: FieldRef<"AiServiceConfig", 'Boolean'>
     readonly allowTransferToHuman: FieldRef<"AiServiceConfig", 'Boolean'>
     readonly privacyNoticeText: FieldRef<"AiServiceConfig", 'String'>
+    readonly quickActionsJson: FieldRef<"AiServiceConfig", 'String'>
     readonly providerMode: FieldRef<"AiServiceConfig", 'String'>
     readonly createdAt: FieldRef<"AiServiceConfig", 'DateTime'>
     readonly updatedAt: FieldRef<"AiServiceConfig", 'DateTime'>
@@ -38040,6 +38181,7 @@ export namespace Prisma {
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     ledger?: boolean | AiCreditAccount$ledgerArgs<ExtArgs>
+    buckets?: boolean | AiCreditAccount$bucketsArgs<ExtArgs>
     _count?: boolean | AiCreditAccountCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["aiCreditAccount"]>
 
@@ -38076,6 +38218,7 @@ export namespace Prisma {
   export type AiCreditAccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     ledger?: boolean | AiCreditAccount$ledgerArgs<ExtArgs>
+    buckets?: boolean | AiCreditAccount$bucketsArgs<ExtArgs>
     _count?: boolean | AiCreditAccountCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AiCreditAccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -38090,6 +38233,7 @@ export namespace Prisma {
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
       ledger: Prisma.$AiCreditLedgerPayload<ExtArgs>[]
+      buckets: Prisma.$AiCreditBucketPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -38494,6 +38638,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     ledger<T extends AiCreditAccount$ledgerArgs<ExtArgs> = {}>(args?: Subset<T, AiCreditAccount$ledgerArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditLedgerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    buckets<T extends AiCreditAccount$bucketsArgs<ExtArgs> = {}>(args?: Subset<T, AiCreditAccount$bucketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -38951,6 +39096,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AiCreditLedgerScalarFieldEnum | AiCreditLedgerScalarFieldEnum[]
+  }
+
+  /**
+   * AiCreditAccount.buckets
+   */
+  export type AiCreditAccount$bucketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    where?: AiCreditBucketWhereInput
+    orderBy?: AiCreditBucketOrderByWithRelationInput | AiCreditBucketOrderByWithRelationInput[]
+    cursor?: AiCreditBucketWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AiCreditBucketScalarFieldEnum | AiCreditBucketScalarFieldEnum[]
   }
 
   /**
@@ -40148,6 +40317,1199 @@ export namespace Prisma {
 
 
   /**
+   * Model AiCreditBucket
+   */
+
+  export type AggregateAiCreditBucket = {
+    _count: AiCreditBucketCountAggregateOutputType | null
+    _avg: AiCreditBucketAvgAggregateOutputType | null
+    _sum: AiCreditBucketSumAggregateOutputType | null
+    _min: AiCreditBucketMinAggregateOutputType | null
+    _max: AiCreditBucketMaxAggregateOutputType | null
+  }
+
+  export type AiCreditBucketAvgAggregateOutputType = {
+    grantedAmount: number | null
+    remainingAmount: number | null
+  }
+
+  export type AiCreditBucketSumAggregateOutputType = {
+    grantedAmount: number | null
+    remainingAmount: number | null
+  }
+
+  export type AiCreditBucketMinAggregateOutputType = {
+    id: string | null
+    accountId: string | null
+    sourceOrderId: string | null
+    sourceType: string | null
+    grantedAmount: number | null
+    remainingAmount: number | null
+    status: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AiCreditBucketMaxAggregateOutputType = {
+    id: string | null
+    accountId: string | null
+    sourceOrderId: string | null
+    sourceType: string | null
+    grantedAmount: number | null
+    remainingAmount: number | null
+    status: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AiCreditBucketCountAggregateOutputType = {
+    id: number
+    accountId: number
+    sourceOrderId: number
+    sourceType: number
+    grantedAmount: number
+    remainingAmount: number
+    status: number
+    expiresAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AiCreditBucketAvgAggregateInputType = {
+    grantedAmount?: true
+    remainingAmount?: true
+  }
+
+  export type AiCreditBucketSumAggregateInputType = {
+    grantedAmount?: true
+    remainingAmount?: true
+  }
+
+  export type AiCreditBucketMinAggregateInputType = {
+    id?: true
+    accountId?: true
+    sourceOrderId?: true
+    sourceType?: true
+    grantedAmount?: true
+    remainingAmount?: true
+    status?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AiCreditBucketMaxAggregateInputType = {
+    id?: true
+    accountId?: true
+    sourceOrderId?: true
+    sourceType?: true
+    grantedAmount?: true
+    remainingAmount?: true
+    status?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AiCreditBucketCountAggregateInputType = {
+    id?: true
+    accountId?: true
+    sourceOrderId?: true
+    sourceType?: true
+    grantedAmount?: true
+    remainingAmount?: true
+    status?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AiCreditBucketAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AiCreditBucket to aggregate.
+     */
+    where?: AiCreditBucketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditBuckets to fetch.
+     */
+    orderBy?: AiCreditBucketOrderByWithRelationInput | AiCreditBucketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AiCreditBucketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditBuckets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditBuckets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AiCreditBuckets
+    **/
+    _count?: true | AiCreditBucketCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AiCreditBucketAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AiCreditBucketSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AiCreditBucketMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AiCreditBucketMaxAggregateInputType
+  }
+
+  export type GetAiCreditBucketAggregateType<T extends AiCreditBucketAggregateArgs> = {
+        [P in keyof T & keyof AggregateAiCreditBucket]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAiCreditBucket[P]>
+      : GetScalarType<T[P], AggregateAiCreditBucket[P]>
+  }
+
+
+
+
+  export type AiCreditBucketGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AiCreditBucketWhereInput
+    orderBy?: AiCreditBucketOrderByWithAggregationInput | AiCreditBucketOrderByWithAggregationInput[]
+    by: AiCreditBucketScalarFieldEnum[] | AiCreditBucketScalarFieldEnum
+    having?: AiCreditBucketScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AiCreditBucketCountAggregateInputType | true
+    _avg?: AiCreditBucketAvgAggregateInputType
+    _sum?: AiCreditBucketSumAggregateInputType
+    _min?: AiCreditBucketMinAggregateInputType
+    _max?: AiCreditBucketMaxAggregateInputType
+  }
+
+  export type AiCreditBucketGroupByOutputType = {
+    id: string
+    accountId: string
+    sourceOrderId: string | null
+    sourceType: string
+    grantedAmount: number
+    remainingAmount: number
+    status: string
+    expiresAt: Date
+    createdAt: Date
+    updatedAt: Date
+    _count: AiCreditBucketCountAggregateOutputType | null
+    _avg: AiCreditBucketAvgAggregateOutputType | null
+    _sum: AiCreditBucketSumAggregateOutputType | null
+    _min: AiCreditBucketMinAggregateOutputType | null
+    _max: AiCreditBucketMaxAggregateOutputType | null
+  }
+
+  type GetAiCreditBucketGroupByPayload<T extends AiCreditBucketGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AiCreditBucketGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AiCreditBucketGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AiCreditBucketGroupByOutputType[P]>
+            : GetScalarType<T[P], AiCreditBucketGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AiCreditBucketSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    accountId?: boolean
+    sourceOrderId?: boolean
+    sourceType?: boolean
+    grantedAmount?: boolean
+    remainingAmount?: boolean
+    status?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    account?: boolean | AiCreditAccountDefaultArgs<ExtArgs>
+    sourceOrder?: boolean | AiCreditBucket$sourceOrderArgs<ExtArgs>
+  }, ExtArgs["result"]["aiCreditBucket"]>
+
+  export type AiCreditBucketSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    accountId?: boolean
+    sourceOrderId?: boolean
+    sourceType?: boolean
+    grantedAmount?: boolean
+    remainingAmount?: boolean
+    status?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    account?: boolean | AiCreditAccountDefaultArgs<ExtArgs>
+    sourceOrder?: boolean | AiCreditBucket$sourceOrderArgs<ExtArgs>
+  }, ExtArgs["result"]["aiCreditBucket"]>
+
+  export type AiCreditBucketSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    accountId?: boolean
+    sourceOrderId?: boolean
+    sourceType?: boolean
+    grantedAmount?: boolean
+    remainingAmount?: boolean
+    status?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    account?: boolean | AiCreditAccountDefaultArgs<ExtArgs>
+    sourceOrder?: boolean | AiCreditBucket$sourceOrderArgs<ExtArgs>
+  }, ExtArgs["result"]["aiCreditBucket"]>
+
+  export type AiCreditBucketSelectScalar = {
+    id?: boolean
+    accountId?: boolean
+    sourceOrderId?: boolean
+    sourceType?: boolean
+    grantedAmount?: boolean
+    remainingAmount?: boolean
+    status?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AiCreditBucketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "accountId" | "sourceOrderId" | "sourceType" | "grantedAmount" | "remainingAmount" | "status" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["aiCreditBucket"]>
+  export type AiCreditBucketInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | AiCreditAccountDefaultArgs<ExtArgs>
+    sourceOrder?: boolean | AiCreditBucket$sourceOrderArgs<ExtArgs>
+  }
+  export type AiCreditBucketIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | AiCreditAccountDefaultArgs<ExtArgs>
+    sourceOrder?: boolean | AiCreditBucket$sourceOrderArgs<ExtArgs>
+  }
+  export type AiCreditBucketIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | AiCreditAccountDefaultArgs<ExtArgs>
+    sourceOrder?: boolean | AiCreditBucket$sourceOrderArgs<ExtArgs>
+  }
+
+  export type $AiCreditBucketPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AiCreditBucket"
+    objects: {
+      account: Prisma.$AiCreditAccountPayload<ExtArgs>
+      sourceOrder: Prisma.$OrderPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      accountId: string
+      sourceOrderId: string | null
+      sourceType: string
+      grantedAmount: number
+      remainingAmount: number
+      status: string
+      expiresAt: Date
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["aiCreditBucket"]>
+    composites: {}
+  }
+
+  type AiCreditBucketGetPayload<S extends boolean | null | undefined | AiCreditBucketDefaultArgs> = $Result.GetResult<Prisma.$AiCreditBucketPayload, S>
+
+  type AiCreditBucketCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AiCreditBucketFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AiCreditBucketCountAggregateInputType | true
+    }
+
+  export interface AiCreditBucketDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AiCreditBucket'], meta: { name: 'AiCreditBucket' } }
+    /**
+     * Find zero or one AiCreditBucket that matches the filter.
+     * @param {AiCreditBucketFindUniqueArgs} args - Arguments to find a AiCreditBucket
+     * @example
+     * // Get one AiCreditBucket
+     * const aiCreditBucket = await prisma.aiCreditBucket.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AiCreditBucketFindUniqueArgs>(args: SelectSubset<T, AiCreditBucketFindUniqueArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AiCreditBucket that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AiCreditBucketFindUniqueOrThrowArgs} args - Arguments to find a AiCreditBucket
+     * @example
+     * // Get one AiCreditBucket
+     * const aiCreditBucket = await prisma.aiCreditBucket.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AiCreditBucketFindUniqueOrThrowArgs>(args: SelectSubset<T, AiCreditBucketFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AiCreditBucket that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditBucketFindFirstArgs} args - Arguments to find a AiCreditBucket
+     * @example
+     * // Get one AiCreditBucket
+     * const aiCreditBucket = await prisma.aiCreditBucket.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AiCreditBucketFindFirstArgs>(args?: SelectSubset<T, AiCreditBucketFindFirstArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AiCreditBucket that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditBucketFindFirstOrThrowArgs} args - Arguments to find a AiCreditBucket
+     * @example
+     * // Get one AiCreditBucket
+     * const aiCreditBucket = await prisma.aiCreditBucket.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AiCreditBucketFindFirstOrThrowArgs>(args?: SelectSubset<T, AiCreditBucketFindFirstOrThrowArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AiCreditBuckets that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditBucketFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AiCreditBuckets
+     * const aiCreditBuckets = await prisma.aiCreditBucket.findMany()
+     * 
+     * // Get first 10 AiCreditBuckets
+     * const aiCreditBuckets = await prisma.aiCreditBucket.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const aiCreditBucketWithIdOnly = await prisma.aiCreditBucket.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AiCreditBucketFindManyArgs>(args?: SelectSubset<T, AiCreditBucketFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AiCreditBucket.
+     * @param {AiCreditBucketCreateArgs} args - Arguments to create a AiCreditBucket.
+     * @example
+     * // Create one AiCreditBucket
+     * const AiCreditBucket = await prisma.aiCreditBucket.create({
+     *   data: {
+     *     // ... data to create a AiCreditBucket
+     *   }
+     * })
+     * 
+     */
+    create<T extends AiCreditBucketCreateArgs>(args: SelectSubset<T, AiCreditBucketCreateArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AiCreditBuckets.
+     * @param {AiCreditBucketCreateManyArgs} args - Arguments to create many AiCreditBuckets.
+     * @example
+     * // Create many AiCreditBuckets
+     * const aiCreditBucket = await prisma.aiCreditBucket.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AiCreditBucketCreateManyArgs>(args?: SelectSubset<T, AiCreditBucketCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AiCreditBuckets and returns the data saved in the database.
+     * @param {AiCreditBucketCreateManyAndReturnArgs} args - Arguments to create many AiCreditBuckets.
+     * @example
+     * // Create many AiCreditBuckets
+     * const aiCreditBucket = await prisma.aiCreditBucket.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AiCreditBuckets and only return the `id`
+     * const aiCreditBucketWithIdOnly = await prisma.aiCreditBucket.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AiCreditBucketCreateManyAndReturnArgs>(args?: SelectSubset<T, AiCreditBucketCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AiCreditBucket.
+     * @param {AiCreditBucketDeleteArgs} args - Arguments to delete one AiCreditBucket.
+     * @example
+     * // Delete one AiCreditBucket
+     * const AiCreditBucket = await prisma.aiCreditBucket.delete({
+     *   where: {
+     *     // ... filter to delete one AiCreditBucket
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AiCreditBucketDeleteArgs>(args: SelectSubset<T, AiCreditBucketDeleteArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AiCreditBucket.
+     * @param {AiCreditBucketUpdateArgs} args - Arguments to update one AiCreditBucket.
+     * @example
+     * // Update one AiCreditBucket
+     * const aiCreditBucket = await prisma.aiCreditBucket.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AiCreditBucketUpdateArgs>(args: SelectSubset<T, AiCreditBucketUpdateArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AiCreditBuckets.
+     * @param {AiCreditBucketDeleteManyArgs} args - Arguments to filter AiCreditBuckets to delete.
+     * @example
+     * // Delete a few AiCreditBuckets
+     * const { count } = await prisma.aiCreditBucket.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AiCreditBucketDeleteManyArgs>(args?: SelectSubset<T, AiCreditBucketDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AiCreditBuckets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditBucketUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AiCreditBuckets
+     * const aiCreditBucket = await prisma.aiCreditBucket.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AiCreditBucketUpdateManyArgs>(args: SelectSubset<T, AiCreditBucketUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AiCreditBuckets and returns the data updated in the database.
+     * @param {AiCreditBucketUpdateManyAndReturnArgs} args - Arguments to update many AiCreditBuckets.
+     * @example
+     * // Update many AiCreditBuckets
+     * const aiCreditBucket = await prisma.aiCreditBucket.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AiCreditBuckets and only return the `id`
+     * const aiCreditBucketWithIdOnly = await prisma.aiCreditBucket.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AiCreditBucketUpdateManyAndReturnArgs>(args: SelectSubset<T, AiCreditBucketUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AiCreditBucket.
+     * @param {AiCreditBucketUpsertArgs} args - Arguments to update or create a AiCreditBucket.
+     * @example
+     * // Update or create a AiCreditBucket
+     * const aiCreditBucket = await prisma.aiCreditBucket.upsert({
+     *   create: {
+     *     // ... data to create a AiCreditBucket
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AiCreditBucket we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AiCreditBucketUpsertArgs>(args: SelectSubset<T, AiCreditBucketUpsertArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AiCreditBuckets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditBucketCountArgs} args - Arguments to filter AiCreditBuckets to count.
+     * @example
+     * // Count the number of AiCreditBuckets
+     * const count = await prisma.aiCreditBucket.count({
+     *   where: {
+     *     // ... the filter for the AiCreditBuckets we want to count
+     *   }
+     * })
+    **/
+    count<T extends AiCreditBucketCountArgs>(
+      args?: Subset<T, AiCreditBucketCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AiCreditBucketCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AiCreditBucket.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditBucketAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AiCreditBucketAggregateArgs>(args: Subset<T, AiCreditBucketAggregateArgs>): Prisma.PrismaPromise<GetAiCreditBucketAggregateType<T>>
+
+    /**
+     * Group by AiCreditBucket.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditBucketGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AiCreditBucketGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AiCreditBucketGroupByArgs['orderBy'] }
+        : { orderBy?: AiCreditBucketGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AiCreditBucketGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAiCreditBucketGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AiCreditBucket model
+   */
+  readonly fields: AiCreditBucketFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AiCreditBucket.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AiCreditBucketClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    account<T extends AiCreditAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AiCreditAccountDefaultArgs<ExtArgs>>): Prisma__AiCreditAccountClient<$Result.GetResult<Prisma.$AiCreditAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    sourceOrder<T extends AiCreditBucket$sourceOrderArgs<ExtArgs> = {}>(args?: Subset<T, AiCreditBucket$sourceOrderArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AiCreditBucket model
+   */
+  interface AiCreditBucketFieldRefs {
+    readonly id: FieldRef<"AiCreditBucket", 'String'>
+    readonly accountId: FieldRef<"AiCreditBucket", 'String'>
+    readonly sourceOrderId: FieldRef<"AiCreditBucket", 'String'>
+    readonly sourceType: FieldRef<"AiCreditBucket", 'String'>
+    readonly grantedAmount: FieldRef<"AiCreditBucket", 'Int'>
+    readonly remainingAmount: FieldRef<"AiCreditBucket", 'Int'>
+    readonly status: FieldRef<"AiCreditBucket", 'String'>
+    readonly expiresAt: FieldRef<"AiCreditBucket", 'DateTime'>
+    readonly createdAt: FieldRef<"AiCreditBucket", 'DateTime'>
+    readonly updatedAt: FieldRef<"AiCreditBucket", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AiCreditBucket findUnique
+   */
+  export type AiCreditBucketFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditBucket to fetch.
+     */
+    where: AiCreditBucketWhereUniqueInput
+  }
+
+  /**
+   * AiCreditBucket findUniqueOrThrow
+   */
+  export type AiCreditBucketFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditBucket to fetch.
+     */
+    where: AiCreditBucketWhereUniqueInput
+  }
+
+  /**
+   * AiCreditBucket findFirst
+   */
+  export type AiCreditBucketFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditBucket to fetch.
+     */
+    where?: AiCreditBucketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditBuckets to fetch.
+     */
+    orderBy?: AiCreditBucketOrderByWithRelationInput | AiCreditBucketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AiCreditBuckets.
+     */
+    cursor?: AiCreditBucketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditBuckets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditBuckets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AiCreditBuckets.
+     */
+    distinct?: AiCreditBucketScalarFieldEnum | AiCreditBucketScalarFieldEnum[]
+  }
+
+  /**
+   * AiCreditBucket findFirstOrThrow
+   */
+  export type AiCreditBucketFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditBucket to fetch.
+     */
+    where?: AiCreditBucketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditBuckets to fetch.
+     */
+    orderBy?: AiCreditBucketOrderByWithRelationInput | AiCreditBucketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AiCreditBuckets.
+     */
+    cursor?: AiCreditBucketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditBuckets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditBuckets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AiCreditBuckets.
+     */
+    distinct?: AiCreditBucketScalarFieldEnum | AiCreditBucketScalarFieldEnum[]
+  }
+
+  /**
+   * AiCreditBucket findMany
+   */
+  export type AiCreditBucketFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditBuckets to fetch.
+     */
+    where?: AiCreditBucketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditBuckets to fetch.
+     */
+    orderBy?: AiCreditBucketOrderByWithRelationInput | AiCreditBucketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AiCreditBuckets.
+     */
+    cursor?: AiCreditBucketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditBuckets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditBuckets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AiCreditBuckets.
+     */
+    distinct?: AiCreditBucketScalarFieldEnum | AiCreditBucketScalarFieldEnum[]
+  }
+
+  /**
+   * AiCreditBucket create
+   */
+  export type AiCreditBucketCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AiCreditBucket.
+     */
+    data: XOR<AiCreditBucketCreateInput, AiCreditBucketUncheckedCreateInput>
+  }
+
+  /**
+   * AiCreditBucket createMany
+   */
+  export type AiCreditBucketCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AiCreditBuckets.
+     */
+    data: AiCreditBucketCreateManyInput | AiCreditBucketCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AiCreditBucket createManyAndReturn
+   */
+  export type AiCreditBucketCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * The data used to create many AiCreditBuckets.
+     */
+    data: AiCreditBucketCreateManyInput | AiCreditBucketCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AiCreditBucket update
+   */
+  export type AiCreditBucketUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AiCreditBucket.
+     */
+    data: XOR<AiCreditBucketUpdateInput, AiCreditBucketUncheckedUpdateInput>
+    /**
+     * Choose, which AiCreditBucket to update.
+     */
+    where: AiCreditBucketWhereUniqueInput
+  }
+
+  /**
+   * AiCreditBucket updateMany
+   */
+  export type AiCreditBucketUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AiCreditBuckets.
+     */
+    data: XOR<AiCreditBucketUpdateManyMutationInput, AiCreditBucketUncheckedUpdateManyInput>
+    /**
+     * Filter which AiCreditBuckets to update
+     */
+    where?: AiCreditBucketWhereInput
+    /**
+     * Limit how many AiCreditBuckets to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AiCreditBucket updateManyAndReturn
+   */
+  export type AiCreditBucketUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * The data used to update AiCreditBuckets.
+     */
+    data: XOR<AiCreditBucketUpdateManyMutationInput, AiCreditBucketUncheckedUpdateManyInput>
+    /**
+     * Filter which AiCreditBuckets to update
+     */
+    where?: AiCreditBucketWhereInput
+    /**
+     * Limit how many AiCreditBuckets to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AiCreditBucket upsert
+   */
+  export type AiCreditBucketUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AiCreditBucket to update in case it exists.
+     */
+    where: AiCreditBucketWhereUniqueInput
+    /**
+     * In case the AiCreditBucket found by the `where` argument doesn't exist, create a new AiCreditBucket with this data.
+     */
+    create: XOR<AiCreditBucketCreateInput, AiCreditBucketUncheckedCreateInput>
+    /**
+     * In case the AiCreditBucket was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AiCreditBucketUpdateInput, AiCreditBucketUncheckedUpdateInput>
+  }
+
+  /**
+   * AiCreditBucket delete
+   */
+  export type AiCreditBucketDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * Filter which AiCreditBucket to delete.
+     */
+    where: AiCreditBucketWhereUniqueInput
+  }
+
+  /**
+   * AiCreditBucket deleteMany
+   */
+  export type AiCreditBucketDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AiCreditBuckets to delete
+     */
+    where?: AiCreditBucketWhereInput
+    /**
+     * Limit how many AiCreditBuckets to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AiCreditBucket.sourceOrder
+   */
+  export type AiCreditBucket$sourceOrderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+  }
+
+  /**
+   * AiCreditBucket without action
+   */
+  export type AiCreditBucketDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model MembershipSubscription
    */
 
@@ -41277,6 +42639,7 @@ export namespace Prisma {
     userId: string | null
     planCode: string | null
     planNameSnapshot: string | null
+    productType: string | null
     billingCycle: string | null
     originalAmount: number | null
     payableAmount: number | null
@@ -41303,6 +42666,7 @@ export namespace Prisma {
     userId: string | null
     planCode: string | null
     planNameSnapshot: string | null
+    productType: string | null
     billingCycle: string | null
     originalAmount: number | null
     payableAmount: number | null
@@ -41329,6 +42693,7 @@ export namespace Prisma {
     userId: number
     planCode: number
     planNameSnapshot: number
+    productType: number
     billingCycle: number
     originalAmount: number
     payableAmount: number
@@ -41368,6 +42733,7 @@ export namespace Prisma {
     userId?: true
     planCode?: true
     planNameSnapshot?: true
+    productType?: true
     billingCycle?: true
     originalAmount?: true
     payableAmount?: true
@@ -41394,6 +42760,7 @@ export namespace Prisma {
     userId?: true
     planCode?: true
     planNameSnapshot?: true
+    productType?: true
     billingCycle?: true
     originalAmount?: true
     payableAmount?: true
@@ -41420,6 +42787,7 @@ export namespace Prisma {
     userId?: true
     planCode?: true
     planNameSnapshot?: true
+    productType?: true
     billingCycle?: true
     originalAmount?: true
     payableAmount?: true
@@ -41534,6 +42902,7 @@ export namespace Prisma {
     userId: string
     planCode: string
     planNameSnapshot: string
+    productType: string
     billingCycle: string
     originalAmount: number
     payableAmount: number
@@ -41580,6 +42949,7 @@ export namespace Prisma {
     userId?: boolean
     planCode?: boolean
     planNameSnapshot?: boolean
+    productType?: boolean
     billingCycle?: boolean
     originalAmount?: boolean
     payableAmount?: boolean
@@ -41600,6 +42970,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    aiCreditBucket?: boolean | Order$aiCreditBucketArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -41608,6 +42979,7 @@ export namespace Prisma {
     userId?: boolean
     planCode?: boolean
     planNameSnapshot?: boolean
+    productType?: boolean
     billingCycle?: boolean
     originalAmount?: boolean
     payableAmount?: boolean
@@ -41636,6 +43008,7 @@ export namespace Prisma {
     userId?: boolean
     planCode?: boolean
     planNameSnapshot?: boolean
+    productType?: boolean
     billingCycle?: boolean
     originalAmount?: boolean
     payableAmount?: boolean
@@ -41664,6 +43037,7 @@ export namespace Prisma {
     userId?: boolean
     planCode?: boolean
     planNameSnapshot?: boolean
+    productType?: boolean
     billingCycle?: boolean
     originalAmount?: boolean
     payableAmount?: boolean
@@ -41685,9 +43059,10 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNo" | "userId" | "planCode" | "planNameSnapshot" | "billingCycle" | "originalAmount" | "payableAmount" | "currency" | "paymentChannel" | "providerTradeNo" | "idempotencyKey" | "status" | "paidAt" | "cancelledAt" | "closedAt" | "refundedAt" | "expiresAt" | "metadata" | "cancelReason" | "refundReason" | "refundBy" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNo" | "userId" | "planCode" | "planNameSnapshot" | "productType" | "billingCycle" | "originalAmount" | "payableAmount" | "currency" | "paymentChannel" | "providerTradeNo" | "idempotencyKey" | "status" | "paidAt" | "cancelledAt" | "closedAt" | "refundedAt" | "expiresAt" | "metadata" | "cancelReason" | "refundReason" | "refundBy" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    aiCreditBucket?: boolean | Order$aiCreditBucketArgs<ExtArgs>
   }
   export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -41700,6 +43075,7 @@ export namespace Prisma {
     name: "Order"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
+      aiCreditBucket: Prisma.$AiCreditBucketPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -41707,6 +43083,7 @@ export namespace Prisma {
       userId: string
       planCode: string
       planNameSnapshot: string
+      productType: string
       billingCycle: string
       originalAmount: number
       payableAmount: number
@@ -42121,6 +43498,7 @@ export namespace Prisma {
   export interface Prisma__OrderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    aiCreditBucket<T extends Order$aiCreditBucketArgs<ExtArgs> = {}>(args?: Subset<T, Order$aiCreditBucketArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -42155,6 +43533,7 @@ export namespace Prisma {
     readonly userId: FieldRef<"Order", 'String'>
     readonly planCode: FieldRef<"Order", 'String'>
     readonly planNameSnapshot: FieldRef<"Order", 'String'>
+    readonly productType: FieldRef<"Order", 'String'>
     readonly billingCycle: FieldRef<"Order", 'String'>
     readonly originalAmount: FieldRef<"Order", 'Int'>
     readonly payableAmount: FieldRef<"Order", 'Int'>
@@ -42572,6 +43951,25 @@ export namespace Prisma {
      * Limit how many Orders to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Order.aiCreditBucket
+   */
+  export type Order$aiCreditBucketArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    where?: AiCreditBucketWhereInput
   }
 
   /**
@@ -55676,6 +57074,7 @@ export namespace Prisma {
     allowReport: 'allowReport',
     allowTransferToHuman: 'allowTransferToHuman',
     privacyNoticeText: 'privacyNoticeText',
+    quickActionsJson: 'quickActionsJson',
     providerMode: 'providerMode',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -55739,6 +57138,22 @@ export namespace Prisma {
   export type AiCreditLedgerScalarFieldEnum = (typeof AiCreditLedgerScalarFieldEnum)[keyof typeof AiCreditLedgerScalarFieldEnum]
 
 
+  export const AiCreditBucketScalarFieldEnum: {
+    id: 'id',
+    accountId: 'accountId',
+    sourceOrderId: 'sourceOrderId',
+    sourceType: 'sourceType',
+    grantedAmount: 'grantedAmount',
+    remainingAmount: 'remainingAmount',
+    status: 'status',
+    expiresAt: 'expiresAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AiCreditBucketScalarFieldEnum = (typeof AiCreditBucketScalarFieldEnum)[keyof typeof AiCreditBucketScalarFieldEnum]
+
+
   export const MembershipSubscriptionScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -55759,6 +57174,7 @@ export namespace Prisma {
     userId: 'userId',
     planCode: 'planCode',
     planNameSnapshot: 'planNameSnapshot',
+    productType: 'productType',
     billingCycle: 'billingCycle',
     originalAmount: 'originalAmount',
     payableAmount: 'payableAmount',
@@ -58392,6 +59808,7 @@ export namespace Prisma {
     allowReport?: BoolFilter<"AiServiceConfig"> | boolean
     allowTransferToHuman?: BoolFilter<"AiServiceConfig"> | boolean
     privacyNoticeText?: StringNullableFilter<"AiServiceConfig"> | string | null
+    quickActionsJson?: StringNullableFilter<"AiServiceConfig"> | string | null
     providerMode?: StringFilter<"AiServiceConfig"> | string
     createdAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
     updatedAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
@@ -58410,6 +59827,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrderInput | SortOrder
+    quickActionsJson?: SortOrderInput | SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -58431,6 +59849,7 @@ export namespace Prisma {
     allowReport?: BoolFilter<"AiServiceConfig"> | boolean
     allowTransferToHuman?: BoolFilter<"AiServiceConfig"> | boolean
     privacyNoticeText?: StringNullableFilter<"AiServiceConfig"> | string | null
+    quickActionsJson?: StringNullableFilter<"AiServiceConfig"> | string | null
     providerMode?: StringFilter<"AiServiceConfig"> | string
     createdAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
     updatedAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
@@ -58449,6 +59868,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrderInput | SortOrder
+    quickActionsJson?: SortOrderInput | SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -58472,6 +59892,7 @@ export namespace Prisma {
     allowReport?: BoolWithAggregatesFilter<"AiServiceConfig"> | boolean
     allowTransferToHuman?: BoolWithAggregatesFilter<"AiServiceConfig"> | boolean
     privacyNoticeText?: StringNullableWithAggregatesFilter<"AiServiceConfig"> | string | null
+    quickActionsJson?: StringNullableWithAggregatesFilter<"AiServiceConfig"> | string | null
     providerMode?: StringWithAggregatesFilter<"AiServiceConfig"> | string
     createdAt?: DateTimeWithAggregatesFilter<"AiServiceConfig"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"AiServiceConfig"> | Date | string
@@ -58627,6 +60048,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"AiCreditAccount"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     ledger?: AiCreditLedgerListRelationFilter
+    buckets?: AiCreditBucketListRelationFilter
   }
 
   export type AiCreditAccountOrderByWithRelationInput = {
@@ -58638,6 +60060,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
     ledger?: AiCreditLedgerOrderByRelationAggregateInput
+    buckets?: AiCreditBucketOrderByRelationAggregateInput
   }
 
   export type AiCreditAccountWhereUniqueInput = Prisma.AtLeast<{
@@ -58652,6 +60075,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"AiCreditAccount"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     ledger?: AiCreditLedgerListRelationFilter
+    buckets?: AiCreditBucketListRelationFilter
   }, "id" | "userId">
 
   export type AiCreditAccountOrderByWithAggregationInput = {
@@ -58767,6 +60191,91 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"AiCreditLedger"> | Date | string
   }
 
+  export type AiCreditBucketWhereInput = {
+    AND?: AiCreditBucketWhereInput | AiCreditBucketWhereInput[]
+    OR?: AiCreditBucketWhereInput[]
+    NOT?: AiCreditBucketWhereInput | AiCreditBucketWhereInput[]
+    id?: UuidFilter<"AiCreditBucket"> | string
+    accountId?: UuidFilter<"AiCreditBucket"> | string
+    sourceOrderId?: UuidNullableFilter<"AiCreditBucket"> | string | null
+    sourceType?: StringFilter<"AiCreditBucket"> | string
+    grantedAmount?: IntFilter<"AiCreditBucket"> | number
+    remainingAmount?: IntFilter<"AiCreditBucket"> | number
+    status?: StringFilter<"AiCreditBucket"> | string
+    expiresAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    createdAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    updatedAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    account?: XOR<AiCreditAccountScalarRelationFilter, AiCreditAccountWhereInput>
+    sourceOrder?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
+  }
+
+  export type AiCreditBucketOrderByWithRelationInput = {
+    id?: SortOrder
+    accountId?: SortOrder
+    sourceOrderId?: SortOrderInput | SortOrder
+    sourceType?: SortOrder
+    grantedAmount?: SortOrder
+    remainingAmount?: SortOrder
+    status?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    account?: AiCreditAccountOrderByWithRelationInput
+    sourceOrder?: OrderOrderByWithRelationInput
+  }
+
+  export type AiCreditBucketWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    sourceOrderId?: string
+    AND?: AiCreditBucketWhereInput | AiCreditBucketWhereInput[]
+    OR?: AiCreditBucketWhereInput[]
+    NOT?: AiCreditBucketWhereInput | AiCreditBucketWhereInput[]
+    accountId?: UuidFilter<"AiCreditBucket"> | string
+    sourceType?: StringFilter<"AiCreditBucket"> | string
+    grantedAmount?: IntFilter<"AiCreditBucket"> | number
+    remainingAmount?: IntFilter<"AiCreditBucket"> | number
+    status?: StringFilter<"AiCreditBucket"> | string
+    expiresAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    createdAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    updatedAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    account?: XOR<AiCreditAccountScalarRelationFilter, AiCreditAccountWhereInput>
+    sourceOrder?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
+  }, "id" | "sourceOrderId">
+
+  export type AiCreditBucketOrderByWithAggregationInput = {
+    id?: SortOrder
+    accountId?: SortOrder
+    sourceOrderId?: SortOrderInput | SortOrder
+    sourceType?: SortOrder
+    grantedAmount?: SortOrder
+    remainingAmount?: SortOrder
+    status?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AiCreditBucketCountOrderByAggregateInput
+    _avg?: AiCreditBucketAvgOrderByAggregateInput
+    _max?: AiCreditBucketMaxOrderByAggregateInput
+    _min?: AiCreditBucketMinOrderByAggregateInput
+    _sum?: AiCreditBucketSumOrderByAggregateInput
+  }
+
+  export type AiCreditBucketScalarWhereWithAggregatesInput = {
+    AND?: AiCreditBucketScalarWhereWithAggregatesInput | AiCreditBucketScalarWhereWithAggregatesInput[]
+    OR?: AiCreditBucketScalarWhereWithAggregatesInput[]
+    NOT?: AiCreditBucketScalarWhereWithAggregatesInput | AiCreditBucketScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"AiCreditBucket"> | string
+    accountId?: UuidWithAggregatesFilter<"AiCreditBucket"> | string
+    sourceOrderId?: UuidNullableWithAggregatesFilter<"AiCreditBucket"> | string | null
+    sourceType?: StringWithAggregatesFilter<"AiCreditBucket"> | string
+    grantedAmount?: IntWithAggregatesFilter<"AiCreditBucket"> | number
+    remainingAmount?: IntWithAggregatesFilter<"AiCreditBucket"> | number
+    status?: StringWithAggregatesFilter<"AiCreditBucket"> | string
+    expiresAt?: DateTimeWithAggregatesFilter<"AiCreditBucket"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"AiCreditBucket"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AiCreditBucket"> | Date | string
+  }
+
   export type MembershipSubscriptionWhereInput = {
     AND?: MembershipSubscriptionWhereInput | MembershipSubscriptionWhereInput[]
     OR?: MembershipSubscriptionWhereInput[]
@@ -58846,6 +60355,7 @@ export namespace Prisma {
     userId?: UuidFilter<"Order"> | string
     planCode?: StringFilter<"Order"> | string
     planNameSnapshot?: StringFilter<"Order"> | string
+    productType?: StringFilter<"Order"> | string
     billingCycle?: StringFilter<"Order"> | string
     originalAmount?: IntFilter<"Order"> | number
     payableAmount?: IntFilter<"Order"> | number
@@ -58866,6 +60376,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    aiCreditBucket?: XOR<AiCreditBucketNullableScalarRelationFilter, AiCreditBucketWhereInput> | null
   }
 
   export type OrderOrderByWithRelationInput = {
@@ -58874,6 +60385,7 @@ export namespace Prisma {
     userId?: SortOrder
     planCode?: SortOrder
     planNameSnapshot?: SortOrder
+    productType?: SortOrder
     billingCycle?: SortOrder
     originalAmount?: SortOrder
     payableAmount?: SortOrder
@@ -58894,6 +60406,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
+    aiCreditBucket?: AiCreditBucketOrderByWithRelationInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -58906,6 +60419,7 @@ export namespace Prisma {
     userId?: UuidFilter<"Order"> | string
     planCode?: StringFilter<"Order"> | string
     planNameSnapshot?: StringFilter<"Order"> | string
+    productType?: StringFilter<"Order"> | string
     billingCycle?: StringFilter<"Order"> | string
     originalAmount?: IntFilter<"Order"> | number
     payableAmount?: IntFilter<"Order"> | number
@@ -58925,6 +60439,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    aiCreditBucket?: XOR<AiCreditBucketNullableScalarRelationFilter, AiCreditBucketWhereInput> | null
   }, "id" | "orderNo" | "providerTradeNo">
 
   export type OrderOrderByWithAggregationInput = {
@@ -58933,6 +60448,7 @@ export namespace Prisma {
     userId?: SortOrder
     planCode?: SortOrder
     planNameSnapshot?: SortOrder
+    productType?: SortOrder
     billingCycle?: SortOrder
     originalAmount?: SortOrder
     payableAmount?: SortOrder
@@ -58968,6 +60484,7 @@ export namespace Prisma {
     userId?: UuidWithAggregatesFilter<"Order"> | string
     planCode?: StringWithAggregatesFilter<"Order"> | string
     planNameSnapshot?: StringWithAggregatesFilter<"Order"> | string
+    productType?: StringWithAggregatesFilter<"Order"> | string
     billingCycle?: StringWithAggregatesFilter<"Order"> | string
     originalAmount?: IntWithAggregatesFilter<"Order"> | number
     payableAmount?: IntWithAggregatesFilter<"Order"> | number
@@ -62634,6 +64151,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62652,6 +64170,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62668,6 +64187,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62686,6 +64206,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62703,6 +64224,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62719,6 +64241,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62736,6 +64259,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62895,6 +64419,7 @@ export namespace Prisma {
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutAiCreditAccountInput
     ledger?: AiCreditLedgerCreateNestedManyWithoutAccountInput
+    buckets?: AiCreditBucketCreateNestedManyWithoutAccountInput
   }
 
   export type AiCreditAccountUncheckedCreateInput = {
@@ -62905,6 +64430,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdAt?: Date | string
     ledger?: AiCreditLedgerUncheckedCreateNestedManyWithoutAccountInput
+    buckets?: AiCreditBucketUncheckedCreateNestedManyWithoutAccountInput
   }
 
   export type AiCreditAccountUpdateInput = {
@@ -62915,6 +64441,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutAiCreditAccountNestedInput
     ledger?: AiCreditLedgerUpdateManyWithoutAccountNestedInput
+    buckets?: AiCreditBucketUpdateManyWithoutAccountNestedInput
   }
 
   export type AiCreditAccountUncheckedUpdateInput = {
@@ -62925,6 +64452,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ledger?: AiCreditLedgerUncheckedUpdateManyWithoutAccountNestedInput
+    buckets?: AiCreditBucketUncheckedUpdateManyWithoutAccountNestedInput
   }
 
   export type AiCreditAccountCreateManyInput = {
@@ -63050,6 +64578,95 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AiCreditBucketCreateInput = {
+    id?: string
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    account: AiCreditAccountCreateNestedOneWithoutBucketsInput
+    sourceOrder?: OrderCreateNestedOneWithoutAiCreditBucketInput
+  }
+
+  export type AiCreditBucketUncheckedCreateInput = {
+    id?: string
+    accountId: string
+    sourceOrderId?: string | null
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiCreditBucketUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    account?: AiCreditAccountUpdateOneRequiredWithoutBucketsNestedInput
+    sourceOrder?: OrderUpdateOneWithoutAiCreditBucketNestedInput
+  }
+
+  export type AiCreditBucketUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    sourceOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCreditBucketCreateManyInput = {
+    id?: string
+    accountId: string
+    sourceOrderId?: string | null
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiCreditBucketUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCreditBucketUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    sourceOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type MembershipSubscriptionCreateInput = {
     id?: string
     planCode?: string
@@ -63131,6 +64748,7 @@ export namespace Prisma {
     orderNo: string
     planCode: string
     planNameSnapshot: string
+    productType?: string
     billingCycle: string
     originalAmount: number
     payableAmount: number
@@ -63151,6 +64769,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutOrdersInput
+    aiCreditBucket?: AiCreditBucketCreateNestedOneWithoutSourceOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
@@ -63159,6 +64778,7 @@ export namespace Prisma {
     userId: string
     planCode: string
     planNameSnapshot: string
+    productType?: string
     billingCycle: string
     originalAmount: number
     payableAmount: number
@@ -63178,6 +64798,7 @@ export namespace Prisma {
     refundBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    aiCreditBucket?: AiCreditBucketUncheckedCreateNestedOneWithoutSourceOrderInput
   }
 
   export type OrderUpdateInput = {
@@ -63185,6 +64806,7 @@ export namespace Prisma {
     orderNo?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
     billingCycle?: StringFieldUpdateOperationsInput | string
     originalAmount?: IntFieldUpdateOperationsInput | number
     payableAmount?: IntFieldUpdateOperationsInput | number
@@ -63205,6 +64827,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutOrdersNestedInput
+    aiCreditBucket?: AiCreditBucketUpdateOneWithoutSourceOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
@@ -63213,6 +64836,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
     billingCycle?: StringFieldUpdateOperationsInput | string
     originalAmount?: IntFieldUpdateOperationsInput | number
     payableAmount?: IntFieldUpdateOperationsInput | number
@@ -63232,6 +64856,7 @@ export namespace Prisma {
     refundBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiCreditBucket?: AiCreditBucketUncheckedUpdateOneWithoutSourceOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
@@ -63240,6 +64865,7 @@ export namespace Prisma {
     userId: string
     planCode: string
     planNameSnapshot: string
+    productType?: string
     billingCycle: string
     originalAmount: number
     payableAmount: number
@@ -63266,6 +64892,7 @@ export namespace Prisma {
     orderNo?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
     billingCycle?: StringFieldUpdateOperationsInput | string
     originalAmount?: IntFieldUpdateOperationsInput | number
     payableAmount?: IntFieldUpdateOperationsInput | number
@@ -63293,6 +64920,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
     billingCycle?: StringFieldUpdateOperationsInput | string
     originalAmount?: IntFieldUpdateOperationsInput | number
     payableAmount?: IntFieldUpdateOperationsInput | number
@@ -66181,6 +67809,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrder
+    quickActionsJson?: SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -66198,6 +67827,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrder
+    quickActionsJson?: SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -66215,6 +67845,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrder
+    quickActionsJson?: SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -66312,7 +67943,17 @@ export namespace Prisma {
     none?: AiCreditLedgerWhereInput
   }
 
+  export type AiCreditBucketListRelationFilter = {
+    every?: AiCreditBucketWhereInput
+    some?: AiCreditBucketWhereInput
+    none?: AiCreditBucketWhereInput
+  }
+
   export type AiCreditLedgerOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AiCreditBucketOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -66408,6 +68049,60 @@ export namespace Prisma {
     balanceAfter?: SortOrder
   }
 
+  export type OrderNullableScalarRelationFilter = {
+    is?: OrderWhereInput | null
+    isNot?: OrderWhereInput | null
+  }
+
+  export type AiCreditBucketCountOrderByAggregateInput = {
+    id?: SortOrder
+    accountId?: SortOrder
+    sourceOrderId?: SortOrder
+    sourceType?: SortOrder
+    grantedAmount?: SortOrder
+    remainingAmount?: SortOrder
+    status?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AiCreditBucketAvgOrderByAggregateInput = {
+    grantedAmount?: SortOrder
+    remainingAmount?: SortOrder
+  }
+
+  export type AiCreditBucketMaxOrderByAggregateInput = {
+    id?: SortOrder
+    accountId?: SortOrder
+    sourceOrderId?: SortOrder
+    sourceType?: SortOrder
+    grantedAmount?: SortOrder
+    remainingAmount?: SortOrder
+    status?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AiCreditBucketMinOrderByAggregateInput = {
+    id?: SortOrder
+    accountId?: SortOrder
+    sourceOrderId?: SortOrder
+    sourceType?: SortOrder
+    grantedAmount?: SortOrder
+    remainingAmount?: SortOrder
+    status?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AiCreditBucketSumOrderByAggregateInput = {
+    grantedAmount?: SortOrder
+    remainingAmount?: SortOrder
+  }
+
   export type MembershipSubscriptionCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -66441,12 +68136,18 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type AiCreditBucketNullableScalarRelationFilter = {
+    is?: AiCreditBucketWhereInput | null
+    isNot?: AiCreditBucketWhereInput | null
+  }
+
   export type OrderCountOrderByAggregateInput = {
     id?: SortOrder
     orderNo?: SortOrder
     userId?: SortOrder
     planCode?: SortOrder
     planNameSnapshot?: SortOrder
+    productType?: SortOrder
     billingCycle?: SortOrder
     originalAmount?: SortOrder
     payableAmount?: SortOrder
@@ -66479,6 +68180,7 @@ export namespace Prisma {
     userId?: SortOrder
     planCode?: SortOrder
     planNameSnapshot?: SortOrder
+    productType?: SortOrder
     billingCycle?: SortOrder
     originalAmount?: SortOrder
     payableAmount?: SortOrder
@@ -66505,6 +68207,7 @@ export namespace Prisma {
     userId?: SortOrder
     planCode?: SortOrder
     planNameSnapshot?: SortOrder
+    productType?: SortOrder
     billingCycle?: SortOrder
     originalAmount?: SortOrder
     payableAmount?: SortOrder
@@ -68638,11 +70341,25 @@ export namespace Prisma {
     connect?: AiCreditLedgerWhereUniqueInput | AiCreditLedgerWhereUniqueInput[]
   }
 
+  export type AiCreditBucketCreateNestedManyWithoutAccountInput = {
+    create?: XOR<AiCreditBucketCreateWithoutAccountInput, AiCreditBucketUncheckedCreateWithoutAccountInput> | AiCreditBucketCreateWithoutAccountInput[] | AiCreditBucketUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutAccountInput | AiCreditBucketCreateOrConnectWithoutAccountInput[]
+    createMany?: AiCreditBucketCreateManyAccountInputEnvelope
+    connect?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+  }
+
   export type AiCreditLedgerUncheckedCreateNestedManyWithoutAccountInput = {
     create?: XOR<AiCreditLedgerCreateWithoutAccountInput, AiCreditLedgerUncheckedCreateWithoutAccountInput> | AiCreditLedgerCreateWithoutAccountInput[] | AiCreditLedgerUncheckedCreateWithoutAccountInput[]
     connectOrCreate?: AiCreditLedgerCreateOrConnectWithoutAccountInput | AiCreditLedgerCreateOrConnectWithoutAccountInput[]
     createMany?: AiCreditLedgerCreateManyAccountInputEnvelope
     connect?: AiCreditLedgerWhereUniqueInput | AiCreditLedgerWhereUniqueInput[]
+  }
+
+  export type AiCreditBucketUncheckedCreateNestedManyWithoutAccountInput = {
+    create?: XOR<AiCreditBucketCreateWithoutAccountInput, AiCreditBucketUncheckedCreateWithoutAccountInput> | AiCreditBucketCreateWithoutAccountInput[] | AiCreditBucketUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutAccountInput | AiCreditBucketCreateOrConnectWithoutAccountInput[]
+    createMany?: AiCreditBucketCreateManyAccountInputEnvelope
+    connect?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
   }
 
   export type UserUpdateOneRequiredWithoutAiCreditAccountNestedInput = {
@@ -68667,6 +70384,20 @@ export namespace Prisma {
     deleteMany?: AiCreditLedgerScalarWhereInput | AiCreditLedgerScalarWhereInput[]
   }
 
+  export type AiCreditBucketUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<AiCreditBucketCreateWithoutAccountInput, AiCreditBucketUncheckedCreateWithoutAccountInput> | AiCreditBucketCreateWithoutAccountInput[] | AiCreditBucketUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutAccountInput | AiCreditBucketCreateOrConnectWithoutAccountInput[]
+    upsert?: AiCreditBucketUpsertWithWhereUniqueWithoutAccountInput | AiCreditBucketUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: AiCreditBucketCreateManyAccountInputEnvelope
+    set?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    disconnect?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    delete?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    connect?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    update?: AiCreditBucketUpdateWithWhereUniqueWithoutAccountInput | AiCreditBucketUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: AiCreditBucketUpdateManyWithWhereWithoutAccountInput | AiCreditBucketUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: AiCreditBucketScalarWhereInput | AiCreditBucketScalarWhereInput[]
+  }
+
   export type AiCreditLedgerUncheckedUpdateManyWithoutAccountNestedInput = {
     create?: XOR<AiCreditLedgerCreateWithoutAccountInput, AiCreditLedgerUncheckedCreateWithoutAccountInput> | AiCreditLedgerCreateWithoutAccountInput[] | AiCreditLedgerUncheckedCreateWithoutAccountInput[]
     connectOrCreate?: AiCreditLedgerCreateOrConnectWithoutAccountInput | AiCreditLedgerCreateOrConnectWithoutAccountInput[]
@@ -68681,6 +70412,20 @@ export namespace Prisma {
     deleteMany?: AiCreditLedgerScalarWhereInput | AiCreditLedgerScalarWhereInput[]
   }
 
+  export type AiCreditBucketUncheckedUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<AiCreditBucketCreateWithoutAccountInput, AiCreditBucketUncheckedCreateWithoutAccountInput> | AiCreditBucketCreateWithoutAccountInput[] | AiCreditBucketUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutAccountInput | AiCreditBucketCreateOrConnectWithoutAccountInput[]
+    upsert?: AiCreditBucketUpsertWithWhereUniqueWithoutAccountInput | AiCreditBucketUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: AiCreditBucketCreateManyAccountInputEnvelope
+    set?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    disconnect?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    delete?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    connect?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    update?: AiCreditBucketUpdateWithWhereUniqueWithoutAccountInput | AiCreditBucketUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: AiCreditBucketUpdateManyWithWhereWithoutAccountInput | AiCreditBucketUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: AiCreditBucketScalarWhereInput | AiCreditBucketScalarWhereInput[]
+  }
+
   export type AiCreditAccountCreateNestedOneWithoutLedgerInput = {
     create?: XOR<AiCreditAccountCreateWithoutLedgerInput, AiCreditAccountUncheckedCreateWithoutLedgerInput>
     connectOrCreate?: AiCreditAccountCreateOrConnectWithoutLedgerInput
@@ -68693,6 +70438,36 @@ export namespace Prisma {
     upsert?: AiCreditAccountUpsertWithoutLedgerInput
     connect?: AiCreditAccountWhereUniqueInput
     update?: XOR<XOR<AiCreditAccountUpdateToOneWithWhereWithoutLedgerInput, AiCreditAccountUpdateWithoutLedgerInput>, AiCreditAccountUncheckedUpdateWithoutLedgerInput>
+  }
+
+  export type AiCreditAccountCreateNestedOneWithoutBucketsInput = {
+    create?: XOR<AiCreditAccountCreateWithoutBucketsInput, AiCreditAccountUncheckedCreateWithoutBucketsInput>
+    connectOrCreate?: AiCreditAccountCreateOrConnectWithoutBucketsInput
+    connect?: AiCreditAccountWhereUniqueInput
+  }
+
+  export type OrderCreateNestedOneWithoutAiCreditBucketInput = {
+    create?: XOR<OrderCreateWithoutAiCreditBucketInput, OrderUncheckedCreateWithoutAiCreditBucketInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutAiCreditBucketInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type AiCreditAccountUpdateOneRequiredWithoutBucketsNestedInput = {
+    create?: XOR<AiCreditAccountCreateWithoutBucketsInput, AiCreditAccountUncheckedCreateWithoutBucketsInput>
+    connectOrCreate?: AiCreditAccountCreateOrConnectWithoutBucketsInput
+    upsert?: AiCreditAccountUpsertWithoutBucketsInput
+    connect?: AiCreditAccountWhereUniqueInput
+    update?: XOR<XOR<AiCreditAccountUpdateToOneWithWhereWithoutBucketsInput, AiCreditAccountUpdateWithoutBucketsInput>, AiCreditAccountUncheckedUpdateWithoutBucketsInput>
+  }
+
+  export type OrderUpdateOneWithoutAiCreditBucketNestedInput = {
+    create?: XOR<OrderCreateWithoutAiCreditBucketInput, OrderUncheckedCreateWithoutAiCreditBucketInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutAiCreditBucketInput
+    upsert?: OrderUpsertWithoutAiCreditBucketInput
+    disconnect?: OrderWhereInput | boolean
+    delete?: OrderWhereInput | boolean
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutAiCreditBucketInput, OrderUpdateWithoutAiCreditBucketInput>, OrderUncheckedUpdateWithoutAiCreditBucketInput>
   }
 
   export type UserCreateNestedOneWithoutMembershipSubscriptionInput = {
@@ -68715,12 +70490,44 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type AiCreditBucketCreateNestedOneWithoutSourceOrderInput = {
+    create?: XOR<AiCreditBucketCreateWithoutSourceOrderInput, AiCreditBucketUncheckedCreateWithoutSourceOrderInput>
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutSourceOrderInput
+    connect?: AiCreditBucketWhereUniqueInput
+  }
+
+  export type AiCreditBucketUncheckedCreateNestedOneWithoutSourceOrderInput = {
+    create?: XOR<AiCreditBucketCreateWithoutSourceOrderInput, AiCreditBucketUncheckedCreateWithoutSourceOrderInput>
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutSourceOrderInput
+    connect?: AiCreditBucketWhereUniqueInput
+  }
+
   export type UserUpdateOneRequiredWithoutOrdersNestedInput = {
     create?: XOR<UserCreateWithoutOrdersInput, UserUncheckedCreateWithoutOrdersInput>
     connectOrCreate?: UserCreateOrConnectWithoutOrdersInput
     upsert?: UserUpsertWithoutOrdersInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOrdersInput, UserUpdateWithoutOrdersInput>, UserUncheckedUpdateWithoutOrdersInput>
+  }
+
+  export type AiCreditBucketUpdateOneWithoutSourceOrderNestedInput = {
+    create?: XOR<AiCreditBucketCreateWithoutSourceOrderInput, AiCreditBucketUncheckedCreateWithoutSourceOrderInput>
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutSourceOrderInput
+    upsert?: AiCreditBucketUpsertWithoutSourceOrderInput
+    disconnect?: AiCreditBucketWhereInput | boolean
+    delete?: AiCreditBucketWhereInput | boolean
+    connect?: AiCreditBucketWhereUniqueInput
+    update?: XOR<XOR<AiCreditBucketUpdateToOneWithWhereWithoutSourceOrderInput, AiCreditBucketUpdateWithoutSourceOrderInput>, AiCreditBucketUncheckedUpdateWithoutSourceOrderInput>
+  }
+
+  export type AiCreditBucketUncheckedUpdateOneWithoutSourceOrderNestedInput = {
+    create?: XOR<AiCreditBucketCreateWithoutSourceOrderInput, AiCreditBucketUncheckedCreateWithoutSourceOrderInput>
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutSourceOrderInput
+    upsert?: AiCreditBucketUpsertWithoutSourceOrderInput
+    disconnect?: AiCreditBucketWhereInput | boolean
+    delete?: AiCreditBucketWhereInput | boolean
+    connect?: AiCreditBucketWhereUniqueInput
+    update?: XOR<XOR<AiCreditBucketUpdateToOneWithWhereWithoutSourceOrderInput, AiCreditBucketUpdateWithoutSourceOrderInput>, AiCreditBucketUncheckedUpdateWithoutSourceOrderInput>
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -69669,6 +71476,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -69685,6 +71493,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -69702,6 +71511,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdAt?: Date | string
     ledger?: AiCreditLedgerCreateNestedManyWithoutAccountInput
+    buckets?: AiCreditBucketCreateNestedManyWithoutAccountInput
   }
 
   export type AiCreditAccountUncheckedCreateWithoutUserInput = {
@@ -69711,6 +71521,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdAt?: Date | string
     ledger?: AiCreditLedgerUncheckedCreateNestedManyWithoutAccountInput
+    buckets?: AiCreditBucketUncheckedCreateNestedManyWithoutAccountInput
   }
 
   export type AiCreditAccountCreateOrConnectWithoutUserInput = {
@@ -69748,6 +71559,7 @@ export namespace Prisma {
     orderNo: string
     planCode: string
     planNameSnapshot: string
+    productType?: string
     billingCycle: string
     originalAmount: number
     payableAmount: number
@@ -69767,6 +71579,7 @@ export namespace Prisma {
     refundBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    aiCreditBucket?: AiCreditBucketCreateNestedOneWithoutSourceOrderInput
   }
 
   export type OrderUncheckedCreateWithoutUserInput = {
@@ -69774,6 +71587,7 @@ export namespace Prisma {
     orderNo: string
     planCode: string
     planNameSnapshot: string
+    productType?: string
     billingCycle: string
     originalAmount: number
     payableAmount: number
@@ -69793,6 +71607,7 @@ export namespace Prisma {
     refundBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    aiCreditBucket?: AiCreditBucketUncheckedCreateNestedOneWithoutSourceOrderInput
   }
 
   export type OrderCreateOrConnectWithoutUserInput = {
@@ -70330,6 +72145,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70346,6 +72162,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70369,6 +72186,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ledger?: AiCreditLedgerUpdateManyWithoutAccountNestedInput
+    buckets?: AiCreditBucketUpdateManyWithoutAccountNestedInput
   }
 
   export type AiCreditAccountUncheckedUpdateWithoutUserInput = {
@@ -70378,6 +72196,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ledger?: AiCreditLedgerUncheckedUpdateManyWithoutAccountNestedInput
+    buckets?: AiCreditBucketUncheckedUpdateManyWithoutAccountNestedInput
   }
 
   export type MembershipSubscriptionUpsertWithoutUserInput = {
@@ -70436,6 +72255,7 @@ export namespace Prisma {
     userId?: UuidFilter<"Order"> | string
     planCode?: StringFilter<"Order"> | string
     planNameSnapshot?: StringFilter<"Order"> | string
+    productType?: StringFilter<"Order"> | string
     billingCycle?: StringFilter<"Order"> | string
     originalAmount?: IntFilter<"Order"> | number
     payableAmount?: IntFilter<"Order"> | number
@@ -74537,6 +76357,40 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AiCreditBucketCreateWithoutAccountInput = {
+    id?: string
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sourceOrder?: OrderCreateNestedOneWithoutAiCreditBucketInput
+  }
+
+  export type AiCreditBucketUncheckedCreateWithoutAccountInput = {
+    id?: string
+    sourceOrderId?: string | null
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiCreditBucketCreateOrConnectWithoutAccountInput = {
+    where: AiCreditBucketWhereUniqueInput
+    create: XOR<AiCreditBucketCreateWithoutAccountInput, AiCreditBucketUncheckedCreateWithoutAccountInput>
+  }
+
+  export type AiCreditBucketCreateManyAccountInputEnvelope = {
+    data: AiCreditBucketCreateManyAccountInput | AiCreditBucketCreateManyAccountInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutAiCreditAccountInput = {
     update: XOR<UserUpdateWithoutAiCreditAccountInput, UserUncheckedUpdateWithoutAiCreditAccountInput>
     create: XOR<UserCreateWithoutAiCreditAccountInput, UserUncheckedCreateWithoutAiCreditAccountInput>
@@ -74649,6 +76503,38 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"AiCreditLedger"> | Date | string
   }
 
+  export type AiCreditBucketUpsertWithWhereUniqueWithoutAccountInput = {
+    where: AiCreditBucketWhereUniqueInput
+    update: XOR<AiCreditBucketUpdateWithoutAccountInput, AiCreditBucketUncheckedUpdateWithoutAccountInput>
+    create: XOR<AiCreditBucketCreateWithoutAccountInput, AiCreditBucketUncheckedCreateWithoutAccountInput>
+  }
+
+  export type AiCreditBucketUpdateWithWhereUniqueWithoutAccountInput = {
+    where: AiCreditBucketWhereUniqueInput
+    data: XOR<AiCreditBucketUpdateWithoutAccountInput, AiCreditBucketUncheckedUpdateWithoutAccountInput>
+  }
+
+  export type AiCreditBucketUpdateManyWithWhereWithoutAccountInput = {
+    where: AiCreditBucketScalarWhereInput
+    data: XOR<AiCreditBucketUpdateManyMutationInput, AiCreditBucketUncheckedUpdateManyWithoutAccountInput>
+  }
+
+  export type AiCreditBucketScalarWhereInput = {
+    AND?: AiCreditBucketScalarWhereInput | AiCreditBucketScalarWhereInput[]
+    OR?: AiCreditBucketScalarWhereInput[]
+    NOT?: AiCreditBucketScalarWhereInput | AiCreditBucketScalarWhereInput[]
+    id?: UuidFilter<"AiCreditBucket"> | string
+    accountId?: UuidFilter<"AiCreditBucket"> | string
+    sourceOrderId?: UuidNullableFilter<"AiCreditBucket"> | string | null
+    sourceType?: StringFilter<"AiCreditBucket"> | string
+    grantedAmount?: IntFilter<"AiCreditBucket"> | number
+    remainingAmount?: IntFilter<"AiCreditBucket"> | number
+    status?: StringFilter<"AiCreditBucket"> | string
+    expiresAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    createdAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    updatedAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+  }
+
   export type AiCreditAccountCreateWithoutLedgerInput = {
     id?: string
     balance?: number
@@ -74656,6 +76542,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutAiCreditAccountInput
+    buckets?: AiCreditBucketCreateNestedManyWithoutAccountInput
   }
 
   export type AiCreditAccountUncheckedCreateWithoutLedgerInput = {
@@ -74665,6 +76552,7 @@ export namespace Prisma {
     version?: number
     updatedAt?: Date | string
     createdAt?: Date | string
+    buckets?: AiCreditBucketUncheckedCreateNestedManyWithoutAccountInput
   }
 
   export type AiCreditAccountCreateOrConnectWithoutLedgerInput = {
@@ -74690,6 +76578,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutAiCreditAccountNestedInput
+    buckets?: AiCreditBucketUpdateManyWithoutAccountNestedInput
   }
 
   export type AiCreditAccountUncheckedUpdateWithoutLedgerInput = {
@@ -74699,6 +76588,191 @@ export namespace Prisma {
     version?: IntFieldUpdateOperationsInput | number
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    buckets?: AiCreditBucketUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type AiCreditAccountCreateWithoutBucketsInput = {
+    id?: string
+    balance?: number
+    version?: number
+    updatedAt?: Date | string
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutAiCreditAccountInput
+    ledger?: AiCreditLedgerCreateNestedManyWithoutAccountInput
+  }
+
+  export type AiCreditAccountUncheckedCreateWithoutBucketsInput = {
+    id?: string
+    userId: string
+    balance?: number
+    version?: number
+    updatedAt?: Date | string
+    createdAt?: Date | string
+    ledger?: AiCreditLedgerUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type AiCreditAccountCreateOrConnectWithoutBucketsInput = {
+    where: AiCreditAccountWhereUniqueInput
+    create: XOR<AiCreditAccountCreateWithoutBucketsInput, AiCreditAccountUncheckedCreateWithoutBucketsInput>
+  }
+
+  export type OrderCreateWithoutAiCreditBucketInput = {
+    id?: string
+    orderNo: string
+    planCode: string
+    planNameSnapshot: string
+    productType?: string
+    billingCycle: string
+    originalAmount: number
+    payableAmount: number
+    currency?: string
+    paymentChannel?: string | null
+    providerTradeNo?: string | null
+    idempotencyKey?: string | null
+    status?: string
+    paidAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    closedAt?: Date | string | null
+    refundedAt?: Date | string | null
+    expiresAt?: Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    cancelReason?: string | null
+    refundReason?: string | null
+    refundBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutOrdersInput
+  }
+
+  export type OrderUncheckedCreateWithoutAiCreditBucketInput = {
+    id?: string
+    orderNo: string
+    userId: string
+    planCode: string
+    planNameSnapshot: string
+    productType?: string
+    billingCycle: string
+    originalAmount: number
+    payableAmount: number
+    currency?: string
+    paymentChannel?: string | null
+    providerTradeNo?: string | null
+    idempotencyKey?: string | null
+    status?: string
+    paidAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    closedAt?: Date | string | null
+    refundedAt?: Date | string | null
+    expiresAt?: Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    cancelReason?: string | null
+    refundReason?: string | null
+    refundBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderCreateOrConnectWithoutAiCreditBucketInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutAiCreditBucketInput, OrderUncheckedCreateWithoutAiCreditBucketInput>
+  }
+
+  export type AiCreditAccountUpsertWithoutBucketsInput = {
+    update: XOR<AiCreditAccountUpdateWithoutBucketsInput, AiCreditAccountUncheckedUpdateWithoutBucketsInput>
+    create: XOR<AiCreditAccountCreateWithoutBucketsInput, AiCreditAccountUncheckedCreateWithoutBucketsInput>
+    where?: AiCreditAccountWhereInput
+  }
+
+  export type AiCreditAccountUpdateToOneWithWhereWithoutBucketsInput = {
+    where?: AiCreditAccountWhereInput
+    data: XOR<AiCreditAccountUpdateWithoutBucketsInput, AiCreditAccountUncheckedUpdateWithoutBucketsInput>
+  }
+
+  export type AiCreditAccountUpdateWithoutBucketsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    balance?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutAiCreditAccountNestedInput
+    ledger?: AiCreditLedgerUpdateManyWithoutAccountNestedInput
+  }
+
+  export type AiCreditAccountUncheckedUpdateWithoutBucketsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    balance?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ledger?: AiCreditLedgerUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type OrderUpsertWithoutAiCreditBucketInput = {
+    update: XOR<OrderUpdateWithoutAiCreditBucketInput, OrderUncheckedUpdateWithoutAiCreditBucketInput>
+    create: XOR<OrderCreateWithoutAiCreditBucketInput, OrderUncheckedCreateWithoutAiCreditBucketInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutAiCreditBucketInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutAiCreditBucketInput, OrderUncheckedUpdateWithoutAiCreditBucketInput>
+  }
+
+  export type OrderUpdateWithoutAiCreditBucketInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderNo?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
+    billingCycle?: StringFieldUpdateOperationsInput | string
+    originalAmount?: IntFieldUpdateOperationsInput | number
+    payableAmount?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTradeNo?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    refundReason?: NullableStringFieldUpdateOperationsInput | string | null
+    refundBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutOrdersNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutAiCreditBucketInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderNo?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
+    billingCycle?: StringFieldUpdateOperationsInput | string
+    originalAmount?: IntFieldUpdateOperationsInput | number
+    payableAmount?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTradeNo?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    refundReason?: NullableStringFieldUpdateOperationsInput | string | null
+    refundBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserCreateWithoutMembershipSubscriptionInput = {
@@ -74926,6 +77000,35 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutOrdersInput, UserUncheckedCreateWithoutOrdersInput>
   }
 
+  export type AiCreditBucketCreateWithoutSourceOrderInput = {
+    id?: string
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    account: AiCreditAccountCreateNestedOneWithoutBucketsInput
+  }
+
+  export type AiCreditBucketUncheckedCreateWithoutSourceOrderInput = {
+    id?: string
+    accountId: string
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiCreditBucketCreateOrConnectWithoutSourceOrderInput = {
+    where: AiCreditBucketWhereUniqueInput
+    create: XOR<AiCreditBucketCreateWithoutSourceOrderInput, AiCreditBucketUncheckedCreateWithoutSourceOrderInput>
+  }
+
   export type UserUpsertWithoutOrdersInput = {
     update: XOR<UserUpdateWithoutOrdersInput, UserUncheckedUpdateWithoutOrdersInput>
     create: XOR<UserCreateWithoutOrdersInput, UserUncheckedCreateWithoutOrdersInput>
@@ -75003,6 +77106,41 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type AiCreditBucketUpsertWithoutSourceOrderInput = {
+    update: XOR<AiCreditBucketUpdateWithoutSourceOrderInput, AiCreditBucketUncheckedUpdateWithoutSourceOrderInput>
+    create: XOR<AiCreditBucketCreateWithoutSourceOrderInput, AiCreditBucketUncheckedCreateWithoutSourceOrderInput>
+    where?: AiCreditBucketWhereInput
+  }
+
+  export type AiCreditBucketUpdateToOneWithWhereWithoutSourceOrderInput = {
+    where?: AiCreditBucketWhereInput
+    data: XOR<AiCreditBucketUpdateWithoutSourceOrderInput, AiCreditBucketUncheckedUpdateWithoutSourceOrderInput>
+  }
+
+  export type AiCreditBucketUpdateWithoutSourceOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    account?: AiCreditAccountUpdateOneRequiredWithoutBucketsNestedInput
+  }
+
+  export type AiCreditBucketUncheckedUpdateWithoutSourceOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserCreateWithoutOwnedWorkspacesInput = {
@@ -76106,6 +78244,7 @@ export namespace Prisma {
     orderNo: string
     planCode: string
     planNameSnapshot: string
+    productType?: string
     billingCycle: string
     originalAmount: number
     payableAmount: number
@@ -76489,6 +78628,7 @@ export namespace Prisma {
     orderNo?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
     billingCycle?: StringFieldUpdateOperationsInput | string
     originalAmount?: IntFieldUpdateOperationsInput | number
     payableAmount?: IntFieldUpdateOperationsInput | number
@@ -76508,6 +78648,7 @@ export namespace Prisma {
     refundBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiCreditBucket?: AiCreditBucketUpdateOneWithoutSourceOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutUserInput = {
@@ -76515,6 +78656,7 @@ export namespace Prisma {
     orderNo?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
     billingCycle?: StringFieldUpdateOperationsInput | string
     originalAmount?: IntFieldUpdateOperationsInput | number
     payableAmount?: IntFieldUpdateOperationsInput | number
@@ -76534,6 +78676,7 @@ export namespace Prisma {
     refundBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiCreditBucket?: AiCreditBucketUncheckedUpdateOneWithoutSourceOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutUserInput = {
@@ -76541,6 +78684,7 @@ export namespace Prisma {
     orderNo?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
     billingCycle?: StringFieldUpdateOperationsInput | string
     originalAmount?: IntFieldUpdateOperationsInput | number
     payableAmount?: IntFieldUpdateOperationsInput | number
@@ -77304,6 +79448,18 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type AiCreditBucketCreateManyAccountInput = {
+    id?: string
+    sourceOrderId?: string | null
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type AiCreditLedgerUpdateWithoutAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     entryType?: StringFieldUpdateOperationsInput | string
@@ -77341,6 +79497,42 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     reason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCreditBucketUpdateWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sourceOrder?: OrderUpdateOneWithoutAiCreditBucketNestedInput
+  }
+
+  export type AiCreditBucketUncheckedUpdateWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourceOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCreditBucketUncheckedUpdateManyWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourceOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type WorkspaceMemberCreateManyWorkspaceInput = {

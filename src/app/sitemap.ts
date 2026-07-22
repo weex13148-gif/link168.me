@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { db } from "@/lib/db";
+import { db, isDatabaseConfigured } from "@/lib/db";
 
 const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://link168.me").replace(/\/$/, "");
 
@@ -19,6 +19,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 公开主页
   let publicProfiles: MetadataRoute.Sitemap = [];
+  if (!isDatabaseConfigured) {
+    return staticRoutes;
+  }
   try {
     const profiles = await db.profile.findMany({
       where: { isPublic: true },

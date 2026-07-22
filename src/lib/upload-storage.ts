@@ -32,31 +32,26 @@ const EXTENSION_TO_MIME: Record<string, string> = {
 const AVATAR_FILE_PATTERN = /^[a-zA-Z0-9_-]+\.(?:jpg|jpeg|png|webp|gif)$/i;
 const LINK_ICON_FILE_PATTERN = /^[a-zA-Z0-9_-]+\.(?:jpg|jpeg|png|webp)$/i;
 
-function projectRootFromCwd() {
-  const cwd = /*turbopackIgnore: true*/ process.cwd();
-  const marker = `${path.sep}.next${path.sep}standalone`;
-  const markerIndex = cwd.lastIndexOf(marker);
-  return markerIndex >= 0 ? cwd.slice(0, markerIndex) : cwd;
-}
-
 export function getUploadRoot() {
   const configured = process.env.LINK168_UPLOAD_ROOT?.trim() || process.env.UPLOAD_ROOT?.trim();
   if (configured) {
-    return path.isAbsolute(configured) ? configured : path.resolve(projectRootFromCwd(), configured);
+    return path.isAbsolute(configured)
+      ? path.normalize(configured)
+      : path.join(/* turbopackIgnore: true */ process.cwd(), configured);
   }
-  return path.join(projectRootFromCwd(), "storage", "uploads");
+  return path.join(/* turbopackIgnore: true */ process.cwd(), "storage", "uploads");
 }
 
 export function getAvatarUploadDir() {
-  return path.join(getUploadRoot(), "avatars");
+  return path.join(/* turbopackIgnore: true */ getUploadRoot(), "avatars");
 }
 
 export function getLinkIconUploadDir() {
-  return path.join(getUploadRoot(), "links", "icons");
+  return path.join(/* turbopackIgnore: true */ getUploadRoot(), "links", "icons");
 }
 
 export function getMediaUploadDir(mediaType: "cover" | "popup" | "carousel" | "background") {
-  return path.join(getUploadRoot(), "media", mediaType);
+  return path.join(/* turbopackIgnore: true */ getUploadRoot(), "media", mediaType);
 }
 
 export function isSafeAvatarFileName(fileName: string) {
@@ -89,10 +84,10 @@ export function getLinkIconContentType(fileName: string) {
 }
 
 export function getLegacyAvatarDirs() {
-  const root = projectRootFromCwd();
+  const root = /* turbopackIgnore: true */ process.cwd();
   return [
-    path.join(root, "public", "uploads", "avatars"),
-    path.join(root, ".next", "standalone", "public", "uploads", "avatars"),
+    path.join(/* turbopackIgnore: true */ root, "public", "uploads", "avatars"),
+    path.join(/* turbopackIgnore: true */ root, ".next", "standalone", "public", "uploads", "avatars"),
   ];
 }
 
@@ -177,8 +172,8 @@ export function validateUploadPath(baseDir: string, fileName: string): { valid: 
     return { valid: false, fullPath: "", reason: "文件名格式不安全" };
   }
 
-  const resolvedBase = path.resolve(baseDir);
-  const fullPath = path.resolve(path.join(resolvedBase, safeFileName));
+  const resolvedBase = path.resolve(/* turbopackIgnore: true */ baseDir);
+  const fullPath = path.resolve(/* turbopackIgnore: true */ path.join(/* turbopackIgnore: true */ resolvedBase, safeFileName));
 
   if (!fullPath.startsWith(resolvedBase)) {
     return { valid: false, fullPath: "", reason: "路径穿越检测" };
@@ -189,7 +184,7 @@ export function validateUploadPath(baseDir: string, fileName: string): { valid: 
 
 export function validateUploadPathWithDate(baseDir: string, fileName: string): { valid: boolean; fullPath: string; reason?: string } {
   const dateSubdir = getDateSubdirectory();
-  const targetDir = path.join(baseDir, dateSubdir);
+  const targetDir = path.join(/* turbopackIgnore: true */ baseDir, dateSubdir);
   return validateUploadPath(targetDir, fileName);
 }
 

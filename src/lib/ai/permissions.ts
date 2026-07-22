@@ -4,6 +4,12 @@ import { getUserEntitlements } from "@/lib/billing/entitlements";
 import type { PlanCode } from "@/lib/billing/plans";
 import { bindIdempotencyKey } from "@/lib/ai/credits";
 import type { Prisma } from "@/generated/prisma/client";
+import {
+  allocateCreditBuckets,
+  expireCreditBuckets,
+  readCreditBucketAllocations,
+  restoreCreditBucketAllocations,
+} from "@/lib/billing/ai-credit-buckets";
 
 // ============================================================================
 // AI 权限与额度服务（单一权威来源：src/lib/billing/plans.ts + entitlements）
@@ -153,6 +159,7 @@ export async function getAiQuota(userId: string): Promise<{
   canCall: boolean;
   reason?: string;
 }> {
+  await expireCreditBuckets(userId);
   const [accessInfo, entitlements, account] = await Promise.all([
     getAiAccessLevel(userId),
     getUserEntitlements(userId),
@@ -290,13 +297,15 @@ export async function consumeCredit(
         };
       }
 
-      // 扣减 Credit 余额（如果是 credit 来源）
+      // 扣减 Credit 余额（如果是 credit 来源），有效期较早的点数包优先。
       let newBalance = current.balance;
+      let creditBucketAllocations: Array<{ bucketId: string; amount: number }> = [];
       if (source === "credit") {
         newBalance = current.balance - amount;
         if (newBalance < 0) {
           return { success: false, reason: "Credit 余额不足" };
         }
+        creditBucketAllocations = await allocateCreditBuckets(tx, account.id, amount);
         await tx.aiCreditAccount.update({
           where: { id: account.id, version: current.version },
           data: { balance: newBalance, version: { increment: 1 } },
@@ -316,6 +325,7 @@ export async function consumeCredit(
           metadata: {
             ...(metadata ?? {}),
             creditSource: source,
+            creditBucketAllocations,
             operationKey,
           } as unknown as Prisma.InputJsonValue,
         },
@@ -430,6 +440,10 @@ export async function refundConsumedCredit(params: {
     const refundAmount = Math.abs(consume.amount);
     let balanceAfter = current.balance;
     if (source === "credit") {
+      const allocations = readCreditBucketAllocations(consume.metadata);
+      if (allocations.length > 0) {
+        await restoreCreditBucketAllocations(tx, account.id, allocations);
+      }
       balanceAfter = current.balance + refundAmount;
       await tx.aiCreditAccount.update({
         where: { id: account.id, version: current.version },

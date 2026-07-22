@@ -3,13 +3,13 @@ import { Prisma } from "@/generated/prisma/client";
 
 const PRICES: Record<string, { monthly: number | null; yearly: number | null }> = {
   free: { monthly: 0, yearly: 0 },
-  plus: { monthly: null, yearly: 18800 },
-  member_basic: { monthly: null, yearly: 18800 },
-  member_plus: { monthly: null, yearly: 18800 },
-  pro: { monthly: null, yearly: 38800 },
-  enterprise: { monthly: null, yearly: 128000 },
-  enterprise_pro: { monthly: null, yearly: 268000 },
-  enterprise_pro_plus: { monthly: null, yearly: 268000 },
+  plus: { monthly: 6900, yearly: 59900 },
+  member_basic: { monthly: 6900, yearly: 59900 },
+  member_plus: { monthly: 6900, yearly: 59900 },
+  pro: { monthly: 13900, yearly: 99900 },
+  enterprise: { monthly: null, yearly: 880000 },
+  enterprise_pro: { monthly: null, yearly: 1980000 },
+  enterprise_pro_plus: { monthly: null, yearly: 1980000 },
   internal_test: { monthly: 1, yearly: 1 },
 };
 
@@ -39,6 +39,7 @@ export type PlanDefinition = {
     products: number;
     knowledgeDocs: number;
     aiChatsPerMonth: number;
+    /** 仅用于一次性赠送活动；正式订阅的月度点数由 aiChatsPerMonth 计算，不得重复发放。 */
     aiCreditsGrant: number;
     teamSeats: number;
     customDomain: boolean;
@@ -94,8 +95,8 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
     limits: {
       products: 10,
       knowledgeDocs: 3,
-      aiChatsPerMonth: 300,
-      aiCreditsGrant: 300,
+      aiChatsPerMonth: 800,
+      aiCreditsGrant: 0,
       teamSeats: 1,
       customDomain: false,
       removeBranding: true,
@@ -120,8 +121,8 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
     limits: {
       products: 10,
       knowledgeDocs: 3,
-      aiChatsPerMonth: 300,
-      aiCreditsGrant: 300,
+      aiChatsPerMonth: 800,
+      aiCreditsGrant: 0,
       teamSeats: 1,
       customDomain: false,
       removeBranding: true,
@@ -147,8 +148,8 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
     limits: {
       products: 10,
       knowledgeDocs: 3,
-      aiChatsPerMonth: 300,
-      aiCreditsGrant: 300,
+      aiChatsPerMonth: 800,
+      aiCreditsGrant: 0,
       teamSeats: 1,
       customDomain: false,
       removeBranding: true,
@@ -167,7 +168,7 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
     features: [
       "产品与服务模块展示",
       "客户线索收集与整理",
-      "有限 AI 接待（2000 Credits/月）",
+      "AI 接待与经营助手（3,000 点/月）",
       "知识库文档管理",
       "高级数据统计与导出",
       "优先客服支持",
@@ -175,8 +176,8 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
     limits: {
       products: 50,
       knowledgeDocs: 20,
-      aiChatsPerMonth: 2000,
-      aiCreditsGrant: 2000,
+      aiChatsPerMonth: 3000,
+      aiCreditsGrant: 0,
       teamSeats: 1,
       customDomain: false,
       removeBranding: true,
@@ -202,9 +203,9 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
     limits: {
       products: 200,
       knowledgeDocs: 100,
-      aiChatsPerMonth: 10000,
-      aiCreditsGrant: 10000,
-      teamSeats: 3,
+      aiChatsPerMonth: 15000,
+      aiCreditsGrant: 0,
+      teamSeats: 5,
       customDomain: true,
       removeBranding: true,
       prioritySupport: true,
@@ -217,9 +218,10 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
     priceMonthly: PRICES.enterprise_pro.monthly,
     priceYearly: PRICES.enterprise_pro.yearly,
     currency: "CNY",
+    contactSales: true,
     features: [
       "包含企业会员全部功能",
-      "最多 10 名企业成员",
+      "最多 20 名企业成员",
       "最多 3 个独立域名名额",
       "多产品与多知识空间",
       "高级客服顾问与操作日志",
@@ -229,8 +231,8 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
       products: 1000,
       knowledgeDocs: 500,
       aiChatsPerMonth: 50000,
-      aiCreditsGrant: 50000,
-      teamSeats: 10,
+      aiCreditsGrant: 0,
+      teamSeats: 20,
       customDomain: true,
       removeBranding: true,
       prioritySupport: true,
@@ -243,9 +245,10 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
     priceMonthly: PRICES.enterprise_pro_plus.monthly,
     priceYearly: PRICES.enterprise_pro_plus.yearly,
     currency: "CNY",
+    contactSales: true,
     features: [
       "包含企业会员全部功能",
-      "最多 10 名企业成员",
+      "最多 20 名企业成员",
       "最多 3 个独立域名名额",
       "多产品与多知识空间",
       "高级客服顾问与操作日志",
@@ -255,8 +258,8 @@ export const PLAN_DEFINITIONS: Record<PlanCode, PlanDefinition> = {
       products: 1000,
       knowledgeDocs: 500,
       aiChatsPerMonth: 50000,
-      aiCreditsGrant: 50000,
-      teamSeats: 10,
+      aiCreditsGrant: 0,
+      teamSeats: 20,
       customDomain: true,
       removeBranding: true,
       prioritySupport: true,
@@ -362,15 +365,46 @@ export function generateOrderId(): string {
   return `L${timestamp}${random}`;
 }
 
-export const AI_RECEPTION_ADDON = {
-  code: "ai_reception_addon_100",
-  name: "AI 接待通用加油包",
-  description: "100 次 AI 接待会话额度，90 天有效",
-  priceCents: 990,
-  quantity: 100,
-  unit: "session",
-  validityDays: 90,
-} as const;
+export const AI_CREDIT_ADDONS = [
+  {
+    code: "ai_points_1000",
+    name: "AI 点数轻量包",
+    description: "1,000 AI 点，购买后 12 个月有效",
+    priceCents: 3900,
+    points: 1000,
+    validityDays: 365,
+  },
+  {
+    code: "ai_points_3000",
+    name: "AI 点数标准包",
+    description: "3,000 AI 点，购买后 12 个月有效",
+    priceCents: 9900,
+    points: 3000,
+    validityDays: 365,
+  },
+  {
+    code: "ai_points_10000",
+    name: "AI 点数进阶包",
+    description: "10,000 AI 点，购买后 12 个月有效",
+    priceCents: 29900,
+    points: 10000,
+    validityDays: 365,
+  },
+  {
+    code: "ai_points_30000",
+    name: "AI 点数团队包",
+    description: "30,000 AI 点，购买后 12 个月有效",
+    priceCents: 79900,
+    points: 30000,
+    validityDays: 365,
+  },
+] as const;
+
+export type AiCreditAddonCode = (typeof AI_CREDIT_ADDONS)[number]["code"];
+
+export function getAiCreditAddon(code: string) {
+  return AI_CREDIT_ADDONS.find((item) => item.code === code) ?? null;
+}
 
 /**
  * 判断 Prisma 错误是否为唯一键冲突。

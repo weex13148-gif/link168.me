@@ -9,6 +9,7 @@ import {
   normalizePlanCode,
 } from "@/lib/billing/plans";
 import { getPaymentAvailability } from "@/lib/billing/payments";
+import { expireCreditBuckets } from "@/lib/billing/ai-credit-buckets";
 
 export const runtime = "nodejs";
 
@@ -46,6 +47,7 @@ export async function GET(request: Request) {
   const { user, response } = await requireDashboardUser(request);
   if (response || !user) return response;
 
+  await expireCreditBuckets(user.id);
   const data = await getMembershipWithUsage(user.id);
   const availability = await getPaymentAvailability();
   const planDefinitions: Record<string, ReturnType<typeof serializePlanDefinition>> = {};

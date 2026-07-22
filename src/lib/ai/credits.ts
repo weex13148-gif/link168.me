@@ -1,7 +1,10 @@
 import crypto from "crypto";
 import { db } from "@/lib/db";
 
-export const AI_CHAT_CREDIT_COST = 1;
+export const AI_STANDARD_REPLY_CREDIT_COST = 1;
+export const AI_BASIC_TASK_CREDIT_COST = 5;
+export const AI_ADVANCED_TASK_CREDIT_COST = 20;
+export const AI_CHAT_CREDIT_COST = AI_STANDARD_REPLY_CREDIT_COST;
 
 export type AiCreditBalance = {
   accountId: string;

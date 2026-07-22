@@ -14,6 +14,11 @@ const mockTx = {
     findUnique: jest.fn(),
     create: jest.fn(),
   },
+  aiCreditBucket: {
+    findMany: jest.fn(),
+    updateMany: jest.fn(),
+    create: jest.fn(),
+  },
 };
 
 const mockDb = {
@@ -99,6 +104,9 @@ describe("AI source-aware compensation", () => {
     });
     mockTx.aiCreditLedger.findUnique.mockResolvedValue(null);
     mockTx.aiCreditLedger.create.mockResolvedValue({ id: "ledger-created" });
+    mockTx.aiCreditBucket.findMany.mockResolvedValue([]);
+    mockTx.aiCreditBucket.updateMany.mockResolvedValue({ count: 1 });
+    mockTx.aiCreditBucket.create.mockResolvedValue({ id: "bucket-created" });
   });
 
   test("consumeCredit returns a bound operation key and records the plan source", async () => {

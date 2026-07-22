@@ -583,7 +583,7 @@ model AiServiceConfig {
   allowReport                Boolean  @default(true) @map("allow_report")
   allowTransferToHuman       Boolean  @default(true) @map("allow_transfer_to_human")
   privacyNoticeText          String?  @map("privacy_notice_text")
-  quickActionsJson            String?  @map("quick_actions_json")
+  quickActionsJson           String?  @map("quick_actions_json")
   // providerMode：mock / 真实模型名（如 "gpt-4o-mini"）。具体模型的 API Key 不存本表
   providerMode               String   @default("mock") @map("provider_mode")
   createdAt                  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -642,6 +642,7 @@ model AiCreditAccount {
   // 账户与经营数据不允许用户删除时静默清零；物理删除需管理员显式操作
   user      User             @relation(fields: [userId], references: [id], onDelete: Restrict)
   ledger    AiCreditLedger[]
+  buckets   AiCreditBucket[]
 
   @@map("ai_credit_accounts")
 }
@@ -675,6 +676,27 @@ model AiCreditLedger {
   @@map("ai_credit_ledgers")
 }
 
+// 一次性 AI 点数包余额桶：按到期时间先进先出消费。
+// AiCreditAccount.balance 保留为快速汇总；本表是到期与退款的明细权威来源。
+model AiCreditBucket {
+  id              String   @id @default(uuid()) @db.Uuid
+  accountId       String   @map("account_id") @db.Uuid
+  sourceOrderId   String?  @unique @map("source_order_id") @db.Uuid
+  sourceType      String   @default("addon") @map("source_type")
+  grantedAmount   Int      @map("granted_amount")
+  remainingAmount Int      @map("remaining_amount")
+  status          String   @default("active")
+  expiresAt       DateTime @map("expires_at") @db.Timestamptz(6)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  account     AiCreditAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  sourceOrder Order?          @relation(fields: [sourceOrderId], references: [id], onDelete: Restrict)
+
+  @@index([accountId, status, expiresAt])
+  @@map("ai_credit_buckets")
+}
+
 // 会员订阅（最小模型：当前不接支付，仅标记套餐与状态）
 model MembershipSubscription {
   id                 String    @id @default(uuid()) @db.Uuid
@@ -694,45 +716,48 @@ model MembershipSubscription {
 // 正式订单模型：禁止将订单存入 AppConfig，必须使用独立表
 // 订单状态：pending（待支付）/ paid（已支付）/ cancelled（用户取消）/ closed（超时关闭）/ refunded（已退款）
 model Order {
-  id               String    @id @default(uuid()) @db.Uuid
+  id               String          @id @default(uuid()) @db.Uuid
   // 业务订单号：L + 时间戳 + 随机字符，全局唯一
-  orderNo          String    @unique @map("order_no")
-  userId           String    @map("user_id") @db.Uuid
+  orderNo          String          @unique @map("order_no")
+  userId           String          @map("user_id") @db.Uuid
   // 套餐快照
-  planCode         String    @map("plan_code")
-  planNameSnapshot String    @map("plan_name_snapshot")
-  billingCycle     String    @map("billing_cycle") // monthly / yearly
+  planCode         String          @map("plan_code")
+  planNameSnapshot String          @map("plan_name_snapshot")
+  productType      String          @default("membership") @map("product_type") // membership / ai_credit_addon
+  billingCycle     String          @map("billing_cycle") // monthly / yearly / one_time
   // 金额快照（下单时锁定，不允许后续修改）
-  originalAmount   Int       @map("original_amount") // 原价（分）
-  payableAmount    Int       @map("payable_amount") // 应付（分）
-  currency         String    @default("CNY") @map("currency")
+  originalAmount   Int             @map("original_amount") // 原价（分）
+  payableAmount    Int             @map("payable_amount") // 应付（分）
+  currency         String          @default("CNY") @map("currency")
   // 支付信息
-  paymentChannel   String?   @map("payment_channel") // wechat / alipay
-  providerTradeNo  String?   @unique @map("provider_trade_no") // 支付通道交易号（非空时唯一）
+  paymentChannel   String?         @map("payment_channel") // wechat / alipay
+  providerTradeNo  String?         @unique @map("provider_trade_no") // 支付通道交易号（非空时唯一）
   // 幂等键：避免重复回调
-  idempotencyKey   String?   @map("idempotency_key")
+  idempotencyKey   String?         @map("idempotency_key")
   // 状态
-  status           String    @default("pending") @map("status") // pending / paid / cancelled / closed / refunded
+  status           String          @default("pending") @map("status") // pending / paid / cancelled / closed / refunded
   // 时间戳
-  paidAt           DateTime? @map("paid_at") @db.Timestamptz(6)
-  cancelledAt      DateTime? @map("cancelled_at") @db.Timestamptz(6)
-  closedAt         DateTime? @map("closed_at") @db.Timestamptz(6)
-  refundedAt       DateTime? @map("refunded_at") @db.Timestamptz(6)
-  expiresAt        DateTime? @map("expires_at") @db.Timestamptz(6) // 订单超时时间
+  paidAt           DateTime?       @map("paid_at") @db.Timestamptz(6)
+  cancelledAt      DateTime?       @map("cancelled_at") @db.Timestamptz(6)
+  closedAt         DateTime?       @map("closed_at") @db.Timestamptz(6)
+  refundedAt       DateTime?       @map("refunded_at") @db.Timestamptz(6)
+  expiresAt        DateTime?       @map("expires_at") @db.Timestamptz(6) // 订单超时时间
   // 扩展数据
-  metadata         Json?     @db.JsonB
+  metadata         Json?           @db.JsonB
   // 审计字段
-  cancelReason     String?   @map("cancel_reason")
-  refundReason     String?   @map("refund_reason")
-  refundBy         String?   @map("refund_by") // admin_id 或 system
+  cancelReason     String?         @map("cancel_reason")
+  refundReason     String?         @map("refund_reason")
+  refundBy         String?         @map("refund_by") // admin_id 或 system
   // 时间戳
-  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
   // 关系
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  aiCreditBucket   AiCreditBucket?
 
   @@index([userId, createdAt])
   @@index([userId, status])
+  @@index([productType, status])
   @@index([status, expiresAt])
   @@map("orders")
 }

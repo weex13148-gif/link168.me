@@ -20,6 +20,7 @@ const mockDb: Record<string, any> = {
   aiMessage: { findMany: jest.fn(), create: jest.fn() },
   aiCreditAccount: { findUnique: jest.fn(), upsert: jest.fn(), update: jest.fn(), updateMany: jest.fn(), findUniqueOrThrow: jest.fn(), create: jest.fn() },
   aiCreditLedger: { findUnique: jest.fn(), create: jest.fn(), aggregate: jest.fn().mockResolvedValue({ _sum: { amount: 0 } }) },
+  aiCreditBucket: { findUnique: jest.fn(), findMany: jest.fn().mockResolvedValue([]), create: jest.fn(), updateMany: jest.fn().mockResolvedValue({ count: 1 }) },
   freezeRecord: { findMany: jest.fn().mockResolvedValue([]), create: jest.fn(), updateMany: jest.fn() },
   lead: { findUnique: jest.fn(), update: jest.fn(), create: jest.fn() },
   // 兼容其他测试需要的模型，避免 jest.mock 缓存冲突

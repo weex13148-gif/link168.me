@@ -248,7 +248,7 @@ describe("getUserEntitlements - plus plan", () => {
     expect(entitlements.plan.code).toBe("plus");
     expect(entitlements.hasActiveMembership).toBe(true);
     expect(entitlements.features.aiEnabled).toBe(true);
-    expect(entitlements.limits.aiChatsPerMonth.max).toBe(300);
+    expect(entitlements.limits.aiChatsPerMonth.max).toBe(800);
   });
 
   test("legacy member_basic subscription normalizes to plus", async () => {
@@ -297,11 +297,11 @@ describe("getUserEntitlements - plus plan", () => {
 });
 
 // ============================================
-// 3. Credits atomic rollback
+// 3. Monthly plan points are not duplicated into purchased-credit balance
 // ============================================
 
-describe("processPaymentSuccess - credits atomicity", () => {
-  test("ledger non-unique error triggers transaction rollback", async () => {
+describe("processPaymentSuccess - monthly plan points", () => {
+  test("paid subscription does not grant a second one-time credit balance", async () => {
     const order = {
       id: "order-1",
       userId: "user-1",
@@ -309,7 +309,7 @@ describe("processPaymentSuccess - credits atomicity", () => {
       planNameSnapshot: "Plus",
       billingCycle: "yearly",
       orderNo: "LNK20260101000001",
-      payableAmount: 18800,
+      payableAmount: 59900,
       status: ORDER_STATUS.PROCESSING,
       providerTradeNo: null,
       paidAt: null,
@@ -325,65 +325,6 @@ describe("processPaymentSuccess - credits atomicity", () => {
     tx.order.findUnique.mockResolvedValue(order);
     tx.order.findUniqueOrThrow.mockResolvedValue({ ...order, status: ORDER_STATUS.PAID, providerTradeNo: "TRADE001" });
     tx.membershipSubscription.findUnique.mockResolvedValue(null);
-    tx.aiCreditAccount.upsert.mockResolvedValue({ id: "acct-1", balance: 300, version: 1 });
-
-    // Simulate a non-unique-key error on ledger create
-    const dbError = new Prisma.PrismaClientKnownRequestError("Database error", {
-      code: "P2010",
-      clientVersion: "5.0.0",
-    });
-    tx.aiCreditLedger.create.mockRejectedValue(dbError);
-
-    mockDb.$transaction.mockImplementation(async (fn: (tx: MockTx) => Promise<unknown>) => {
-      return fn(tx);
-    });
-
-    const result = await processPaymentSuccess({
-      orderId: "order-1",
-      providerTradeNo: "TRADE001",
-      paidAt: new Date(),
-      metadata: {},
-    } as any);
-
-    // Non-unique ledger error should cause the transaction to fail and roll back
-    expect(result.success).toBe(false);
-    expect(result.error).toContain("Database error");
-    expect(tx.aiCreditLedger.create).toHaveBeenCalled();
-  });
-
-  test("ledger unique conflict on idempotency_key is idempotent", async () => {
-    const order = {
-      id: "order-1",
-      userId: "user-1",
-      planCode: "plus",
-      planNameSnapshot: "Plus",
-      billingCycle: "yearly",
-      orderNo: "LNK20260101000001",
-      payableAmount: 18800,
-      status: ORDER_STATUS.PROCESSING,
-      providerTradeNo: null,
-      paidAt: null,
-      metadata: {},
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    mockDb.order.findUnique.mockResolvedValue(order);
-
-    const tx = makeMockTx();
-    tx.order.updateMany.mockResolvedValue({ count: 1 });
-    tx.order.findUnique.mockResolvedValue(order);
-    tx.order.findUniqueOrThrow.mockResolvedValue({ ...order, status: ORDER_STATUS.PAID, providerTradeNo: "TRADE001" });
-    tx.membershipSubscription.findUnique.mockResolvedValue(null);
-    tx.aiCreditAccount.upsert.mockResolvedValue({ id: "acct-1", balance: 300, version: 1 });
-
-    const uniqueError = new Prisma.PrismaClientKnownRequestError("Unique constraint", {
-      code: "P2002",
-      clientVersion: "5.0.0",
-      meta: { target: ["idempotency_key"] },
-    });
-    tx.aiCreditLedger.create.mockRejectedValue(uniqueError);
-
     mockDb.$transaction.mockImplementation(async (fn: (tx: MockTx) => Promise<unknown>) => {
       return fn(tx);
     });
@@ -396,7 +337,8 @@ describe("processPaymentSuccess - credits atomicity", () => {
     } as any);
 
     expect(result.success).toBe(true);
-    expect(tx.aiCreditLedger.create).toHaveBeenCalled();
+    expect(tx.aiCreditAccount.upsert).not.toHaveBeenCalled();
+    expect(tx.aiCreditLedger.create).not.toHaveBeenCalled();
   });
 });
 
@@ -431,7 +373,7 @@ describe("processPaymentSuccess - duplicate callback idempotency", () => {
       planNameSnapshot: "Plus",
       billingCycle: "yearly",
       orderNo: "LNK20260101000001",
-      payableAmount: 18800,
+      payableAmount: 59900,
       status: ORDER_STATUS.PAID,
       providerTradeNo: "TRADE001",
       paidAt: new Date("2026-01-01"),

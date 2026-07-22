@@ -8,7 +8,14 @@ import {
   isPriceConfirmed,
   normalizePlanCode,
   isUniqueConstraintError,
+  getAiCreditAddon,
+  type AiCreditAddonCode,
 } from "./plans";
+import {
+  AI_CREDIT_ADDON_PRODUCT_TYPE,
+  grantAddonCredits,
+  isAiCreditAddonOrder,
+} from "./ai-credit-buckets";
 
 // 业务层专用错误类
 export class BillingPermissionError extends Error {
@@ -77,9 +84,10 @@ export type BillingOrder = {
   id: string;
   orderNo: string;
   userId: string;
-  planCode: PlanCode;
+  planCode: string;
   planName: string;
-  billingCycle: "monthly" | "yearly";
+  productType: "membership" | "ai_credit_addon";
+  billingCycle: "monthly" | "yearly" | "one_time";
   originalAmount: number;
   payableAmount: number;
   currency: string;
@@ -102,9 +110,10 @@ function toApiOrder(order: DbOrder): BillingOrder {
     id: order.id,
     orderNo: order.orderNo,
     userId: order.userId,
-    planCode: order.planCode as PlanCode,
+    planCode: order.planCode,
     planName: order.planNameSnapshot,
-    billingCycle: order.billingCycle as "monthly" | "yearly",
+    productType: order.productType as "membership" | "ai_credit_addon",
+    billingCycle: order.billingCycle as "monthly" | "yearly" | "one_time",
     originalAmount: order.originalAmount,
     payableAmount: order.payableAmount,
     currency: order.currency,
@@ -162,6 +171,7 @@ export async function createOrder(params: {
     where: {
       userId,
       planCode,
+      productType: "membership",
       billingCycle,
       status: ORDER_STATUS.PENDING,
     },
@@ -191,6 +201,7 @@ export async function createOrder(params: {
       userId,
       planCode,
       planNameSnapshot: plan.name,
+      productType: "membership",
       billingCycle,
       originalAmount: payableAmount,
       payableAmount,
@@ -204,6 +215,62 @@ export async function createOrder(params: {
     },
   });
 
+  return toApiOrder(order);
+}
+
+export async function createAddonOrder(params: {
+  userId: string;
+  addonCode: AiCreditAddonCode;
+  metadata?: Record<string, unknown>;
+}): Promise<BillingOrder> {
+  const { userId, addonCode, metadata = {} } = params;
+  const addon = getAiCreditAddon(addonCode);
+  if (!addon) throw new Error("AI 点数包不存在");
+
+  const existingPending = await db.order.findFirst({
+    where: {
+      userId,
+      planCode: addon.code,
+      productType: AI_CREDIT_ADDON_PRODUCT_TYPE,
+      billingCycle: "one_time",
+      status: ORDER_STATUS.PENDING,
+    },
+  });
+  if (existingPending) {
+    if (existingPending.expiresAt && existingPending.expiresAt < new Date()) {
+      await db.order.update({
+        where: { id: existingPending.id },
+        data: { status: ORDER_STATUS.EXPIRED, closedAt: new Date() },
+      });
+    } else {
+      return toApiOrder(existingPending);
+    }
+  }
+
+  const expiresAt = new Date(Date.now() + ORDER_EXPIRE_MINUTES * 60 * 1000);
+  const order = await db.order.create({
+    data: {
+      orderNo: generateOrderId(),
+      userId,
+      planCode: addon.code,
+      planNameSnapshot: addon.name,
+      productType: AI_CREDIT_ADDON_PRODUCT_TYPE,
+      billingCycle: "one_time",
+      originalAmount: addon.priceCents,
+      payableAmount: addon.priceCents,
+      currency: "CNY",
+      status: ORDER_STATUS.PENDING,
+      idempotencyKey: `addon-order:${userId}:${addon.code}:${Date.now()}`,
+      expiresAt,
+      metadata: {
+        ...metadata,
+        productType: AI_CREDIT_ADDON_PRODUCT_TYPE,
+        addonCode: addon.code,
+        points: addon.points,
+        validityDays: addon.validityDays,
+      },
+    },
+  });
   return toApiOrder(order);
 }
 
@@ -434,6 +501,11 @@ export async function processPaymentSuccess(params: {
       const updatedOrder = await tx.order.findUniqueOrThrow({
         where: { id: currentOrder.id },
       });
+
+      if (isAiCreditAddonOrder(updatedOrder)) {
+        await grantAddonCredits(tx, updatedOrder, paidAt);
+        return updatedOrder;
+      }
 
       const existingSubscription = await tx.membershipSubscription.findUnique({
         where: { userId: currentOrder.userId },

@@ -24,12 +24,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.8.0
- * Query Engine version: 3c6e192761c0362d496ed980de936e2f3cebcd3a
+ * Prisma Client JS version: 7.9.0
+ * Query Engine version: e922089b7d7502aff4249d5da3420f6fa55fc6ad
  */
 Prisma.prismaVersion = {
-  client: "7.8.0",
-  engine: "3c6e192761c0362d496ed980de936e2f3cebcd3a"
+  client: "7.9.0",
+  engine: "e922089b7d7502aff4249d5da3420f6fa55fc6ad"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -495,6 +495,7 @@ exports.Prisma.AiServiceConfigScalarFieldEnum = {
   allowReport: 'allowReport',
   allowTransferToHuman: 'allowTransferToHuman',
   privacyNoticeText: 'privacyNoticeText',
+  quickActionsJson: 'quickActionsJson',
   providerMode: 'providerMode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -543,6 +544,19 @@ exports.Prisma.AiCreditLedgerScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.AiCreditBucketScalarFieldEnum = {
+  id: 'id',
+  accountId: 'accountId',
+  sourceOrderId: 'sourceOrderId',
+  sourceType: 'sourceType',
+  grantedAmount: 'grantedAmount',
+  remainingAmount: 'remainingAmount',
+  status: 'status',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.MembershipSubscriptionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -560,6 +574,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   userId: 'userId',
   planCode: 'planCode',
   planNameSnapshot: 'planNameSnapshot',
+  productType: 'productType',
   billingCycle: 'billingCycle',
   originalAmount: 'originalAmount',
   payableAmount: 'payableAmount',
@@ -805,6 +820,7 @@ exports.Prisma.ModelName = {
   AiMessage: 'AiMessage',
   AiCreditAccount: 'AiCreditAccount',
   AiCreditLedger: 'AiCreditLedger',
+  AiCreditBucket: 'AiCreditBucket',
   MembershipSubscription: 'MembershipSubscription',
   Order: 'Order',
   CompetitionFile: 'CompetitionFile',

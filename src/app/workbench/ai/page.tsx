@@ -309,11 +309,11 @@ export default async function WorkbenchAiPage() {
       <section className="mt-6 rounded-[28px] border border-[#E8DCCB] bg-white p-5 shadow-sm">
         <p className="text-sm font-black text-[#3F5F31]">配额使用顺序</p>
         <ul className="mt-3 grid gap-2 text-xs text-[#7A6D5E]">
-          <li>1. 优先使用套餐月度额度（基础版 200 次 / Plus 2000 次 / 企业版无限）</li>
-          <li>2. 套餐额度用完后，自动使用额外 Credit（需购买或赠送）</li>
-          <li>3. 每日风控上限独立计算，防止短时间滥用（基础版 50 次 / Plus 200 次 / 企业版 500 次）</li>
-          <li>4. 调用失败或超时不扣额度，自动回补</li>
-          <li>5. 套餐过期后立即停止正式调用权限</li>
+          <li>1. 优先使用套餐月度点数（Plus 800 / Pro 3,000 / 企业版 15,000 / 企业 Pro 50,000）</li>
+          <li>2. 标准 AI 回复 1 点，经营助手基础任务 5 点；高级分析任务按页面明确标注</li>
+          <li>3. 套餐点数用完后，自动使用仍在有效期内的加量包点数</li>
+          <li>4. 调用失败或超时不扣点，已经预扣的点数会自动回补</li>
+          <li>5. 套餐过期后停止正式调用；套餐月度点数不结转</li>
         </ul>
       </section>
 

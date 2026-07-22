@@ -6,6 +6,7 @@ const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
 };
 
+export const isDatabaseConfigured = Boolean(process.env.DATABASE_URL?.trim());
 const connectionString = process.env.DATABASE_URL || "postgresql://invalid:invalid@localhost:5432/invalid";
 
 const adapter = new PrismaPg({ connectionString });

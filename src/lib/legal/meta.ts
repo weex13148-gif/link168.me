@@ -22,9 +22,10 @@ export const SUPPORT_EMAIL: string = "business@link168.me";
 
 export const PUBLIC_PLANS = [
   { code: "free", name: "免费版", priceYearlyCents: 0, aiChatsPerMonth: 0 },
-  { code: "plus", name: "Plus 会员", priceYearlyCents: 18800, aiChatsPerMonth: 300 },
-  { code: "pro", name: "Pro 年付", priceYearlyCents: 38800, aiChatsPerMonth: 2000 },
-  { code: "enterprise", name: "企业版", priceYearlyCents: null, aiChatsPerMonth: 10000, contactSales: true },
+  { code: "plus", name: "Plus 会员", priceMonthlyCents: 6900, priceYearlyCents: 59900, aiChatsPerMonth: 800 },
+  { code: "pro", name: "Pro 会员", priceMonthlyCents: 13900, priceYearlyCents: 99900, aiChatsPerMonth: 3000 },
+  { code: "enterprise", name: "企业版", priceYearlyCents: 880000, aiChatsPerMonth: 15000, contactSales: true },
+  { code: "enterprise_pro", name: "企业 Pro", priceYearlyCents: 1980000, aiChatsPerMonth: 50000, contactSales: true },
 ];
 
 export const PAYMENT_CHANNELS = ["支付宝"];
