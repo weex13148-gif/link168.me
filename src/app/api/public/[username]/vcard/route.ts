@@ -46,10 +46,6 @@ export async function GET(_request: NextRequest, context: RouteContext) {
     return NextResponse.json({ error: "Profile not found" }, { status: 404 });
   }
 
-  if (profile.contactVisibility === "private") {
-    return NextResponse.json({ error: "Profile not found" }, { status: 404 });
-  }
-
   try {
     const restrictions = await getActiveRestrictions(profile.userId);
     const visibility = canShowPublicProfile(restrictions);
@@ -62,7 +58,7 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 
   const contactIsPublic = profile.contactVisibility === "public";
 
-  // public 或 contacts_only：公开联系方式字段
+  // vCard 始终提供公开身份；只有明确公开时才附带联系方式。
   const lines: string[] = [
     "BEGIN:VCARD",
     "VERSION:3.0",
@@ -70,10 +66,10 @@ export async function GET(_request: NextRequest, context: RouteContext) {
     `N:${escapeVCard(profile.displayName || profile.username)};;;;`,
   ];
 
-  if (contactIsPublic && profile.company) {
+  if (profile.company) {
     lines.push(`ORG:${escapeVCard(profile.company)}`);
   }
-  if (contactIsPublic && profile.jobTitle) {
+  if (profile.jobTitle) {
     lines.push(`TITLE:${escapeVCard(profile.jobTitle)}`);
   }
   if (contactIsPublic && profile.phone) {

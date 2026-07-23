@@ -7,6 +7,7 @@ import { PublicProductsSection, type ProductDto } from "@/components/share/Publi
 import { QrCodeModal } from "@/components/share/QrCodeModal";
 import { ShareModal } from "@/components/share/ShareModal";
 import { SharePageRenderer, type SharePageTemplate } from "@/components/share/SharePageRenderer";
+import type { PublicProfileRenderMode } from "@/components/share/public-profile-types";
 import { sanitizePublicUrl } from "@/lib/public-url-security";
 
 const VISITOR_ID_KEY = "link168_visitor_id";
@@ -48,8 +49,7 @@ type Props = {
   address?: string | null;
   website?: string | null;
   contactVisibility?: string;
-  onQrCodeClick?: () => void;
-  onShareClick?: () => void;
+  renderMode?: PublicProfileRenderMode;
 };
 
 function originalUrlFromPayload(payloadRaw: string | null | undefined) {
@@ -294,6 +294,7 @@ export function SharePageWithContact(props: Props) {
         address={props.address}
         website={props.website}
         contactVisibility={props.contactVisibility}
+        renderMode={props.renderMode || "public"}
         onContactInteraction={trackContactInteraction}
       />
 

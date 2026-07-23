@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Bot, Copy, ExternalLink, Flag, Loader2, Phone, Send, ShieldAlert, UserRound, X } from "lucide-react";
 import type { AiReceptionQuickAction, PublicAiReceptionConfig } from "@/lib/ai/reception-config";
+import { PUBLIC_MODULE_SURFACE_STYLE } from "@/components/share/PublicModuleList";
 
 function makeId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -160,7 +161,7 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
 
   if (configLoading) {
     return (
-      <div className="flex min-h-28 items-center justify-center rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] text-sm font-bold text-[#7A6D5E]">
+      <div data-public-module-surface style={PUBLIC_MODULE_SURFACE_STYLE} className="flex min-h-28 items-center justify-center rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] text-sm font-bold text-[#7A6D5E]">
         <Loader2 className="mr-2 size-4 animate-spin" />
         正在加载 AI 接待…
       </div>
@@ -169,7 +170,7 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
 
   if (configUnavailable || !config) {
     return (
-      <div className="rounded-2xl border border-dashed border-[#E8DCCB] bg-[#FFFDF8] px-4 py-6 text-center">
+      <div data-public-module-surface style={PUBLIC_MODULE_SURFACE_STYLE} className="rounded-2xl border border-dashed border-[#E8DCCB] bg-[#FFFDF8] px-4 py-6 text-center">
         <Bot className="mx-auto size-6 text-[#7A6D5E]" />
         <p className="mt-2 text-sm font-black text-[#2B241E]">AI 接待暂未开启</p>
         <p className="mt-1 text-xs text-[#7A6D5E]">你仍可以使用主页上的其他联系方式。</p>
@@ -178,7 +179,7 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
   }
 
   return (
-    <div className="w-full overflow-hidden rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] shadow-sm">
+    <div data-public-module-surface style={PUBLIC_MODULE_SURFACE_STYLE} className="w-full overflow-hidden rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] shadow-sm">
       <div className="flex items-center justify-between border-b border-[#E8DCCB] bg-white px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">
           <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#EEF4E7] text-[#4F6D37]">

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check, Clock, Gift, Loader, Tag, X } from "lucide-react";
+import { PUBLIC_MODULE_SURFACE_STYLE } from "@/components/share/PublicModuleList";
 
 export type OfferPayload = {
   title: string;
@@ -97,7 +98,7 @@ function OfferModule({ payload, username }: OfferModuleProps) {
 
   return (
     <section className="w-full">
-      <div className={`flex flex-col overflow-hidden rounded-2xl border shadow-sm ${isLive ? "border-[#6F8F4E]" : "border-[#E8DCCB]"} ${isExpired ? "opacity-60" : ""}`}>
+      <div data-public-module-surface style={PUBLIC_MODULE_SURFACE_STYLE} className={`flex flex-col overflow-hidden rounded-2xl border shadow-sm ${isLive ? "border-[#6F8F4E]" : "border-[#E8DCCB]"} ${isExpired ? "opacity-60" : ""}`}>
         {coverImageUrl ? (
           <div className="aspect-[16/9] w-full overflow-hidden bg-[#F7F1E7]">
             {/* eslint-disable-next-line @next/next/no-img-element */}

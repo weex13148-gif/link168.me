@@ -119,7 +119,34 @@ export default function DashboardV1Client() {
         template: core.profile?.template || "business",
         customTheme: core.profile?.custom_theme || null,
       };
-  const preview = <PhonePreview variant="public" profileId={core.profile?.id} poweredLogoClickable username={core.profile?.username || "abao"} displayName={core.profile?.display_name || "我的名片"} bio={core.profile?.bio || "填写一句简介，让访客快速了解你"} avatarUrl={core.profile?.avatar_url} links={previewLinks} appearance={{ themeName: previewAppearance.themeName, template: previewAppearance.template as "business" | "creator" | "conversion", customTheme: previewAppearance.customTheme, contactVisibility: core.profile?.contact_visibility || "public" }} className="mx-auto max-w-[315px]" />;
+  const preview = (
+    <PhonePreview
+      variant="public"
+      renderMode="preview"
+      profileId={core.profile?.id}
+      poweredLogoClickable
+      username={core.profile?.username || ""}
+      displayName={core.profile?.display_name ?? ""}
+      bio={core.profile?.bio}
+      avatarUrl={core.profile?.avatar_url}
+      company={core.profile?.company}
+      jobTitle={core.profile?.job_title}
+      phone={core.profile?.phone}
+      email={core.profile?.email}
+      wechat={core.profile?.wechat}
+      city={core.profile?.city}
+      address={core.profile?.address}
+      website={core.profile?.website}
+      links={previewLinks}
+      appearance={{
+        themeName: previewAppearance.themeName,
+        template: previewAppearance.template as "business" | "creator" | "conversion",
+        customTheme: previewAppearance.customTheme,
+        contactVisibility: core.profile?.contact_visibility || undefined,
+      }}
+      className="mx-auto max-w-[315px]"
+    />
+  );
 
   let panel: ReactNode;
   if (activeTab === "profile") panel = <ProfilePanel profile={core.profile} username={core.username} displayName={core.displayName} bio={core.bio} saveState={core.saveState} uploadingAvatar={core.uploadingAvatar} onUsernameChange={(value) => { core.setUsername(value); core.markDirty(); }} onDisplayNameChange={(value) => { core.setDisplayName(value); core.markDirty(); }} onBioChange={(value) => { core.setBio(value); core.markDirty(); }} onSave={core.saveProfile} onUploadAvatar={(file) => void core.uploadAvatar(file)} onDeleteAvatar={() => void core.deleteAvatar()} />;

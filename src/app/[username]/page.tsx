@@ -18,7 +18,6 @@ import {
   serializeSchema,
 } from "@/lib/seo/json-ld";
 import type { SharePageTemplate } from "@/components/share/SharePageRenderer";
-import { getThemeClasses } from "@/components/theme/presetThemes";
 import {
   canShowPublicProfile,
   getActiveRestrictions,
@@ -301,7 +300,6 @@ export default async function PublicProfilePage({ params, searchParams }: Public
 
   const reportUrl = `/report?url=${encodeURIComponent(`${appUrl}/${profile.username}`)}`;
   const themeName = profile.theme || "Link168 草木默认";
-  const surfaceClass = getThemeClasses(themeName).surfaceClassName;
 
   const rawAvatarUrl = profile.avatarUrl || null;
   const avatarUrlWithCacheBust = rawAvatarUrl
@@ -339,12 +337,12 @@ export default async function PublicProfilePage({ params, searchParams }: Public
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeSchema(profilePageSchema) }}
       />
-      <main className={`mx-auto flex min-h-dvh w-full max-w-2xl flex-col px-4 py-6 sm:py-10 ${surfaceClass}`}>
+      <main className="min-h-dvh w-full bg-[#F4EEE5] sm:px-4 sm:py-8">
         <PublicProfileClientWrapper
           profileId={profile.id}
           template={resolveTemplate(profile, query.template)}
           username={profile.username}
-          displayName={profile.displayName || `@${profile.username}`}
+          displayName={profile.displayName || profile.company || "经营主页"}
           bio={profile.bio}
           avatarUrl={avatarUrlWithCacheBust}
           links={links}
