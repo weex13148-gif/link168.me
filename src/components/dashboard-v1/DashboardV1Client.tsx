@@ -7,7 +7,7 @@ import { PhonePreview, type PhonePreviewLink } from "@/components/PhonePreview";
 import { QrCodeModal } from "@/components/share/QrCodeModal";
 import { ShareModal } from "@/components/share/ShareModal";
 import { AccountPanel } from "@/components/dashboard-v1/AccountPanel";
-import { AppearancePanel } from "@/components/dashboard-v1/AppearancePanel";
+import { AppearancePanel, type AppearancePreviewState } from "@/components/dashboard-v1/AppearancePanel";
 import { DashboardFrame } from "@/components/dashboard-v1/DashboardFrame";
 import { HomePanel } from "@/components/dashboard-v1/HomePanel";
 import { LinksPanel } from "@/components/dashboard-v1/LinksPanel";
@@ -33,6 +33,7 @@ export default function DashboardV1Client() {
   const [qrOpen, setQrOpen] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [emailBannerOpen, setEmailBannerOpen] = useState(true);
+  const [appearancePreview, setAppearancePreview] = useState<AppearancePreviewState | null>(null);
 
   const showToast = useCallback((message: string, tone: "success" | "error" = "success") => {
     setToast({ message, tone });
@@ -111,12 +112,19 @@ export default function DashboardV1Client() {
   if (core.loading) return <main className="ui-page grid min-h-dvh place-items-center px-4"><div className="ui-surface flex items-center gap-3 px-5 py-4 text-sm font-black"><Loader2 className="size-5 animate-spin text-[var(--ui-brand)]" />正在加载用户后台…</div></main>;
   if (core.loadError) return <main className="ui-page grid min-h-dvh place-items-center px-4"><section className="ui-surface w-full max-w-md p-6 text-center"><AlertTriangle className="mx-auto size-10 text-[var(--ui-danger)]" /><h1 className="mt-4 text-xl ui-title">后台暂时无法加载</h1><p className="mt-2 text-sm leading-6 ui-muted">{core.loadError}</p><button type="button" onClick={() => void core.load()} className="ui-button-primary mt-5"><RefreshCcw className="size-4" />重新加载</button></section></main>;
 
-  const preview = <PhonePreview variant="public" profileId={core.profile?.id} poweredLogoClickable username={core.profile?.username || "abao"} displayName={core.profile?.display_name || "我的名片"} bio={core.profile?.bio || "填写一句简介，让访客快速了解你"} avatarUrl={core.profile?.avatar_url} links={previewLinks} appearance={{ themeName: core.profile?.theme || "Link168 草木默认", template: (core.profile?.template || "business") as "business" | "creator" | "conversion", customTheme: core.profile?.custom_theme || null, contactVisibility: core.profile?.contact_visibility || "public" }} className="mx-auto max-w-[315px]" />;
+  const previewAppearance = activeTab === "appearance" && appearancePreview
+    ? appearancePreview
+    : {
+        themeName: core.profile?.theme || "Link168 草木默认",
+        template: core.profile?.template || "business",
+        customTheme: core.profile?.custom_theme || null,
+      };
+  const preview = <PhonePreview variant="public" profileId={core.profile?.id} poweredLogoClickable username={core.profile?.username || "abao"} displayName={core.profile?.display_name || "我的名片"} bio={core.profile?.bio || "填写一句简介，让访客快速了解你"} avatarUrl={core.profile?.avatar_url} links={previewLinks} appearance={{ themeName: previewAppearance.themeName, template: previewAppearance.template as "business" | "creator" | "conversion", customTheme: previewAppearance.customTheme, contactVisibility: core.profile?.contact_visibility || "public" }} className="mx-auto max-w-[315px]" />;
 
   let panel: ReactNode;
   if (activeTab === "profile") panel = <ProfilePanel profile={core.profile} username={core.username} displayName={core.displayName} bio={core.bio} saveState={core.saveState} uploadingAvatar={core.uploadingAvatar} onUsernameChange={(value) => { core.setUsername(value); core.markDirty(); }} onDisplayNameChange={(value) => { core.setDisplayName(value); core.markDirty(); }} onBioChange={(value) => { core.setBio(value); core.markDirty(); }} onSave={core.saveProfile} onUploadAvatar={(file) => void core.uploadAvatar(file)} onDeleteAvatar={() => void core.deleteAvatar()} />;
   else if (activeTab === "links") panel = <LinksPanel links={linkState.sortedLinks} isPaid={core.planEntitlements.isPaid} planLabel={core.planEntitlements.planLabel} creating={linkState.creating} busyLinkId={linkState.busyLinkId} onCreate={linkState.createLink} onUpdate={linkState.updateLink} onToggle={linkState.toggleLink} onDelete={linkState.deleteLink} onMove={linkState.moveLink} onCopy={copyText} onUpgrade={onUpgrade} />;
-  else if (activeTab === "appearance") panel = <AppearancePanel theme={core.profile?.theme || "草木原色"} template={core.profile?.template || "business"} customThemes={core.planEntitlements.customThemes} customTheme={core.profile?.custom_theme || null} isPublic={core.profile?.is_public ?? true} language={core.profile?.language || "zh"} contactVisibility={core.profile?.contact_visibility || "public"} saving={core.appearanceSaving} onSave={core.saveAppearance} onSaveCustom={core.saveCustomTheme} onSaveSystem={core.saveProfileSettings} onUpgrade={onUpgrade} />;
+  else if (activeTab === "appearance") panel = <AppearancePanel theme={core.profile?.theme || "草木原色"} template={core.profile?.template || "business"} customThemes={core.planEntitlements.customThemes} customTheme={core.profile?.custom_theme || null} isPublic={core.profile?.is_public ?? true} language={core.profile?.language || "zh"} contactVisibility={core.profile?.contact_visibility || "public"} saving={core.appearanceSaving} onSave={core.saveAppearance} onSaveCustom={core.saveCustomTheme} onSaveSystem={core.saveProfileSettings} onPreviewChange={setAppearancePreview} onUpgrade={onUpgrade} />;
   else if (activeTab === "share") panel = <SharePanel publicUrl={publicUrl} username={core.profile?.username || ""} displayName={core.profile?.display_name || "我的名片"} onCopy={() => copyText(publicUrl)} onShare={openShare} onQr={openQr} />;
   else if (activeTab === "stats") panel = <StatsPanel username={core.profile?.username || ""} />;
   else if (activeTab === "account") panel = <AccountPanel user={core.user} planLabel={core.planEntitlements.planLabel} isPaid={core.planEntitlements.isPaid} isLegacyActive={core.planEntitlements.isLegacyActive} isGracePeriod={core.planEntitlements.isGracePeriod} gracePeriodDays={core.planEntitlements.gracePeriodDays} daysRemaining={core.planEntitlements.daysRemaining} currentPeriodEnd={core.planEntitlements.currentPeriodEnd} canUpgrade={core.planEntitlements.canUpgrade} sessions={account.sessions} sessionsLoading={account.sessionsLoading} resendingEmail={account.resendingEmail} passwordSaving={account.passwordSaving} deactivating={core.deactivating} onResendEmail={account.resendEmail} onChangePassword={account.changePassword} onRevokeSession={account.revokeSession} onRevokeOthers={account.revokeOthers} onUpgrade={onUpgrade} onLogout={() => void logout()} onDeactivate={core.deactivateAccount} />;
