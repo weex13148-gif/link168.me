@@ -4,6 +4,7 @@ import {
   type CardStyle,
   type ButtonStyle,
   type AvatarFrame,
+  type AvatarMode,
   defaultCustomTheme,
 } from "./types";
 import {
@@ -11,11 +12,13 @@ import {
   defaultThemeNameV2,
   mapLegacyThemeNameToV2,
 } from "./presetThemes";
+import { BUILT_IN_WALLPAPERS } from "./wallpapers";
 
 const VALID_BACKGROUND_TYPES: BackgroundType[] = ["solid", "gradient", "image"];
 const VALID_CARD_STYLES: CardStyle[] = ["solid", "glass", "outline"];
 const VALID_BUTTON_STYLES: ButtonStyle[] = ["solid", "outline", "soft"];
 const VALID_AVATAR_FRAMES: AvatarFrame[] = ["circle", "square", "rounded", "ring"];
+const VALID_AVATAR_MODES: AvatarMode[] = ["portrait", "logo"];
 
 const HEX_COLOR_RE = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/;
 const RGB_COLOR_RE = /^rgb(a)?\(\s*\d+\s*,\s*\d+\s*,\s*\d+(\s*,\s*[\d.]+\s*)?\)$/i;
@@ -48,7 +51,9 @@ function isValidBackgroundValue(type: BackgroundType, value: string): boolean {
     case "gradient":
       return GRADIENT_RE.test(v);
     case "image":
-      return URL_RE.test(v) || HTTP_URL_RE.test(v);
+      return URL_RE.test(v)
+        || HTTP_URL_RE.test(v)
+        || BUILT_IN_WALLPAPERS.some((wallpaper) => wallpaper.src === v);
     default:
       return false;
   }
@@ -148,11 +153,20 @@ export function validateCustomTheme(obj: unknown): {
     }
   }
 
+  if ("avatarMode" in input) {
+    const v = input.avatarMode;
+    if (typeof v === "string" && VALID_AVATAR_MODES.includes(v as AvatarMode)) {
+      result.avatarMode = v as AvatarMode;
+    } else {
+      errors.push("avatarMode is invalid");
+    }
+  }
+
   if ("moduleGap" in input) {
     const v = input.moduleGap;
     if (typeof v === "number") {
-      result.moduleGap = clampNumber(v, 8, 32, defaultCustomTheme.moduleGap);
-      if (v < 8 || v > 32) errors.push("moduleGap out of range");
+      result.moduleGap = clampNumber(v, 0, 32, defaultCustomTheme.moduleGap);
+      if (v < 0 || v > 32) errors.push("moduleGap out of range");
     } else {
       errors.push("moduleGap is invalid");
     }
