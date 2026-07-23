@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/showcase", "/help", "/pricing", "/s/"],
+        allow: ["/", "/help", "/pricing", "/s/"],
         disallow: [
           "/dashboard",
           "/workbench",
@@ -27,7 +27,7 @@ export default function robots(): MetadataRoute.Robots {
       },
       {
         userAgent: "Googlebot",
-        allow: ["/", "/showcase", "/help", "/pricing", "/s/"],
+        allow: ["/", "/help", "/pricing", "/s/"],
         disallow: ["/dashboard", "/workbench", "/console", "/admin", "/jeepwork", "/api/"],
       },
       {
@@ -37,7 +37,7 @@ export default function robots(): MetadataRoute.Robots {
       },
       {
         userAgent: "Bingbot",
-        allow: ["/", "/showcase", "/help", "/pricing", "/s/"],
+        allow: ["/", "/help", "/pricing", "/s/"],
         disallow: ["/dashboard", "/workbench", "/console", "/admin", "/jeepwork", "/api/"],
       },
     ],

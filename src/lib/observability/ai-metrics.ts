@@ -3,10 +3,9 @@
 // ----------------------------------------------------------------------------
 // 在现有 telemetry/index.ts 之上封装，补充：
 // 1. traceId 关联（贯穿 ai-trace.ts）
-// 2. usageType 维度（visitor_reception / business_ai / enterprise_ai / showcase_demo）
-// 3. Showcase Demo 独立预算与限流（内存计数，按日重置）
-// 4. 安全拒答与请求超时的结构化记录
-// 5. 统一的字段命名：traceId / userId / usageType / provider / model /
+// 2. usageType 维度（visitor_reception / business_ai / enterprise_ai）
+// 3. 安全拒答与请求超时的结构化记录
+// 4. 统一的字段命名：traceId / userId / usageType / provider / model /
 //    inputTokens / outputTokens / totalTokens / durationMs / success /
 //    errorCode / requestSource / createdAt
 //
@@ -34,106 +33,6 @@ export interface AiMetricRecord {
   errorCode: string | null;
   requestSource: string;
   createdAt: Date;
-}
-
-// ---------- Showcase Demo 独立预算与限流 ----------
-
-/**
- * Showcase Demo 独立预算配置。
- * 与用户套餐额度完全隔离，不消耗用户额度。
- */
-export const SHOWCASE_DEMO_BUDGET = {
-  /** 每日最大调用次数（所有访客合计） */
-  dailyCallLimit: 100,
-  /** 单次最大输入 token */
-  maxInputTokensPerCall: 2000,
-  /** 单次最大输出 token */
-  maxOutputTokensPerCall: 1000,
-  /** 单 IP 每分钟最大调用次数 */
-  perIpPerMinuteLimit: 5,
-} as const;
-
-interface ShowcaseBudgetState {
-  date: string; // YYYY-MM-DD
-  callCount: number;
-  /** 按 IP 计数的滑动窗口：[timestamp, count] */
-  ipWindows: Map<string, number[]>;
-}
-
-let showcaseBudget: ShowcaseBudgetState = {
-  date: new Date().toISOString().split("T")[0],
-  callCount: 0,
-  ipWindows: new Map(),
-};
-
-function resetShowcaseBudgetIfNewDay(): void {
-  const today = new Date().toISOString().split("T")[0];
-  if (showcaseBudget.date !== today) {
-    showcaseBudget = {
-      date: today,
-      callCount: 0,
-      ipWindows: new Map(),
-    };
-  }
-}
-
-/**
- * 检查 Showcase Demo 是否允许调用（独立预算 + 限流）。
- * 返回 null 表示允许，返回字符串表示拒绝原因（错误码）。
- */
-export function checkShowcaseDemoBudget(args: {
-  ip: string;
-}): "AI_RATE_LIMITED" | "AI_QUOTA_EXHAUSTED" | null {
-  resetShowcaseBudgetIfNewDay();
-
-  // 1. 每日总次数预算
-  if (showcaseBudget.callCount >= SHOWCASE_DEMO_BUDGET.dailyCallLimit) {
-    return "AI_QUOTA_EXHAUSTED";
-  }
-
-  // 2. 单 IP 每分钟限流
-  const now = Date.now();
-  const windowMs = 60_000;
-  const ipKey = args.ip;
-  const existing = showcaseBudget.ipWindows.get(ipKey) ?? [];
-  // 清理 1 分钟外的记录
-  const recent = existing.filter((ts) => now - ts < windowMs);
-  if (recent.length >= SHOWCASE_DEMO_BUDGET.perIpPerMinuteLimit) {
-    return "AI_RATE_LIMITED";
-  }
-
-  return null;
-}
-
-/**
- * 记录一次 Showcase Demo 调用（在调用成功后执行）。
- */
-export function consumeShowcaseDemoBudget(args: { ip: string }): void {
-  resetShowcaseBudgetIfNewDay();
-  showcaseBudget.callCount += 1;
-  const now = Date.now();
-  const ipKey = args.ip;
-  const existing = showcaseBudget.ipWindows.get(ipKey) ?? [];
-  existing.push(now);
-  showcaseBudget.ipWindows.set(ipKey, existing);
-}
-
-/**
- * 获取 Showcase Demo 预算当前状态（用于后台展示）。
- */
-export function getShowcaseDemoBudgetStatus(): {
-  date: string;
-  callCount: number;
-  dailyCallLimit: number;
-  remaining: number;
-} {
-  resetShowcaseBudgetIfNewDay();
-  return {
-    date: showcaseBudget.date,
-    callCount: showcaseBudget.callCount,
-    dailyCallLimit: SHOWCASE_DEMO_BUDGET.dailyCallLimit,
-    remaining: Math.max(0, SHOWCASE_DEMO_BUDGET.dailyCallLimit - showcaseBudget.callCount),
-  };
 }
 
 // ---------- 统一指标记录入口 ----------

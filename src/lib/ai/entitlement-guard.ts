@@ -8,7 +8,7 @@
 // 4. 过期会员（非宽限期内）被拒绝
 // 5. 额度不足被拒绝
 // 6. AI 冻结用户被拒绝
-// 7. 用量类型（visitor_reception / business_ai / showcase_demo / enterprise_ai）可区分
+// 7. 用量类型（visitor_reception / business_ai / enterprise_ai）可区分
 //
 // 权威来源：
 // - 套餐额度：src/lib/billing/plans.ts（PLAN_DEFINITIONS.limits.aiChatsPerMonth）
@@ -23,7 +23,6 @@ import { checkUserAiRestricted, type AiRestrictionResult } from "@/lib/ai/permis
 export type AiUsageType =
   | "visitor_reception"   // 访客侧 AI 接待（主页访客对话，消耗主页所有者额度）
   | "business_ai"         // 用户侧经营 AI（workbench 五大助手）
-  | "showcase_demo"       // Showcase 演示（不消耗用户额度，独立配额）
   | "enterprise_ai";      // 企业 AI（enterprise-ai 路由）
 
 // ---------- 守卫决策 ----------
@@ -55,10 +54,10 @@ export type AiEntitlementDecision =
  * 统一 AI 权益守卫。
  *
  * @param userId  用户 ID（访客接待场景传入主页所有者 userId）
- * @param usageType 用量类型，用于区分访客 AI / 经营 AI / Showcase / 企业 AI
+ * @param usageType 用量类型，用于区分访客 AI / 经营 AI / 企业 AI
  *
  * 规则：
- * - 未传入 userId 视为未登录，拒绝（showcase_demo 除外，由调用方单独鉴权）
+ * - 未传入 userId 视为未登录，拒绝
  * - 免费用户（planCode === "free"）拒绝
  * - features.aiEnabled === false 拒绝
  * - 非有效会员且不在宽限期内拒绝
@@ -72,7 +71,7 @@ export async function assertAiEntitlement(
   userId: string | null | undefined,
   usageType: AiUsageType,
 ): Promise<AiEntitlementDecision> {
-  // 1. 未登录检查（showcase_demo 不走此守卫，由调用方单独鉴权）
+  // 1. 未登录检查
   if (!userId) {
     return {
       ok: false,

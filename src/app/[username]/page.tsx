@@ -123,6 +123,7 @@ type CurrentProfile = Extract<
 
 export async function generateMetadata({ params }: PublicProfilePageProps): Promise<Metadata> {
   const { username } = await params;
+  if (normalizeUsername(username) === "showcase") notFound();
   const result = await resolveUsername(username);
 
   if (result.type !== "current") {
@@ -197,6 +198,7 @@ function restrictionPage(restrictions: ActiveRestriction[]) {
 
 export default async function PublicProfilePage({ params, searchParams }: PublicProfilePageProps) {
   const { username } = await params;
+  if (normalizeUsername(username) === "showcase") notFound();
   const query = searchParams ? await searchParams : {};
   const result = await resolveUsername(username);
 
