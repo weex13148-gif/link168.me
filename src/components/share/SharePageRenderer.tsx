@@ -92,6 +92,9 @@ export interface SharePageRendererProps extends PublicProfileIdentity {
   onQrCodeClick?: () => void;
   onShareClick?: () => void;
   onContactInteraction?: (linkId: string) => void;
+  onAiAvailabilityChange?: (available: boolean) => void;
+  onOpenContact?: () => void;
+  stickyAction?: ReactNode;
 }
 
 function safeParseJson<T = unknown>(value: string | null | undefined): T | null {
@@ -204,7 +207,15 @@ function BrandFoot({ classes }: { classes: ShareThemeClassSet }) {
   );
 }
 
-function renderNewModule(item: SharePageLink, componentType: string, payload: Record<string, unknown> | null, username: string, profileId?: string): ReactNode {
+function renderNewModule(
+  item: SharePageLink,
+  componentType: string,
+  payload: Record<string, unknown> | null,
+  username: string,
+  profileId?: string,
+  onAvailabilityChange?: (available: boolean) => void,
+  onOpenContact?: () => void,
+): ReactNode {
   if (!payload) return <div key={item.id}><ModuleFallback message="模块数据为空" /></div>;
   if (!isModuleType(componentType)) return <div key={item.id}><ModuleFallback message="未知模块类型" /></div>;
   const validation = validateModulePayload(componentType, payload);
@@ -221,7 +232,7 @@ function renderNewModule(item: SharePageLink, componentType: string, payload: Re
     case "music-link": return <div key={item.id}><MusicLinkModule payload={payload as MusicLinkPayload} /></div>;
     case "divider": return <div key={item.id}><DividerModule payload={payload as DividerPayload} /></div>;
     case "copy-text": return <div key={item.id}><CopyTextModule payload={payload as CopyTextPayload} /></div>;
-    case "ai-chat": return <div key={item.id}><AiChatModule username={username} mode="customer-service" /></div>;
+    case "ai-chat": return <div key={item.id}><AiChatModule username={username} mode="customer-service" onAvailabilityChange={onAvailabilityChange} onOpenContact={onOpenContact} /></div>;
     case "product-card": return <div key={item.id}><ProductCardModule payload={payload as ProductCardPayload} username={username} /></div>;
     case "service-card": return <div key={item.id}><ServiceCardModule payload={payload as ServiceCardPayload} username={username} /></div>;
     case "offer": return <div key={item.id}><OfferModule payload={payload as OfferPayload} username={username} /></div>;
@@ -288,7 +299,7 @@ function buildComponentItems(props: SharePageRendererProps, classes: ShareThemeC
     const componentType = normalizeComponentType(item);
     const payload = safeParseJson<Record<string, unknown>>(item.payload);
     const node = moduleTypes.has(componentType)
-      ? renderNewModule(item, componentType, payload, props.username, props.profileId)
+      ? renderNewModule(item, componentType, payload, props.username, props.profileId, props.onAiAvailabilityChange, props.onOpenContact)
       : renderLegacyItem(item, componentType, payload, classes, props.template || "business", linkClassName, props.onContactInteraction);
     return { id: item.id, node };
   });
@@ -357,6 +368,7 @@ export function SharePageRenderer(props: SharePageRendererProps) {
         {props.showBrandFoot ? <div className="flex justify-center px-5 pb-4"><BrandFoot classes={classes} /></div> : null}
         {props.reportUrl ? <Link href={props.reportUrl} className="block pb-5 text-center text-xs font-bold text-[#7A6D5E] opacity-70 hover:opacity-100">举报此主页</Link> : null}
       </div>
+      {props.stickyAction}
     </div>
   );
 }

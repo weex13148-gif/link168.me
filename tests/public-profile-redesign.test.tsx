@@ -1,7 +1,9 @@
 /** @jest-environment jsdom */
 import "@testing-library/jest-dom";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { SharePageRenderer } from "@/components/share/SharePageRenderer";
+import { SharePageWithContact } from "@/components/share/SharePageWithContact";
+import { AiChatModule } from "@/components/share/modules/AiChatModule";
 
 const identity = {
   profileId: "00000000-0000-0000-0000-000000000001",
@@ -13,6 +15,49 @@ const identity = {
   jobTitle: "经营顾问",
   links: [],
 };
+
+const publicAiConfig = {
+  enabled: true,
+  assistantName: "经营助手",
+  welcomeMessage: "你好，欢迎咨询。",
+  allowReport: false,
+  quickActions: [],
+};
+
+function renderPublicProfileWithAi(
+  response: { ok: boolean; status?: number; body?: unknown; networkError?: boolean },
+  options?: { customTheme?: string },
+) {
+  const fetchMock = jest.fn();
+  if (response.networkError) {
+    fetchMock.mockRejectedValue(new Error("network unavailable"));
+  } else {
+    fetchMock.mockResolvedValue({
+      ok: response.ok,
+      status: response.status ?? (response.ok ? 200 : 503),
+      json: async () => response.body ?? { success: false },
+    } as Response);
+  }
+
+  Object.defineProperty(global, "fetch", {
+    configurable: true,
+    value: fetchMock,
+  });
+
+  return render(
+    <SharePageWithContact
+      {...identity}
+      themeName="default"
+      customTheme={options?.customTheme}
+      links={[{ id: "ai", title: "AI 接待", componentType: "ai-chat", payload: "{}" }]}
+    />,
+  );
+}
+
+afterEach(() => {
+  jest.restoreAllMocks();
+  delete (global as { fetch?: unknown }).fetch;
+});
 
 test("public mode hides empty modules and internal test usernames", () => {
   render(<SharePageRenderer {...identity} renderMode="public" />);
@@ -201,4 +246,86 @@ test("new business cards consume the shared surface opacity and radius", () => {
     "--profile-card-opacity": "0.35",
     "--profile-button-radius": "9px",
   });
+});
+
+test("an enabled AI reception replaces the public CTA and focuses the chat input", async () => {
+  renderPublicProfileWithAi({ ok: true, body: { success: true, config: publicAiConfig } });
+
+  await waitFor(() => expect(screen.getByRole("button", { name: "开始咨询" })).toBeInTheDocument());
+  expect(screen.getAllByRole("button", { name: /开始咨询|联系我/ })).toHaveLength(1);
+
+  fireEvent.click(screen.getByRole("button", { name: "开始咨询" }));
+  expect(screen.getByLabelText("AI 咨询问题")).toHaveFocus();
+});
+
+test("the sticky contact bar inherits the normalized profile button radius", async () => {
+  renderPublicProfileWithAi(
+    { ok: false, status: 503 },
+    { customTheme: JSON.stringify({ buttonRadius: 7 }) },
+  );
+
+  const action = await screen.findByRole("button", { name: "联系我" });
+  expect(action).toHaveStyle({ borderRadius: "var(--profile-button-radius, 16px)" });
+  expect(action.closest("[data-profile-template]")).toHaveStyle({ "--profile-button-radius": "7px" });
+  expect(action.parentElement).toHaveClass("fixed", "inset-x-0", "bottom-0", "backdrop-blur");
+});
+
+test.each([404, 403, 503])("an unavailable AI configuration (%i) keeps only the contact CTA", async (status) => {
+  renderPublicProfileWithAi({ ok: false, status });
+
+  await waitFor(() => expect(screen.getByRole("button", { name: "联系我" })).toBeInTheDocument());
+  expect(screen.getAllByRole("button", { name: /开始咨询|联系我/ })).toHaveLength(1);
+});
+
+test.each([
+  { ok: true, body: { success: true, config: { ...publicAiConfig, enabled: false } } },
+  { ok: false, networkError: true },
+])("a disabled or unreachable AI configuration keeps only the contact CTA", async (response) => {
+  renderPublicProfileWithAi(response);
+
+  await waitFor(() => expect(screen.getByRole("button", { name: "联系我" })).toBeInTheDocument());
+  expect(screen.getAllByRole("button", { name: /开始咨询|联系我/ })).toHaveLength(1);
+});
+
+test("a failed contact submit preserves values and Escape closes the dialog", async () => {
+  const view = renderPublicProfileWithAi({ ok: false, status: 503 });
+
+  await waitFor(() => expect(screen.getByRole("button", { name: "联系我" })).toBeInTheDocument());
+  fireEvent.click(screen.getByRole("button", { name: "联系我" }));
+  fireEvent.change(screen.getByPlaceholderText("如何称呼你"), { target: { value: "访客" } });
+  fireEvent.change(screen.getByPlaceholderText("方便联系你的方式"), { target: { value: "visitor@example.com" } });
+  fireEvent.click(screen.getByRole("button", { name: "提交联系信息" }));
+
+  await waitFor(() => expect(screen.getByText("提交失败，请稍后重试。" )).toBeInTheDocument());
+  expect(screen.getByPlaceholderText("如何称呼你")).toHaveValue("访客");
+  expect(screen.getByPlaceholderText("方便联系你的方式")).toHaveValue("visitor@example.com");
+
+  fireEvent.keyDown(document, { key: "Escape" });
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  view.unmount();
+});
+
+test("an unavailable embedded AI module offers a real contact handoff", async () => {
+  Object.defineProperty(global, "fetch", {
+    configurable: true,
+    value: jest.fn().mockResolvedValue({ ok: false, status: 503, json: async () => ({ success: false }) } as Response),
+  });
+  const onOpenContact = jest.fn();
+  render(<AiChatModule username="owner" onOpenContact={onOpenContact} />);
+
+  fireEvent.click(await screen.findByRole("button", { name: "联系本人" }));
+  expect(onOpenContact).toHaveBeenCalledTimes(1);
+});
+
+test("an embedded AI module reports unavailable when it unmounts", () => {
+  Object.defineProperty(global, "fetch", {
+    configurable: true,
+    value: jest.fn(() => new Promise(() => undefined)),
+  });
+  const onAvailabilityChange = jest.fn();
+  const view = render(<AiChatModule username="owner" onAvailabilityChange={onAvailabilityChange} />);
+
+  onAvailabilityChange.mockClear();
+  view.unmount();
+  expect(onAvailabilityChange).toHaveBeenCalledWith(false);
 });
