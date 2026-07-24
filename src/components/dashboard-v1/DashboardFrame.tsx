@@ -44,7 +44,7 @@ const MODULE_NAV_ITEMS = PRIMARY_NAV_ITEMS.filter(
 
 const mobilePrimary: DashboardTab[] = ["home", "links", "profile", "stats"];
 
-function SaveStatus({ state, mobile = false }: { state: SaveState; mobile?: boolean }) {
+function SaveStatus({ state }: { state: SaveState }) {
   const config = {
     saved: { text: "已保存", dot: "bg-[var(--ui-success)]", className: "bg-[var(--ui-success-soft)] text-[var(--ui-success)]" },
     dirty: { text: "未保存", dot: "bg-[var(--ui-accent)]", className: "bg-[var(--ui-accent-soft)] text-[#8C612E]" },
@@ -52,16 +52,12 @@ function SaveStatus({ state, mobile = false }: { state: SaveState; mobile?: bool
     error: { text: "保存失败", dot: "bg-[var(--ui-danger)]", className: "bg-[var(--ui-danger-soft)] text-[var(--ui-danger)]" },
   }[state];
 
-  if (mobile) {
-    return (
-      <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[11px] font-black ${config.className}`}>
-        <span className={`size-1.5 rounded-full ${config.dot}`} />
-        {config.text}
-      </span>
-    );
-  }
-
-  return <span className={`hidden rounded-full px-3 py-1.5 text-xs font-black sm:inline-flex ${config.className}`}>{config.text}</span>;
+  return (
+    <span className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2 py-1 text-[11px] font-black sm:px-3 sm:py-1.5 sm:text-xs ${config.className}`}>
+      <span className={`size-1.5 rounded-full ${config.dot}`} />
+      {config.text}
+    </span>
+  );
 }
 
 export function DashboardFrame({
@@ -124,7 +120,6 @@ export function DashboardFrame({
           </button>
 
           <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
-            <SaveStatus state={saveState} mobile={saveState !== "saved"} />
             <SaveStatus state={saveState} />
             <button type="button" onClick={() => selectTab("account")} className="hidden min-h-9 items-center gap-2 rounded-xl border border-[var(--ui-line)] bg-white px-3 text-xs font-black text-[var(--ui-muted)] sm:inline-flex">
               <Crown className="size-4 text-[var(--ui-accent)]" />
@@ -155,7 +150,7 @@ export function DashboardFrame({
         </div>
       </header>
 
-      <div className="ui-admin-container grid gap-5 py-5 lg:grid-cols-[224px_minmax(0,1fr)_auto] lg:gap-6 lg:py-7">
+      <div className={`ui-admin-container grid gap-5 py-5 lg:gap-6 lg:py-7 ${previewOpen ? "lg:grid-cols-[224px_minmax(0,1fr)_minmax(350px,370px)]" : "lg:grid-cols-[224px_minmax(0,1fr)_44px]"}`}>
         <aside className="hidden lg:block">
           <div className="sticky top-24 grid gap-4">
             <nav className="ui-surface p-3" aria-label="用户后台导航">
@@ -175,7 +170,7 @@ export function DashboardFrame({
                       <Link
                         key={item.href}
                         href={item.href}
-                        className={`flex min-h-10 items-center gap-3 rounded-xl px-3 text-left text-sm font-black transition ${active ? "bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]" : "text-[var(--ui-muted)] hover:bg-[var(--ui-surface-muted)] hover:text-[var(--ui-ink)]"}`}
+                        className={`flex min-h-10 min-w-0 items-center gap-3 rounded-xl px-3 text-left text-sm font-black transition ${active ? "bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]" : "text-[var(--ui-muted)] hover:bg-[var(--ui-surface-muted)] hover:text-[var(--ui-ink)]"}`}
                       >
                         <Icon className="size-4 shrink-0" />
                         <span className="truncate">{item.label}</span>
@@ -200,10 +195,10 @@ export function DashboardFrame({
                       key={key}
                       type="button"
                       onClick={() => selectTab(key)}
-                      className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-left text-sm font-black transition ${active ? "bg-[var(--ui-brand)] text-white" : "text-[var(--ui-muted)] hover:bg-[var(--ui-surface-muted)] hover:text-[var(--ui-ink)]"}`}
+                      className={`flex min-h-11 min-w-0 items-center gap-3 rounded-xl px-3 text-left text-sm font-black transition ${active ? "bg-[var(--ui-brand)] text-white" : "text-[var(--ui-muted)] hover:bg-[var(--ui-surface-muted)] hover:text-[var(--ui-ink)]"}`}
                     >
                       <Icon className="size-4.5 shrink-0" />
-                      {label}
+                      <span className="truncate">{label}</span>
                     </button>
                   );
                 })}
@@ -251,15 +246,15 @@ export function DashboardFrame({
             const Icon = item.icon;
             const active = activeTab === key;
             return (
-              <button key={key} type="button" onClick={() => selectTab(key)} className={`flex min-w-[44px] min-h-[56px] flex-col items-center justify-center gap-1 rounded-xl px-3 py-2 text-[10px] font-black transition ${active ? "bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]" : "text-[var(--ui-muted)] hover:bg-[var(--ui-surface-muted)]"}`}>
+              <button key={key} type="button" onClick={() => selectTab(key)} className={`flex min-h-[56px] min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[10px] font-black transition ${active ? "bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]" : "text-[var(--ui-muted)] hover:bg-[var(--ui-surface-muted)]"}`}>
                 <Icon className="size-5" />
-                {item.label}
+                <span className="whitespace-nowrap leading-none">{item.label}</span>
               </button>
             );
           })}
-          <button type="button" onClick={() => setMoreOpen(true)} className={`flex min-w-[44px] min-h-[56px] flex-col items-center justify-center gap-1 rounded-xl px-3 py-2 text-[10px] font-black transition ${activeTab === "share" || activeTab === "account" || activeTab === "appearance" ? "bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]" : "text-[var(--ui-muted)] hover:bg-[var(--ui-surface-muted)]"}`}>
+          <button type="button" onClick={() => setMoreOpen(true)} className={`flex min-h-[56px] min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[10px] font-black transition ${activeTab === "share" || activeTab === "account" || activeTab === "appearance" ? "bg-[var(--ui-brand-soft)] text-[var(--ui-brand)]" : "text-[var(--ui-muted)] hover:bg-[var(--ui-surface-muted)]"}`}>
             <Menu className="size-5" />
-            更多
+            <span className="whitespace-nowrap leading-none">更多</span>
           </button>
         </div>
       </nav>

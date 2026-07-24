@@ -56,4 +56,19 @@ describe("Mobile layout safety at 360px–430px", () => {
     // Should not have any hardcoded width that exceeds 360px
     expect(content).not.toMatch(/w-\[\d{3,4}px\]/);
   });
+
+  test("DashboardFrame keeps one responsive save status and stable dashboard columns", () => {
+    const framePath = path.join(
+      srcRoot,
+      "components",
+      "dashboard-v1",
+      "DashboardFrame.tsx",
+    );
+    const content = fs.readFileSync(framePath, "utf-8");
+
+    expect(content.match(/<SaveStatus\b/g)).toHaveLength(1);
+    expect(content).toContain("whitespace-nowrap");
+    expect(content).toContain("minmax(0,1fr)");
+    expect(content).toContain("224px");
+  });
 });
