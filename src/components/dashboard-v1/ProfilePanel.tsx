@@ -19,6 +19,11 @@ export function ProfilePanel({ profile, username, displayName, bio, saveState, u
   onDeleteAvatar: () => void;
 }) {
   const canSetUsername = !profile || isTemporaryUsername(profile.username);
+  const avatarModerationLabel = profile?.avatar_moderation_status === "approved" || profile?.avatar_moderation_status === "legacy_approved"
+    ? "已通过"
+    : profile?.avatar_moderation_status === "rejected"
+      ? "未通过"
+      : "待人工审核（待配置验证）";
 
   return (
     <div className="grid gap-5">
@@ -50,7 +55,8 @@ export function ProfilePanel({ profile, username, displayName, bio, saveState, u
               <div className="xl:mt-4">
                 <label className="ui-button-secondary cursor-pointer"><Camera className="size-4" />{uploadingAvatar ? "正在上传…" : "更换头像"}<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" disabled={uploadingAvatar} onChange={(event) => { onUploadAvatar(event.target.files?.[0] || null); event.currentTarget.value = ""; }} /></label>
                 {profile?.avatar_url ? <button type="button" disabled={uploadingAvatar} onClick={() => { if (window.confirm("确定删除当前头像吗？")) onDeleteAvatar(); }} className="ui-button-quiet mt-2 text-[var(--ui-danger)] disabled:opacity-50"><Trash2 className="size-4" />删除头像</button> : null}
-                <p className="mt-2 text-xs leading-5 ui-muted">支持 JPG、PNG、WebP、GIF，最大 2MB。上传成功后会立即同步到预览和公开主页。</p>
+                <p className="mt-2 text-xs leading-5 ui-muted">支持 JPG、PNG、WebP、GIF，最大 2MB。审核通过后公开展示。</p>
+                {profile?.avatar_url ? <p className="mt-1 text-xs leading-5 ui-muted">审核状态：{avatarModerationLabel}</p> : null}
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState, type FormEvent } from "react";
-import type { DashboardLink, DashboardProfile, DashboardUser, SaveState } from "@/components/dashboard-v1/types";
+import type { AvatarModerationStatus, DashboardLink, DashboardProfile, DashboardUser, SaveState } from "@/components/dashboard-v1/types";
 import { isTemporaryUsername } from "@/components/dashboard-v1/types";
 import { deleteAvatarRequest, fetchDashboard, fetchPlan, saveAppearanceRequest, saveProfileRequest, uploadAvatarRequest, saveCustomThemeRequest, saveProfileSettingsRequest, deactivateAccountRequest, logoutRequest } from "@/components/dashboard-v1/dashboard-api";
 import type { CustomTheme } from "@/components/theme/types";
@@ -115,6 +115,14 @@ function withAvatarCacheBust(profile: DashboardProfile): DashboardProfile {
   return { ...profile, avatar_url: `${base}?v=${version}` };
 }
 
+export function getAvatarUploadSuccessMessage(status: AvatarModerationStatus): string {
+  if (status === "approved" || status === "legacy_approved") {
+    return "头像已更新，并已同步到预览和公开主页。";
+  }
+
+  return "头像已上传，待人工审核（待配置验证）。审核通过后公开展示。";
+}
+
 export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, showToast }: {
   onUnauthorized: () => void;
   onLinksLoaded: (links: DashboardLink[]) => void;
@@ -211,7 +219,7 @@ export function useDashboardCore({ onUnauthorized, onLinksLoaded, onUpgrade, sho
       setDisplayName(nextProfile.display_name || "");
       setBio(nextProfile.bio || "");
       setSaveState("saved");
-      showToast("头像已更新，并已同步到预览和公开主页。");
+      showToast(getAvatarUploadSuccessMessage(nextProfile.avatar_moderation_status));
     } catch {
       setSaveState("error");
       showToast("头像上传失败，请稍后重试。", "error");

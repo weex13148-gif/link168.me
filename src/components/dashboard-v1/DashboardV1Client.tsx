@@ -21,6 +21,7 @@ import { useAccountState } from "@/components/dashboard-v1/account-store";
 import { logoutRequest } from "@/components/dashboard-v1/dashboard-api";
 import type { DashboardLink, DashboardTab } from "@/components/dashboard-v1/types";
 import { publicProfileUrl } from "@/components/dashboard-v1/types";
+import { resolvePublicAvatarUrl } from "@/lib/public-avatar";
 
 type ToastState = { message: string; tone: "success" | "error" } | null;
 
@@ -119,6 +120,13 @@ export default function DashboardV1Client() {
         template: core.profile?.template || "business",
         customTheme: core.profile?.custom_theme || null,
       };
+  const previewAvatarUrl = core.profile
+    ? resolvePublicAvatarUrl({
+        avatarUrl: core.profile.avatar_url,
+        avatarModerationStatus: core.profile.avatar_moderation_status,
+        updatedAt: new Date(core.profile.updated_at),
+      })
+    : null;
   const preview = (
     <PhonePreview
       variant="public"
@@ -128,7 +136,7 @@ export default function DashboardV1Client() {
       username={core.profile?.username || ""}
       displayName={core.profile?.display_name ?? ""}
       bio={core.profile?.bio}
-      avatarUrl={core.profile?.avatar_url}
+      avatarUrl={previewAvatarUrl}
       company={core.profile?.company}
       jobTitle={core.profile?.job_title}
       phone={core.profile?.phone}

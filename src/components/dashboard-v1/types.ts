@@ -2,6 +2,16 @@ export type DashboardTab = "home" | "profile" | "links" | "appearance" | "share"
 
 export type SaveState = "saved" | "dirty" | "saving" | "error";
 
+export type AvatarModerationStatus = "pending" | "pending_manual_review" | "rejected" | "approved" | "legacy_approved";
+
+export function toAvatarModerationStatus(value: string | null | undefined): AvatarModerationStatus {
+  if (value === "pending" || value === "pending_manual_review" || value === "rejected" || value === "approved" || value === "legacy_approved") {
+    return value;
+  }
+
+  return "pending_manual_review";
+}
+
 export type DashboardUser = {
   id?: string;
   email: string;
@@ -15,6 +25,7 @@ export type DashboardProfile = {
   display_name: string | null;
   bio: string | null;
   avatar_url: string | null;
+  avatar_moderation_status: AvatarModerationStatus;
   theme: string;
   template: string;
   language: string;

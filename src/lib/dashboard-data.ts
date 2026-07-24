@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { db } from "@/lib/db";
+import { toAvatarModerationStatus } from "@/components/dashboard-v1/types";
 
 export function toProfileDto(profile: {
   id: string;
@@ -7,6 +8,7 @@ export function toProfileDto(profile: {
   displayName: string | null;
   bio: string | null;
   avatarUrl: string | null;
+  avatarModerationStatus: string;
   theme: string;
   template: string;
   language: string;
@@ -31,6 +33,7 @@ export function toProfileDto(profile: {
     display_name: profile.displayName,
     bio: profile.bio,
     avatar_url: profile.avatarUrl,
+    avatar_moderation_status: toAvatarModerationStatus(profile.avatarModerationStatus),
     theme: profile.theme,
     template: profile.template,
     language: profile.language,

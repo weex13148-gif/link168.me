@@ -26,6 +26,7 @@ import {
 } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { sanitizePublicUrl } from "@/lib/public-url-security";
+import { resolvePublicAvatarUrl } from "@/lib/public-avatar";
 
 export const dynamic = "force-dynamic";
 
@@ -141,9 +142,11 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
     indexable = false;
   }
 
-  const avatarUrl = profile.avatarUrl
-    ? `${profile.avatarUrl.split("?")[0]}?v=${profile.updatedAt.getTime()}`
-    : null;
+  const avatarUrl = resolvePublicAvatarUrl({
+    avatarUrl: profile.avatarUrl,
+    avatarModerationStatus: profile.avatarModerationStatus,
+    updatedAt: profile.updatedAt,
+  });
 
   return buildPublicProfileMetadata({
     username: profile.username,
@@ -301,10 +304,11 @@ export default async function PublicProfilePage({ params, searchParams }: Public
   const reportUrl = `/report?url=${encodeURIComponent(`${appUrl}/${profile.username}`)}`;
   const themeName = profile.theme || "Link168 草木默认";
 
-  const rawAvatarUrl = profile.avatarUrl || null;
-  const avatarUrlWithCacheBust = rawAvatarUrl
-    ? `${rawAvatarUrl.split("?")[0]}?t=${profile.updatedAt.getTime()}`
-    : null;
+  const avatarUrlWithCacheBust = resolvePublicAvatarUrl({
+    avatarUrl: profile.avatarUrl,
+    avatarModerationStatus: profile.avatarModerationStatus,
+    updatedAt: profile.updatedAt,
+  });
   const contactIsPublic = profile.contactVisibility === "public";
 
   // JSON-LD 结构化数据
