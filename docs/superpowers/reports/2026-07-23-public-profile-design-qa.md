@@ -22,3 +22,15 @@
 `final result: pending`
 
 The code and source-level responsive checks are complete, but authenticated public-profile and dashboard visual acceptance cannot be certified until the local `.env.local`/PostgreSQL credentials and a real test profile are restored. No fake account or production data was created.
+
+## Repository gates
+
+- `npx prisma validate`: passed with a command-scoped non-production placeholder URL because `.env.local` is absent; no database connection or write occurred.
+- `npx prisma generate`: passed.
+- `npm run lint`: passed.
+- `npm run typecheck`: passed after removing the corrupted, Git-ignored `.next` cache left by the interrupted development process.
+- `npm test -- --runInBand`: passed, 35 suites / 454 tests.
+- `npm run build`: passed; the route manifest contains no `/showcase` or `/api/showcase/*` route. With the intentionally invalid command-scoped database URL, static page collection logged a Prisma connection warning but the production build completed successfully.
+- `git diff --check`: passed.
+
+The Next.js build rewrote `next-env.d.ts`; the pre-existing user-owned development-types reference was restored afterward and remains intentionally uncommitted.
