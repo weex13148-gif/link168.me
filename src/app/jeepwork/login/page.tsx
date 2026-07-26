@@ -102,6 +102,15 @@ export default function JeepworkLoginPage() {
             />
           </label>
 
+          <div className="-mt-1 text-right">
+            <Link
+              href="/forgot-password"
+              className="text-xs font-bold text-[var(--ui-brand)] hover:underline"
+            >
+              忘记管理员密码？
+            </Link>
+          </div>
+
           {error ? (
             <AdminAlertBanner tone="danger" title="登录失败">
               {error}

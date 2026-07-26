@@ -51,9 +51,13 @@ export async function POST(request: Request) {
   ]);
   await consumePasswordResetToken(token);
 
+  const redirectTo = user.role === "super_admin"
+    ? "/jeepwork/login?passwordReset=success"
+    : "/login?passwordReset=success";
+
   return NextResponse.json({
     success: true,
     message: "密码修改成功，请使用新密码重新登录。",
-    redirectTo: "/login?passwordReset=success",
+    redirectTo,
   });
 }

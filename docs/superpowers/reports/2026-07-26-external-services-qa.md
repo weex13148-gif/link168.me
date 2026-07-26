@@ -12,10 +12,11 @@
   - AI 必须收到 HTTP 200 且包含非空的真实 completion，才记录为通过。
   - SMTP 必须先完成连接验证、再成功发信，并确认测试收件人被 SMTP 服务器接受，才记录为通过。
 - 支付宝本地 RSA2 验钥只记录诊断，不会生成绿色就绪证据；只有真实查单响应完成验签后才能记录为通过。
+- 管理员无需知道旧密码：`/jeepwork/login` 已提供“忘记管理员密码”入口；重置令牌确认账号为 `super_admin` 后，会回到 `/jeepwork/login`，不会再误跳普通用户登录页。
 
 ## 自动化验证
 
-新增 `tests/external-service-test-routes.test.ts`，覆盖：
+`tests/external-service-test-routes.test.ts` 覆盖：
 
 1. AI 测试入口必须经过超级管理员鉴权。
 2. AI 只有真实 completion 响应才能通过。
@@ -26,13 +27,19 @@
 7. 支付宝真实查单响应验签通过后才形成通过证据。
 8. 未获得验签证据的查单不能形成绿色状态。
 
+新增密码恢复回归测试，覆盖：
+
+1. 超级管理员重置成功后返回 Jeepwork 登录页。
+2. 普通用户重置成功后仍返回普通登录页。
+3. Jeepwork 登录页明确显示密码恢复入口。
+
 完整质量门结果：
 
 - `npx prisma validate`：通过
 - `npx prisma generate`：通过
 - `npm run lint`：通过
 - `npm run typecheck`：通过
-- `npm test -- --runInBand`：37 个测试套件、464 项测试全部通过
+- `npm test -- --runInBand`：39 个测试套件、467 项测试全部通过
 - `npm run build`：通过
 - `git diff --check`：通过
 
@@ -55,7 +62,7 @@
 - 管理页引用的 9 个 JavaScript 分包和 1 个 CSS 分包均返回 HTTP 200，未发现静态资源 404。
 - 未登录访问 `/api/jeepwork/auth/me` 返回 `NOT_AUTHORIZED`。
 - 未登录调用 AI、邮件、支付宝三个专用测试入口均返回 HTTP 401；鉴权发生在外部服务调用之前，没有产生邮件、AI 额度或支付订单副作用。
-- GitHub `master` 当前为 `5e8831b`，本地唯一收口分支当前为 `40aa27b`；本地收口提交尚未在远端同名分支出现，因此不能把本地新加固逻辑当作已部署事实。
+- GitHub `master` 在只读冒烟时为 `5e8831b`；本地收口变更尚未部署，因此不能把本地新加固逻辑当作生产事实。
 - 生产 Chrome 管理页当前没有可读取的有效超级管理员会话。页面呈现空白且控制连接不稳定，因此没有点击任何真实测试按钮。
 
-生产真实验收仍需先由项目所有者在 `https://link168.me/jeepwork/login` 完成超级管理员登录，再执行上述三项最小真实调用。
+生产真实验收仍需先部署本地收口变更，再由项目所有者通过 `https://link168.me/jeepwork/login` 的密码恢复入口设置新密码并登录，最后执行上述三项最小真实调用。找回密码只需要已登记且可收信的管理员邮箱，不需要旧密码。
