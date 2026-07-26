@@ -172,7 +172,31 @@ async function handleTestAiConnection(): Promise<NextResponse> {
       id?: string;
       model?: string;
       usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
+      choices?: Array<{ message?: { content?: unknown } }>;
     };
+
+    const completion = data.choices?.[0]?.message?.content;
+    if (typeof completion !== "string" || !completion.trim()) {
+      const safeError = "AI 服务返回了无效的完成结果，未记录为连接通过。";
+      if (config.aiProvider === "bailian") {
+        await recordExternalServiceTest("bailian", config, {
+          passed: false,
+          message: safeError,
+        }).catch(() => undefined);
+      }
+      return NextResponse.json(
+        {
+          success: false,
+          data: {
+            success: false,
+            status: response.status,
+            error: safeError,
+          } satisfies AiTestResult,
+          error: null,
+        },
+        { status: 502 },
+      );
+    }
 
     if (config.aiProvider === "bailian") {
       try {

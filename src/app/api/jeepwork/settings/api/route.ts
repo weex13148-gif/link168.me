@@ -244,13 +244,21 @@ async function testMail(emailValue: unknown) {
 
   try {
     await transporter.verify();
-    await transporter.sendMail({
+    const sendResult = await transporter.sendMail({
       from: config.mailFrom,
       to: targetEmail,
       subject: "Link168 邮件服务测试成功",
       text: "收到本邮件表示 Link168 SMTP 配置可以正常发送注册验证码和忘记密码邮件。",
       html: "<h2>Link168 邮件服务测试成功</h2><p>收到本邮件表示 SMTP 配置可以正常发送注册验证码和忘记密码邮件。</p>",
     });
+    const acceptedRecipients = Array.isArray(sendResult.accepted)
+      ? sendResult.accepted
+          .filter((recipient): recipient is string => typeof recipient === "string")
+          .map((recipient) => recipient.toLowerCase())
+      : [];
+    if (!acceptedRecipients.includes(targetEmail)) {
+      throw new Error("SMTP did not accept the test recipient.");
+    }
   } catch (error) {
     const message = mailFailureMessage(error);
     await recordExternalServiceTest("mail", config, { passed: false, message }).catch(() => undefined);
