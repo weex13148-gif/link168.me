@@ -135,7 +135,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     const moduleDef = getModuleDefinition(componentType);
     if (moduleDef && !moduleDef.free) {
       const entitlements = await getUserEntitlements(user.id);
-      if (!entitlements.hasActiveMembership && !entitlements.isGracePeriod) {
+      if (!entitlements.hasActiveMembership && !entitlements.isLegacyActive && !entitlements.isGracePeriod) {
         return NextResponse.json(
           { success: false, error: "该模块为付费功能，请升级会员后使用。" },
           { status: 403 }

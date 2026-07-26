@@ -33,7 +33,7 @@ export async function GET(request: Request) {
       planName: entitlements.plan.name,
       planLabel: planLabel(entitlements.planCode, entitlements.plan.name),
       status,
-      isPaid: entitlements.hasActiveMembership || entitlements.isGracePeriod,
+      isPaid: entitlements.hasActiveMembership || entitlements.isLegacyActive || entitlements.isGracePeriod,
       isLegacyActive: entitlements.isLegacyActive,
       isGracePeriod: entitlements.isGracePeriod,
       gracePeriodDays: entitlements.gracePeriodDays,

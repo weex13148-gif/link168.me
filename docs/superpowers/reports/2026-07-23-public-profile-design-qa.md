@@ -1,36 +1,54 @@
-# Public Profile Design QA — 2026-07-23
+# Public Profile Design QA — 2026-07-26
 
-- reference: `docs/superpowers/assets/2026-07-23-public-profile-ai-reception-reference.png` (not present in this worktree; comparison is pending)
-- public viewport: 390x844 (landing page inspected; no database-backed test profile available)
-- dashboard viewport: 1440x1024 (dashboard entry attempted; blocked by missing local database credentials)
-- responsive viewports: 360px, 390px, 768px (source-level responsive tests passed; authenticated visual pass pending)
-- showcase routes: standard 404
-- console errors: landing page none; `/console` has Prisma authentication error because `.env.local` and the required local database role are absent
-- broken images: none observed on landing page
-- duplicate primary CTA: landing page has distinct registration and login actions; authenticated public-profile CTA remains pending
-- pending third-party checks: 图片自动审核未配置时保持 `pending_manual_review`（待配置验证）
+- public profile: `/ui-audit-20260722`
+- public viewport visually inspected: 390 × 844
+- dashboard: authenticated local test account, mobile editor visually inspected
+- responsive viewports: 360 px, 390 px, 768 px and 1440 px covered by layout regression tests and responsive source rules
+- retired `/showcase` scope: no route in the production build manifest; retirement regression tests pass
+- third-party state: AI provider and automatic image moderation remain **待配置验证**
 
-## Evidence
+## Visual evidence
 
-- `GET /showcase`, `/showcase/judge`, `/showcase/investor`, `/showcase/government`, and `/api/showcase/content` each returned HTTP 404.
-- At 390×844, the landing page rendered without horizontal overflow in the inspected viewport and showed the responsive hero/phone mockup.
-- `/ui-audit-20260722` and `/abao` returned the expected 404 because no database-backed public profile was available after restart.
-- `/console` reached the app but failed during `session.findFirst()` with database authentication failure; no production or external data was changed.
+At 390 × 844, the database-backed public profile rendered:
+
+- a full-width cover area with the identity section integrated into the page rather than a floating white card;
+- the approved logo/avatar without cropping;
+- the profile name, introduction and vCard action;
+- the `ai-chat` module before the service module and within the first viewport;
+- the explicit safe fallback “AI 接待暂未开启 / 联系本人” because no real AI provider is configured;
+- exactly one sticky primary “联系我” action;
+- no “暂无公开内容” placeholder and no horizontal overflow.
+
+The authenticated dashboard rendered the restored profile and two public modules, with a single top save-state indicator, mobile bottom navigation and no horizontal overflow in the inspected mobile viewport. The desktop structure remains the tested three-column editor layout (224 px navigation, flexible editor and 350–370 px preview). A second desktop screenshot could not be captured after the browser automation connection stalled, so desktop acceptance is supported by the existing responsive regression suite and the successful production build rather than a new screenshot.
+
+## Functional evidence
+
+- Local PostgreSQL, the existing test profile and the local login account were restored after restart.
+- A service card was saved through the dashboard UI.
+- A local-only Pro test entitlement was attached without creating a payment or order.
+- An AI reception module was created and moved before the service module.
+- Public AI availability failed safely when the provider was not configured and exposed the contact fallback.
+- A membership inconsistency was found and fixed: valid legacy paid subscriptions are now recognized consistently by the dashboard and by paid-module create/edit APIs.
+- The production route manifest contains no `/showcase` or `/api/showcase/*` route.
 
 ## Result
 
-`final result: pending`
+`final result: passed for local closeout`
 
-The code and source-level responsive checks are complete, but authenticated public-profile and dashboard visual acceptance cannot be certified until the local `.env.local`/PostgreSQL credentials and a real test profile are restored. No fake account or production data was created.
+The implemented SaaS flow is locally runnable and the public-profile closeout is accepted. Production payment, email, AI and automatic moderation still require real credentials and controlled production verification; no success was fabricated for those integrations.
 
 ## Repository gates
 
-- `npx prisma validate`: passed with a command-scoped non-production placeholder URL because `.env.local` is absent; no database connection or write occurred.
+- `npx prisma validate`: passed.
 - `npx prisma generate`: passed.
 - `npm run lint`: passed.
-- `npm run typecheck`: passed after removing the corrupted, Git-ignored `.next` cache left by the interrupted development process.
-- `npm test -- --runInBand`: passed, 35 suites / 454 tests.
-- `npm run build`: passed; the route manifest contains no `/showcase` or `/api/showcase/*` route. With the intentionally invalid command-scoped database URL, static page collection logged a Prisma connection warning but the production build completed successfully.
-- `git diff --check`: passed.
+- `npm run typecheck`: passed.
+- `npm test -- --runInBand`: passed, 36 suites / 456 tests.
+- `npm run build`: passed; 142 static pages generated and no showcase route appears in the route manifest.
+- `git diff --check`: passed after the final report update.
+
+## Dependency audit
+
+`npm audit --omit=dev` reports three high and one moderate advisory in the Prisma CLI dependency chain (`prisma` → `@prisma/dev` → `find-my-way` / `valibot`). The registry proposes a Prisma downgrade to 7.8.0. No forced downgrade was applied during closeout because it changes the schema toolchain and requires a separate compatibility review.
 
 The Next.js build rewrote `next-env.d.ts`; the pre-existing user-owned development-types reference was restored afterward and remains intentionally uncommitted.
