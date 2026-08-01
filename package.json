@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "node scripts/release/prepare-standalone.js",
     "start": "node .next/standalone/server.js",
     "lint": "eslint src --quiet",
     "typecheck": "tsc --noEmit",

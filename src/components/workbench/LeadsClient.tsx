@@ -271,7 +271,7 @@ type Props = {
 export default function LeadsClient({ initialLeads, initialStats }: Props) {
   const [leads, setLeads] = useState<LeadItem[]>(initialLeads);
   const [stats, setStats] = useState(initialStats);
-  const [filter, setFilter] = useState<string>("all");
+  const [filter, setFilter] = useState<string>("pending");
   const [detail, setDetail] = useState<LeadItem | null>(null);
   const [loading, setLoading] = useState(false);
   const [noteInput, setNoteInput] = useState("");
@@ -299,7 +299,7 @@ export default function LeadsClient({ initialLeads, initialStats }: Props) {
       const params = new URLSearchParams();
       if (searchQuery) params.set("search", searchQuery);
       if (sourceFilter) params.set("source", sourceFilter);
-      if (filter !== "all") params.set("status", filter);
+      params.set("statusGroup", filter);
       if (timeRange === "today") {
         const today = formatDate(new Date());
         params.set("dateFrom", today);
@@ -336,12 +336,14 @@ export default function LeadsClient({ initialLeads, initialStats }: Props) {
   }, [searchQuery, sourceFilter, filter, timeRange, dateFrom, dateTo, page, pageSize]);
 
   useEffect(() => {
-    if (hasSearched || page > 1 || pageSize !== 50) {
-      fetchLeads();
-    }
-  }, [hasSearched, page, pageSize, fetchLeads]);
+    void fetchLeads();
+  }, [fetchLeads]);
 
-  const filteredLeads = filter === "all" ? leads : leads.filter((l) => l.status === filter);
+  const filteredLeads = leads.filter((lead) => {
+    if (filter === "pending") return lead.status === "new" || lead.status === "viewed";
+    if (filter === "completed") return lead.status === "won" || lead.status === "closed";
+    return lead.status === "following_up";
+  });
 
   const displayStats = stats ?? {
     total: leads.length,
@@ -353,12 +355,9 @@ export default function LeadsClient({ initialLeads, initialStats }: Props) {
   };
 
   const filterTabs = [
-    { key: "all", label: "全部", count: displayStats.total },
-    { key: "new", label: "新线索", count: displayStats.new },
-    { key: "viewed", label: "已查看", count: displayStats.viewed },
+    { key: "pending", label: "待处理", count: displayStats.new + displayStats.viewed },
     { key: "following_up", label: "跟进中", count: displayStats.following_up },
-    { key: "won", label: "已成交", count: displayStats.won },
-    { key: "closed", label: "已关闭", count: displayStats.closed },
+    { key: "completed", label: "已完成", count: displayStats.won + displayStats.closed },
   ];
 
   const handleSearch = () => {
@@ -379,9 +378,6 @@ export default function LeadsClient({ initialLeads, initialStats }: Props) {
   const handleStatusTabClick = (status: string) => {
     setFilter(status);
     setPage(1);
-    if (hasSearched) {
-      fetchLeads();
-    }
   };
 
   const handleCopyContact = async (field: string, value: string) => {
@@ -446,7 +442,7 @@ export default function LeadsClient({ initialLeads, initialStats }: Props) {
 
   return (
     <>
-      <section className="mt-6 grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+      <section className="mt-6 grid gap-3 grid-cols-3">
         {filterTabs.map((tab) => {
           const cfg = tab.key === "all"
             ? { color: "text-[#2B241E]", bg: "bg-[#F7F1E7]", dot: "bg-[#6F8F4E]" }
@@ -488,7 +484,7 @@ export default function LeadsClient({ initialLeads, initialStats }: Props) {
             </button>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          {showFilters ? <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="relative flex-1">
               <Search aria-hidden className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#7A6D5E]" />
               <input
@@ -508,7 +504,7 @@ export default function LeadsClient({ initialLeads, initialStats }: Props) {
                 搜索
               </button>
             </div>
-          </div>
+          </div> : null}
 
           {showFilters && (
             <div className="grid gap-3 pt-2 border-t border-[#F2E7D8] sm:grid-cols-2 lg:grid-cols-4">
@@ -852,6 +848,18 @@ export default function LeadsClient({ initialLeads, initialStats }: Props) {
                   </div>
                 </div>
               </div>
+
+              {(detail.status === "new" || detail.status === "viewed") ? (
+                <button
+                  type="button"
+                  onClick={() => updateStatus(detail.id, "following_up")}
+                  disabled={loading}
+                  className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#6F8F4E] px-4 text-sm font-black text-white disabled:opacity-50 sm:w-auto"
+                >
+                  <ArrowRight aria-hidden className="size-4" />
+                  开始跟进
+                </button>
+              ) : null}
 
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-2xl bg-[#F7F1E7] p-4">

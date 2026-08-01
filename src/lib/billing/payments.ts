@@ -377,7 +377,7 @@ async function createAlipayPayment(order: BillingOrder, config: PaymentConfig): 
     timestamp: new Date().toISOString().replace("T", " ").slice(0, 19),
     version: "1.0",
     notify_url: resolveNotifyUrl(config.alipayNotifyUrl, DEFAULT_ALIPAY_NOTIFY_PATH),
-    return_url: `${process.env.NEXT_PUBLIC_APP_URL || ""}/workbench/membership`,
+    return_url: `${process.env.NEXT_PUBLIC_APP_URL || ""}/console/membership`,
     biz_content: JSON.stringify({
       out_trade_no: order.orderNo,
       product_code: "FAST_INSTANT_TRADE_PAY",

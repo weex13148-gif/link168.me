@@ -218,7 +218,7 @@ export async function assignUsername(
             theme: "Link168 草木默认",
             language: "zh",
             customTheme: null,
-            isPublic: true,
+            isPublic: false,
           },
           update: { username: finalUsername, updatedAt: now },
         });

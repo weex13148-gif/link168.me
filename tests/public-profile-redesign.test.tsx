@@ -251,10 +251,10 @@ test("new business cards consume the shared surface opacity and radius", () => {
 test("an enabled AI reception replaces the public CTA and focuses the chat input", async () => {
   renderPublicProfileWithAi({ ok: true, body: { success: true, config: publicAiConfig } });
 
-  await waitFor(() => expect(screen.getByRole("button", { name: "开始咨询" })).toBeInTheDocument());
-  expect(screen.getAllByRole("button", { name: /开始咨询|联系我/ })).toHaveLength(1);
+  await waitFor(() => expect(screen.getByRole("button", { name: "立即咨询" })).toBeInTheDocument());
+  expect(screen.getAllByRole("button", { name: /立即咨询|留下需求/ })).toHaveLength(1);
 
-  fireEvent.click(screen.getByRole("button", { name: "开始咨询" }));
+  fireEvent.click(screen.getByRole("button", { name: "立即咨询" }));
   expect(screen.getByLabelText("AI 咨询问题")).toHaveFocus();
 });
 
@@ -264,7 +264,7 @@ test("the sticky contact bar inherits the normalized profile button radius", asy
     { customTheme: JSON.stringify({ buttonRadius: 7 }) },
   );
 
-  const action = await screen.findByRole("button", { name: "联系我" });
+  const action = await screen.findByRole("button", { name: "留下需求" });
   expect(action).toHaveStyle({ borderRadius: "var(--profile-button-radius, 16px)" });
   expect(action.closest("[data-profile-template]")).toHaveStyle({ "--profile-button-radius": "7px" });
   expect(action.parentElement).toHaveClass("fixed", "inset-x-0", "bottom-0", "backdrop-blur");
@@ -273,8 +273,8 @@ test("the sticky contact bar inherits the normalized profile button radius", asy
 test.each([404, 403, 503])("an unavailable AI configuration (%i) keeps only the contact CTA", async (status) => {
   renderPublicProfileWithAi({ ok: false, status });
 
-  await waitFor(() => expect(screen.getByRole("button", { name: "联系我" })).toBeInTheDocument());
-  expect(screen.getAllByRole("button", { name: /开始咨询|联系我/ })).toHaveLength(1);
+  await waitFor(() => expect(screen.getByRole("button", { name: "留下需求" })).toBeInTheDocument());
+  expect(screen.getAllByRole("button", { name: /立即咨询|留下需求/ })).toHaveLength(1);
 });
 
 test.each([
@@ -283,15 +283,15 @@ test.each([
 ])("a disabled or unreachable AI configuration keeps only the contact CTA", async (response) => {
   renderPublicProfileWithAi(response);
 
-  await waitFor(() => expect(screen.getByRole("button", { name: "联系我" })).toBeInTheDocument());
-  expect(screen.getAllByRole("button", { name: /开始咨询|联系我/ })).toHaveLength(1);
+  await waitFor(() => expect(screen.getByRole("button", { name: "留下需求" })).toBeInTheDocument());
+  expect(screen.getAllByRole("button", { name: /立即咨询|留下需求/ })).toHaveLength(1);
 });
 
 test("a failed contact submit preserves values and Escape closes the dialog", async () => {
   const view = renderPublicProfileWithAi({ ok: false, status: 503 });
 
-  await waitFor(() => expect(screen.getByRole("button", { name: "联系我" })).toBeInTheDocument());
-  fireEvent.click(screen.getByRole("button", { name: "联系我" }));
+  await waitFor(() => expect(screen.getByRole("button", { name: "留下需求" })).toBeInTheDocument());
+  fireEvent.click(screen.getByRole("button", { name: "留下需求" }));
   fireEvent.change(screen.getByPlaceholderText("如何称呼你"), { target: { value: "访客" } });
   fireEvent.change(screen.getByPlaceholderText("方便联系你的方式"), { target: { value: "visitor@example.com" } });
   fireEvent.click(screen.getByRole("button", { name: "提交联系信息" }));

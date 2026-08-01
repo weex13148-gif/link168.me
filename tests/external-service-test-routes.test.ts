@@ -78,11 +78,15 @@ jest.mock("@/lib/admin-audit-log", () => ({
 
 jest.mock("@/lib/ai/enterprise-bailian", () => ({
   getEnterpriseAiSettingsUrlValidationError: jest.fn(() => null),
+  resolveEnterpriseBailianConfig: jest.fn((config) => ({
+    appId: config.aiBailianAppId || "",
+    apiKey: config.aiApiKey || "",
+    baseUrl: config.aiBailianBaseUrl || "",
+    dashscopeWorkspaceId: config.aiBailianWorkspaceId || "",
+    timeoutMs: (config.aiRequestTimeout || 45) * 1000,
+    configured: Boolean(config.aiBailianAppId && config.aiApiKey && config.aiBailianBaseUrl),
+  })),
   validateEnterpriseAiSettingsPatch: jest.fn((value) => value),
-}));
-
-jest.mock("@/lib/auth", () => ({
-  ROLE_SUPER_ADMIN: "super_admin",
 }));
 
 jest.mock("@/lib/db", () => ({ db: mockDb }));
@@ -142,6 +146,10 @@ function aiConfig() {
     aiBaseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1",
     aiApiKey: "sk-route-test-secret",
     aiModel: "qwen-plus",
+    aiBailianAppId: "app-route-test",
+    aiBailianBaseUrl: "https://dashscope.aliyuncs.com/api/v1",
+    aiBailianWorkspaceId: "workspace-route-test",
+    aiRequestTimeout: 45,
   };
 }
 
@@ -201,14 +209,13 @@ describe("real external-service test routes", () => {
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
-  test("AI test records a pass only after a real completion response", async () => {
+  test("AI test records a pass only after a real Bailian application response", async () => {
     const config = aiConfig();
     mockGetConfig.mockResolvedValue(config);
     mockFetch.mockResolvedValue(new Response(JSON.stringify({
-      id: "chatcmpl-test",
-      model: "qwen-plus",
-      choices: [{ message: { content: "Hello from the provider." } }],
-      usage: { prompt_tokens: 2, completion_tokens: 5, total_tokens: 7 },
+      request_id: "bailian-app-test",
+      output: { text: "连接测试成功", session_id: "session-test" },
+      usage: { model_id: "qwen-plus", input_tokens: 2, output_tokens: 5, total_tokens: 7 },
     }), {
       status: 200,
       headers: { "content-type": "application/json" },
@@ -224,17 +231,19 @@ describe("real external-service test routes", () => {
       success: true,
       data: {
         success: true,
-        requestId: "chatcmpl-test",
+        requestId: "bailian-app-test",
         totalTokens: 7,
       },
     });
     expect(mockFetch).toHaveBeenCalledWith(
-      "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+      "https://dashscope.aliyuncs.com/api/v1/apps/app-route-test/completion",
       expect.objectContaining({
         method: "POST",
         headers: expect.objectContaining({
           Authorization: "Bearer sk-route-test-secret",
+          "X-DashScope-WorkSpace": "workspace-route-test",
         }),
+        body: expect.stringContaining('"prompt":"请只回复：连接测试成功"'),
       }),
     );
     expect(mockRecordExternalServiceTest).toHaveBeenCalledWith(
@@ -244,13 +253,12 @@ describe("real external-service test routes", () => {
     );
   });
 
-  test("AI test rejects a 200 response without a usable completion", async () => {
+  test("AI test rejects a 200 application response without a usable reply", async () => {
     const config = aiConfig();
     mockGetConfig.mockResolvedValue(config);
     mockFetch.mockResolvedValue(new Response(JSON.stringify({
-      id: "empty-completion",
-      model: "qwen-plus",
-      choices: [],
+      request_id: "empty-application-reply",
+      output: {},
     }), {
       status: 200,
       headers: { "content-type": "application/json" },

@@ -388,7 +388,7 @@ export default function HelpPage() {
                 <h2 className="mt-2 text-3xl font-black sm:text-4xl">你想解决什么问题？</h2>
               </div>
               <Link
-                href="/dashboard"
+                href="/console/card"
                 className="link168-button-press inline-flex w-fit items-center gap-2 rounded-full bg-[#0B6B2B] px-5 py-3 text-sm font-black text-white shadow-xl shadow-[#0B6B2B]/15 transition hover:-translate-y-0.5"
               >
                 回到后台

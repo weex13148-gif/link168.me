@@ -1,4 +1,5 @@
 export type DashboardTab = "home" | "profile" | "links" | "appearance" | "share" | "stats" | "account";
+export type CardEditorSection = "content" | "style" | "publish";
 
 export type SaveState = "saved" | "dirty" | "saving" | "error";
 
@@ -31,6 +32,7 @@ export type DashboardProfile = {
   language: string;
   custom_theme: string | null;
   is_public: boolean;
+  first_published_at: string | null;
   company: string | null;
   job_title: string | null;
   phone: string | null;
@@ -173,7 +175,7 @@ export const emptyLinkDraft: LinkDraft = {
 
 export function isTemporaryUsername(username: string | null | undefined) {
   const value = (username || "").trim().toLowerCase();
-  return !value || value === "yourname" || /^user-[a-z0-9]{6,}$/i.test(value);
+  return !value || value === "yourname" || /^user-[a-z0-9]{6,}$/i.test(value) || /^u_[a-z0-9]{8,}$/i.test(value);
 }
 
 export function publicProfileUrl(username: string | null | undefined) {

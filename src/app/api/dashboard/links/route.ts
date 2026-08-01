@@ -330,6 +330,6 @@ export async function GET(request: Request) {
   if (response || !user) return response;
   const profile = await getOwnedProfile(user.id);
   if (!profile) return NextResponse.json({ success: false, error: "没有找到当前用户的主页资料。" }, { status: 404 });
-  const links = await db.link.findMany({ where: { profileId: profile.id }, orderBy: [{ isActive: "desc" }, { position: "asc" }] });
+  const links = await db.link.findMany({ where: { profileId: profile.id, workspaceId: null }, orderBy: [{ isActive: "desc" }, { position: "asc" }] });
   return NextResponse.json({ success: true, links: links.map(toLinkDto) });
 }

@@ -140,7 +140,7 @@ function VerifyEmailForm() {
         <button type="button" onClick={() => void handleResend()} disabled={cooldown > 0 || resending} className="font-black text-[var(--ui-brand-hover)] disabled:cursor-not-allowed disabled:text-[var(--ui-faint)]">
           {resending ? "正在发送…" : cooldown > 0 ? `${cooldown} 秒后可重新发送` : "重新发送验证码"}
         </button>
-        <Link href="/dashboard" className="font-bold text-[var(--ui-muted)]">稍后验证，先进入后台</Link>
+        <Link href="/onboarding" className="font-bold text-[var(--ui-muted)]">稍后验证，先创建名片</Link>
         <Link href="/login" className="font-bold text-[var(--ui-muted)]">返回登录</Link>
       </div>
     </section>

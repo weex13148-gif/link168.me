@@ -67,8 +67,8 @@ function ProfileIdentityMedia({
         src={avatarUrl}
         alt={logoMode ? `${name} 的企业标志` : `${name} 的头像`}
         className={logoMode
-          ? "h-20 w-44 rounded-2xl border-4 border-[#FFFDF8] bg-white object-contain p-2 shadow-sm"
-          : `size-20 border-4 border-[#FFFDF8] bg-white object-cover shadow-sm ${portraitFrameClass}`}
+          ? "h-16 w-36 rounded-xl border-4 border-[#FFFDF8] bg-white object-contain p-2 shadow-sm"
+          : `size-16 border-4 border-[#FFFDF8] bg-white object-cover shadow-sm ${portraitFrameClass}`}
         data-avatar-frame={logoMode ? "logo" : avatarFrame}
         onError={() => setImageFailed(true)}
       />
@@ -78,8 +78,8 @@ function ProfileIdentityMedia({
   return (
     <div
       className={logoMode
-        ? "grid h-20 w-44 place-items-center rounded-2xl border-4 border-[#FFFDF8] bg-[#31543D] text-2xl font-black text-white shadow-sm"
-        : `grid size-20 place-items-center border-4 border-[#FFFDF8] bg-[#31543D] text-2xl font-black text-white shadow-sm ${portraitFrameClass}`}
+        ? "grid h-16 w-36 place-items-center rounded-xl border-4 border-[#FFFDF8] bg-[#31543D] text-xl font-black text-white shadow-sm"
+        : `grid size-16 place-items-center border-4 border-[#FFFDF8] bg-[#31543D] text-xl font-black text-white shadow-sm ${portraitFrameClass}`}
       data-avatar-frame={logoMode ? "logo" : avatarFrame}
     >
       {name.slice(0, 1).toUpperCase()}
@@ -108,14 +108,14 @@ export function PublicProfileHero({
 
   return (
     <section className="w-full overflow-hidden bg-[#FFFDF8]">
-      <div className="relative min-h-[200px] overflow-hidden" style={buildCoverStyle(customTheme)}>
+      <div className="relative min-h-[140px] overflow-hidden" style={buildCoverStyle(customTheme)}>
         <span className="absolute left-4 top-4 rounded-full border border-white/50 bg-[#FFFDF8]/85 px-3 py-1.5 text-xs font-black tracking-wide text-[#31543D] backdrop-blur">Link168</span>
         <HeaderActions onQrCodeClick={onQrCodeClick} onShareClick={onShareClick} />
       </div>
-      <div data-public-profile-identity className="relative -mt-10 px-5 pb-5" style={{ color: customTheme?.textColor || "#2B241E" }}>
+      <div data-public-profile-identity className="relative -mt-8 px-5 pb-4" style={{ color: customTheme?.textColor || "#2B241E" }}>
         <ProfileIdentityMedia key={imageKey} name={name} avatarUrl={identity.avatarUrl} avatarMode={avatarMode} avatarFrame={avatarFrame} />
         <div className="mt-3">
-          <h1 className="text-2xl font-black tracking-tight text-current">{name}</h1>
+          <h1 className="text-xl font-black tracking-tight text-current sm:text-2xl">{name}</h1>
           {descriptor ? <p className="mt-1 text-sm font-bold text-current opacity-75">{descriptor}</p> : null}
           {identity.bio ? <p className="mt-3 max-w-lg text-sm leading-6 text-current opacity-80">{identity.bio}</p> : renderMode === "preview" ? <p className="mt-3 text-sm text-current opacity-60">添加一句业务价值介绍</p> : null}
         </div>

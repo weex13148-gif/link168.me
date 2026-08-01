@@ -65,7 +65,7 @@ export default function AccountSecurityPage() {
       setConfirmPassword("");
 
       window.setTimeout(() => {
-        router.push("/dashboard");
+        router.push("/console/card");
       }, 1500);
     } catch {
       setLoading(false);
@@ -163,7 +163,7 @@ export default function AccountSecurityPage() {
           <Link href="/account/sessions" className="font-black text-[#3F5F31]">
             管理已登录设备
           </Link>
-          <Link href="/dashboard" className="font-black text-[#3F5F31]">
+          <Link href="/console/card" className="font-black text-[#3F5F31]">
             返回后台
           </Link>
         </div>

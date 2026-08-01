@@ -19,14 +19,20 @@ type ChatMessage = {
 type Props = {
   username: string;
   mode?: "customer-service" | "sales-agent";
+  handoffContactEntryId?: string;
   onAvailabilityChange?: (available: boolean) => void;
   onOpenContact?: () => void;
+  onOpenContactEntry?: (contactEntryId?: string) => void;
 };
 
 type ChatApiResult = {
   success?: boolean;
   code?: string;
-  data?: { reply?: string; replyKind?: "ai" | "preset" };
+  data?: {
+    reply?: string;
+    replyKind?: "ai" | "preset";
+    action?: { type?: string; contactEntryId?: string };
+  };
 };
 
 function publicErrorMessage(code?: string) {
@@ -49,7 +55,7 @@ function actionIcon(action: AiReceptionQuickAction) {
   return <Send className="size-3.5" />;
 }
 
-export function AiChatModule({ username, mode = "customer-service", onAvailabilityChange, onOpenContact }: Props) {
+export function AiChatModule({ username, mode = "customer-service", handoffContactEntryId, onAvailabilityChange, onOpenContact, onOpenContactEntry }: Props) {
   const [config, setConfig] = useState<PublicAiReceptionConfig | null>(null);
   const [configLoading, setConfigLoading] = useState(true);
   const [configUnavailable, setConfigUnavailable] = useState(false);
@@ -123,12 +129,15 @@ export function AiChatModule({ username, mode = "customer-service", onAvailabili
         method: "POST",
         headers: { "Content-Type": "application/json" },
         cache: "no-store",
-        body: JSON.stringify({ username, message, requestId }),
+        body: JSON.stringify({ username, message, requestId, handoffContactEntryId }),
       });
       const result = await response.json() as ChatApiResult;
       if (response.ok && result.success && result.data?.reply) {
         const reply = result.data.reply;
         appendMessage("assistant", reply, result.data.replyKind === "preset" ? "preset" : "ai");
+        if (result.data.action?.type === "contact") {
+          window.setTimeout(() => onOpenContactEntry?.(result.data?.action?.contactEntryId), 0);
+        }
       } else {
         appendMessage("system", publicErrorMessage(result.code));
       }

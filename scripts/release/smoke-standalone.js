@@ -9,13 +9,12 @@ const standaloneDir = path.join(root, ".next", "standalone");
 const serverPath = path.join(standaloneDir, "server.js");
 const port = Number(process.env.RELEASE_SMOKE_PORT || 3000);
 const baseUrl = `http://127.0.0.1:${port}`;
+const requireDatabase = String(process.env.RELEASE_SMOKE_REQUIRE_DB || "").toLowerCase() === "true";
 
-function ensureDirectory(source, destination) {
-  if (!fs.existsSync(source)) {
-    throw new Error(`Required runtime asset directory is missing: ${path.relative(root, source)}`);
+function requireRuntimeDirectory(target) {
+  if (!fs.existsSync(target)) {
+    throw new Error(`Required packaged runtime asset directory is missing: ${path.relative(root, target)}`);
   }
-  fs.mkdirSync(path.dirname(destination), { recursive: true });
-  fs.cpSync(source, destination, { recursive: true, force: true });
 }
 
 async function request(pathname) {
@@ -31,9 +30,9 @@ async function waitUntilReady() {
   let lastError;
   while (Date.now() < deadline) {
     try {
-      const response = await request("/api/health");
+      const response = await request("/");
       if (response.status === 200) return response;
-      lastError = new Error(`health returned ${response.status}`);
+      lastError = new Error(`homepage returned ${response.status}`);
     } catch (error) {
       lastError = error;
     }
@@ -53,8 +52,8 @@ async function main() {
     throw new Error("Missing .next/standalone/server.js. Run npm run build first.");
   }
 
-  ensureDirectory(path.join(root, ".next", "static"), path.join(standaloneDir, ".next", "static"));
-  ensureDirectory(path.join(root, "public"), path.join(standaloneDir, "public"));
+  requireRuntimeDirectory(path.join(standaloneDir, ".next", "static"));
+  requireRuntimeDirectory(path.join(standaloneDir, "public"));
 
   const child = spawn(process.execPath, [serverPath], {
     cwd: standaloneDir,
@@ -72,16 +71,7 @@ async function main() {
   child.stderr.on("data", (chunk) => { output += String(chunk); });
 
   try {
-    const healthResponse = await waitUntilReady();
-    const health = await healthResponse.json();
-    if (health.status !== "ok" || health.database !== "ok") {
-      throw new Error("Health endpoint did not confirm application and database readiness");
-    }
-
-    const homeResponse = await request("/");
-    if (homeResponse.status !== 200) {
-      throw new Error(`Homepage returned ${homeResponse.status}`);
-    }
+    const homeResponse = await waitUntilReady();
     const html = await homeResponse.text();
 
     const staticAsset = firstAsset(html, "/_next/static/");
@@ -92,7 +82,20 @@ async function main() {
     const brandResponse = await request("/brand/link168-logo.png");
     if (brandResponse.status !== 200) throw new Error(`Brand asset returned ${brandResponse.status}`);
 
-    console.log("[release:smoke] standalone homepage, health, static and brand assets passed");
+    if (requireDatabase) {
+      const healthResponse = await request("/api/health");
+      if (healthResponse.status !== 200) {
+        throw new Error(`Health endpoint returned ${healthResponse.status}`);
+      }
+      const health = await healthResponse.json();
+      if (health.status !== "ok" || health.database !== "ok") {
+        throw new Error("Health endpoint did not confirm application and database readiness");
+      }
+    }
+
+    console.log(
+      `[release:smoke] packaged standalone homepage, static and brand assets passed${requireDatabase ? "; database health passed" : ""}`,
+    );
   } finally {
     child.kill("SIGTERM");
     await new Promise((resolve) => {

@@ -14,6 +14,7 @@ export function toProfileDto(profile: {
   language: string;
   customTheme: string | null;
   isPublic: boolean;
+  firstPublishedAt: Date | null;
   company: string | null;
   jobTitle: string | null;
   phone: string | null;
@@ -39,6 +40,7 @@ export function toProfileDto(profile: {
     language: profile.language,
     custom_theme: profile.customTheme,
     is_public: profile.isPublic,
+    first_published_at: profile.firstPublishedAt?.toISOString() ?? null,
     company: profile.company,
     job_title: profile.jobTitle,
     phone: profile.phone,
@@ -144,7 +146,7 @@ export async function getDashboardData(userId: string) {
   // V2: profile 显式 include template 与会员字段
   const profile = await db.profile.findUnique({
     where: { userId },
-    include: { links: { orderBy: { position: "asc" } } },
+    include: { links: { where: { workspaceId: null }, orderBy: { position: "asc" } } },
   });
 
   // V2-006: 同时拉取最新 20 条线索用于 Dashboard 摘要

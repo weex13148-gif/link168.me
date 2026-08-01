@@ -3,7 +3,7 @@ import path from "node:path";
 
 test("AI reception server page serializes only the customer DTO", () => {
   const page = fs.readFileSync(
-    path.join(process.cwd(), "src/app/workbench/ai/reception/page.tsx"),
+    path.join(process.cwd(), "src/app/console/ai-reception/page.tsx"),
     "utf8",
   );
 

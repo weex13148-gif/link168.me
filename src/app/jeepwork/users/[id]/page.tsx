@@ -81,7 +81,7 @@ function formatDateShort(value: string) {
 
 function roleLabel(role: string) {
   if (role === "super_admin") return "超级管理员";
-  if (role === "admin") return "管理员";
+  if (role === "admin") return "历史管理员";
   if (role === "user") return "普通用户";
   return role;
 }
@@ -458,15 +458,6 @@ export default function JeepworkUserDetailPage({ params }: { params: Promise<{ i
               ) : (
                 <>
                   <p className="mr-2 text-sm font-bold text-[#7A6D5E]">修改角色：</p>
-                  {currentRole !== "admin" && (
-                    <button
-                      type="button"
-                      onClick={() => setModal({ type: "changeRole", newRole: "admin" })}
-                      className="min-h-10 rounded-2xl border border-[#E8DCCB] bg-white px-4 text-sm font-bold text-[#2B241E] hover:bg-[#F5F0E7]"
-                    >
-                      设为管理员
-                    </button>
-                  )}
                   {currentRole !== "super_admin" && (
                     <button
                       type="button"

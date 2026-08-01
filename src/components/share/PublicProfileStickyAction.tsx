@@ -10,7 +10,7 @@ export function PublicProfileStickyAction({
   onClick: () => void;
 }) {
   const isAi = kind === "ai";
-  const label = isAi ? "开始咨询" : "联系我";
+  const label = isAi ? "立即咨询" : "留下需求";
 
   return (
     <div

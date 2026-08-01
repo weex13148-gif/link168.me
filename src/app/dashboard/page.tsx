@@ -1,7 +1,11 @@
-import DashboardV1Client from "@/components/dashboard-v1/DashboardV1Client";
+import { redirect } from "next/navigation";
+import { resolveLegacyConsoleRoute } from "@/lib/legacy-console-routes";
 
-export const dynamic = "force-dynamic";
-
-export default function DashboardPage() {
-  return <DashboardV1Client />;
+export default async function DashboardCompatibilityPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
+  const query = await searchParams;
+  redirect(resolveLegacyConsoleRoute("/dashboard", query.tab) || "/console/card");
 }

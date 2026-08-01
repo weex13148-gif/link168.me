@@ -79,6 +79,28 @@ describe("workspace proxy Host preservation", () => {
     expect(mockResolveDomain).not.toHaveBeenCalled();
   });
 
+  test("treats the configured testnet Host as a platform entry", async () => {
+    const previousAppUrl = process.env.NEXT_PUBLIC_APP_URL;
+    process.env.NEXT_PUBLIC_APP_URL = "https://testnet.example.com";
+
+    try {
+      const request = new NextRequest("https://testnet.example.com/console", {
+        headers: { host: "testnet.example.com" },
+      });
+
+      const response = await proxy(request);
+
+      expect(response.headers.get("x-middleware-rewrite")).toBeNull();
+      expect(mockResolveDomain).not.toHaveBeenCalled();
+    } finally {
+      if (previousAppUrl === undefined) {
+        delete process.env.NEXT_PUBLIC_APP_URL;
+      } else {
+        process.env.NEXT_PUBLIC_APP_URL = previousAppUrl;
+      }
+    }
+  });
+
   test("preserves a valid proof across the internal rewrite pass", async () => {
     const firstRequest = new NextRequest("http://localhost:3000/", {
       headers: { host: "brand.example.com" },

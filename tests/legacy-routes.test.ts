@@ -11,12 +11,13 @@ describe("Legacy route compatibility", () => {
     expect(content).toContain('redirect("/console")');
   });
 
-  test("/dashboard page exists as card editor compatibility entry", () => {
+  test("/dashboard page is a compatibility redirect", () => {
     const dashboardPage = path.join(srcRoot, "app", "dashboard", "page.tsx");
     expect(fs.existsSync(dashboardPage)).toBe(true);
     const content = fs.readFileSync(dashboardPage, "utf-8");
     expect(content.length).toBeGreaterThan(0);
-    expect(content).toContain("DashboardV1Client");
+    expect(content).toContain("resolveLegacyConsoleRoute");
+    expect(content).not.toContain("DashboardV1Client");
   });
 
   test("/console page exists as the sole user shell", () => {

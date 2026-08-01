@@ -35,7 +35,7 @@ type ActionState = {
 
 type ModalState =
   | { type: "none" }
-  | { type: "changeRole"; userId: string; email: string; newRole: string }
+  | { type: "changeRole"; userId: string; email: string; newRole: "super_admin" | "user" }
   | { type: "freeze"; userId: string; email: string }
   | { type: "ban"; userId: string; email: string }
   | { type: "unfreeze"; userId: string; email: string }
@@ -52,7 +52,7 @@ function formatDate(value: string) {
 
 function roleLabel(role: string) {
   if (role === "super_admin") return "超级管理员";
-  if (role === "admin") return "管理员";
+  if (role === "admin") return "历史管理员";
   if (role === "user") return "普通用户";
   return role;
 }
@@ -303,7 +303,7 @@ export default function AdminUsersClient({ currentUserEmail }: { currentUserEmai
     return user._restrictions?.some((r) => r.type === "BANNED" && r.isActive);
   }
 
-  function openChangeRole(user: UserRow, newRole: string) {
+  function openChangeRole(user: UserRow, newRole: "super_admin" | "user") {
     setModal({ type: "changeRole", userId: user.id, email: user.email, newRole });
   }
 
@@ -453,7 +453,7 @@ export default function AdminUsersClient({ currentUserEmail }: { currentUserEmai
           >
             <option value="">全部角色</option>
             <option value="super_admin">超级管理员</option>
-            <option value="admin">管理员</option>
+            <option value="admin">历史管理员（仅迁移）</option>
             <option value="user">普通用户</option>
           </select>
         </label>
@@ -596,16 +596,6 @@ export default function AdminUsersClient({ currentUserEmail }: { currentUserEmai
                     </span>
                   ) : (
                     <>
-                      {userItem.role !== "admin" && (
-                        <button
-                          type="button"
-                          onClick={() => openChangeRole(userItem, "admin")}
-                          disabled={action.loading}
-                          className="min-h-10 rounded-2xl border border-[#E8DCCB] bg-white px-3 text-sm font-bold text-[#2B241E] disabled:opacity-60"
-                        >
-                          设为管理员
-                        </button>
-                      )}
                       {userItem.role !== "super_admin" && (
                         <button
                           type="button"

@@ -192,6 +192,7 @@ exports.Prisma.ProfileScalarFieldEnum = {
   template: 'template',
   language: 'language',
   isPublic: 'isPublic',
+  firstPublishedAt: 'firstPublishedAt',
   company: 'company',
   jobTitle: 'jobTitle',
   phone: 'phone',
@@ -236,6 +237,7 @@ exports.Prisma.WorkspacePublicProfileScalarFieldEnum = {
 exports.Prisma.LinkScalarFieldEnum = {
   id: 'id',
   profileId: 'profileId',
+  workspaceId: 'workspaceId',
   type: 'type',
   payloadJson: 'payloadJson',
   title: 'title',
@@ -410,6 +412,9 @@ exports.Prisma.AdminAuditLogScalarFieldEnum = {
 exports.Prisma.LeadScalarFieldEnum = {
   id: 'id',
   profileId: 'profileId',
+  workspaceId: 'workspaceId',
+  contactEntryId: 'contactEntryId',
+  claimedByUserId: 'claimedByUserId',
   name: 'name',
   email: 'email',
   phone: 'phone',

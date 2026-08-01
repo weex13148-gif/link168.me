@@ -15,7 +15,6 @@ import {
   type SmtpSecureMode,
   type StorageProvider,
 } from "@/lib/app-config";
-import { ROLE_SUPER_ADMIN } from "@/lib/auth";
 import { db } from "@/lib/db";
 import {
   getExternalServiceReadiness,
@@ -287,15 +286,6 @@ async function testWhitelist(emailValue: unknown) {
   return NextResponse.json({ success: true, data: { message: tester ? "该邮箱在 AI 测试白名单中。" : "该邮箱不在 AI 测试白名单中。", email, isTester: tester, usage }, error: null });
 }
 
-async function promoteSuperAdmin(emailValue: unknown) {
-  const email = text(emailValue).toLowerCase();
-  if (!EMAIL_REGEX.test(email)) return errorResponse("BAD_EMAIL", "请输入正确的邮箱地址。", 400);
-  const user = await db.user.findUnique({ where: { email }, select: { id: true } });
-  if (!user) return errorResponse("NOT_FOUND", "没有找到该用户。", 404);
-  await db.user.update({ where: { id: user.id }, data: { role: ROLE_SUPER_ADMIN } });
-  return NextResponse.json({ success: true, data: { message: `已将 ${email} 设置为超级管理员。` }, error: null });
-}
-
 async function testAi() {
   const config = await getConfig();
   if (!config.aiEnabled) return errorResponse("AI_DISABLED", "AI 服务总开关尚未开启。", 400);
@@ -317,7 +307,6 @@ export async function POST(request: Request) {
   switch (body.action) {
     case "test-mail": return testMail(body.email);
     case "test-email": return testWhitelist(body.email);
-    case "promote-super-admin": return promoteSuperAdmin(body.email);
     case "test-ai-connection": return testAi();
     case "test-storage": return errorResponse("REAL_TEST_UNAVAILABLE", "尚未执行对象存储真实读写删除测试，不能标记为通过。", 409);
     case "test-payment": return errorResponse("REAL_TEST_REQUIRED", "本地签名校验不代表支付宝连接通过，请使用真实查单并完成响应验签。", 409);

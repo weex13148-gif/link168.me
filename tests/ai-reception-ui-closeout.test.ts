@@ -71,7 +71,7 @@ describe("AI reception customer and visitor UI closeout", () => {
     expect(renderer).toContain("onOpenContact");
     expect(renderer).not.toContain("aiPayload.assistantName");
     expect(renderer).not.toContain("aiPayload.greeting");
-    expect(editor).toContain("/workbench/ai/reception");
+    expect(editor).toContain("/console/ai-reception");
     expect(editor).toContain("助手名称、欢迎语、业务资料和快捷回复");
     expect(editor).not.toContain('payloadField(draft.payloadJson, "assistantName")');
     expect(editor).not.toContain('payloadField(draft.payloadJson, "greeting")');

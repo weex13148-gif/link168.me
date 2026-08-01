@@ -45,6 +45,7 @@ model User {
   ownedWorkspaces             Workspace[]                  @relation("WorkspaceOwner")
   workspacePublicProfiles     WorkspacePublicProfile[]
   enterpriseQuotaConsumptions EnterpriseQuotaConsumption[]
+  claimedWorkspaceLeads       Lead[]                       @relation("WorkspaceLeadClaimer")
 
   @@map("users")
 }
@@ -124,7 +125,8 @@ model Profile {
   // V2-004: 模板选择持久化 — business / creator / conversion
   template                   String           @default("business")
   language                   String           @default("zh")
-  isPublic                   Boolean          @default(true) @map("is_public")
+  isPublic                   Boolean          @default(false) @map("is_public")
+  firstPublishedAt           DateTime?        @map("first_published_at") @db.Timestamptz(6)
   // 联系方式字段
   company                    String?          @map("company")
   jobTitle                   String?          @map("job_title")
@@ -211,6 +213,8 @@ model WorkspacePublicProfile {
 model Link {
   id                   String      @id @db.Uuid
   profileId            String      @map("profile_id") @db.Uuid
+  // 团队联系入口归属；为空时是个人入口。普通链接继续仅归 Profile 所有。
+  workspaceId          String?     @map("workspace_id") @db.Uuid
   // V2-005: 组件类型 — link/text/group-title/qr/wechat/shop/booking/map/phone
   type                 String      @default("link")
   // V2-005: 组件扩展字段（微信账号、商品价格、预约时间段、地图坐标等）
@@ -228,9 +232,12 @@ model Link {
   createdAt            DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt            DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
   profile              Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  workspace            Workspace?  @relation("WorkspaceContactEntries", fields: [workspaceId], references: [id], onDelete: Restrict)
   clicks               LinkClick[]
+  contactLeads         Lead[]      @relation("ContactEntryLeads")
 
   @@index([profileId, type])
+  @@index([workspaceId, type, position])
   @@map("links")
 }
 
@@ -447,6 +454,10 @@ model AdminAuditLog {
 model Lead {
   id                        String          @id @db.Uuid
   profileId                 String          @map("profile_id") @db.Uuid
+  // 团队联系入口产生的线索进入共享池；为空时保持原有个人线索行为。
+  workspaceId               String?         @map("workspace_id") @db.Uuid
+  contactEntryId            String?         @map("contact_entry_id") @db.Uuid
+  claimedByUserId           String?         @map("claimed_by_user_id") @db.Uuid
   name                      String
   email                     String?
   phone                     String?
@@ -470,12 +481,18 @@ model Lead {
   createdAt                 DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt                 DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
   profile                   Profile         @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  workspace                 Workspace?      @relation("WorkspaceLeads", fields: [workspaceId], references: [id], onDelete: SetNull)
+  contactEntry              Link?           @relation("ContactEntryLeads", fields: [contactEntryId], references: [id], onDelete: SetNull)
+  claimedBy                 User?           @relation("WorkspaceLeadClaimer", fields: [claimedByUserId], references: [id], onDelete: SetNull)
   interestedProduct         Product?        @relation(fields: [interestedProductId], references: [id], onDelete: SetNull)
   conversation              AiConversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
   // 独立跟进记录
   followUps                 LeadFollowUp[]
 
   @@index([profileId, createdAt])
+  @@index([workspaceId, status, createdAt])
+  @@index([workspaceId, claimedByUserId, createdAt])
+  @@index([contactEntryId, createdAt])
   @@index([status])
   @@index([interestedProductId])
   @@map("leads")
@@ -967,6 +984,8 @@ model Workspace {
   members                     WorkspaceMember[]
   domains                     Domain[]
   publicProfiles              WorkspacePublicProfile[]
+  contactEntries              Link[]                       @relation("WorkspaceContactEntries")
+  leads                       Lead[]                       @relation("WorkspaceLeads")
   quotaPool                   EnterpriseQuotaPool?
   enterpriseQuotaConsumptions EnterpriseQuotaConsumption[]
 

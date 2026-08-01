@@ -57,10 +57,27 @@ const nodeEnv = String(process.env.NODE_ENV || "").toLowerCase();
 const appUrl = String(process.env.NEXT_PUBLIC_APP_URL || "").trim();
 const bypass = String(process.env.AUTH_RATE_LIMIT_BYPASS || "false").toLowerCase();
 
-if (nodeEnv === "production") {
-  if (!appUrl.startsWith("https://")) {
-    fail("NEXT_PUBLIC_APP_URL must use HTTPS in production");
+if (appUrl) {
+  try {
+    const parsedAppUrl = new URL(appUrl);
+    if (
+      parsedAppUrl.username
+      || parsedAppUrl.password
+      || parsedAppUrl.pathname !== "/"
+      || parsedAppUrl.search
+      || parsedAppUrl.hash
+    ) {
+      fail("NEXT_PUBLIC_APP_URL must be a bare origin without credentials, path, query, or fragment");
+    }
+    if (nodeEnv === "production" && parsedAppUrl.protocol !== "https:") {
+      fail("NEXT_PUBLIC_APP_URL must use HTTPS in production");
+    }
+  } catch {
+    fail("NEXT_PUBLIC_APP_URL must be a valid absolute URL");
   }
+}
+
+if (nodeEnv === "production") {
   if (bypass === "true") {
     fail("AUTH_RATE_LIMIT_BYPASS must not be enabled in production");
   }

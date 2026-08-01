@@ -41,7 +41,7 @@ export function PublicProfileClientWrapper(props: PublicProfileClientWrapperProp
     <MobileOptimizer>
       {isPreview ? (
         <Link
-          href="/dashboard"
+          href="/console/card"
           className="mb-4 inline-flex w-fit items-center rounded-full bg-[#6F8F4E] px-4 py-2 text-sm font-black text-white shadow-sm"
         >
           返回操作后台

@@ -3,6 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireWorkspacePublicRequestHost } from "@/lib/workspace-public-request";
+import { CONTACT_ENTRY_TYPE } from "@/lib/contact-entries";
+import { ContactEntryCard } from "@/components/share/ContactEntryCard";
+import { TeamAiReception } from "@/components/share/TeamAiReception";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +43,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function EnterpriseHomePage({ params }: Props) {
   const { workspaceId } = await params;
-  await requireWorkspacePublicRequestHost(workspaceId);
+  const verifiedHost = await requireWorkspacePublicRequestHost(workspaceId);
+  const publicBaseUrl = `https://${verifiedHost}`;
   const workspace = await loadWorkspace(workspaceId);
   if (!workspace) notFound();
 
@@ -49,6 +53,7 @@ export default async function EnterpriseHomePage({ params }: Props) {
     .findUnique({
       where: { userId: workspace.ownerId },
       select: {
+        username: true,
         phone: true,
         email: true,
         wechat: true,
@@ -69,6 +74,12 @@ export default async function EnterpriseHomePage({ params }: Props) {
   // 读取企业产品（来自 owner 的 products）
   const productCount = await db.product.count({
     where: { userId: workspace.ownerId, isActive: true },
+  });
+
+  const contactEntries = await db.link.findMany({
+    where: { workspaceId, type: CONTACT_ENTRY_TYPE, isActive: true },
+    orderBy: { position: "asc" },
+    select: { id: true, title: true, description: true, payloadJson: true, workspaceId: true },
   });
 
   const contactIsPublic = ownerProfile?.contactVisibility === "public";
@@ -149,6 +160,42 @@ export default async function EnterpriseHomePage({ params }: Props) {
           <div className="mt-1 text-xs text-gray-500">在线咨询</div>
         </Link>
       </nav>
+
+      {contactEntries.length ? (
+        <section className="border-t border-gray-200 py-8">
+          <h2 className="mb-2 text-lg font-bold text-gray-900">快速添加团队联系人</h2>
+          <p className="mb-4 text-sm text-gray-500">扫码或直接进入微信、企业微信添加页面。点击将进入团队共享线索池。</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {contactEntries.map((entry) => (
+              <ContactEntryCard
+                key={entry.id}
+                publicBaseUrl={publicBaseUrl}
+                entry={{
+                  id: entry.id,
+                  title: entry.title,
+                  description: entry.description,
+                  payload: entry.payloadJson,
+                  workspaceId: entry.workspaceId,
+                }}
+              />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {ownerProfile?.username && contactEntries.length ? (
+        <TeamAiReception
+          username={ownerProfile.username}
+          publicBaseUrl={publicBaseUrl}
+          entries={contactEntries.map((entry) => ({
+            id: entry.id,
+            title: entry.title,
+            description: entry.description,
+            payload: entry.payloadJson,
+            workspaceId: entry.workspaceId,
+          }))}
+        />
+      ) : null}
 
       {/* 联系方式概要 */}
       {hasContact ? (

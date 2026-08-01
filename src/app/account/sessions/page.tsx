@@ -260,7 +260,7 @@ export default function AccountSessionsPage() {
         )}
 
         <div className="mt-8 text-center">
-          <Link href="/dashboard" className="text-sm font-black text-[#3F5F31]">
+          <Link href="/console/card" className="text-sm font-black text-[#3F5F31]">
             返回后台
           </Link>
         </div>

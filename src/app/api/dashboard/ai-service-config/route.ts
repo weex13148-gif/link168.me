@@ -50,7 +50,7 @@ export async function PUT(request: Request) {
     allowProductRecommendation: normalized.allowProductRecommendation,
     collectLead: normalized.collectLead,
     allowReport: normalized.allowReport,
-    allowTransferToHuman: false,
+    allowTransferToHuman: normalized.allowTransferToHuman,
     privacyNoticeText: normalized.privacyNoticeText,
     quickActionsJson: normalized.quickActionsJson,
   };

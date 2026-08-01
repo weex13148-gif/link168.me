@@ -39,6 +39,8 @@ import ServiceCardModule from "@/components/share/modules/ServiceCardModule";
 import OfferModule from "@/components/share/modules/OfferModule";
 import { QuoteModule } from "@/components/share/modules/QuoteModule";
 import { ContactFormModule } from "@/components/share/modules/ContactFormModule";
+import { ContactEntryCard } from "@/components/share/ContactEntryCard";
+import { CONTACT_ENTRY_TYPE } from "@/lib/contact-entries";
 import {
   isModuleType,
   validateModulePayload,
@@ -73,6 +75,7 @@ export type SharePageLink = {
   type?: string | null;
   componentType?: string | null;
   payload?: string | null;
+  workspaceId?: string | null;
 };
 
 export interface SharePageRendererProps extends PublicProfileIdentity {
@@ -94,6 +97,7 @@ export interface SharePageRendererProps extends PublicProfileIdentity {
   onContactInteraction?: (linkId: string) => void;
   onAiAvailabilityChange?: (available: boolean) => void;
   onOpenContact?: () => void;
+  onOpenContactEntry?: (contactEntryId?: string) => void;
   stickyAction?: ReactNode;
 }
 
@@ -215,6 +219,7 @@ function renderNewModule(
   profileId?: string,
   onAvailabilityChange?: (available: boolean) => void,
   onOpenContact?: () => void,
+  onOpenContactEntry?: (contactEntryId?: string) => void,
 ): ReactNode {
   if (!payload) return <div key={item.id}><ModuleFallback message="模块数据为空" /></div>;
   if (!isModuleType(componentType)) return <div key={item.id}><ModuleFallback message="未知模块类型" /></div>;
@@ -232,7 +237,7 @@ function renderNewModule(
     case "music-link": return <div key={item.id}><MusicLinkModule payload={payload as MusicLinkPayload} /></div>;
     case "divider": return <div key={item.id}><DividerModule payload={payload as DividerPayload} /></div>;
     case "copy-text": return <div key={item.id}><CopyTextModule payload={payload as CopyTextPayload} /></div>;
-    case "ai-chat": return <div key={item.id}><AiChatModule username={username} mode="customer-service" onAvailabilityChange={onAvailabilityChange} onOpenContact={onOpenContact} /></div>;
+    case "ai-chat": return <div key={item.id}><AiChatModule username={username} mode="customer-service" onAvailabilityChange={onAvailabilityChange} onOpenContact={onOpenContact} onOpenContactEntry={onOpenContactEntry} /></div>;
     case "product-card": return <div key={item.id}><ProductCardModule payload={payload as ProductCardPayload} username={username} /></div>;
     case "service-card": return <div key={item.id}><ServiceCardModule payload={payload as ServiceCardPayload} username={username} /></div>;
     case "offer": return <div key={item.id}><OfferModule payload={payload as OfferPayload} username={username} /></div>;
@@ -252,6 +257,9 @@ function renderLegacyItem(
   linkClassName: string,
   onContactInteraction?: (linkId: string) => void,
 ) {
+  if (componentType === CONTACT_ENTRY_TYPE) {
+    return <div key={item.id}><ContactEntryCard entry={{ id: item.id, title: item.title, description: item.description, payload: item.payload, workspaceId: item.workspaceId }} /></div>;
+  }
   const safe = sanitizeHref(componentType, item.url, payload);
   const title = item.title || "链接";
   const description = item.description;
@@ -299,7 +307,7 @@ function buildComponentItems(props: SharePageRendererProps, classes: ShareThemeC
     const componentType = normalizeComponentType(item);
     const payload = safeParseJson<Record<string, unknown>>(item.payload);
     const node = moduleTypes.has(componentType)
-      ? renderNewModule(item, componentType, payload, props.username, props.profileId, props.onAiAvailabilityChange, props.onOpenContact)
+      ? renderNewModule(item, componentType, payload, props.username, props.profileId, props.onAiAvailabilityChange, props.onOpenContact, props.onOpenContactEntry)
       : renderLegacyItem(item, componentType, payload, classes, props.template || "business", linkClassName, props.onContactInteraction);
     return { id: item.id, node };
   });
@@ -361,10 +369,10 @@ export function SharePageRenderer(props: SharePageRendererProps) {
     <div className="min-h-full w-full bg-[#F4EEE5]" style={sharedStyle} data-profile-template={props.template || "business"} data-profile-card-style={cardStyle} data-profile-button-style={buttonStyle}>
       <div className="mx-auto w-full max-w-xl overflow-hidden bg-[#FFFDF8]">
         <PublicProfileHero identity={identity} customTheme={custom} renderMode={renderMode} onQrCodeClick={props.onQrCodeClick} onShareClick={props.onShareClick} />
-        <PublicContactActions identity={identity} />
         <div className="px-5 pb-6 text-sm">
           <PublicModuleList renderMode={renderMode} gap={custom?.moduleGap ?? 8} items={items} />
         </div>
+        <PublicContactActions identity={identity} />
         {props.showBrandFoot ? <div className="flex justify-center px-5 pb-4"><BrandFoot classes={classes} /></div> : null}
         {props.reportUrl ? <Link href={props.reportUrl} className="block pb-5 text-center text-xs font-bold text-[#7A6D5E] opacity-70 hover:opacity-100">举报此主页</Link> : null}
       </div>

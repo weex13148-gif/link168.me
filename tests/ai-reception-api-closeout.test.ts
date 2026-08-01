@@ -15,6 +15,7 @@ const mockRequireDashboardUser = jest.fn();
 const mockRevalidatePublicProfileByUser = jest.fn();
 const mockGetActiveRestrictions = jest.fn();
 const mockCanShowPublicProfile = jest.fn();
+const mockResolvePublicAiRequestContext = jest.fn();
 
 jest.mock("@/lib/db", () => ({ db: mockDb }));
 jest.mock("@/lib/auth", () => ({
@@ -24,6 +25,9 @@ jest.mock("@/lib/auth", () => ({
 }));
 jest.mock("@/lib/cache/public-profile", () => ({
   revalidatePublicProfileByUser: mockRevalidatePublicProfileByUser,
+}));
+jest.mock("@/lib/ai/public-request-context", () => ({
+  resolvePublicAiRequestContext: mockResolvePublicAiRequestContext,
 }));
 
 import {
@@ -206,6 +210,10 @@ describe("public AI reception configuration API", () => {
     jest.clearAllMocks();
     mockGetActiveRestrictions.mockResolvedValue([]);
     mockCanShowPublicProfile.mockReturnValue({ ok: true });
+    mockResolvePublicAiRequestContext.mockResolvedValue({
+      ok: true,
+      expectedWorkspaceId: null,
+    });
     mockDb.profile.findUnique.mockResolvedValue({
       id: "33333333-3333-4333-8333-333333333333",
       userId,
@@ -234,6 +242,21 @@ describe("public AI reception configuration API", () => {
       },
     });
     expect(JSON.stringify(json)).not.toMatch(/internal-provider|providerMode|model|credential|endpoint|workspace|token/i);
+  });
+
+  test("rejects an unverified public request context before profile lookup", async () => {
+    mockResolvePublicAiRequestContext.mockResolvedValueOnce({
+      ok: false,
+      code: "PUBLIC_CONTEXT_UNVERIFIED",
+      message: "unverified",
+    });
+
+    const response = await getPublicConfig(publicRequest(), {
+      params: Promise.resolve({ username: "owner" }),
+    });
+
+    expect(response.status).toBe(403);
+    expect(mockDb.profile.findUnique).not.toHaveBeenCalled();
   });
 
   test.each([

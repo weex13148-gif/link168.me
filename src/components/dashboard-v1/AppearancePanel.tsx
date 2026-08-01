@@ -30,6 +30,7 @@ type AppearancePanelProps = {
   onSaveSystem: (settings: { isPublic: boolean; language: string; contactVisibility: string }) => Promise<boolean>;
   onPreviewChange: (state: AppearancePreviewState) => void;
   onUpgrade: () => void;
+  showSystemSettings?: boolean;
 };
 
 function parseCustomTheme(value: string | null | undefined): CustomTheme {
@@ -130,6 +131,7 @@ export function AppearancePanel({
   onSaveSystem,
   onPreviewChange,
   onUpgrade,
+  showSystemSettings = true,
 }: AppearancePanelProps) {
   const [activeTab, setActiveTab] = useState<AppearanceTab>("themes");
   const [selectedTheme, setSelectedTheme] = useState(theme || "草木原色");
@@ -192,6 +194,9 @@ export function AppearancePanel({
     { key: "custom", label: "自定义", icon: <LayoutTemplate className="size-4" /> },
     { key: "system", label: "系统设置", icon: <Settings className="size-4" /> },
   ];
+  const visibleTabs = showSystemSettings
+    ? tabs
+    : tabs.filter((tab) => tab.key !== "system");
 
   return (
     <fieldset disabled={saving} className="m-0 grid min-w-0 gap-5 border-0 p-0">
@@ -202,7 +207,7 @@ export function AppearancePanel({
       </header>
 
       <div className="flex gap-1 rounded-xl bg-[var(--ui-surface-muted)] p-1">
-        {tabs.map((tab) => (
+        {visibleTabs.map((tab) => (
           <button
             key={tab.key}
             type="button"

@@ -17,7 +17,7 @@ export default async function WorkbenchLeadsPage() {
   if (!user) redirect("/login");
 
   const profile = await db.profile.findUnique({ where: { userId: user.id } });
-  if (!profile) redirect("/dashboard");
+  if (!profile) redirect("/console/card");
 
   const [leads, stats] = await Promise.all([
     db.lead.findMany({

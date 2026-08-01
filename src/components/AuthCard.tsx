@@ -66,7 +66,7 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
           router.refresh();
         }, 800);
       } else {
-        router.push("/dashboard");
+        router.push(result.redirectTo || "/console");
         router.refresh();
       }
     } catch {

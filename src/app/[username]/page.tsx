@@ -46,7 +46,8 @@ async function loadProfileByUserId(userId: string) {
     where: { userId },
     include: {
       links: {
-        where: { isActive: true },
+        // 团队联系入口只在对应企业站点展示，避免泄漏到成员个人名片。
+        where: { isActive: true, workspaceId: null },
         orderBy: { position: "asc" },
       },
     },
@@ -62,7 +63,8 @@ async function resolveUsername(rawUsername: string) {
       where: { username: normalized },
       include: {
         links: {
-          where: { isActive: true },
+          // 团队联系入口只在对应企业站点展示，避免泄漏到成员个人名片。
+          where: { isActive: true, workspaceId: null },
           orderBy: { position: "asc" },
         },
       },
@@ -273,6 +275,7 @@ export default async function PublicProfilePage({ params, searchParams }: Public
       type: item.iconType || null,
       componentType: item.type || null,
       payload: item.payloadJson || null,
+      workspaceId: item.workspaceId || null,
     };
   });
 

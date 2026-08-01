@@ -4821,6 +4821,7 @@ export namespace Prisma {
     ownedWorkspaces: number
     workspacePublicProfiles: number
     enterpriseQuotaConsumptions: number
+    claimedWorkspaceLeads: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4838,6 +4839,7 @@ export namespace Prisma {
     ownedWorkspaces?: boolean | UserCountOutputTypeCountOwnedWorkspacesArgs
     workspacePublicProfiles?: boolean | UserCountOutputTypeCountWorkspacePublicProfilesArgs
     enterpriseQuotaConsumptions?: boolean | UserCountOutputTypeCountEnterpriseQuotaConsumptionsArgs
+    claimedWorkspaceLeads?: boolean | UserCountOutputTypeCountClaimedWorkspaceLeadsArgs
   }
 
   // Custom InputTypes
@@ -4949,6 +4951,13 @@ export namespace Prisma {
     where?: EnterpriseQuotaConsumptionWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountClaimedWorkspaceLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LeadWhereInput
+  }
+
 
   /**
    * Count Type ProfileCountOutputType
@@ -5014,10 +5023,12 @@ export namespace Prisma {
 
   export type LinkCountOutputType = {
     clicks: number
+    contactLeads: number
   }
 
   export type LinkCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     clicks?: boolean | LinkCountOutputTypeCountClicksArgs
+    contactLeads?: boolean | LinkCountOutputTypeCountContactLeadsArgs
   }
 
   // Custom InputTypes
@@ -5036,6 +5047,13 @@ export namespace Prisma {
    */
   export type LinkCountOutputTypeCountClicksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: LinkClickWhereInput
+  }
+
+  /**
+   * LinkCountOutputType without action
+   */
+  export type LinkCountOutputTypeCountContactLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LeadWhereInput
   }
 
 
@@ -5211,6 +5229,8 @@ export namespace Prisma {
     members: number
     domains: number
     publicProfiles: number
+    contactEntries: number
+    leads: number
     enterpriseQuotaConsumptions: number
   }
 
@@ -5218,6 +5238,8 @@ export namespace Prisma {
     members?: boolean | WorkspaceCountOutputTypeCountMembersArgs
     domains?: boolean | WorkspaceCountOutputTypeCountDomainsArgs
     publicProfiles?: boolean | WorkspaceCountOutputTypeCountPublicProfilesArgs
+    contactEntries?: boolean | WorkspaceCountOutputTypeCountContactEntriesArgs
+    leads?: boolean | WorkspaceCountOutputTypeCountLeadsArgs
     enterpriseQuotaConsumptions?: boolean | WorkspaceCountOutputTypeCountEnterpriseQuotaConsumptionsArgs
   }
 
@@ -5251,6 +5273,20 @@ export namespace Prisma {
    */
   export type WorkspaceCountOutputTypeCountPublicProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WorkspacePublicProfileWhereInput
+  }
+
+  /**
+   * WorkspaceCountOutputType without action
+   */
+  export type WorkspaceCountOutputTypeCountContactEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LinkWhereInput
+  }
+
+  /**
+   * WorkspaceCountOutputType without action
+   */
+  export type WorkspaceCountOutputTypeCountLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LeadWhereInput
   }
 
   /**
@@ -5553,6 +5589,7 @@ export namespace Prisma {
     ownedWorkspaces?: boolean | User$ownedWorkspacesArgs<ExtArgs>
     workspacePublicProfiles?: boolean | User$workspacePublicProfilesArgs<ExtArgs>
     enterpriseQuotaConsumptions?: boolean | User$enterpriseQuotaConsumptionsArgs<ExtArgs>
+    claimedWorkspaceLeads?: boolean | User$claimedWorkspaceLeadsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -5627,6 +5664,7 @@ export namespace Prisma {
     ownedWorkspaces?: boolean | User$ownedWorkspacesArgs<ExtArgs>
     workspacePublicProfiles?: boolean | User$workspacePublicProfilesArgs<ExtArgs>
     enterpriseQuotaConsumptions?: boolean | User$enterpriseQuotaConsumptionsArgs<ExtArgs>
+    claimedWorkspaceLeads?: boolean | User$claimedWorkspaceLeadsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5653,6 +5691,7 @@ export namespace Prisma {
       ownedWorkspaces: Prisma.$WorkspacePayload<ExtArgs>[]
       workspacePublicProfiles: Prisma.$WorkspacePublicProfilePayload<ExtArgs>[]
       enterpriseQuotaConsumptions: Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>[]
+      claimedWorkspaceLeads: Prisma.$LeadPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6081,6 +6120,7 @@ export namespace Prisma {
     ownedWorkspaces<T extends User$ownedWorkspacesArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedWorkspacesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     workspacePublicProfiles<T extends User$workspacePublicProfilesArgs<ExtArgs> = {}>(args?: Subset<T, User$workspacePublicProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     enterpriseQuotaConsumptions<T extends User$enterpriseQuotaConsumptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$enterpriseQuotaConsumptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    claimedWorkspaceLeads<T extends User$claimedWorkspaceLeadsArgs<ExtArgs> = {}>(args?: Subset<T, User$claimedWorkspaceLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6926,6 +6966,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: EnterpriseQuotaConsumptionScalarFieldEnum | EnterpriseQuotaConsumptionScalarFieldEnum[]
+  }
+
+  /**
+   * User.claimedWorkspaceLeads
+   */
+  export type User$claimedWorkspaceLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    where?: LeadWhereInput
+    orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
+    cursor?: LeadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
   }
 
   /**
@@ -10294,6 +10358,7 @@ export namespace Prisma {
     template: string | null
     language: string | null
     isPublic: boolean | null
+    firstPublishedAt: Date | null
     company: string | null
     jobTitle: string | null
     phone: string | null
@@ -10323,6 +10388,7 @@ export namespace Prisma {
     template: string | null
     language: string | null
     isPublic: boolean | null
+    firstPublishedAt: Date | null
     company: string | null
     jobTitle: string | null
     phone: string | null
@@ -10352,6 +10418,7 @@ export namespace Prisma {
     template: number
     language: number
     isPublic: number
+    firstPublishedAt: number
     company: number
     jobTitle: number
     phone: number
@@ -10384,6 +10451,7 @@ export namespace Prisma {
     template?: true
     language?: true
     isPublic?: true
+    firstPublishedAt?: true
     company?: true
     jobTitle?: true
     phone?: true
@@ -10413,6 +10481,7 @@ export namespace Prisma {
     template?: true
     language?: true
     isPublic?: true
+    firstPublishedAt?: true
     company?: true
     jobTitle?: true
     phone?: true
@@ -10442,6 +10511,7 @@ export namespace Prisma {
     template?: true
     language?: true
     isPublic?: true
+    firstPublishedAt?: true
     company?: true
     jobTitle?: true
     phone?: true
@@ -10545,6 +10615,7 @@ export namespace Prisma {
     template: string
     language: string
     isPublic: boolean
+    firstPublishedAt: Date | null
     company: string | null
     jobTitle: string | null
     phone: string | null
@@ -10592,6 +10663,7 @@ export namespace Prisma {
     template?: boolean
     language?: boolean
     isPublic?: boolean
+    firstPublishedAt?: boolean
     company?: boolean
     jobTitle?: boolean
     phone?: boolean
@@ -10628,6 +10700,7 @@ export namespace Prisma {
     template?: boolean
     language?: boolean
     isPublic?: boolean
+    firstPublishedAt?: boolean
     company?: boolean
     jobTitle?: boolean
     phone?: boolean
@@ -10659,6 +10732,7 @@ export namespace Prisma {
     template?: boolean
     language?: boolean
     isPublic?: boolean
+    firstPublishedAt?: boolean
     company?: boolean
     jobTitle?: boolean
     phone?: boolean
@@ -10690,6 +10764,7 @@ export namespace Prisma {
     template?: boolean
     language?: boolean
     isPublic?: boolean
+    firstPublishedAt?: boolean
     company?: boolean
     jobTitle?: boolean
     phone?: boolean
@@ -10704,7 +10779,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "username" | "displayName" | "displayNameAnonymized" | "bio" | "avatarUrl" | "avatarModerationStatus" | "coverImageUrl" | "coverImageModerationStatus" | "theme" | "customTheme" | "template" | "language" | "isPublic" | "company" | "jobTitle" | "phone" | "email" | "wechat" | "city" | "address" | "website" | "socialLinks" | "contactVisibility" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
+  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "username" | "displayName" | "displayNameAnonymized" | "bio" | "avatarUrl" | "avatarModerationStatus" | "coverImageUrl" | "coverImageModerationStatus" | "theme" | "customTheme" | "template" | "language" | "isPublic" | "firstPublishedAt" | "company" | "jobTitle" | "phone" | "email" | "wechat" | "city" | "address" | "website" | "socialLinks" | "contactVisibility" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
   export type ProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     links?: boolean | Profile$linksArgs<ExtArgs>
@@ -10745,6 +10820,7 @@ export namespace Prisma {
       template: string
       language: string
       isPublic: boolean
+      firstPublishedAt: Date | null
       company: string | null
       jobTitle: string | null
       phone: string | null
@@ -11200,6 +11276,7 @@ export namespace Prisma {
     readonly template: FieldRef<"Profile", 'String'>
     readonly language: FieldRef<"Profile", 'String'>
     readonly isPublic: FieldRef<"Profile", 'Boolean'>
+    readonly firstPublishedAt: FieldRef<"Profile", 'DateTime'>
     readonly company: FieldRef<"Profile", 'String'>
     readonly jobTitle: FieldRef<"Profile", 'String'>
     readonly phone: FieldRef<"Profile", 'String'>
@@ -14029,6 +14106,7 @@ export namespace Prisma {
   export type LinkMinAggregateOutputType = {
     id: string | null
     profileId: string | null
+    workspaceId: string | null
     type: string | null
     payloadJson: string | null
     title: string | null
@@ -14048,6 +14126,7 @@ export namespace Prisma {
   export type LinkMaxAggregateOutputType = {
     id: string | null
     profileId: string | null
+    workspaceId: string | null
     type: string | null
     payloadJson: string | null
     title: string | null
@@ -14067,6 +14146,7 @@ export namespace Prisma {
   export type LinkCountAggregateOutputType = {
     id: number
     profileId: number
+    workspaceId: number
     type: number
     payloadJson: number
     title: number
@@ -14098,6 +14178,7 @@ export namespace Prisma {
   export type LinkMinAggregateInputType = {
     id?: true
     profileId?: true
+    workspaceId?: true
     type?: true
     payloadJson?: true
     title?: true
@@ -14117,6 +14198,7 @@ export namespace Prisma {
   export type LinkMaxAggregateInputType = {
     id?: true
     profileId?: true
+    workspaceId?: true
     type?: true
     payloadJson?: true
     title?: true
@@ -14136,6 +14218,7 @@ export namespace Prisma {
   export type LinkCountAggregateInputType = {
     id?: true
     profileId?: true
+    workspaceId?: true
     type?: true
     payloadJson?: true
     title?: true
@@ -14242,6 +14325,7 @@ export namespace Prisma {
   export type LinkGroupByOutputType = {
     id: string
     profileId: string
+    workspaceId: string | null
     type: string
     payloadJson: string | null
     title: string
@@ -14280,6 +14364,7 @@ export namespace Prisma {
   export type LinkSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
     type?: boolean
     payloadJson?: boolean
     title?: boolean
@@ -14295,13 +14380,16 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Link$workspaceArgs<ExtArgs>
     clicks?: boolean | Link$clicksArgs<ExtArgs>
+    contactLeads?: boolean | Link$contactLeadsArgs<ExtArgs>
     _count?: boolean | LinkCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["link"]>
 
   export type LinkSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
     type?: boolean
     payloadJson?: boolean
     title?: boolean
@@ -14317,11 +14405,13 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Link$workspaceArgs<ExtArgs>
   }, ExtArgs["result"]["link"]>
 
   export type LinkSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
     type?: boolean
     payloadJson?: boolean
     title?: boolean
@@ -14337,11 +14427,13 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Link$workspaceArgs<ExtArgs>
   }, ExtArgs["result"]["link"]>
 
   export type LinkSelectScalar = {
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
     type?: boolean
     payloadJson?: boolean
     title?: boolean
@@ -14358,28 +14450,35 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type LinkOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "profileId" | "type" | "payloadJson" | "title" | "url" | "description" | "iconType" | "iconValue" | "iconUrl" | "iconModerationStatus" | "position" | "isActive" | "totalClicks" | "createdAt" | "updatedAt", ExtArgs["result"]["link"]>
+  export type LinkOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "profileId" | "workspaceId" | "type" | "payloadJson" | "title" | "url" | "description" | "iconType" | "iconValue" | "iconUrl" | "iconModerationStatus" | "position" | "isActive" | "totalClicks" | "createdAt" | "updatedAt", ExtArgs["result"]["link"]>
   export type LinkInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Link$workspaceArgs<ExtArgs>
     clicks?: boolean | Link$clicksArgs<ExtArgs>
+    contactLeads?: boolean | Link$contactLeadsArgs<ExtArgs>
     _count?: boolean | LinkCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type LinkIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Link$workspaceArgs<ExtArgs>
   }
   export type LinkIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Link$workspaceArgs<ExtArgs>
   }
 
   export type $LinkPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Link"
     objects: {
       profile: Prisma.$ProfilePayload<ExtArgs>
+      workspace: Prisma.$WorkspacePayload<ExtArgs> | null
       clicks: Prisma.$LinkClickPayload<ExtArgs>[]
+      contactLeads: Prisma.$LeadPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       profileId: string
+      workspaceId: string | null
       type: string
       payloadJson: string | null
       title: string
@@ -14789,7 +14888,9 @@ export namespace Prisma {
   export interface Prisma__LinkClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     profile<T extends ProfileDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProfileDefaultArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    workspace<T extends Link$workspaceArgs<ExtArgs> = {}>(args?: Subset<T, Link$workspaceArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     clicks<T extends Link$clicksArgs<ExtArgs> = {}>(args?: Subset<T, Link$clicksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkClickPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    contactLeads<T extends Link$contactLeadsArgs<ExtArgs> = {}>(args?: Subset<T, Link$contactLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14821,6 +14922,7 @@ export namespace Prisma {
   interface LinkFieldRefs {
     readonly id: FieldRef<"Link", 'String'>
     readonly profileId: FieldRef<"Link", 'String'>
+    readonly workspaceId: FieldRef<"Link", 'String'>
     readonly type: FieldRef<"Link", 'String'>
     readonly payloadJson: FieldRef<"Link", 'String'>
     readonly title: FieldRef<"Link", 'String'>
@@ -15236,6 +15338,25 @@ export namespace Prisma {
   }
 
   /**
+   * Link.workspace
+   */
+  export type Link$workspaceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspaceInclude<ExtArgs> | null
+    where?: WorkspaceWhereInput
+  }
+
+  /**
    * Link.clicks
    */
   export type Link$clicksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -15257,6 +15378,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: LinkClickScalarFieldEnum | LinkClickScalarFieldEnum[]
+  }
+
+  /**
+   * Link.contactLeads
+   */
+  export type Link$contactLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    where?: LeadWhereInput
+    orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
+    cursor?: LeadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
   }
 
   /**
@@ -28660,6 +28805,9 @@ export namespace Prisma {
   export type LeadMinAggregateOutputType = {
     id: string | null
     profileId: string | null
+    workspaceId: string | null
+    contactEntryId: string | null
+    claimedByUserId: string | null
     name: string | null
     email: string | null
     phone: string | null
@@ -28683,6 +28831,9 @@ export namespace Prisma {
   export type LeadMaxAggregateOutputType = {
     id: string | null
     profileId: string | null
+    workspaceId: string | null
+    contactEntryId: string | null
+    claimedByUserId: string | null
     name: string | null
     email: string | null
     phone: string | null
@@ -28706,6 +28857,9 @@ export namespace Prisma {
   export type LeadCountAggregateOutputType = {
     id: number
     profileId: number
+    workspaceId: number
+    contactEntryId: number
+    claimedByUserId: number
     name: number
     email: number
     phone: number
@@ -28731,6 +28885,9 @@ export namespace Prisma {
   export type LeadMinAggregateInputType = {
     id?: true
     profileId?: true
+    workspaceId?: true
+    contactEntryId?: true
+    claimedByUserId?: true
     name?: true
     email?: true
     phone?: true
@@ -28754,6 +28911,9 @@ export namespace Prisma {
   export type LeadMaxAggregateInputType = {
     id?: true
     profileId?: true
+    workspaceId?: true
+    contactEntryId?: true
+    claimedByUserId?: true
     name?: true
     email?: true
     phone?: true
@@ -28777,6 +28937,9 @@ export namespace Prisma {
   export type LeadCountAggregateInputType = {
     id?: true
     profileId?: true
+    workspaceId?: true
+    contactEntryId?: true
+    claimedByUserId?: true
     name?: true
     email?: true
     phone?: true
@@ -28873,6 +29036,9 @@ export namespace Prisma {
   export type LeadGroupByOutputType = {
     id: string
     profileId: string
+    workspaceId: string | null
+    contactEntryId: string | null
+    claimedByUserId: string | null
     name: string
     email: string | null
     phone: string | null
@@ -28913,6 +29079,9 @@ export namespace Prisma {
   export type LeadSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
+    contactEntryId?: boolean
+    claimedByUserId?: boolean
     name?: boolean
     email?: boolean
     phone?: boolean
@@ -28932,6 +29101,9 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Lead$workspaceArgs<ExtArgs>
+    contactEntry?: boolean | Lead$contactEntryArgs<ExtArgs>
+    claimedBy?: boolean | Lead$claimedByArgs<ExtArgs>
     interestedProduct?: boolean | Lead$interestedProductArgs<ExtArgs>
     conversation?: boolean | Lead$conversationArgs<ExtArgs>
     followUps?: boolean | Lead$followUpsArgs<ExtArgs>
@@ -28941,6 +29113,9 @@ export namespace Prisma {
   export type LeadSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
+    contactEntryId?: boolean
+    claimedByUserId?: boolean
     name?: boolean
     email?: boolean
     phone?: boolean
@@ -28960,6 +29135,9 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Lead$workspaceArgs<ExtArgs>
+    contactEntry?: boolean | Lead$contactEntryArgs<ExtArgs>
+    claimedBy?: boolean | Lead$claimedByArgs<ExtArgs>
     interestedProduct?: boolean | Lead$interestedProductArgs<ExtArgs>
     conversation?: boolean | Lead$conversationArgs<ExtArgs>
   }, ExtArgs["result"]["lead"]>
@@ -28967,6 +29145,9 @@ export namespace Prisma {
   export type LeadSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
+    contactEntryId?: boolean
+    claimedByUserId?: boolean
     name?: boolean
     email?: boolean
     phone?: boolean
@@ -28986,6 +29167,9 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Lead$workspaceArgs<ExtArgs>
+    contactEntry?: boolean | Lead$contactEntryArgs<ExtArgs>
+    claimedBy?: boolean | Lead$claimedByArgs<ExtArgs>
     interestedProduct?: boolean | Lead$interestedProductArgs<ExtArgs>
     conversation?: boolean | Lead$conversationArgs<ExtArgs>
   }, ExtArgs["result"]["lead"]>
@@ -28993,6 +29177,9 @@ export namespace Prisma {
   export type LeadSelectScalar = {
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
+    contactEntryId?: boolean
+    claimedByUserId?: boolean
     name?: boolean
     email?: boolean
     phone?: boolean
@@ -29013,9 +29200,12 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "profileId" | "name" | "email" | "phone" | "wechat" | "message" | "sourceComponent" | "sourcePage" | "interestedProductId" | "interestedProductName" | "interestedProductPrice" | "interestedProductCategory" | "conversationId" | "status" | "notes" | "handlerNote" | "handledAt" | "createdAt" | "updatedAt", ExtArgs["result"]["lead"]>
+  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "profileId" | "workspaceId" | "contactEntryId" | "claimedByUserId" | "name" | "email" | "phone" | "wechat" | "message" | "sourceComponent" | "sourcePage" | "interestedProductId" | "interestedProductName" | "interestedProductPrice" | "interestedProductCategory" | "conversationId" | "status" | "notes" | "handlerNote" | "handledAt" | "createdAt" | "updatedAt", ExtArgs["result"]["lead"]>
   export type LeadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Lead$workspaceArgs<ExtArgs>
+    contactEntry?: boolean | Lead$contactEntryArgs<ExtArgs>
+    claimedBy?: boolean | Lead$claimedByArgs<ExtArgs>
     interestedProduct?: boolean | Lead$interestedProductArgs<ExtArgs>
     conversation?: boolean | Lead$conversationArgs<ExtArgs>
     followUps?: boolean | Lead$followUpsArgs<ExtArgs>
@@ -29023,11 +29213,17 @@ export namespace Prisma {
   }
   export type LeadIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Lead$workspaceArgs<ExtArgs>
+    contactEntry?: boolean | Lead$contactEntryArgs<ExtArgs>
+    claimedBy?: boolean | Lead$claimedByArgs<ExtArgs>
     interestedProduct?: boolean | Lead$interestedProductArgs<ExtArgs>
     conversation?: boolean | Lead$conversationArgs<ExtArgs>
   }
   export type LeadIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Lead$workspaceArgs<ExtArgs>
+    contactEntry?: boolean | Lead$contactEntryArgs<ExtArgs>
+    claimedBy?: boolean | Lead$claimedByArgs<ExtArgs>
     interestedProduct?: boolean | Lead$interestedProductArgs<ExtArgs>
     conversation?: boolean | Lead$conversationArgs<ExtArgs>
   }
@@ -29036,6 +29232,9 @@ export namespace Prisma {
     name: "Lead"
     objects: {
       profile: Prisma.$ProfilePayload<ExtArgs>
+      workspace: Prisma.$WorkspacePayload<ExtArgs> | null
+      contactEntry: Prisma.$LinkPayload<ExtArgs> | null
+      claimedBy: Prisma.$UserPayload<ExtArgs> | null
       interestedProduct: Prisma.$ProductPayload<ExtArgs> | null
       conversation: Prisma.$AiConversationPayload<ExtArgs> | null
       followUps: Prisma.$LeadFollowUpPayload<ExtArgs>[]
@@ -29043,6 +29242,9 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       profileId: string
+      workspaceId: string | null
+      contactEntryId: string | null
+      claimedByUserId: string | null
       name: string
       email: string | null
       phone: string | null
@@ -29456,6 +29658,9 @@ export namespace Prisma {
   export interface Prisma__LeadClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     profile<T extends ProfileDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProfileDefaultArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    workspace<T extends Lead$workspaceArgs<ExtArgs> = {}>(args?: Subset<T, Lead$workspaceArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    contactEntry<T extends Lead$contactEntryArgs<ExtArgs> = {}>(args?: Subset<T, Lead$contactEntryArgs<ExtArgs>>): Prisma__LinkClient<$Result.GetResult<Prisma.$LinkPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    claimedBy<T extends Lead$claimedByArgs<ExtArgs> = {}>(args?: Subset<T, Lead$claimedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     interestedProduct<T extends Lead$interestedProductArgs<ExtArgs> = {}>(args?: Subset<T, Lead$interestedProductArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     conversation<T extends Lead$conversationArgs<ExtArgs> = {}>(args?: Subset<T, Lead$conversationArgs<ExtArgs>>): Prisma__AiConversationClient<$Result.GetResult<Prisma.$AiConversationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     followUps<T extends Lead$followUpsArgs<ExtArgs> = {}>(args?: Subset<T, Lead$followUpsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadFollowUpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -29490,6 +29695,9 @@ export namespace Prisma {
   interface LeadFieldRefs {
     readonly id: FieldRef<"Lead", 'String'>
     readonly profileId: FieldRef<"Lead", 'String'>
+    readonly workspaceId: FieldRef<"Lead", 'String'>
+    readonly contactEntryId: FieldRef<"Lead", 'String'>
+    readonly claimedByUserId: FieldRef<"Lead", 'String'>
     readonly name: FieldRef<"Lead", 'String'>
     readonly email: FieldRef<"Lead", 'String'>
     readonly phone: FieldRef<"Lead", 'String'>
@@ -29906,6 +30114,63 @@ export namespace Prisma {
      * Limit how many Leads to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Lead.workspace
+   */
+  export type Lead$workspaceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspaceInclude<ExtArgs> | null
+    where?: WorkspaceWhereInput
+  }
+
+  /**
+   * Lead.contactEntry
+   */
+  export type Lead$contactEntryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Link
+     */
+    select?: LinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Link
+     */
+    omit?: LinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkInclude<ExtArgs> | null
+    where?: LinkWhereInput
+  }
+
+  /**
+   * Lead.claimedBy
+   */
+  export type Lead$claimedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -52068,6 +52333,8 @@ export namespace Prisma {
     members?: boolean | Workspace$membersArgs<ExtArgs>
     domains?: boolean | Workspace$domainsArgs<ExtArgs>
     publicProfiles?: boolean | Workspace$publicProfilesArgs<ExtArgs>
+    contactEntries?: boolean | Workspace$contactEntriesArgs<ExtArgs>
+    leads?: boolean | Workspace$leadsArgs<ExtArgs>
     quotaPool?: boolean | Workspace$quotaPoolArgs<ExtArgs>
     enterpriseQuotaConsumptions?: boolean | Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs>
     _count?: boolean | WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
@@ -52120,6 +52387,8 @@ export namespace Prisma {
     members?: boolean | Workspace$membersArgs<ExtArgs>
     domains?: boolean | Workspace$domainsArgs<ExtArgs>
     publicProfiles?: boolean | Workspace$publicProfilesArgs<ExtArgs>
+    contactEntries?: boolean | Workspace$contactEntriesArgs<ExtArgs>
+    leads?: boolean | Workspace$leadsArgs<ExtArgs>
     quotaPool?: boolean | Workspace$quotaPoolArgs<ExtArgs>
     enterpriseQuotaConsumptions?: boolean | Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs>
     _count?: boolean | WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
@@ -52138,6 +52407,8 @@ export namespace Prisma {
       members: Prisma.$WorkspaceMemberPayload<ExtArgs>[]
       domains: Prisma.$DomainPayload<ExtArgs>[]
       publicProfiles: Prisma.$WorkspacePublicProfilePayload<ExtArgs>[]
+      contactEntries: Prisma.$LinkPayload<ExtArgs>[]
+      leads: Prisma.$LeadPayload<ExtArgs>[]
       quotaPool: Prisma.$EnterpriseQuotaPoolPayload<ExtArgs> | null
       enterpriseQuotaConsumptions: Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>[]
     }
@@ -52550,6 +52821,8 @@ export namespace Prisma {
     members<T extends Workspace$membersArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     domains<T extends Workspace$domainsArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$domainsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DomainPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     publicProfiles<T extends Workspace$publicProfilesArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$publicProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    contactEntries<T extends Workspace$contactEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$contactEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    leads<T extends Workspace$leadsArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$leadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     quotaPool<T extends Workspace$quotaPoolArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$quotaPoolArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     enterpriseQuotaConsumptions<T extends Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -53061,6 +53334,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: WorkspacePublicProfileScalarFieldEnum | WorkspacePublicProfileScalarFieldEnum[]
+  }
+
+  /**
+   * Workspace.contactEntries
+   */
+  export type Workspace$contactEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Link
+     */
+    select?: LinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Link
+     */
+    omit?: LinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkInclude<ExtArgs> | null
+    where?: LinkWhereInput
+    orderBy?: LinkOrderByWithRelationInput | LinkOrderByWithRelationInput[]
+    cursor?: LinkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LinkScalarFieldEnum | LinkScalarFieldEnum[]
+  }
+
+  /**
+   * Workspace.leads
+   */
+  export type Workspace$leadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    where?: LeadWhereInput
+    orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
+    cursor?: LeadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
   }
 
   /**
@@ -56708,6 +57029,7 @@ export namespace Prisma {
     template: 'template',
     language: 'language',
     isPublic: 'isPublic',
+    firstPublishedAt: 'firstPublishedAt',
     company: 'company',
     jobTitle: 'jobTitle',
     phone: 'phone',
@@ -56761,6 +57083,7 @@ export namespace Prisma {
   export const LinkScalarFieldEnum: {
     id: 'id',
     profileId: 'profileId',
+    workspaceId: 'workspaceId',
     type: 'type',
     payloadJson: 'payloadJson',
     title: 'title',
@@ -56974,6 +57297,9 @@ export namespace Prisma {
   export const LeadScalarFieldEnum: {
     id: 'id',
     profileId: 'profileId',
+    workspaceId: 'workspaceId',
+    contactEntryId: 'contactEntryId',
+    claimedByUserId: 'claimedByUserId',
     name: 'name',
     email: 'email',
     phone: 'phone',
@@ -57560,6 +57886,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceListRelationFilter
     workspacePublicProfiles?: WorkspacePublicProfileListRelationFilter
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
+    claimedWorkspaceLeads?: LeadListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -57595,6 +57922,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceOrderByRelationAggregateInput
     workspacePublicProfiles?: WorkspacePublicProfileOrderByRelationAggregateInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionOrderByRelationAggregateInput
+    claimedWorkspaceLeads?: LeadOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -57633,6 +57961,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceListRelationFilter
     workspacePublicProfiles?: WorkspacePublicProfileListRelationFilter
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
+    claimedWorkspaceLeads?: LeadListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -57933,6 +58262,7 @@ export namespace Prisma {
     template?: StringFilter<"Profile"> | string
     language?: StringFilter<"Profile"> | string
     isPublic?: BoolFilter<"Profile"> | boolean
+    firstPublishedAt?: DateTimeNullableFilter<"Profile"> | Date | string | null
     company?: StringNullableFilter<"Profile"> | string | null
     jobTitle?: StringNullableFilter<"Profile"> | string | null
     phone?: StringNullableFilter<"Profile"> | string | null
@@ -57968,6 +58298,7 @@ export namespace Prisma {
     template?: SortOrder
     language?: SortOrder
     isPublic?: SortOrder
+    firstPublishedAt?: SortOrderInput | SortOrder
     company?: SortOrderInput | SortOrder
     jobTitle?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
@@ -58006,6 +58337,7 @@ export namespace Prisma {
     template?: StringFilter<"Profile"> | string
     language?: StringFilter<"Profile"> | string
     isPublic?: BoolFilter<"Profile"> | boolean
+    firstPublishedAt?: DateTimeNullableFilter<"Profile"> | Date | string | null
     company?: StringNullableFilter<"Profile"> | string | null
     jobTitle?: StringNullableFilter<"Profile"> | string | null
     phone?: StringNullableFilter<"Profile"> | string | null
@@ -58041,6 +58373,7 @@ export namespace Prisma {
     template?: SortOrder
     language?: SortOrder
     isPublic?: SortOrder
+    firstPublishedAt?: SortOrderInput | SortOrder
     company?: SortOrderInput | SortOrder
     jobTitle?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
@@ -58077,6 +58410,7 @@ export namespace Prisma {
     template?: StringWithAggregatesFilter<"Profile"> | string
     language?: StringWithAggregatesFilter<"Profile"> | string
     isPublic?: BoolWithAggregatesFilter<"Profile"> | boolean
+    firstPublishedAt?: DateTimeNullableWithAggregatesFilter<"Profile"> | Date | string | null
     company?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     jobTitle?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     phone?: StringNullableWithAggregatesFilter<"Profile"> | string | null
@@ -58267,6 +58601,7 @@ export namespace Prisma {
     NOT?: LinkWhereInput | LinkWhereInput[]
     id?: UuidFilter<"Link"> | string
     profileId?: UuidFilter<"Link"> | string
+    workspaceId?: UuidNullableFilter<"Link"> | string | null
     type?: StringFilter<"Link"> | string
     payloadJson?: StringNullableFilter<"Link"> | string | null
     title?: StringFilter<"Link"> | string
@@ -58282,12 +58617,15 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Link"> | Date | string
     updatedAt?: DateTimeFilter<"Link"> | Date | string
     profile?: XOR<ProfileScalarRelationFilter, ProfileWhereInput>
+    workspace?: XOR<WorkspaceNullableScalarRelationFilter, WorkspaceWhereInput> | null
     clicks?: LinkClickListRelationFilter
+    contactLeads?: LeadListRelationFilter
   }
 
   export type LinkOrderByWithRelationInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrderInput | SortOrder
     type?: SortOrder
     payloadJson?: SortOrderInput | SortOrder
     title?: SortOrder
@@ -58303,7 +58641,9 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     profile?: ProfileOrderByWithRelationInput
+    workspace?: WorkspaceOrderByWithRelationInput
     clicks?: LinkClickOrderByRelationAggregateInput
+    contactLeads?: LeadOrderByRelationAggregateInput
   }
 
   export type LinkWhereUniqueInput = Prisma.AtLeast<{
@@ -58312,6 +58652,7 @@ export namespace Prisma {
     OR?: LinkWhereInput[]
     NOT?: LinkWhereInput | LinkWhereInput[]
     profileId?: UuidFilter<"Link"> | string
+    workspaceId?: UuidNullableFilter<"Link"> | string | null
     type?: StringFilter<"Link"> | string
     payloadJson?: StringNullableFilter<"Link"> | string | null
     title?: StringFilter<"Link"> | string
@@ -58327,12 +58668,15 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Link"> | Date | string
     updatedAt?: DateTimeFilter<"Link"> | Date | string
     profile?: XOR<ProfileScalarRelationFilter, ProfileWhereInput>
+    workspace?: XOR<WorkspaceNullableScalarRelationFilter, WorkspaceWhereInput> | null
     clicks?: LinkClickListRelationFilter
+    contactLeads?: LeadListRelationFilter
   }, "id">
 
   export type LinkOrderByWithAggregationInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrderInput | SortOrder
     type?: SortOrder
     payloadJson?: SortOrderInput | SortOrder
     title?: SortOrder
@@ -58360,6 +58704,7 @@ export namespace Prisma {
     NOT?: LinkScalarWhereWithAggregatesInput | LinkScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"Link"> | string
     profileId?: UuidWithAggregatesFilter<"Link"> | string
+    workspaceId?: UuidNullableWithAggregatesFilter<"Link"> | string | null
     type?: StringWithAggregatesFilter<"Link"> | string
     payloadJson?: StringNullableWithAggregatesFilter<"Link"> | string | null
     title?: StringWithAggregatesFilter<"Link"> | string
@@ -59333,6 +59678,9 @@ export namespace Prisma {
     NOT?: LeadWhereInput | LeadWhereInput[]
     id?: UuidFilter<"Lead"> | string
     profileId?: UuidFilter<"Lead"> | string
+    workspaceId?: UuidNullableFilter<"Lead"> | string | null
+    contactEntryId?: UuidNullableFilter<"Lead"> | string | null
+    claimedByUserId?: UuidNullableFilter<"Lead"> | string | null
     name?: StringFilter<"Lead"> | string
     email?: StringNullableFilter<"Lead"> | string | null
     phone?: StringNullableFilter<"Lead"> | string | null
@@ -59352,6 +59700,9 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
     profile?: XOR<ProfileScalarRelationFilter, ProfileWhereInput>
+    workspace?: XOR<WorkspaceNullableScalarRelationFilter, WorkspaceWhereInput> | null
+    contactEntry?: XOR<LinkNullableScalarRelationFilter, LinkWhereInput> | null
+    claimedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     interestedProduct?: XOR<ProductNullableScalarRelationFilter, ProductWhereInput> | null
     conversation?: XOR<AiConversationNullableScalarRelationFilter, AiConversationWhereInput> | null
     followUps?: LeadFollowUpListRelationFilter
@@ -59360,6 +59711,9 @@ export namespace Prisma {
   export type LeadOrderByWithRelationInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrderInput | SortOrder
+    contactEntryId?: SortOrderInput | SortOrder
+    claimedByUserId?: SortOrderInput | SortOrder
     name?: SortOrder
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
@@ -59379,6 +59733,9 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     profile?: ProfileOrderByWithRelationInput
+    workspace?: WorkspaceOrderByWithRelationInput
+    contactEntry?: LinkOrderByWithRelationInput
+    claimedBy?: UserOrderByWithRelationInput
     interestedProduct?: ProductOrderByWithRelationInput
     conversation?: AiConversationOrderByWithRelationInput
     followUps?: LeadFollowUpOrderByRelationAggregateInput
@@ -59391,6 +59748,9 @@ export namespace Prisma {
     OR?: LeadWhereInput[]
     NOT?: LeadWhereInput | LeadWhereInput[]
     profileId?: UuidFilter<"Lead"> | string
+    workspaceId?: UuidNullableFilter<"Lead"> | string | null
+    contactEntryId?: UuidNullableFilter<"Lead"> | string | null
+    claimedByUserId?: UuidNullableFilter<"Lead"> | string | null
     name?: StringFilter<"Lead"> | string
     email?: StringNullableFilter<"Lead"> | string | null
     phone?: StringNullableFilter<"Lead"> | string | null
@@ -59409,6 +59769,9 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
     profile?: XOR<ProfileScalarRelationFilter, ProfileWhereInput>
+    workspace?: XOR<WorkspaceNullableScalarRelationFilter, WorkspaceWhereInput> | null
+    contactEntry?: XOR<LinkNullableScalarRelationFilter, LinkWhereInput> | null
+    claimedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     interestedProduct?: XOR<ProductNullableScalarRelationFilter, ProductWhereInput> | null
     conversation?: XOR<AiConversationNullableScalarRelationFilter, AiConversationWhereInput> | null
     followUps?: LeadFollowUpListRelationFilter
@@ -59417,6 +59780,9 @@ export namespace Prisma {
   export type LeadOrderByWithAggregationInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrderInput | SortOrder
+    contactEntryId?: SortOrderInput | SortOrder
+    claimedByUserId?: SortOrderInput | SortOrder
     name?: SortOrder
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
@@ -59446,6 +59812,9 @@ export namespace Prisma {
     NOT?: LeadScalarWhereWithAggregatesInput | LeadScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"Lead"> | string
     profileId?: UuidWithAggregatesFilter<"Lead"> | string
+    workspaceId?: UuidNullableWithAggregatesFilter<"Lead"> | string | null
+    contactEntryId?: UuidNullableWithAggregatesFilter<"Lead"> | string | null
+    claimedByUserId?: UuidNullableWithAggregatesFilter<"Lead"> | string | null
     name?: StringWithAggregatesFilter<"Lead"> | string
     email?: StringNullableWithAggregatesFilter<"Lead"> | string | null
     phone?: StringNullableWithAggregatesFilter<"Lead"> | string | null
@@ -61182,6 +61551,8 @@ export namespace Prisma {
     members?: WorkspaceMemberListRelationFilter
     domains?: DomainListRelationFilter
     publicProfiles?: WorkspacePublicProfileListRelationFilter
+    contactEntries?: LinkListRelationFilter
+    leads?: LeadListRelationFilter
     quotaPool?: XOR<EnterpriseQuotaPoolNullableScalarRelationFilter, EnterpriseQuotaPoolWhereInput> | null
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
   }
@@ -61201,6 +61572,8 @@ export namespace Prisma {
     members?: WorkspaceMemberOrderByRelationAggregateInput
     domains?: DomainOrderByRelationAggregateInput
     publicProfiles?: WorkspacePublicProfileOrderByRelationAggregateInput
+    contactEntries?: LinkOrderByRelationAggregateInput
+    leads?: LeadOrderByRelationAggregateInput
     quotaPool?: EnterpriseQuotaPoolOrderByWithRelationInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionOrderByRelationAggregateInput
   }
@@ -61223,6 +61596,8 @@ export namespace Prisma {
     members?: WorkspaceMemberListRelationFilter
     domains?: DomainListRelationFilter
     publicProfiles?: WorkspacePublicProfileListRelationFilter
+    contactEntries?: LinkListRelationFilter
+    leads?: LeadListRelationFilter
     quotaPool?: XOR<EnterpriseQuotaPoolNullableScalarRelationFilter, EnterpriseQuotaPoolWhereInput> | null
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
   }, "id" | "slug">
@@ -61549,6 +61924,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -61584,6 +61960,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUpdateInput = {
@@ -61619,6 +61996,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -61654,6 +62032,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -61993,6 +62372,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -62028,6 +62408,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -62061,6 +62442,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62096,6 +62478,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62130,6 +62513,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -62159,6 +62543,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62189,6 +62574,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62406,12 +62792,15 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     profile: ProfileCreateNestedOneWithoutLinksInput
+    workspace?: WorkspaceCreateNestedOneWithoutContactEntriesInput
     clicks?: LinkClickCreateNestedManyWithoutLinkInput
+    contactLeads?: LeadCreateNestedManyWithoutContactEntryInput
   }
 
   export type LinkUncheckedCreateInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
     type?: string
     payloadJson?: string | null
     title: string
@@ -62427,6 +62816,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     clicks?: LinkClickUncheckedCreateNestedManyWithoutLinkInput
+    contactLeads?: LeadUncheckedCreateNestedManyWithoutContactEntryInput
   }
 
   export type LinkUpdateInput = {
@@ -62446,12 +62836,15 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profile?: ProfileUpdateOneRequiredWithoutLinksNestedInput
+    workspace?: WorkspaceUpdateOneWithoutContactEntriesNestedInput
     clicks?: LinkClickUpdateManyWithoutLinkNestedInput
+    contactLeads?: LeadUpdateManyWithoutContactEntryNestedInput
   }
 
   export type LinkUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -62467,11 +62860,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clicks?: LinkClickUncheckedUpdateManyWithoutLinkNestedInput
+    contactLeads?: LeadUncheckedUpdateManyWithoutContactEntryNestedInput
   }
 
   export type LinkCreateManyInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
     type?: string
     payloadJson?: string | null
     title: string
@@ -62509,6 +62904,7 @@ export namespace Prisma {
   export type LinkUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -63625,6 +64021,9 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     profile: ProfileCreateNestedOneWithoutLeadsInput
+    workspace?: WorkspaceCreateNestedOneWithoutLeadsInput
+    contactEntry?: LinkCreateNestedOneWithoutContactLeadsInput
+    claimedBy?: UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput
     interestedProduct?: ProductCreateNestedOneWithoutLeadsInput
     conversation?: AiConversationCreateNestedOneWithoutLeadInput
     followUps?: LeadFollowUpCreateNestedManyWithoutLeadInput
@@ -63633,6 +64032,9 @@ export namespace Prisma {
   export type LeadUncheckedCreateInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -63673,6 +64075,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profile?: ProfileUpdateOneRequiredWithoutLeadsNestedInput
+    workspace?: WorkspaceUpdateOneWithoutLeadsNestedInput
+    contactEntry?: LinkUpdateOneWithoutContactLeadsNestedInput
+    claimedBy?: UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput
     interestedProduct?: ProductUpdateOneWithoutLeadsNestedInput
     conversation?: AiConversationUpdateOneWithoutLeadNestedInput
     followUps?: LeadFollowUpUpdateManyWithoutLeadNestedInput
@@ -63681,6 +64086,9 @@ export namespace Prisma {
   export type LeadUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -63705,6 +64113,9 @@ export namespace Prisma {
   export type LeadCreateManyInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -63748,6 +64159,9 @@ export namespace Prisma {
   export type LeadUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -65747,6 +66161,8 @@ export namespace Prisma {
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
@@ -65765,6 +66181,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
@@ -65783,6 +66201,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
@@ -65801,6 +66221,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
@@ -66302,6 +66724,12 @@ export namespace Prisma {
     none?: EnterpriseQuotaConsumptionWhereInput
   }
 
+  export type LeadListRelationFilter = {
+    every?: LeadWhereInput
+    some?: LeadWhereInput
+    none?: LeadWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -66360,6 +66788,10 @@ export namespace Prisma {
   }
 
   export type EnterpriseQuotaConsumptionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type LeadOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -66703,12 +67135,6 @@ export namespace Prisma {
     none?: LinkWhereInput
   }
 
-  export type LeadListRelationFilter = {
-    every?: LeadWhereInput
-    some?: LeadWhereInput
-    none?: LeadWhereInput
-  }
-
   export type AiConversationListRelationFilter = {
     every?: AiConversationWhereInput
     some?: AiConversationWhereInput
@@ -66722,10 +67148,6 @@ export namespace Prisma {
   }
 
   export type LinkOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type LeadOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -66753,6 +67175,7 @@ export namespace Prisma {
     template?: SortOrder
     language?: SortOrder
     isPublic?: SortOrder
+    firstPublishedAt?: SortOrder
     company?: SortOrder
     jobTitle?: SortOrder
     phone?: SortOrder
@@ -66783,6 +67206,7 @@ export namespace Prisma {
     template?: SortOrder
     language?: SortOrder
     isPublic?: SortOrder
+    firstPublishedAt?: SortOrder
     company?: SortOrder
     jobTitle?: SortOrder
     phone?: SortOrder
@@ -66812,6 +67236,7 @@ export namespace Prisma {
     template?: SortOrder
     language?: SortOrder
     isPublic?: SortOrder
+    firstPublishedAt?: SortOrder
     company?: SortOrder
     jobTitle?: SortOrder
     phone?: SortOrder
@@ -66952,6 +67377,11 @@ export namespace Prisma {
     isNot?: ProfileWhereInput
   }
 
+  export type WorkspaceNullableScalarRelationFilter = {
+    is?: WorkspaceWhereInput | null
+    isNot?: WorkspaceWhereInput | null
+  }
+
   export type LinkClickListRelationFilter = {
     every?: LinkClickWhereInput
     some?: LinkClickWhereInput
@@ -66965,6 +67395,7 @@ export namespace Prisma {
   export type LinkCountOrderByAggregateInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrder
     type?: SortOrder
     payloadJson?: SortOrder
     title?: SortOrder
@@ -66989,6 +67420,7 @@ export namespace Prisma {
   export type LinkMaxOrderByAggregateInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrder
     type?: SortOrder
     payloadJson?: SortOrder
     title?: SortOrder
@@ -67008,6 +67440,7 @@ export namespace Prisma {
   export type LinkMinOrderByAggregateInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrder
     type?: SortOrder
     payloadJson?: SortOrder
     title?: SortOrder
@@ -67536,6 +67969,16 @@ export namespace Prisma {
     success?: SortOrder
   }
 
+  export type LinkNullableScalarRelationFilter = {
+    is?: LinkWhereInput | null
+    isNot?: LinkWhereInput | null
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
   export type ProductNullableScalarRelationFilter = {
     is?: ProductWhereInput | null
     isNot?: ProductWhereInput | null
@@ -67559,6 +68002,9 @@ export namespace Prisma {
   export type LeadCountOrderByAggregateInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrder
+    contactEntryId?: SortOrder
+    claimedByUserId?: SortOrder
     name?: SortOrder
     email?: SortOrder
     phone?: SortOrder
@@ -67582,6 +68028,9 @@ export namespace Prisma {
   export type LeadMaxOrderByAggregateInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrder
+    contactEntryId?: SortOrder
+    claimedByUserId?: SortOrder
     name?: SortOrder
     email?: SortOrder
     phone?: SortOrder
@@ -67605,6 +68054,9 @@ export namespace Prisma {
   export type LeadMinOrderByAggregateInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrder
+    contactEntryId?: SortOrder
+    claimedByUserId?: SortOrder
     name?: SortOrder
     email?: SortOrder
     phone?: SortOrder
@@ -68956,6 +69408,13 @@ export namespace Prisma {
     connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
   }
 
+  export type LeadCreateNestedManyWithoutClaimedByInput = {
+    create?: XOR<LeadCreateWithoutClaimedByInput, LeadUncheckedCreateWithoutClaimedByInput> | LeadCreateWithoutClaimedByInput[] | LeadUncheckedCreateWithoutClaimedByInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutClaimedByInput | LeadCreateOrConnectWithoutClaimedByInput[]
+    createMany?: LeadCreateManyClaimedByInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+  }
+
   export type ProfileUncheckedCreateNestedOneWithoutUserInput = {
     create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
@@ -69076,6 +69535,13 @@ export namespace Prisma {
     connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput[]
     createMany?: EnterpriseQuotaConsumptionCreateManyUserInputEnvelope
     connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+  }
+
+  export type LeadUncheckedCreateNestedManyWithoutClaimedByInput = {
+    create?: XOR<LeadCreateWithoutClaimedByInput, LeadUncheckedCreateWithoutClaimedByInput> | LeadCreateWithoutClaimedByInput[] | LeadUncheckedCreateWithoutClaimedByInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutClaimedByInput | LeadCreateOrConnectWithoutClaimedByInput[]
+    createMany?: LeadCreateManyClaimedByInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -69342,6 +69808,20 @@ export namespace Prisma {
     deleteMany?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
   }
 
+  export type LeadUpdateManyWithoutClaimedByNestedInput = {
+    create?: XOR<LeadCreateWithoutClaimedByInput, LeadUncheckedCreateWithoutClaimedByInput> | LeadCreateWithoutClaimedByInput[] | LeadUncheckedCreateWithoutClaimedByInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutClaimedByInput | LeadCreateOrConnectWithoutClaimedByInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutClaimedByInput | LeadUpsertWithWhereUniqueWithoutClaimedByInput[]
+    createMany?: LeadCreateManyClaimedByInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutClaimedByInput | LeadUpdateWithWhereUniqueWithoutClaimedByInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutClaimedByInput | LeadUpdateManyWithWhereWithoutClaimedByInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
+  }
+
   export type ProfileUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
@@ -69576,6 +70056,20 @@ export namespace Prisma {
     update?: EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutUserInput | EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutUserInput | EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
+  }
+
+  export type LeadUncheckedUpdateManyWithoutClaimedByNestedInput = {
+    create?: XOR<LeadCreateWithoutClaimedByInput, LeadUncheckedCreateWithoutClaimedByInput> | LeadCreateWithoutClaimedByInput[] | LeadUncheckedCreateWithoutClaimedByInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutClaimedByInput | LeadCreateOrConnectWithoutClaimedByInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutClaimedByInput | LeadUpsertWithWhereUniqueWithoutClaimedByInput[]
+    createMany?: LeadCreateManyClaimedByInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutClaimedByInput | LeadUpdateWithWhereUniqueWithoutClaimedByInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutClaimedByInput | LeadUpdateManyWithWhereWithoutClaimedByInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutFreezeRecordsInput = {
@@ -69836,11 +70330,24 @@ export namespace Prisma {
     connect?: ProfileWhereUniqueInput
   }
 
+  export type WorkspaceCreateNestedOneWithoutContactEntriesInput = {
+    create?: XOR<WorkspaceCreateWithoutContactEntriesInput, WorkspaceUncheckedCreateWithoutContactEntriesInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutContactEntriesInput
+    connect?: WorkspaceWhereUniqueInput
+  }
+
   export type LinkClickCreateNestedManyWithoutLinkInput = {
     create?: XOR<LinkClickCreateWithoutLinkInput, LinkClickUncheckedCreateWithoutLinkInput> | LinkClickCreateWithoutLinkInput[] | LinkClickUncheckedCreateWithoutLinkInput[]
     connectOrCreate?: LinkClickCreateOrConnectWithoutLinkInput | LinkClickCreateOrConnectWithoutLinkInput[]
     createMany?: LinkClickCreateManyLinkInputEnvelope
     connect?: LinkClickWhereUniqueInput | LinkClickWhereUniqueInput[]
+  }
+
+  export type LeadCreateNestedManyWithoutContactEntryInput = {
+    create?: XOR<LeadCreateWithoutContactEntryInput, LeadUncheckedCreateWithoutContactEntryInput> | LeadCreateWithoutContactEntryInput[] | LeadUncheckedCreateWithoutContactEntryInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutContactEntryInput | LeadCreateOrConnectWithoutContactEntryInput[]
+    createMany?: LeadCreateManyContactEntryInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
   }
 
   export type LinkClickUncheckedCreateNestedManyWithoutLinkInput = {
@@ -69850,12 +70357,29 @@ export namespace Prisma {
     connect?: LinkClickWhereUniqueInput | LinkClickWhereUniqueInput[]
   }
 
+  export type LeadUncheckedCreateNestedManyWithoutContactEntryInput = {
+    create?: XOR<LeadCreateWithoutContactEntryInput, LeadUncheckedCreateWithoutContactEntryInput> | LeadCreateWithoutContactEntryInput[] | LeadUncheckedCreateWithoutContactEntryInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutContactEntryInput | LeadCreateOrConnectWithoutContactEntryInput[]
+    createMany?: LeadCreateManyContactEntryInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+  }
+
   export type ProfileUpdateOneRequiredWithoutLinksNestedInput = {
     create?: XOR<ProfileCreateWithoutLinksInput, ProfileUncheckedCreateWithoutLinksInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutLinksInput
     upsert?: ProfileUpsertWithoutLinksInput
     connect?: ProfileWhereUniqueInput
     update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutLinksInput, ProfileUpdateWithoutLinksInput>, ProfileUncheckedUpdateWithoutLinksInput>
+  }
+
+  export type WorkspaceUpdateOneWithoutContactEntriesNestedInput = {
+    create?: XOR<WorkspaceCreateWithoutContactEntriesInput, WorkspaceUncheckedCreateWithoutContactEntriesInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutContactEntriesInput
+    upsert?: WorkspaceUpsertWithoutContactEntriesInput
+    disconnect?: WorkspaceWhereInput | boolean
+    delete?: WorkspaceWhereInput | boolean
+    connect?: WorkspaceWhereUniqueInput
+    update?: XOR<XOR<WorkspaceUpdateToOneWithWhereWithoutContactEntriesInput, WorkspaceUpdateWithoutContactEntriesInput>, WorkspaceUncheckedUpdateWithoutContactEntriesInput>
   }
 
   export type LinkClickUpdateManyWithoutLinkNestedInput = {
@@ -69872,6 +70396,20 @@ export namespace Prisma {
     deleteMany?: LinkClickScalarWhereInput | LinkClickScalarWhereInput[]
   }
 
+  export type LeadUpdateManyWithoutContactEntryNestedInput = {
+    create?: XOR<LeadCreateWithoutContactEntryInput, LeadUncheckedCreateWithoutContactEntryInput> | LeadCreateWithoutContactEntryInput[] | LeadUncheckedCreateWithoutContactEntryInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutContactEntryInput | LeadCreateOrConnectWithoutContactEntryInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutContactEntryInput | LeadUpsertWithWhereUniqueWithoutContactEntryInput[]
+    createMany?: LeadCreateManyContactEntryInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutContactEntryInput | LeadUpdateWithWhereUniqueWithoutContactEntryInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutContactEntryInput | LeadUpdateManyWithWhereWithoutContactEntryInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
+  }
+
   export type LinkClickUncheckedUpdateManyWithoutLinkNestedInput = {
     create?: XOR<LinkClickCreateWithoutLinkInput, LinkClickUncheckedCreateWithoutLinkInput> | LinkClickCreateWithoutLinkInput[] | LinkClickUncheckedCreateWithoutLinkInput[]
     connectOrCreate?: LinkClickCreateOrConnectWithoutLinkInput | LinkClickCreateOrConnectWithoutLinkInput[]
@@ -69884,6 +70422,20 @@ export namespace Prisma {
     update?: LinkClickUpdateWithWhereUniqueWithoutLinkInput | LinkClickUpdateWithWhereUniqueWithoutLinkInput[]
     updateMany?: LinkClickUpdateManyWithWhereWithoutLinkInput | LinkClickUpdateManyWithWhereWithoutLinkInput[]
     deleteMany?: LinkClickScalarWhereInput | LinkClickScalarWhereInput[]
+  }
+
+  export type LeadUncheckedUpdateManyWithoutContactEntryNestedInput = {
+    create?: XOR<LeadCreateWithoutContactEntryInput, LeadUncheckedCreateWithoutContactEntryInput> | LeadCreateWithoutContactEntryInput[] | LeadUncheckedCreateWithoutContactEntryInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutContactEntryInput | LeadCreateOrConnectWithoutContactEntryInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutContactEntryInput | LeadUpsertWithWhereUniqueWithoutContactEntryInput[]
+    createMany?: LeadCreateManyContactEntryInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutContactEntryInput | LeadUpdateWithWhereUniqueWithoutContactEntryInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutContactEntryInput | LeadUpdateManyWithWhereWithoutContactEntryInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
   export type LinkCreateNestedOneWithoutClicksInput = {
@@ -70046,6 +70598,24 @@ export namespace Prisma {
     connect?: ProfileWhereUniqueInput
   }
 
+  export type WorkspaceCreateNestedOneWithoutLeadsInput = {
+    create?: XOR<WorkspaceCreateWithoutLeadsInput, WorkspaceUncheckedCreateWithoutLeadsInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutLeadsInput
+    connect?: WorkspaceWhereUniqueInput
+  }
+
+  export type LinkCreateNestedOneWithoutContactLeadsInput = {
+    create?: XOR<LinkCreateWithoutContactLeadsInput, LinkUncheckedCreateWithoutContactLeadsInput>
+    connectOrCreate?: LinkCreateOrConnectWithoutContactLeadsInput
+    connect?: LinkWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput = {
+    create?: XOR<UserCreateWithoutClaimedWorkspaceLeadsInput, UserUncheckedCreateWithoutClaimedWorkspaceLeadsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutClaimedWorkspaceLeadsInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type ProductCreateNestedOneWithoutLeadsInput = {
     create?: XOR<ProductCreateWithoutLeadsInput, ProductUncheckedCreateWithoutLeadsInput>
     connectOrCreate?: ProductCreateOrConnectWithoutLeadsInput
@@ -70078,6 +70648,36 @@ export namespace Prisma {
     upsert?: ProfileUpsertWithoutLeadsInput
     connect?: ProfileWhereUniqueInput
     update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutLeadsInput, ProfileUpdateWithoutLeadsInput>, ProfileUncheckedUpdateWithoutLeadsInput>
+  }
+
+  export type WorkspaceUpdateOneWithoutLeadsNestedInput = {
+    create?: XOR<WorkspaceCreateWithoutLeadsInput, WorkspaceUncheckedCreateWithoutLeadsInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutLeadsInput
+    upsert?: WorkspaceUpsertWithoutLeadsInput
+    disconnect?: WorkspaceWhereInput | boolean
+    delete?: WorkspaceWhereInput | boolean
+    connect?: WorkspaceWhereUniqueInput
+    update?: XOR<XOR<WorkspaceUpdateToOneWithWhereWithoutLeadsInput, WorkspaceUpdateWithoutLeadsInput>, WorkspaceUncheckedUpdateWithoutLeadsInput>
+  }
+
+  export type LinkUpdateOneWithoutContactLeadsNestedInput = {
+    create?: XOR<LinkCreateWithoutContactLeadsInput, LinkUncheckedCreateWithoutContactLeadsInput>
+    connectOrCreate?: LinkCreateOrConnectWithoutContactLeadsInput
+    upsert?: LinkUpsertWithoutContactLeadsInput
+    disconnect?: LinkWhereInput | boolean
+    delete?: LinkWhereInput | boolean
+    connect?: LinkWhereUniqueInput
+    update?: XOR<XOR<LinkUpdateToOneWithWhereWithoutContactLeadsInput, LinkUpdateWithoutContactLeadsInput>, LinkUncheckedUpdateWithoutContactLeadsInput>
+  }
+
+  export type UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput = {
+    create?: XOR<UserCreateWithoutClaimedWorkspaceLeadsInput, UserUncheckedCreateWithoutClaimedWorkspaceLeadsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutClaimedWorkspaceLeadsInput
+    upsert?: UserUpsertWithoutClaimedWorkspaceLeadsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutClaimedWorkspaceLeadsInput, UserUpdateWithoutClaimedWorkspaceLeadsInput>, UserUncheckedUpdateWithoutClaimedWorkspaceLeadsInput>
   }
 
   export type ProductUpdateOneWithoutLeadsNestedInput = {
@@ -70565,6 +71165,20 @@ export namespace Prisma {
     connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
   }
 
+  export type LinkCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<LinkCreateWithoutWorkspaceInput, LinkUncheckedCreateWithoutWorkspaceInput> | LinkCreateWithoutWorkspaceInput[] | LinkUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LinkCreateOrConnectWithoutWorkspaceInput | LinkCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: LinkCreateManyWorkspaceInputEnvelope
+    connect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+  }
+
+  export type LeadCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<LeadCreateWithoutWorkspaceInput, LeadUncheckedCreateWithoutWorkspaceInput> | LeadCreateWithoutWorkspaceInput[] | LeadUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutWorkspaceInput | LeadCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: LeadCreateManyWorkspaceInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+  }
+
   export type EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput = {
     create?: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
     connectOrCreate?: EnterpriseQuotaPoolCreateOrConnectWithoutWorkspaceInput
@@ -70597,6 +71211,20 @@ export namespace Prisma {
     connectOrCreate?: WorkspacePublicProfileCreateOrConnectWithoutWorkspaceInput | WorkspacePublicProfileCreateOrConnectWithoutWorkspaceInput[]
     createMany?: WorkspacePublicProfileCreateManyWorkspaceInputEnvelope
     connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+  }
+
+  export type LinkUncheckedCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<LinkCreateWithoutWorkspaceInput, LinkUncheckedCreateWithoutWorkspaceInput> | LinkCreateWithoutWorkspaceInput[] | LinkUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LinkCreateOrConnectWithoutWorkspaceInput | LinkCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: LinkCreateManyWorkspaceInputEnvelope
+    connect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+  }
+
+  export type LeadUncheckedCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<LeadCreateWithoutWorkspaceInput, LeadUncheckedCreateWithoutWorkspaceInput> | LeadCreateWithoutWorkspaceInput[] | LeadUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutWorkspaceInput | LeadCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: LeadCreateManyWorkspaceInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
   }
 
   export type EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput = {
@@ -70660,6 +71288,34 @@ export namespace Prisma {
     update?: WorkspacePublicProfileUpdateWithWhereUniqueWithoutWorkspaceInput | WorkspacePublicProfileUpdateWithWhereUniqueWithoutWorkspaceInput[]
     updateMany?: WorkspacePublicProfileUpdateManyWithWhereWithoutWorkspaceInput | WorkspacePublicProfileUpdateManyWithWhereWithoutWorkspaceInput[]
     deleteMany?: WorkspacePublicProfileScalarWhereInput | WorkspacePublicProfileScalarWhereInput[]
+  }
+
+  export type LinkUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<LinkCreateWithoutWorkspaceInput, LinkUncheckedCreateWithoutWorkspaceInput> | LinkCreateWithoutWorkspaceInput[] | LinkUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LinkCreateOrConnectWithoutWorkspaceInput | LinkCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: LinkUpsertWithWhereUniqueWithoutWorkspaceInput | LinkUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: LinkCreateManyWorkspaceInputEnvelope
+    set?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    disconnect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    delete?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    connect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    update?: LinkUpdateWithWhereUniqueWithoutWorkspaceInput | LinkUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: LinkUpdateManyWithWhereWithoutWorkspaceInput | LinkUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: LinkScalarWhereInput | LinkScalarWhereInput[]
+  }
+
+  export type LeadUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<LeadCreateWithoutWorkspaceInput, LeadUncheckedCreateWithoutWorkspaceInput> | LeadCreateWithoutWorkspaceInput[] | LeadUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutWorkspaceInput | LeadCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutWorkspaceInput | LeadUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: LeadCreateManyWorkspaceInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutWorkspaceInput | LeadUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutWorkspaceInput | LeadUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
   export type EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput = {
@@ -70726,6 +71382,34 @@ export namespace Prisma {
     update?: WorkspacePublicProfileUpdateWithWhereUniqueWithoutWorkspaceInput | WorkspacePublicProfileUpdateWithWhereUniqueWithoutWorkspaceInput[]
     updateMany?: WorkspacePublicProfileUpdateManyWithWhereWithoutWorkspaceInput | WorkspacePublicProfileUpdateManyWithWhereWithoutWorkspaceInput[]
     deleteMany?: WorkspacePublicProfileScalarWhereInput | WorkspacePublicProfileScalarWhereInput[]
+  }
+
+  export type LinkUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<LinkCreateWithoutWorkspaceInput, LinkUncheckedCreateWithoutWorkspaceInput> | LinkCreateWithoutWorkspaceInput[] | LinkUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LinkCreateOrConnectWithoutWorkspaceInput | LinkCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: LinkUpsertWithWhereUniqueWithoutWorkspaceInput | LinkUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: LinkCreateManyWorkspaceInputEnvelope
+    set?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    disconnect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    delete?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    connect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    update?: LinkUpdateWithWhereUniqueWithoutWorkspaceInput | LinkUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: LinkUpdateManyWithWhereWithoutWorkspaceInput | LinkUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: LinkScalarWhereInput | LinkScalarWhereInput[]
+  }
+
+  export type LeadUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<LeadCreateWithoutWorkspaceInput, LeadUncheckedCreateWithoutWorkspaceInput> | LeadCreateWithoutWorkspaceInput[] | LeadUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutWorkspaceInput | LeadCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutWorkspaceInput | LeadUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: LeadCreateManyWorkspaceInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutWorkspaceInput | LeadUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutWorkspaceInput | LeadUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
   export type EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput = {
@@ -71111,6 +71795,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -71144,6 +71829,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -71671,6 +72357,8 @@ export namespace Prisma {
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
@@ -71688,6 +72376,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
@@ -71764,6 +72454,68 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type LeadCreateWithoutClaimedByInput = {
+    id: string
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile: ProfileCreateNestedOneWithoutLeadsInput
+    workspace?: WorkspaceCreateNestedOneWithoutLeadsInput
+    contactEntry?: LinkCreateNestedOneWithoutContactLeadsInput
+    interestedProduct?: ProductCreateNestedOneWithoutLeadsInput
+    conversation?: AiConversationCreateNestedOneWithoutLeadInput
+    followUps?: LeadFollowUpCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadUncheckedCreateWithoutClaimedByInput = {
+    id: string
+    profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductId?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    conversationId?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    followUps?: LeadFollowUpUncheckedCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadCreateOrConnectWithoutClaimedByInput = {
+    where: LeadWhereUniqueInput
+    create: XOR<LeadCreateWithoutClaimedByInput, LeadUncheckedCreateWithoutClaimedByInput>
+  }
+
+  export type LeadCreateManyClaimedByInputEnvelope = {
+    data: LeadCreateManyClaimedByInput | LeadCreateManyClaimedByInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ProfileUpsertWithoutUserInput = {
     update: XOR<ProfileUpdateWithoutUserInput, ProfileUncheckedUpdateWithoutUserInput>
     create: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
@@ -71790,6 +72542,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71823,6 +72576,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -72404,6 +73158,51 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"EnterpriseQuotaConsumption"> | Date | string
   }
 
+  export type LeadUpsertWithWhereUniqueWithoutClaimedByInput = {
+    where: LeadWhereUniqueInput
+    update: XOR<LeadUpdateWithoutClaimedByInput, LeadUncheckedUpdateWithoutClaimedByInput>
+    create: XOR<LeadCreateWithoutClaimedByInput, LeadUncheckedCreateWithoutClaimedByInput>
+  }
+
+  export type LeadUpdateWithWhereUniqueWithoutClaimedByInput = {
+    where: LeadWhereUniqueInput
+    data: XOR<LeadUpdateWithoutClaimedByInput, LeadUncheckedUpdateWithoutClaimedByInput>
+  }
+
+  export type LeadUpdateManyWithWhereWithoutClaimedByInput = {
+    where: LeadScalarWhereInput
+    data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyWithoutClaimedByInput>
+  }
+
+  export type LeadScalarWhereInput = {
+    AND?: LeadScalarWhereInput | LeadScalarWhereInput[]
+    OR?: LeadScalarWhereInput[]
+    NOT?: LeadScalarWhereInput | LeadScalarWhereInput[]
+    id?: UuidFilter<"Lead"> | string
+    profileId?: UuidFilter<"Lead"> | string
+    workspaceId?: UuidNullableFilter<"Lead"> | string | null
+    contactEntryId?: UuidNullableFilter<"Lead"> | string | null
+    claimedByUserId?: UuidNullableFilter<"Lead"> | string | null
+    name?: StringFilter<"Lead"> | string
+    email?: StringNullableFilter<"Lead"> | string | null
+    phone?: StringNullableFilter<"Lead"> | string | null
+    wechat?: StringNullableFilter<"Lead"> | string | null
+    message?: StringNullableFilter<"Lead"> | string | null
+    sourceComponent?: StringNullableFilter<"Lead"> | string | null
+    sourcePage?: StringNullableFilter<"Lead"> | string | null
+    interestedProductId?: UuidNullableFilter<"Lead"> | string | null
+    interestedProductName?: StringNullableFilter<"Lead"> | string | null
+    interestedProductPrice?: StringNullableFilter<"Lead"> | string | null
+    interestedProductCategory?: StringNullableFilter<"Lead"> | string | null
+    conversationId?: UuidNullableFilter<"Lead"> | string | null
+    status?: StringFilter<"Lead"> | string
+    notes?: StringNullableFilter<"Lead"> | string | null
+    handlerNote?: StringNullableFilter<"Lead"> | string | null
+    handledAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    createdAt?: DateTimeFilter<"Lead"> | Date | string
+    updatedAt?: DateTimeFilter<"Lead"> | Date | string
+  }
+
   export type UserCreateWithoutFreezeRecordsInput = {
     id: string
     email: string
@@ -72436,6 +73235,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutFreezeRecordsInput = {
@@ -72470,6 +73270,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutFreezeRecordsInput = {
@@ -72520,6 +73321,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFreezeRecordsInput = {
@@ -72554,6 +73356,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateWithoutUsernameHistoryInput = {
@@ -72588,6 +73391,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutUsernameHistoryInput = {
@@ -72622,6 +73426,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutUsernameHistoryInput = {
@@ -72672,6 +73477,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUsernameHistoryInput = {
@@ -72706,6 +73512,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateWithoutProfileInput = {
@@ -72740,6 +73547,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutProfileInput = {
@@ -72774,6 +73582,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutProfileInput = {
@@ -72797,11 +73606,14 @@ export namespace Prisma {
     totalClicks?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    workspace?: WorkspaceCreateNestedOneWithoutContactEntriesInput
     clicks?: LinkClickCreateNestedManyWithoutLinkInput
+    contactLeads?: LeadCreateNestedManyWithoutContactEntryInput
   }
 
   export type LinkUncheckedCreateWithoutProfileInput = {
     id: string
+    workspaceId?: string | null
     type?: string
     payloadJson?: string | null
     title: string
@@ -72817,6 +73629,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     clicks?: LinkClickUncheckedCreateNestedManyWithoutLinkInput
+    contactLeads?: LeadUncheckedCreateNestedManyWithoutContactEntryInput
   }
 
   export type LinkCreateOrConnectWithoutProfileInput = {
@@ -72847,6 +73660,9 @@ export namespace Prisma {
     handledAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    workspace?: WorkspaceCreateNestedOneWithoutLeadsInput
+    contactEntry?: LinkCreateNestedOneWithoutContactLeadsInput
+    claimedBy?: UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput
     interestedProduct?: ProductCreateNestedOneWithoutLeadsInput
     conversation?: AiConversationCreateNestedOneWithoutLeadInput
     followUps?: LeadFollowUpCreateNestedManyWithoutLeadInput
@@ -72854,6 +73670,9 @@ export namespace Prisma {
 
   export type LeadUncheckedCreateWithoutProfileInput = {
     id: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -73000,6 +73819,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProfileInput = {
@@ -73034,6 +73854,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type LinkUpsertWithWhereUniqueWithoutProfileInput = {
@@ -73058,6 +73879,7 @@ export namespace Prisma {
     NOT?: LinkScalarWhereInput | LinkScalarWhereInput[]
     id?: UuidFilter<"Link"> | string
     profileId?: UuidFilter<"Link"> | string
+    workspaceId?: UuidNullableFilter<"Link"> | string | null
     type?: StringFilter<"Link"> | string
     payloadJson?: StringNullableFilter<"Link"> | string | null
     title?: StringFilter<"Link"> | string
@@ -73088,32 +73910,6 @@ export namespace Prisma {
   export type LeadUpdateManyWithWhereWithoutProfileInput = {
     where: LeadScalarWhereInput
     data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyWithoutProfileInput>
-  }
-
-  export type LeadScalarWhereInput = {
-    AND?: LeadScalarWhereInput | LeadScalarWhereInput[]
-    OR?: LeadScalarWhereInput[]
-    NOT?: LeadScalarWhereInput | LeadScalarWhereInput[]
-    id?: UuidFilter<"Lead"> | string
-    profileId?: UuidFilter<"Lead"> | string
-    name?: StringFilter<"Lead"> | string
-    email?: StringNullableFilter<"Lead"> | string | null
-    phone?: StringNullableFilter<"Lead"> | string | null
-    wechat?: StringNullableFilter<"Lead"> | string | null
-    message?: StringNullableFilter<"Lead"> | string | null
-    sourceComponent?: StringNullableFilter<"Lead"> | string | null
-    sourcePage?: StringNullableFilter<"Lead"> | string | null
-    interestedProductId?: UuidNullableFilter<"Lead"> | string | null
-    interestedProductName?: StringNullableFilter<"Lead"> | string | null
-    interestedProductPrice?: StringNullableFilter<"Lead"> | string | null
-    interestedProductCategory?: StringNullableFilter<"Lead"> | string | null
-    conversationId?: UuidNullableFilter<"Lead"> | string | null
-    status?: StringFilter<"Lead"> | string
-    notes?: StringNullableFilter<"Lead"> | string | null
-    handlerNote?: StringNullableFilter<"Lead"> | string | null
-    handledAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
-    createdAt?: DateTimeFilter<"Lead"> | Date | string
-    updatedAt?: DateTimeFilter<"Lead"> | Date | string
   }
 
   export type AiConversationUpsertWithWhereUniqueWithoutProfileInput = {
@@ -73193,6 +73989,8 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
@@ -73210,6 +74008,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
@@ -73243,6 +74043,8 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
@@ -73260,6 +74062,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
@@ -73277,6 +74081,8 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
@@ -73294,6 +74100,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
@@ -73335,6 +74143,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutWorkspacePublicProfilesInput = {
@@ -73369,6 +74178,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutWorkspacePublicProfilesInput = {
@@ -73400,6 +74210,8 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
@@ -73417,6 +74229,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
@@ -73464,6 +74278,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWorkspacePublicProfilesInput = {
@@ -73498,6 +74313,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type ProfileCreateWithoutLinksInput = {
@@ -73515,6 +74331,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -73549,6 +74366,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -73569,6 +74387,49 @@ export namespace Prisma {
   export type ProfileCreateOrConnectWithoutLinksInput = {
     where: ProfileWhereUniqueInput
     create: XOR<ProfileCreateWithoutLinksInput, ProfileUncheckedCreateWithoutLinksInput>
+  }
+
+  export type WorkspaceCreateWithoutContactEntriesInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
+    members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUncheckedCreateWithoutContactEntriesInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    ownerId: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceCreateOrConnectWithoutContactEntriesInput = {
+    where: WorkspaceWhereUniqueInput
+    create: XOR<WorkspaceCreateWithoutContactEntriesInput, WorkspaceUncheckedCreateWithoutContactEntriesInput>
   }
 
   export type LinkClickCreateWithoutLinkInput = {
@@ -73607,6 +74468,68 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type LeadCreateWithoutContactEntryInput = {
+    id: string
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile: ProfileCreateNestedOneWithoutLeadsInput
+    workspace?: WorkspaceCreateNestedOneWithoutLeadsInput
+    claimedBy?: UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput
+    interestedProduct?: ProductCreateNestedOneWithoutLeadsInput
+    conversation?: AiConversationCreateNestedOneWithoutLeadInput
+    followUps?: LeadFollowUpCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadUncheckedCreateWithoutContactEntryInput = {
+    id: string
+    profileId: string
+    workspaceId?: string | null
+    claimedByUserId?: string | null
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductId?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    conversationId?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    followUps?: LeadFollowUpUncheckedCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadCreateOrConnectWithoutContactEntryInput = {
+    where: LeadWhereUniqueInput
+    create: XOR<LeadCreateWithoutContactEntryInput, LeadUncheckedCreateWithoutContactEntryInput>
+  }
+
+  export type LeadCreateManyContactEntryInputEnvelope = {
+    data: LeadCreateManyContactEntryInput | LeadCreateManyContactEntryInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ProfileUpsertWithoutLinksInput = {
     update: XOR<ProfileUpdateWithoutLinksInput, ProfileUncheckedUpdateWithoutLinksInput>
     create: XOR<ProfileCreateWithoutLinksInput, ProfileUncheckedCreateWithoutLinksInput>
@@ -73633,6 +74556,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73667,6 +74591,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73682,6 +74607,55 @@ export namespace Prisma {
     leads?: LeadUncheckedUpdateManyWithoutProfileNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutProfileNestedInput
     visits?: ProfileVisitUncheckedUpdateManyWithoutProfileNestedInput
+  }
+
+  export type WorkspaceUpsertWithoutContactEntriesInput = {
+    update: XOR<WorkspaceUpdateWithoutContactEntriesInput, WorkspaceUncheckedUpdateWithoutContactEntriesInput>
+    create: XOR<WorkspaceCreateWithoutContactEntriesInput, WorkspaceUncheckedCreateWithoutContactEntriesInput>
+    where?: WorkspaceWhereInput
+  }
+
+  export type WorkspaceUpdateToOneWithWhereWithoutContactEntriesInput = {
+    where?: WorkspaceWhereInput
+    data: XOR<WorkspaceUpdateWithoutContactEntriesInput, WorkspaceUncheckedUpdateWithoutContactEntriesInput>
+  }
+
+  export type WorkspaceUpdateWithoutContactEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+    members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceUncheckedUpdateWithoutContactEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type LinkClickUpsertWithWhereUniqueWithoutLinkInput = {
@@ -73717,6 +74691,22 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"LinkClick"> | Date | string
   }
 
+  export type LeadUpsertWithWhereUniqueWithoutContactEntryInput = {
+    where: LeadWhereUniqueInput
+    update: XOR<LeadUpdateWithoutContactEntryInput, LeadUncheckedUpdateWithoutContactEntryInput>
+    create: XOR<LeadCreateWithoutContactEntryInput, LeadUncheckedCreateWithoutContactEntryInput>
+  }
+
+  export type LeadUpdateWithWhereUniqueWithoutContactEntryInput = {
+    where: LeadWhereUniqueInput
+    data: XOR<LeadUpdateWithoutContactEntryInput, LeadUncheckedUpdateWithoutContactEntryInput>
+  }
+
+  export type LeadUpdateManyWithWhereWithoutContactEntryInput = {
+    where: LeadScalarWhereInput
+    data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyWithoutContactEntryInput>
+  }
+
   export type LinkCreateWithoutClicksInput = {
     id: string
     type?: string
@@ -73734,11 +74724,14 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     profile: ProfileCreateNestedOneWithoutLinksInput
+    workspace?: WorkspaceCreateNestedOneWithoutContactEntriesInput
+    contactLeads?: LeadCreateNestedManyWithoutContactEntryInput
   }
 
   export type LinkUncheckedCreateWithoutClicksInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
     type?: string
     payloadJson?: string | null
     title: string
@@ -73753,6 +74746,7 @@ export namespace Prisma {
     totalClicks?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    contactLeads?: LeadUncheckedCreateNestedManyWithoutContactEntryInput
   }
 
   export type LinkCreateOrConnectWithoutClicksInput = {
@@ -73788,11 +74782,14 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profile?: ProfileUpdateOneRequiredWithoutLinksNestedInput
+    workspace?: WorkspaceUpdateOneWithoutContactEntriesNestedInput
+    contactLeads?: LeadUpdateManyWithoutContactEntryNestedInput
   }
 
   export type LinkUncheckedUpdateWithoutClicksInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -73807,6 +74804,7 @@ export namespace Prisma {
     totalClicks?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contactLeads?: LeadUncheckedUpdateManyWithoutContactEntryNestedInput
   }
 
   export type ProfileCreateWithoutVisitsInput = {
@@ -73824,6 +74822,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -73858,6 +74857,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -73906,6 +74906,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73940,6 +74941,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73989,6 +74991,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutShortLinksInput = {
@@ -74023,6 +75026,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutShortLinksInput = {
@@ -74129,6 +75133,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutShortLinksInput = {
@@ -74163,6 +75168,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type ShortLinkClickUpsertWithWhereUniqueWithoutShortLinkInput = {
@@ -74308,6 +75314,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -74342,6 +75349,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -74392,6 +75400,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -74426,6 +75435,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateWithoutResetTokensInput = {
@@ -74460,6 +75470,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutResetTokensInput = {
@@ -74494,6 +75505,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutResetTokensInput = {
@@ -74544,6 +75556,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutResetTokensInput = {
@@ -74578,6 +75591,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateWithoutVerifyTokensInput = {
@@ -74612,6 +75626,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutVerifyTokensInput = {
@@ -74646,6 +75661,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutVerifyTokensInput = {
@@ -74696,6 +75712,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVerifyTokensInput = {
@@ -74730,6 +75747,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateWithoutAiUsageLogsInput = {
@@ -74764,6 +75782,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutAiUsageLogsInput = {
@@ -74798,6 +75817,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutAiUsageLogsInput = {
@@ -74848,6 +75868,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiUsageLogsInput = {
@@ -74882,6 +75903,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type ProfileCreateWithoutLeadsInput = {
@@ -74899,6 +75921,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -74933,6 +75956,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -74953,6 +75977,171 @@ export namespace Prisma {
   export type ProfileCreateOrConnectWithoutLeadsInput = {
     where: ProfileWhereUniqueInput
     create: XOR<ProfileCreateWithoutLeadsInput, ProfileUncheckedCreateWithoutLeadsInput>
+  }
+
+  export type WorkspaceCreateWithoutLeadsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
+    members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUncheckedCreateWithoutLeadsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    ownerId: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceCreateOrConnectWithoutLeadsInput = {
+    where: WorkspaceWhereUniqueInput
+    create: XOR<WorkspaceCreateWithoutLeadsInput, WorkspaceUncheckedCreateWithoutLeadsInput>
+  }
+
+  export type LinkCreateWithoutContactLeadsInput = {
+    id: string
+    type?: string
+    payloadJson?: string | null
+    title: string
+    url: string
+    description?: string | null
+    iconType?: string
+    iconValue?: string | null
+    iconUrl?: string | null
+    iconModerationStatus?: string
+    position?: number
+    isActive?: boolean
+    totalClicks?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile: ProfileCreateNestedOneWithoutLinksInput
+    workspace?: WorkspaceCreateNestedOneWithoutContactEntriesInput
+    clicks?: LinkClickCreateNestedManyWithoutLinkInput
+  }
+
+  export type LinkUncheckedCreateWithoutContactLeadsInput = {
+    id: string
+    profileId: string
+    workspaceId?: string | null
+    type?: string
+    payloadJson?: string | null
+    title: string
+    url: string
+    description?: string | null
+    iconType?: string
+    iconValue?: string | null
+    iconUrl?: string | null
+    iconModerationStatus?: string
+    position?: number
+    isActive?: boolean
+    totalClicks?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    clicks?: LinkClickUncheckedCreateNestedManyWithoutLinkInput
+  }
+
+  export type LinkCreateOrConnectWithoutContactLeadsInput = {
+    where: LinkWhereUniqueInput
+    create: XOR<LinkCreateWithoutContactLeadsInput, LinkUncheckedCreateWithoutContactLeadsInput>
+  }
+
+  export type UserCreateWithoutClaimedWorkspaceLeadsInput = {
+    id: string
+    email: string
+    passwordHash: string
+    emailVerified?: boolean
+    frozenReason?: string | null
+    frozenAt?: Date | string | null
+    usernameChanges?: number
+    role?: string
+    isSystem?: boolean
+    accountStatus?: string
+    deactivatedAt?: Date | string | null
+    deactivationReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    usernameHistory?: UsernameHistoryCreateNestedManyWithoutUserInput
+    freezeRecords?: FreezeRecordCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    resetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    verifyTokens?: EmailVerificationTokenCreateNestedManyWithoutUserInput
+    aiUsageLogs?: AiUsageLogCreateNestedManyWithoutUserInput
+    shortLinks?: ShortLinkCreateNestedManyWithoutUserInput
+    products?: ProductCreateNestedManyWithoutUserInput
+    knowledgeDocs?: KnowledgeDocCreateNestedManyWithoutUserInput
+    aiServiceConfig?: AiServiceConfigCreateNestedOneWithoutUserInput
+    aiCreditAccount?: AiCreditAccountCreateNestedOneWithoutUserInput
+    membershipSubscription?: MembershipSubscriptionCreateNestedOneWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutUserInput
+    workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
+    ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutClaimedWorkspaceLeadsInput = {
+    id: string
+    email: string
+    passwordHash: string
+    emailVerified?: boolean
+    frozenReason?: string | null
+    frozenAt?: Date | string | null
+    usernameChanges?: number
+    role?: string
+    isSystem?: boolean
+    accountStatus?: string
+    deactivatedAt?: Date | string | null
+    deactivationReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    usernameHistory?: UsernameHistoryUncheckedCreateNestedManyWithoutUserInput
+    freezeRecords?: FreezeRecordUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    resetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    verifyTokens?: EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
+    aiUsageLogs?: AiUsageLogUncheckedCreateNestedManyWithoutUserInput
+    shortLinks?: ShortLinkUncheckedCreateNestedManyWithoutUserInput
+    products?: ProductUncheckedCreateNestedManyWithoutUserInput
+    knowledgeDocs?: KnowledgeDocUncheckedCreateNestedManyWithoutUserInput
+    aiServiceConfig?: AiServiceConfigUncheckedCreateNestedOneWithoutUserInput
+    aiCreditAccount?: AiCreditAccountUncheckedCreateNestedOneWithoutUserInput
+    membershipSubscription?: MembershipSubscriptionUncheckedCreateNestedOneWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutUserInput
+    workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+    ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutClaimedWorkspaceLeadsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutClaimedWorkspaceLeadsInput, UserUncheckedCreateWithoutClaimedWorkspaceLeadsInput>
   }
 
   export type ProductCreateWithoutLeadsInput = {
@@ -75079,6 +76268,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -75113,6 +76303,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -75128,6 +76319,189 @@ export namespace Prisma {
     links?: LinkUncheckedUpdateManyWithoutProfileNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutProfileNestedInput
     visits?: ProfileVisitUncheckedUpdateManyWithoutProfileNestedInput
+  }
+
+  export type WorkspaceUpsertWithoutLeadsInput = {
+    update: XOR<WorkspaceUpdateWithoutLeadsInput, WorkspaceUncheckedUpdateWithoutLeadsInput>
+    create: XOR<WorkspaceCreateWithoutLeadsInput, WorkspaceUncheckedCreateWithoutLeadsInput>
+    where?: WorkspaceWhereInput
+  }
+
+  export type WorkspaceUpdateToOneWithWhereWithoutLeadsInput = {
+    where?: WorkspaceWhereInput
+    data: XOR<WorkspaceUpdateWithoutLeadsInput, WorkspaceUncheckedUpdateWithoutLeadsInput>
+  }
+
+  export type WorkspaceUpdateWithoutLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+    members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceUncheckedUpdateWithoutLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type LinkUpsertWithoutContactLeadsInput = {
+    update: XOR<LinkUpdateWithoutContactLeadsInput, LinkUncheckedUpdateWithoutContactLeadsInput>
+    create: XOR<LinkCreateWithoutContactLeadsInput, LinkUncheckedCreateWithoutContactLeadsInput>
+    where?: LinkWhereInput
+  }
+
+  export type LinkUpdateToOneWithWhereWithoutContactLeadsInput = {
+    where?: LinkWhereInput
+    data: XOR<LinkUpdateWithoutContactLeadsInput, LinkUncheckedUpdateWithoutContactLeadsInput>
+  }
+
+  export type LinkUpdateWithoutContactLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconType?: StringFieldUpdateOperationsInput | string
+    iconValue?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconModerationStatus?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    totalClicks?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneRequiredWithoutLinksNestedInput
+    workspace?: WorkspaceUpdateOneWithoutContactEntriesNestedInput
+    clicks?: LinkClickUpdateManyWithoutLinkNestedInput
+  }
+
+  export type LinkUncheckedUpdateWithoutContactLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconType?: StringFieldUpdateOperationsInput | string
+    iconValue?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconModerationStatus?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    totalClicks?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clicks?: LinkClickUncheckedUpdateManyWithoutLinkNestedInput
+  }
+
+  export type UserUpsertWithoutClaimedWorkspaceLeadsInput = {
+    update: XOR<UserUpdateWithoutClaimedWorkspaceLeadsInput, UserUncheckedUpdateWithoutClaimedWorkspaceLeadsInput>
+    create: XOR<UserCreateWithoutClaimedWorkspaceLeadsInput, UserUncheckedCreateWithoutClaimedWorkspaceLeadsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutClaimedWorkspaceLeadsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutClaimedWorkspaceLeadsInput, UserUncheckedUpdateWithoutClaimedWorkspaceLeadsInput>
+  }
+
+  export type UserUpdateWithoutClaimedWorkspaceLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    frozenReason?: NullableStringFieldUpdateOperationsInput | string | null
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    usernameChanges?: IntFieldUpdateOperationsInput | number
+    role?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    accountStatus?: StringFieldUpdateOperationsInput | string
+    deactivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deactivationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    usernameHistory?: UsernameHistoryUpdateManyWithoutUserNestedInput
+    freezeRecords?: FreezeRecordUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    resetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    verifyTokens?: EmailVerificationTokenUpdateManyWithoutUserNestedInput
+    aiUsageLogs?: AiUsageLogUpdateManyWithoutUserNestedInput
+    shortLinks?: ShortLinkUpdateManyWithoutUserNestedInput
+    products?: ProductUpdateManyWithoutUserNestedInput
+    knowledgeDocs?: KnowledgeDocUpdateManyWithoutUserNestedInput
+    aiServiceConfig?: AiServiceConfigUpdateOneWithoutUserNestedInput
+    aiCreditAccount?: AiCreditAccountUpdateOneWithoutUserNestedInput
+    membershipSubscription?: MembershipSubscriptionUpdateOneWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutUserNestedInput
+    workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
+    ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutClaimedWorkspaceLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    frozenReason?: NullableStringFieldUpdateOperationsInput | string | null
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    usernameChanges?: IntFieldUpdateOperationsInput | number
+    role?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    accountStatus?: StringFieldUpdateOperationsInput | string
+    deactivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deactivationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    usernameHistory?: UsernameHistoryUncheckedUpdateManyWithoutUserNestedInput
+    freezeRecords?: FreezeRecordUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    resetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    verifyTokens?: EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+    aiUsageLogs?: AiUsageLogUncheckedUpdateManyWithoutUserNestedInput
+    shortLinks?: ShortLinkUncheckedUpdateManyWithoutUserNestedInput
+    products?: ProductUncheckedUpdateManyWithoutUserNestedInput
+    knowledgeDocs?: KnowledgeDocUncheckedUpdateManyWithoutUserNestedInput
+    aiServiceConfig?: AiServiceConfigUncheckedUpdateOneWithoutUserNestedInput
+    aiCreditAccount?: AiCreditAccountUncheckedUpdateOneWithoutUserNestedInput
+    membershipSubscription?: MembershipSubscriptionUncheckedUpdateOneWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
+    workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+    ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProductUpsertWithoutLeadsInput = {
@@ -75258,6 +76632,9 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     profile: ProfileCreateNestedOneWithoutLeadsInput
+    workspace?: WorkspaceCreateNestedOneWithoutLeadsInput
+    contactEntry?: LinkCreateNestedOneWithoutContactLeadsInput
+    claimedBy?: UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput
     interestedProduct?: ProductCreateNestedOneWithoutLeadsInput
     conversation?: AiConversationCreateNestedOneWithoutLeadInput
   }
@@ -75265,6 +76642,9 @@ export namespace Prisma {
   export type LeadUncheckedCreateWithoutFollowUpsInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -75320,6 +76700,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profile?: ProfileUpdateOneRequiredWithoutLeadsNestedInput
+    workspace?: WorkspaceUpdateOneWithoutLeadsNestedInput
+    contactEntry?: LinkUpdateOneWithoutContactLeadsNestedInput
+    claimedBy?: UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput
     interestedProduct?: ProductUpdateOneWithoutLeadsNestedInput
     conversation?: AiConversationUpdateOneWithoutLeadNestedInput
   }
@@ -75327,6 +76710,9 @@ export namespace Prisma {
   export type LeadUncheckedUpdateWithoutFollowUpsInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -75379,6 +76765,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutProductsInput = {
@@ -75413,6 +76800,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutProductsInput = {
@@ -75439,6 +76827,9 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     profile: ProfileCreateNestedOneWithoutLeadsInput
+    workspace?: WorkspaceCreateNestedOneWithoutLeadsInput
+    contactEntry?: LinkCreateNestedOneWithoutContactLeadsInput
+    claimedBy?: UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput
     conversation?: AiConversationCreateNestedOneWithoutLeadInput
     followUps?: LeadFollowUpCreateNestedManyWithoutLeadInput
   }
@@ -75446,6 +76837,9 @@ export namespace Prisma {
   export type LeadUncheckedCreateWithoutInterestedProductInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -75519,6 +76913,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProductsInput = {
@@ -75553,6 +76948,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type LeadUpsertWithWhereUniqueWithoutInterestedProductInput = {
@@ -75603,6 +76999,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutKnowledgeDocsInput = {
@@ -75637,6 +77034,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutKnowledgeDocsInput = {
@@ -75687,6 +77085,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutKnowledgeDocsInput = {
@@ -75721,6 +77120,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateWithoutAiServiceConfigInput = {
@@ -75755,6 +77155,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutAiServiceConfigInput = {
@@ -75789,6 +77190,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutAiServiceConfigInput = {
@@ -75839,6 +77241,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiServiceConfigInput = {
@@ -75873,6 +77276,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type ProfileCreateWithoutAiConversationsInput = {
@@ -75890,6 +77294,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -75924,6 +77329,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -75993,6 +77399,9 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     profile: ProfileCreateNestedOneWithoutLeadsInput
+    workspace?: WorkspaceCreateNestedOneWithoutLeadsInput
+    contactEntry?: LinkCreateNestedOneWithoutContactLeadsInput
+    claimedBy?: UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput
     interestedProduct?: ProductCreateNestedOneWithoutLeadsInput
     followUps?: LeadFollowUpCreateNestedManyWithoutLeadInput
   }
@@ -76000,6 +77409,9 @@ export namespace Prisma {
   export type LeadUncheckedCreateWithoutConversationInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -76051,6 +77463,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76085,6 +77498,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76161,6 +77575,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profile?: ProfileUpdateOneRequiredWithoutLeadsNestedInput
+    workspace?: WorkspaceUpdateOneWithoutLeadsNestedInput
+    contactEntry?: LinkUpdateOneWithoutContactLeadsNestedInput
+    claimedBy?: UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput
     interestedProduct?: ProductUpdateOneWithoutLeadsNestedInput
     followUps?: LeadFollowUpUpdateManyWithoutLeadNestedInput
   }
@@ -76168,6 +77585,9 @@ export namespace Prisma {
   export type LeadUncheckedUpdateWithoutConversationInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76280,6 +77700,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutAiCreditAccountInput = {
@@ -76314,6 +77735,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutAiCreditAccountInput = {
@@ -76434,6 +77856,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiCreditAccountInput = {
@@ -76468,6 +77891,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type AiCreditLedgerUpsertWithWhereUniqueWithoutAccountInput = {
@@ -76807,6 +78231,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutMembershipSubscriptionInput = {
@@ -76841,6 +78266,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutMembershipSubscriptionInput = {
@@ -76891,6 +78317,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMembershipSubscriptionInput = {
@@ -76925,6 +78352,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateWithoutOrdersInput = {
@@ -76959,6 +78387,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutOrdersInput = {
@@ -76993,6 +78422,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutOrdersInput = {
@@ -77072,6 +78502,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -77106,6 +78537,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type AiCreditBucketUpsertWithoutSourceOrderInput = {
@@ -77175,6 +78607,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutOwnedWorkspacesInput = {
@@ -77209,6 +78642,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutOwnedWorkspacesInput = {
@@ -77324,6 +78758,120 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type LinkCreateWithoutWorkspaceInput = {
+    id: string
+    type?: string
+    payloadJson?: string | null
+    title: string
+    url: string
+    description?: string | null
+    iconType?: string
+    iconValue?: string | null
+    iconUrl?: string | null
+    iconModerationStatus?: string
+    position?: number
+    isActive?: boolean
+    totalClicks?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile: ProfileCreateNestedOneWithoutLinksInput
+    clicks?: LinkClickCreateNestedManyWithoutLinkInput
+    contactLeads?: LeadCreateNestedManyWithoutContactEntryInput
+  }
+
+  export type LinkUncheckedCreateWithoutWorkspaceInput = {
+    id: string
+    profileId: string
+    type?: string
+    payloadJson?: string | null
+    title: string
+    url: string
+    description?: string | null
+    iconType?: string
+    iconValue?: string | null
+    iconUrl?: string | null
+    iconModerationStatus?: string
+    position?: number
+    isActive?: boolean
+    totalClicks?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    clicks?: LinkClickUncheckedCreateNestedManyWithoutLinkInput
+    contactLeads?: LeadUncheckedCreateNestedManyWithoutContactEntryInput
+  }
+
+  export type LinkCreateOrConnectWithoutWorkspaceInput = {
+    where: LinkWhereUniqueInput
+    create: XOR<LinkCreateWithoutWorkspaceInput, LinkUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type LinkCreateManyWorkspaceInputEnvelope = {
+    data: LinkCreateManyWorkspaceInput | LinkCreateManyWorkspaceInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type LeadCreateWithoutWorkspaceInput = {
+    id: string
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile: ProfileCreateNestedOneWithoutLeadsInput
+    contactEntry?: LinkCreateNestedOneWithoutContactLeadsInput
+    claimedBy?: UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput
+    interestedProduct?: ProductCreateNestedOneWithoutLeadsInput
+    conversation?: AiConversationCreateNestedOneWithoutLeadInput
+    followUps?: LeadFollowUpCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadUncheckedCreateWithoutWorkspaceInput = {
+    id: string
+    profileId: string
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductId?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    conversationId?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    followUps?: LeadFollowUpUncheckedCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadCreateOrConnectWithoutWorkspaceInput = {
+    where: LeadWhereUniqueInput
+    create: XOR<LeadCreateWithoutWorkspaceInput, LeadUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type LeadCreateManyWorkspaceInputEnvelope = {
+    data: LeadCreateManyWorkspaceInput | LeadCreateManyWorkspaceInput[]
+    skipDuplicates?: boolean
+  }
+
   export type EnterpriseQuotaPoolCreateWithoutWorkspaceInput = {
     id?: string
     totalQuota?: number
@@ -77428,6 +78976,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedWorkspacesInput = {
@@ -77462,6 +79011,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type WorkspaceMemberUpsertWithWhereUniqueWithoutWorkspaceInput = {
@@ -77532,6 +79082,38 @@ export namespace Prisma {
     data: XOR<WorkspacePublicProfileUpdateManyMutationInput, WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceInput>
   }
 
+  export type LinkUpsertWithWhereUniqueWithoutWorkspaceInput = {
+    where: LinkWhereUniqueInput
+    update: XOR<LinkUpdateWithoutWorkspaceInput, LinkUncheckedUpdateWithoutWorkspaceInput>
+    create: XOR<LinkCreateWithoutWorkspaceInput, LinkUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type LinkUpdateWithWhereUniqueWithoutWorkspaceInput = {
+    where: LinkWhereUniqueInput
+    data: XOR<LinkUpdateWithoutWorkspaceInput, LinkUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type LinkUpdateManyWithWhereWithoutWorkspaceInput = {
+    where: LinkScalarWhereInput
+    data: XOR<LinkUpdateManyMutationInput, LinkUncheckedUpdateManyWithoutWorkspaceInput>
+  }
+
+  export type LeadUpsertWithWhereUniqueWithoutWorkspaceInput = {
+    where: LeadWhereUniqueInput
+    update: XOR<LeadUpdateWithoutWorkspaceInput, LeadUncheckedUpdateWithoutWorkspaceInput>
+    create: XOR<LeadCreateWithoutWorkspaceInput, LeadUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type LeadUpdateWithWhereUniqueWithoutWorkspaceInput = {
+    where: LeadWhereUniqueInput
+    data: XOR<LeadUpdateWithoutWorkspaceInput, LeadUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type LeadUpdateManyWithWhereWithoutWorkspaceInput = {
+    where: LeadScalarWhereInput
+    data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyWithoutWorkspaceInput>
+  }
+
   export type EnterpriseQuotaPoolUpsertWithoutWorkspaceInput = {
     update: XOR<EnterpriseQuotaPoolUpdateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedUpdateWithoutWorkspaceInput>
     create: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
@@ -77594,6 +79176,8 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
@@ -77611,6 +79195,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
@@ -77652,6 +79238,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
@@ -77686,6 +79273,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutWorkspaceMembershipsInput = {
@@ -77717,6 +79305,8 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
@@ -77734,6 +79324,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
@@ -77781,6 +79373,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
@@ -77815,6 +79408,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type WorkspaceCreateWithoutQuotaPoolInput = {
@@ -77831,6 +79425,8 @@ export namespace Prisma {
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
 
@@ -77848,6 +79444,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
@@ -77881,6 +79479,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
 
@@ -77898,6 +79498,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
@@ -77915,6 +79517,8 @@ export namespace Prisma {
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
   }
 
@@ -77932,6 +79536,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
   }
 
@@ -77972,6 +79578,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput = {
@@ -78006,6 +79613,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutEnterpriseQuotaConsumptionsInput = {
@@ -78038,6 +79646,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
   }
 
@@ -78055,6 +79665,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
   }
 
@@ -78101,6 +79713,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput = {
@@ -78135,6 +79748,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UsernameHistoryCreateManyUserInput = {
@@ -78311,6 +79925,31 @@ export namespace Prisma {
     failureReason?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+  }
+
+  export type LeadCreateManyClaimedByInput = {
+    id: string
+    profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductId?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    conversationId?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type UsernameHistoryUpdateWithoutUserInput = {
@@ -78761,6 +80400,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
@@ -78778,6 +80419,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
@@ -78857,8 +80500,86 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type LeadUpdateWithoutClaimedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneRequiredWithoutLeadsNestedInput
+    workspace?: WorkspaceUpdateOneWithoutLeadsNestedInput
+    contactEntry?: LinkUpdateOneWithoutContactLeadsNestedInput
+    interestedProduct?: ProductUpdateOneWithoutLeadsNestedInput
+    conversation?: AiConversationUpdateOneWithoutLeadNestedInput
+    followUps?: LeadFollowUpUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateWithoutClaimedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductId?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    followUps?: LeadFollowUpUncheckedUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateManyWithoutClaimedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductId?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type LinkCreateManyProfileInput = {
     id: string
+    workspaceId?: string | null
     type?: string
     payloadJson?: string | null
     title: string
@@ -78877,6 +80598,9 @@ export namespace Prisma {
 
   export type LeadCreateManyProfileInput = {
     id: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -78937,11 +80661,14 @@ export namespace Prisma {
     totalClicks?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneWithoutContactEntriesNestedInput
     clicks?: LinkClickUpdateManyWithoutLinkNestedInput
+    contactLeads?: LeadUpdateManyWithoutContactEntryNestedInput
   }
 
   export type LinkUncheckedUpdateWithoutProfileInput = {
     id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -78957,10 +80684,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clicks?: LinkClickUncheckedUpdateManyWithoutLinkNestedInput
+    contactLeads?: LeadUncheckedUpdateManyWithoutContactEntryNestedInput
   }
 
   export type LinkUncheckedUpdateManyWithoutProfileInput = {
     id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -78995,6 +80724,9 @@ export namespace Prisma {
     handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneWithoutLeadsNestedInput
+    contactEntry?: LinkUpdateOneWithoutContactLeadsNestedInput
+    claimedBy?: UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput
     interestedProduct?: ProductUpdateOneWithoutLeadsNestedInput
     conversation?: AiConversationUpdateOneWithoutLeadNestedInput
     followUps?: LeadFollowUpUpdateManyWithoutLeadNestedInput
@@ -79002,6 +80734,9 @@ export namespace Prisma {
 
   export type LeadUncheckedUpdateWithoutProfileInput = {
     id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79025,6 +80760,9 @@ export namespace Prisma {
 
   export type LeadUncheckedUpdateManyWithoutProfileInput = {
     id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79134,6 +80872,31 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type LeadCreateManyContactEntryInput = {
+    id: string
+    profileId: string
+    workspaceId?: string | null
+    claimedByUserId?: string | null
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductId?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    conversationId?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type LinkClickUpdateWithoutLinkInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
@@ -79171,6 +80934,83 @@ export namespace Prisma {
     referer?: NullableStringFieldUpdateOperationsInput | string | null
     ipHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LeadUpdateWithoutContactEntryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneRequiredWithoutLeadsNestedInput
+    workspace?: WorkspaceUpdateOneWithoutLeadsNestedInput
+    claimedBy?: UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput
+    interestedProduct?: ProductUpdateOneWithoutLeadsNestedInput
+    conversation?: AiConversationUpdateOneWithoutLeadNestedInput
+    followUps?: LeadFollowUpUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateWithoutContactEntryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductId?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    followUps?: LeadFollowUpUncheckedUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateManyWithoutContactEntryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductId?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ShortLinkClickCreateManyShortLinkInput = {
@@ -79312,6 +81152,9 @@ export namespace Prisma {
   export type LeadCreateManyInterestedProductInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -79350,6 +81193,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profile?: ProfileUpdateOneRequiredWithoutLeadsNestedInput
+    workspace?: WorkspaceUpdateOneWithoutLeadsNestedInput
+    contactEntry?: LinkUpdateOneWithoutContactLeadsNestedInput
+    claimedBy?: UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput
     conversation?: AiConversationUpdateOneWithoutLeadNestedInput
     followUps?: LeadFollowUpUpdateManyWithoutLeadNestedInput
   }
@@ -79357,6 +81203,9 @@ export namespace Prisma {
   export type LeadUncheckedUpdateWithoutInterestedProductInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79380,6 +81229,9 @@ export namespace Prisma {
   export type LeadUncheckedUpdateManyWithoutInterestedProductInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79574,6 +81426,50 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type LinkCreateManyWorkspaceInput = {
+    id: string
+    profileId: string
+    type?: string
+    payloadJson?: string | null
+    title: string
+    url: string
+    description?: string | null
+    iconType?: string
+    iconValue?: string | null
+    iconUrl?: string | null
+    iconModerationStatus?: string
+    position?: number
+    isActive?: boolean
+    totalClicks?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LeadCreateManyWorkspaceInput = {
+    id: string
+    profileId: string
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductId?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    conversationId?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type EnterpriseQuotaConsumptionCreateManyWorkspaceInput = {
     id?: string
     userId: string
@@ -79699,6 +81595,144 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LinkUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconType?: StringFieldUpdateOperationsInput | string
+    iconValue?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconModerationStatus?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    totalClicks?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneRequiredWithoutLinksNestedInput
+    clicks?: LinkClickUpdateManyWithoutLinkNestedInput
+    contactLeads?: LeadUpdateManyWithoutContactEntryNestedInput
+  }
+
+  export type LinkUncheckedUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconType?: StringFieldUpdateOperationsInput | string
+    iconValue?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconModerationStatus?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    totalClicks?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clicks?: LinkClickUncheckedUpdateManyWithoutLinkNestedInput
+    contactLeads?: LeadUncheckedUpdateManyWithoutContactEntryNestedInput
+  }
+
+  export type LinkUncheckedUpdateManyWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconType?: StringFieldUpdateOperationsInput | string
+    iconValue?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconModerationStatus?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    totalClicks?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LeadUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneRequiredWithoutLeadsNestedInput
+    contactEntry?: LinkUpdateOneWithoutContactLeadsNestedInput
+    claimedBy?: UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput
+    interestedProduct?: ProductUpdateOneWithoutLeadsNestedInput
+    conversation?: AiConversationUpdateOneWithoutLeadNestedInput
+    followUps?: LeadFollowUpUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductId?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    followUps?: LeadFollowUpUncheckedUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateManyWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductId?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

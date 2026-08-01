@@ -225,7 +225,7 @@ export default function AiSafetyPage() {
 
         {isSuper && (
           <Link
-            href="/jeepwork/governance"
+            href="/jeepwork/roles"
             className="rounded-[28px] border border-[#E8DCCB] bg-white p-6 text-left shadow-sm transition hover:shadow-[0_18px_55px_rgba(86,68,46,0.08)]"
           >
             <p className="text-xs font-black uppercase tracking-[0.2em]" style={{ color: "#5B6FFF" }}>Governance</p>

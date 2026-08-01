@@ -10,18 +10,24 @@ describe("Console navigation contract", () => {
     expect(PRIMARY_NAV_ITEMS).toHaveLength(5);
   });
 
-  test("PRIMARY_NAV_ITEMS order: 首页, 名片, 客户, AI, 我的", () => {
+  test("PRIMARY_NAV_ITEMS order: 概览, 名片, 客户, 经营数据, AI 接待", () => {
     const labels = PRIMARY_NAV_ITEMS.map((i) => i.label);
-    expect(labels).toEqual(["首页", "名片", "客户", "AI", "我的"]);
+    expect(labels).toEqual(["概览", "名片", "客户", "经营数据", "AI 接待"]);
   });
 
-  test("SHARED_MOBILE_NAV must match PRIMARY_NAV_ITEMS", () => {
-    expect(SHARED_MOBILE_NAV).toEqual(PRIMARY_NAV_ITEMS);
+  test("SHARED_MOBILE_NAV keeps four direct actions before More", () => {
+    expect(SHARED_MOBILE_NAV).toHaveLength(4);
+    expect(SHARED_MOBILE_NAV.map((item) => item.label)).toEqual([
+      "概览",
+      "名片",
+      "客户",
+      "账号",
+    ]);
   });
 
-  test("mobile fourth item must be AI", () => {
-    expect(SHARED_MOBILE_NAV[3].label).toBe("AI");
-    expect(SHARED_MOBILE_NAV[3].href).toBe("/workbench/ai");
+  test("mobile fourth item is account", () => {
+    expect(SHARED_MOBILE_NAV[3].label).toBe("账号");
+    expect(SHARED_MOBILE_NAV[3].href).toBe("/console/account");
   });
 
   test("no enterprise entry in primary nav", () => {
@@ -36,6 +42,12 @@ describe("Console navigation contract", () => {
       for (const item of list) {
         expect(item.href).not.toMatch(/jeepwork|showcase/);
       }
+    }
+  });
+
+  test("every user navigation target belongs to the console", () => {
+    for (const item of SHARED_NAV_ITEMS) {
+      expect(item.href).toMatch(/^\/console(?:\/|$)/);
     }
   });
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { runCommercialAgent } from "@/lib/ai/commercial-agent";
+import { resolvePublicAiRequestContext } from "@/lib/ai/public-request-context";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -22,7 +23,15 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = await runCommercialAgent("conversion", body);
+  const context = await resolvePublicAiRequestContext(request, body.username);
+  if (!context.ok) {
+    return NextResponse.json(
+      { success: false, error: context.message, code: context.code },
+      { status: 403, headers: { "Cache-Control": "private, no-store, max-age=0" } },
+    );
+  }
+
+  const result = await runCommercialAgent("conversion", body, context);
   return NextResponse.json(
     result.success ? { success: true, data: result.data } : { success: false, error: result.error, code: result.code },
     { status: result.status, headers: { "Cache-Control": "private, no-store, max-age=0" } },

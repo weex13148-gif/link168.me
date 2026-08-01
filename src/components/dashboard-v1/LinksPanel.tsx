@@ -1293,7 +1293,7 @@ function DynamicFields({ draft, onChange, isNew, products, productsLoading, prod
             当前组件只负责公开页中的位置、排序和显示状态。
           </p>
           <a
-            href="/workbench/ai/reception"
+            href="/console/ai-reception"
             className="mt-3 inline-flex min-h-10 items-center rounded-xl bg-[var(--ui-ink)] px-4 text-xs font-black text-white"
           >
             前往访客 AI 接待配置

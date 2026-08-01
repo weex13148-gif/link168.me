@@ -19,23 +19,23 @@ export function PublicContactActions({ identity }: { identity: PublicProfileIden
   const websiteResult = sanitizePublicUrl(identity.website || "");
   const website = isPublic && websiteResult.safe ? websiteResult.url : null;
   const address = isPublic && identity.address?.trim() ? identity.address.trim().slice(0, 300) : null;
-  const actionClass = "inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--profile-button-radius,16px)] border border-[#DCCFBE] bg-white/70 px-3 text-sm font-black text-[#31543D] transition hover:bg-white";
+  const actionClass = "inline-flex min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-[var(--profile-button-radius,14px)] border border-[#DCCFBE] bg-white/70 px-3 text-xs font-black text-[#31543D] transition hover:bg-white";
 
   return (
-    <section aria-label="联系方式" className="grid grid-cols-2 gap-2 px-5 pb-5">
+    <section aria-label="联系方式" className="flex gap-2 overflow-x-auto px-5 pb-5">
       <a href={`/api/public/${encodeURIComponent(identity.username)}/vcard`} download data-public-button style={PUBLIC_PROFILE_BUTTON_STYLE} className={actionClass}>
         <Download aria-hidden className="size-4" />
         保存到通讯录
       </a>
-      {phone ? <a href={`tel:${phone}`} data-public-button style={PUBLIC_PROFILE_BUTTON_STYLE} className={actionClass}><Phone aria-hidden className="size-4" />{phone}</a> : null}
-      {email ? <a href={`mailto:${email}`} data-public-button style={PUBLIC_PROFILE_BUTTON_STYLE} className={actionClass}><Mail aria-hidden className="size-4" /><span className="truncate">{email}</span></a> : null}
+      {phone ? <a href={`tel:${phone}`} data-public-button style={PUBLIC_PROFILE_BUTTON_STYLE} className={actionClass}><Phone aria-hidden className="size-4" />打电话</a> : null}
+      {email ? <a href={`mailto:${email}`} data-public-button style={PUBLIC_PROFILE_BUTTON_STYLE} className={actionClass}><Mail aria-hidden className="size-4" />发邮件</a> : null}
       {wechat ? (
         <button type="button" data-public-button style={PUBLIC_PROFILE_BUTTON_STYLE} className={actionClass} onClick={() => void navigator.clipboard?.writeText(wechat).catch(() => undefined)}>
-          <Copy aria-hidden className="size-4" />微信：{wechat}
+          <Copy aria-hidden className="size-4" />复制微信
         </button>
       ) : null}
       {website ? <a href={website} target="_blank" rel="noopener noreferrer" data-public-button style={PUBLIC_PROFILE_BUTTON_STYLE} className={actionClass}><Globe aria-hidden className="size-4" />访问官网</a> : null}
-      {address ? <span className={actionClass}><MapPin aria-hidden className="size-4" /><span className="truncate">{address}</span></span> : null}
+      {address ? <span className={actionClass} title={address}><MapPin aria-hidden className="size-4" />查看地址</span> : null}
     </section>
   );
 }
