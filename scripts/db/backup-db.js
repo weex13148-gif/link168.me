@@ -7,6 +7,7 @@
 const { execSync, spawnSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
+require("dotenv").config({ path: ".env.local" });
 require("dotenv").config();
 
 const RED = "\x1b[31m";
@@ -58,6 +59,21 @@ function which(cmd) {
   }
 }
 
+function createPgEnvironment(databaseUrl) {
+  const parsed = new URL(databaseUrl);
+  const pgEnvironment = {
+    ...process.env,
+    PGHOST: parsed.hostname,
+    PGPORT: parsed.port || "5432",
+    PGUSER: decodeURIComponent(parsed.username),
+    PGPASSWORD: decodeURIComponent(parsed.password),
+    PGDATABASE: parsed.pathname.replace(/^\//, ""),
+  };
+  const sslMode = parsed.searchParams.get("sslmode");
+  if (sslMode) pgEnvironment.PGSSLMODE = sslMode;
+  return pgEnvironment;
+}
+
 function main() {
   console.log(`${BOLD}=== Link168 Database Backup ===${RESET}`);
   console.log(`NODE_ENV: ${process.env.NODE_ENV || "(unset)"}`);
@@ -102,9 +118,9 @@ function main() {
 
   // 6. Run pg_dump
   logInfo(`Dumping database to: ${sqlPath}`);
-  const dumpResult = spawnSync("pg_dump", ["--dbname", databaseUrl, "--no-owner", "--file", sqlPath], {
+  const dumpResult = spawnSync("pg_dump", ["--no-owner", "--file", sqlPath], {
     stdio: ["ignore", "pipe", "pipe"],
-    env: process.env,
+    env: createPgEnvironment(databaseUrl),
     encoding: "utf8",
   });
 
