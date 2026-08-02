@@ -50,7 +50,6 @@ export const JEEPWORK_NAV_GROUPS: JeepworkNavGroup[] = [
       { href: "/jeepwork/ai-usage", label: "AI 用量", icon: "△", tone: "accent", requiredRole: "super_admin" },
       { href: "/jeepwork/ai-safety", label: "AI 安全测试", icon: "盾", tone: "accent", requiredRole: "super_admin" },
       { href: "/jeepwork/settings/ai", label: "AI 配置", icon: "⚙", tone: "accent", requiredRole: "super_admin" },
-      { href: "/jeepwork/competition-ai-debug", label: "AI 调试台", icon: "⌥", tone: "accent", requiredRole: "super_admin" },
     ],
   },
   {
@@ -59,14 +58,6 @@ export const JEEPWORK_NAV_GROUPS: JeepworkNavGroup[] = [
     tone: "info",
     items: [
       { href: "/jeepwork/settings/payment", label: "支付宝与收费", icon: "支", tone: "info", requiredRole: "super_admin" },
-    ],
-  },
-  {
-    id: "external-showcase",
-    label: "外部展示",
-    tone: "brand",
-    items: [
-      { href: "/jeepwork/competition-center", label: "比赛中心", icon: "赛", tone: "brand", requiredRole: "super_admin" },
     ],
   },
   {

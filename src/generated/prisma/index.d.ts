@@ -164,6 +164,11 @@ export type AiCreditAccount = $Result.DefaultSelection<Prisma.$AiCreditAccountPa
  */
 export type AiCreditLedger = $Result.DefaultSelection<Prisma.$AiCreditLedgerPayload>
 /**
+ * Model AiCreditBucket
+ * 
+ */
+export type AiCreditBucket = $Result.DefaultSelection<Prisma.$AiCreditBucketPayload>
+/**
  * Model MembershipSubscription
  * 
  */
@@ -269,7 +274,7 @@ export class PrismaClient<
    * Read more in our [docs](https://pris.ly/d/client).
    */
 
-  constructor(optionsArg ?: Prisma.Subset<ClientOptions, Prisma.PrismaClientOptions>);
+  constructor(optionsArg ?: Prisma.PrismaClientConstructorArgs<ClientOptions>);
   $on<V extends U>(eventType: V, callback: (event: V extends 'query' ? Prisma.QueryEvent : Prisma.LogEvent) => void): PrismaClient;
 
   /**
@@ -651,6 +656,16 @@ export class PrismaClient<
   get aiCreditLedger(): Prisma.AiCreditLedgerDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.aiCreditBucket`: Exposes CRUD operations for the **AiCreditBucket** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AiCreditBuckets
+    * const aiCreditBuckets = await prisma.aiCreditBucket.findMany()
+    * ```
+    */
+  get aiCreditBucket(): Prisma.AiCreditBucketDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.membershipSubscription`: Exposes CRUD operations for the **MembershipSubscription** model.
     * Example usage:
     * ```ts
@@ -829,8 +844,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 7.8.0
-   * Query Engine version: 3c6e192761c0362d496ed980de936e2f3cebcd3a
+   * Prisma Client JS version: 7.9.0
+   * Query Engine version: e922089b7d7502aff4249d5da3420f6fa55fc6ad
    */
   export type PrismaVersion = {
     client: string
@@ -965,6 +980,19 @@ export namespace Prisma {
   };
 
   /**
+   * Resolved type of the argument passed to the `PrismaClient` constructor.
+   *
+   * When called without a narrower options type (the common case), this resolves
+   * to `PrismaClientOptions` directly, which produces a clear TypeScript error
+   * message (`not assignable to parameter of type 'PrismaClientOptions'`) when
+   * the argument is missing or incomplete. When the user supplies a narrower
+   * options type (e.g. via a literal), it falls back to `Subset` to keep
+   * filtering out unknown properties.
+   */
+  export type PrismaClientConstructorArgs<Options extends PrismaClientOptions> =
+    [PrismaClientOptions] extends [Options] ? PrismaClientOptions : Subset<Options, PrismaClientOptions>;
+
+  /**
    * SelectSubset
    * @desc From `T` pick properties that exist in `U`. Simple version of Intersection.
    * Additionally, it validates, if both select and include are present. If the case, it errors.
@@ -996,7 +1024,7 @@ export namespace Prisma {
   type XOR<T, U> =
     T extends object ?
     U extends object ?
-      (Without<T, U> & U) | (Without<U, T> & T)
+      ((Without<T, U> & U) | (Without<U, T> & T)) & object
     : U : T
 
 
@@ -1243,6 +1271,7 @@ export namespace Prisma {
     AiMessage: 'AiMessage',
     AiCreditAccount: 'AiCreditAccount',
     AiCreditLedger: 'AiCreditLedger',
+    AiCreditBucket: 'AiCreditBucket',
     MembershipSubscription: 'MembershipSubscription',
     Order: 'Order',
     CompetitionFile: 'CompetitionFile',
@@ -1271,7 +1300,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "freezeRecord" | "usernameHistory" | "usernameRegistry" | "profile" | "domain" | "workspacePublicProfile" | "link" | "linkClick" | "profileVisit" | "shortLink" | "shortLinkClick" | "session" | "report" | "passwordResetToken" | "emailVerificationToken" | "loginAttempt" | "appConfig" | "aiUsageLog" | "adminAuditLog" | "lead" | "leadFollowUp" | "emailSendLog" | "product" | "knowledgeDoc" | "aiServiceConfig" | "aiConversation" | "aiMessage" | "aiCreditAccount" | "aiCreditLedger" | "membershipSubscription" | "order" | "competitionFile" | "showcaseContent" | "showcaseSequence" | "showcaseAIDemoCall" | "showcaseAIDebugLog" | "showcasePromptDraft" | "contentModerationRecord" | "workspace" | "workspaceMember" | "enterpriseQuotaPool" | "enterpriseQuotaConsumption"
+      modelProps: "user" | "freezeRecord" | "usernameHistory" | "usernameRegistry" | "profile" | "domain" | "workspacePublicProfile" | "link" | "linkClick" | "profileVisit" | "shortLink" | "shortLinkClick" | "session" | "report" | "passwordResetToken" | "emailVerificationToken" | "loginAttempt" | "appConfig" | "aiUsageLog" | "adminAuditLog" | "lead" | "leadFollowUp" | "emailSendLog" | "product" | "knowledgeDoc" | "aiServiceConfig" | "aiConversation" | "aiMessage" | "aiCreditAccount" | "aiCreditLedger" | "aiCreditBucket" | "membershipSubscription" | "order" | "competitionFile" | "showcaseContent" | "showcaseSequence" | "showcaseAIDemoCall" | "showcaseAIDebugLog" | "showcasePromptDraft" | "contentModerationRecord" | "workspace" | "workspaceMember" | "enterpriseQuotaPool" | "enterpriseQuotaConsumption"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3495,6 +3524,80 @@ export namespace Prisma {
           }
         }
       }
+      AiCreditBucket: {
+        payload: Prisma.$AiCreditBucketPayload<ExtArgs>
+        fields: Prisma.AiCreditBucketFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AiCreditBucketFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AiCreditBucketFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>
+          }
+          findFirst: {
+            args: Prisma.AiCreditBucketFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AiCreditBucketFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>
+          }
+          findMany: {
+            args: Prisma.AiCreditBucketFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>[]
+          }
+          create: {
+            args: Prisma.AiCreditBucketCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>
+          }
+          createMany: {
+            args: Prisma.AiCreditBucketCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AiCreditBucketCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>[]
+          }
+          delete: {
+            args: Prisma.AiCreditBucketDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>
+          }
+          update: {
+            args: Prisma.AiCreditBucketUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>
+          }
+          deleteMany: {
+            args: Prisma.AiCreditBucketDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AiCreditBucketUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AiCreditBucketUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>[]
+          }
+          upsert: {
+            args: Prisma.AiCreditBucketUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AiCreditBucketPayload>
+          }
+          aggregate: {
+            args: Prisma.AiCreditBucketAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAiCreditBucket>
+          }
+          groupBy: {
+            args: Prisma.AiCreditBucketGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AiCreditBucketGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AiCreditBucketCountArgs<ExtArgs>
+            result: $Utils.Optional<AiCreditBucketCountAggregateOutputType> | number
+          }
+        }
+      }
       MembershipSubscription: {
         payload: Prisma.$MembershipSubscriptionPayload<ExtArgs>
         fields: Prisma.MembershipSubscriptionFieldRefs
@@ -4525,11 +4628,26 @@ export namespace Prisma {
       isolationLevel?: Prisma.TransactionIsolationLevel
     }
     /**
-     * Instance of a Driver Adapter, e.g., like one provided by `@prisma/adapter-planetscale`
+     * A driver adapter that PrismaClient uses to connect to your database, such as the ones provided by `@prisma/adapter-pg`, `@prisma/adapter-libsql`, `@prisma/adapter-planetscale`, etc.
+     * 
+     * A driver adapter is **required** unless you connect to your database through Prisma Accelerate (in which case use `accelerateUrl` instead).
+     * 
+     * Learn more: https://pris.ly/d/driver-adapters
+     * 
+     * @example
+     * ```ts
+     * import { PrismaPg } from '@prisma/adapter-pg'
+     * import { PrismaClient } from './generated/prisma/client'
+     * 
+     * const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+     * const prisma = new PrismaClient({ adapter })
+     * ```
      */
     adapter?: runtime.SqlDriverAdapterFactory
     /**
-     * Prisma Accelerate URL allowing the client to connect through Accelerate instead of a direct database.
+     * The Prisma Accelerate connection URL. Use this option to connect to your database through Prisma Accelerate instead of using a driver adapter to connect directly.
+     * 
+     * Learn more: https://pris.ly/d/accelerate
      */
     accelerateUrl?: string
     /**
@@ -4595,6 +4713,7 @@ export namespace Prisma {
     aiMessage?: AiMessageOmit
     aiCreditAccount?: AiCreditAccountOmit
     aiCreditLedger?: AiCreditLedgerOmit
+    aiCreditBucket?: AiCreditBucketOmit
     membershipSubscription?: MembershipSubscriptionOmit
     order?: OrderOmit
     competitionFile?: CompetitionFileOmit
@@ -4702,6 +4821,7 @@ export namespace Prisma {
     ownedWorkspaces: number
     workspacePublicProfiles: number
     enterpriseQuotaConsumptions: number
+    claimedWorkspaceLeads: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4719,6 +4839,7 @@ export namespace Prisma {
     ownedWorkspaces?: boolean | UserCountOutputTypeCountOwnedWorkspacesArgs
     workspacePublicProfiles?: boolean | UserCountOutputTypeCountWorkspacePublicProfilesArgs
     enterpriseQuotaConsumptions?: boolean | UserCountOutputTypeCountEnterpriseQuotaConsumptionsArgs
+    claimedWorkspaceLeads?: boolean | UserCountOutputTypeCountClaimedWorkspaceLeadsArgs
   }
 
   // Custom InputTypes
@@ -4830,6 +4951,13 @@ export namespace Prisma {
     where?: EnterpriseQuotaConsumptionWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountClaimedWorkspaceLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LeadWhereInput
+  }
+
 
   /**
    * Count Type ProfileCountOutputType
@@ -4895,10 +5023,12 @@ export namespace Prisma {
 
   export type LinkCountOutputType = {
     clicks: number
+    contactLeads: number
   }
 
   export type LinkCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     clicks?: boolean | LinkCountOutputTypeCountClicksArgs
+    contactLeads?: boolean | LinkCountOutputTypeCountContactLeadsArgs
   }
 
   // Custom InputTypes
@@ -4917,6 +5047,13 @@ export namespace Prisma {
    */
   export type LinkCountOutputTypeCountClicksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: LinkClickWhereInput
+  }
+
+  /**
+   * LinkCountOutputType without action
+   */
+  export type LinkCountOutputTypeCountContactLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LeadWhereInput
   }
 
 
@@ -5050,10 +5187,12 @@ export namespace Prisma {
 
   export type AiCreditAccountCountOutputType = {
     ledger: number
+    buckets: number
   }
 
   export type AiCreditAccountCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     ledger?: boolean | AiCreditAccountCountOutputTypeCountLedgerArgs
+    buckets?: boolean | AiCreditAccountCountOutputTypeCountBucketsArgs
   }
 
   // Custom InputTypes
@@ -5074,6 +5213,13 @@ export namespace Prisma {
     where?: AiCreditLedgerWhereInput
   }
 
+  /**
+   * AiCreditAccountCountOutputType without action
+   */
+  export type AiCreditAccountCountOutputTypeCountBucketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AiCreditBucketWhereInput
+  }
+
 
   /**
    * Count Type WorkspaceCountOutputType
@@ -5083,6 +5229,8 @@ export namespace Prisma {
     members: number
     domains: number
     publicProfiles: number
+    contactEntries: number
+    leads: number
     enterpriseQuotaConsumptions: number
   }
 
@@ -5090,6 +5238,8 @@ export namespace Prisma {
     members?: boolean | WorkspaceCountOutputTypeCountMembersArgs
     domains?: boolean | WorkspaceCountOutputTypeCountDomainsArgs
     publicProfiles?: boolean | WorkspaceCountOutputTypeCountPublicProfilesArgs
+    contactEntries?: boolean | WorkspaceCountOutputTypeCountContactEntriesArgs
+    leads?: boolean | WorkspaceCountOutputTypeCountLeadsArgs
     enterpriseQuotaConsumptions?: boolean | WorkspaceCountOutputTypeCountEnterpriseQuotaConsumptionsArgs
   }
 
@@ -5123,6 +5273,20 @@ export namespace Prisma {
    */
   export type WorkspaceCountOutputTypeCountPublicProfilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WorkspacePublicProfileWhereInput
+  }
+
+  /**
+   * WorkspaceCountOutputType without action
+   */
+  export type WorkspaceCountOutputTypeCountContactEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LinkWhereInput
+  }
+
+  /**
+   * WorkspaceCountOutputType without action
+   */
+  export type WorkspaceCountOutputTypeCountLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LeadWhereInput
   }
 
   /**
@@ -5425,6 +5589,7 @@ export namespace Prisma {
     ownedWorkspaces?: boolean | User$ownedWorkspacesArgs<ExtArgs>
     workspacePublicProfiles?: boolean | User$workspacePublicProfilesArgs<ExtArgs>
     enterpriseQuotaConsumptions?: boolean | User$enterpriseQuotaConsumptionsArgs<ExtArgs>
+    claimedWorkspaceLeads?: boolean | User$claimedWorkspaceLeadsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -5499,6 +5664,7 @@ export namespace Prisma {
     ownedWorkspaces?: boolean | User$ownedWorkspacesArgs<ExtArgs>
     workspacePublicProfiles?: boolean | User$workspacePublicProfilesArgs<ExtArgs>
     enterpriseQuotaConsumptions?: boolean | User$enterpriseQuotaConsumptionsArgs<ExtArgs>
+    claimedWorkspaceLeads?: boolean | User$claimedWorkspaceLeadsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5525,6 +5691,7 @@ export namespace Prisma {
       ownedWorkspaces: Prisma.$WorkspacePayload<ExtArgs>[]
       workspacePublicProfiles: Prisma.$WorkspacePublicProfilePayload<ExtArgs>[]
       enterpriseQuotaConsumptions: Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>[]
+      claimedWorkspaceLeads: Prisma.$LeadPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5953,6 +6120,7 @@ export namespace Prisma {
     ownedWorkspaces<T extends User$ownedWorkspacesArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedWorkspacesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     workspacePublicProfiles<T extends User$workspacePublicProfilesArgs<ExtArgs> = {}>(args?: Subset<T, User$workspacePublicProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     enterpriseQuotaConsumptions<T extends User$enterpriseQuotaConsumptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$enterpriseQuotaConsumptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    claimedWorkspaceLeads<T extends User$claimedWorkspaceLeadsArgs<ExtArgs> = {}>(args?: Subset<T, User$claimedWorkspaceLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6798,6 +6966,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: EnterpriseQuotaConsumptionScalarFieldEnum | EnterpriseQuotaConsumptionScalarFieldEnum[]
+  }
+
+  /**
+   * User.claimedWorkspaceLeads
+   */
+  export type User$claimedWorkspaceLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    where?: LeadWhereInput
+    orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
+    cursor?: LeadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
   }
 
   /**
@@ -10166,6 +10358,7 @@ export namespace Prisma {
     template: string | null
     language: string | null
     isPublic: boolean | null
+    firstPublishedAt: Date | null
     company: string | null
     jobTitle: string | null
     phone: string | null
@@ -10195,6 +10388,7 @@ export namespace Prisma {
     template: string | null
     language: string | null
     isPublic: boolean | null
+    firstPublishedAt: Date | null
     company: string | null
     jobTitle: string | null
     phone: string | null
@@ -10224,6 +10418,7 @@ export namespace Prisma {
     template: number
     language: number
     isPublic: number
+    firstPublishedAt: number
     company: number
     jobTitle: number
     phone: number
@@ -10256,6 +10451,7 @@ export namespace Prisma {
     template?: true
     language?: true
     isPublic?: true
+    firstPublishedAt?: true
     company?: true
     jobTitle?: true
     phone?: true
@@ -10285,6 +10481,7 @@ export namespace Prisma {
     template?: true
     language?: true
     isPublic?: true
+    firstPublishedAt?: true
     company?: true
     jobTitle?: true
     phone?: true
@@ -10314,6 +10511,7 @@ export namespace Prisma {
     template?: true
     language?: true
     isPublic?: true
+    firstPublishedAt?: true
     company?: true
     jobTitle?: true
     phone?: true
@@ -10417,6 +10615,7 @@ export namespace Prisma {
     template: string
     language: string
     isPublic: boolean
+    firstPublishedAt: Date | null
     company: string | null
     jobTitle: string | null
     phone: string | null
@@ -10464,6 +10663,7 @@ export namespace Prisma {
     template?: boolean
     language?: boolean
     isPublic?: boolean
+    firstPublishedAt?: boolean
     company?: boolean
     jobTitle?: boolean
     phone?: boolean
@@ -10500,6 +10700,7 @@ export namespace Prisma {
     template?: boolean
     language?: boolean
     isPublic?: boolean
+    firstPublishedAt?: boolean
     company?: boolean
     jobTitle?: boolean
     phone?: boolean
@@ -10531,6 +10732,7 @@ export namespace Prisma {
     template?: boolean
     language?: boolean
     isPublic?: boolean
+    firstPublishedAt?: boolean
     company?: boolean
     jobTitle?: boolean
     phone?: boolean
@@ -10562,6 +10764,7 @@ export namespace Prisma {
     template?: boolean
     language?: boolean
     isPublic?: boolean
+    firstPublishedAt?: boolean
     company?: boolean
     jobTitle?: boolean
     phone?: boolean
@@ -10576,7 +10779,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "username" | "displayName" | "displayNameAnonymized" | "bio" | "avatarUrl" | "avatarModerationStatus" | "coverImageUrl" | "coverImageModerationStatus" | "theme" | "customTheme" | "template" | "language" | "isPublic" | "company" | "jobTitle" | "phone" | "email" | "wechat" | "city" | "address" | "website" | "socialLinks" | "contactVisibility" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
+  export type ProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "username" | "displayName" | "displayNameAnonymized" | "bio" | "avatarUrl" | "avatarModerationStatus" | "coverImageUrl" | "coverImageModerationStatus" | "theme" | "customTheme" | "template" | "language" | "isPublic" | "firstPublishedAt" | "company" | "jobTitle" | "phone" | "email" | "wechat" | "city" | "address" | "website" | "socialLinks" | "contactVisibility" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
   export type ProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     links?: boolean | Profile$linksArgs<ExtArgs>
@@ -10617,6 +10820,7 @@ export namespace Prisma {
       template: string
       language: string
       isPublic: boolean
+      firstPublishedAt: Date | null
       company: string | null
       jobTitle: string | null
       phone: string | null
@@ -11072,6 +11276,7 @@ export namespace Prisma {
     readonly template: FieldRef<"Profile", 'String'>
     readonly language: FieldRef<"Profile", 'String'>
     readonly isPublic: FieldRef<"Profile", 'Boolean'>
+    readonly firstPublishedAt: FieldRef<"Profile", 'DateTime'>
     readonly company: FieldRef<"Profile", 'String'>
     readonly jobTitle: FieldRef<"Profile", 'String'>
     readonly phone: FieldRef<"Profile", 'String'>
@@ -13901,6 +14106,7 @@ export namespace Prisma {
   export type LinkMinAggregateOutputType = {
     id: string | null
     profileId: string | null
+    workspaceId: string | null
     type: string | null
     payloadJson: string | null
     title: string | null
@@ -13920,6 +14126,7 @@ export namespace Prisma {
   export type LinkMaxAggregateOutputType = {
     id: string | null
     profileId: string | null
+    workspaceId: string | null
     type: string | null
     payloadJson: string | null
     title: string | null
@@ -13939,6 +14146,7 @@ export namespace Prisma {
   export type LinkCountAggregateOutputType = {
     id: number
     profileId: number
+    workspaceId: number
     type: number
     payloadJson: number
     title: number
@@ -13970,6 +14178,7 @@ export namespace Prisma {
   export type LinkMinAggregateInputType = {
     id?: true
     profileId?: true
+    workspaceId?: true
     type?: true
     payloadJson?: true
     title?: true
@@ -13989,6 +14198,7 @@ export namespace Prisma {
   export type LinkMaxAggregateInputType = {
     id?: true
     profileId?: true
+    workspaceId?: true
     type?: true
     payloadJson?: true
     title?: true
@@ -14008,6 +14218,7 @@ export namespace Prisma {
   export type LinkCountAggregateInputType = {
     id?: true
     profileId?: true
+    workspaceId?: true
     type?: true
     payloadJson?: true
     title?: true
@@ -14114,6 +14325,7 @@ export namespace Prisma {
   export type LinkGroupByOutputType = {
     id: string
     profileId: string
+    workspaceId: string | null
     type: string
     payloadJson: string | null
     title: string
@@ -14152,6 +14364,7 @@ export namespace Prisma {
   export type LinkSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
     type?: boolean
     payloadJson?: boolean
     title?: boolean
@@ -14167,13 +14380,16 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Link$workspaceArgs<ExtArgs>
     clicks?: boolean | Link$clicksArgs<ExtArgs>
+    contactLeads?: boolean | Link$contactLeadsArgs<ExtArgs>
     _count?: boolean | LinkCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["link"]>
 
   export type LinkSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
     type?: boolean
     payloadJson?: boolean
     title?: boolean
@@ -14189,11 +14405,13 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Link$workspaceArgs<ExtArgs>
   }, ExtArgs["result"]["link"]>
 
   export type LinkSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
     type?: boolean
     payloadJson?: boolean
     title?: boolean
@@ -14209,11 +14427,13 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Link$workspaceArgs<ExtArgs>
   }, ExtArgs["result"]["link"]>
 
   export type LinkSelectScalar = {
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
     type?: boolean
     payloadJson?: boolean
     title?: boolean
@@ -14230,28 +14450,35 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type LinkOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "profileId" | "type" | "payloadJson" | "title" | "url" | "description" | "iconType" | "iconValue" | "iconUrl" | "iconModerationStatus" | "position" | "isActive" | "totalClicks" | "createdAt" | "updatedAt", ExtArgs["result"]["link"]>
+  export type LinkOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "profileId" | "workspaceId" | "type" | "payloadJson" | "title" | "url" | "description" | "iconType" | "iconValue" | "iconUrl" | "iconModerationStatus" | "position" | "isActive" | "totalClicks" | "createdAt" | "updatedAt", ExtArgs["result"]["link"]>
   export type LinkInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Link$workspaceArgs<ExtArgs>
     clicks?: boolean | Link$clicksArgs<ExtArgs>
+    contactLeads?: boolean | Link$contactLeadsArgs<ExtArgs>
     _count?: boolean | LinkCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type LinkIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Link$workspaceArgs<ExtArgs>
   }
   export type LinkIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Link$workspaceArgs<ExtArgs>
   }
 
   export type $LinkPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Link"
     objects: {
       profile: Prisma.$ProfilePayload<ExtArgs>
+      workspace: Prisma.$WorkspacePayload<ExtArgs> | null
       clicks: Prisma.$LinkClickPayload<ExtArgs>[]
+      contactLeads: Prisma.$LeadPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       profileId: string
+      workspaceId: string | null
       type: string
       payloadJson: string | null
       title: string
@@ -14661,7 +14888,9 @@ export namespace Prisma {
   export interface Prisma__LinkClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     profile<T extends ProfileDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProfileDefaultArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    workspace<T extends Link$workspaceArgs<ExtArgs> = {}>(args?: Subset<T, Link$workspaceArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     clicks<T extends Link$clicksArgs<ExtArgs> = {}>(args?: Subset<T, Link$clicksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkClickPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    contactLeads<T extends Link$contactLeadsArgs<ExtArgs> = {}>(args?: Subset<T, Link$contactLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14693,6 +14922,7 @@ export namespace Prisma {
   interface LinkFieldRefs {
     readonly id: FieldRef<"Link", 'String'>
     readonly profileId: FieldRef<"Link", 'String'>
+    readonly workspaceId: FieldRef<"Link", 'String'>
     readonly type: FieldRef<"Link", 'String'>
     readonly payloadJson: FieldRef<"Link", 'String'>
     readonly title: FieldRef<"Link", 'String'>
@@ -15108,6 +15338,25 @@ export namespace Prisma {
   }
 
   /**
+   * Link.workspace
+   */
+  export type Link$workspaceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspaceInclude<ExtArgs> | null
+    where?: WorkspaceWhereInput
+  }
+
+  /**
    * Link.clicks
    */
   export type Link$clicksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -15129,6 +15378,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: LinkClickScalarFieldEnum | LinkClickScalarFieldEnum[]
+  }
+
+  /**
+   * Link.contactLeads
+   */
+  export type Link$contactLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    where?: LeadWhereInput
+    orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
+    cursor?: LeadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
   }
 
   /**
@@ -28532,6 +28805,9 @@ export namespace Prisma {
   export type LeadMinAggregateOutputType = {
     id: string | null
     profileId: string | null
+    workspaceId: string | null
+    contactEntryId: string | null
+    claimedByUserId: string | null
     name: string | null
     email: string | null
     phone: string | null
@@ -28555,6 +28831,9 @@ export namespace Prisma {
   export type LeadMaxAggregateOutputType = {
     id: string | null
     profileId: string | null
+    workspaceId: string | null
+    contactEntryId: string | null
+    claimedByUserId: string | null
     name: string | null
     email: string | null
     phone: string | null
@@ -28578,6 +28857,9 @@ export namespace Prisma {
   export type LeadCountAggregateOutputType = {
     id: number
     profileId: number
+    workspaceId: number
+    contactEntryId: number
+    claimedByUserId: number
     name: number
     email: number
     phone: number
@@ -28603,6 +28885,9 @@ export namespace Prisma {
   export type LeadMinAggregateInputType = {
     id?: true
     profileId?: true
+    workspaceId?: true
+    contactEntryId?: true
+    claimedByUserId?: true
     name?: true
     email?: true
     phone?: true
@@ -28626,6 +28911,9 @@ export namespace Prisma {
   export type LeadMaxAggregateInputType = {
     id?: true
     profileId?: true
+    workspaceId?: true
+    contactEntryId?: true
+    claimedByUserId?: true
     name?: true
     email?: true
     phone?: true
@@ -28649,6 +28937,9 @@ export namespace Prisma {
   export type LeadCountAggregateInputType = {
     id?: true
     profileId?: true
+    workspaceId?: true
+    contactEntryId?: true
+    claimedByUserId?: true
     name?: true
     email?: true
     phone?: true
@@ -28745,6 +29036,9 @@ export namespace Prisma {
   export type LeadGroupByOutputType = {
     id: string
     profileId: string
+    workspaceId: string | null
+    contactEntryId: string | null
+    claimedByUserId: string | null
     name: string
     email: string | null
     phone: string | null
@@ -28785,6 +29079,9 @@ export namespace Prisma {
   export type LeadSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
+    contactEntryId?: boolean
+    claimedByUserId?: boolean
     name?: boolean
     email?: boolean
     phone?: boolean
@@ -28804,6 +29101,9 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Lead$workspaceArgs<ExtArgs>
+    contactEntry?: boolean | Lead$contactEntryArgs<ExtArgs>
+    claimedBy?: boolean | Lead$claimedByArgs<ExtArgs>
     interestedProduct?: boolean | Lead$interestedProductArgs<ExtArgs>
     conversation?: boolean | Lead$conversationArgs<ExtArgs>
     followUps?: boolean | Lead$followUpsArgs<ExtArgs>
@@ -28813,6 +29113,9 @@ export namespace Prisma {
   export type LeadSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
+    contactEntryId?: boolean
+    claimedByUserId?: boolean
     name?: boolean
     email?: boolean
     phone?: boolean
@@ -28832,6 +29135,9 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Lead$workspaceArgs<ExtArgs>
+    contactEntry?: boolean | Lead$contactEntryArgs<ExtArgs>
+    claimedBy?: boolean | Lead$claimedByArgs<ExtArgs>
     interestedProduct?: boolean | Lead$interestedProductArgs<ExtArgs>
     conversation?: boolean | Lead$conversationArgs<ExtArgs>
   }, ExtArgs["result"]["lead"]>
@@ -28839,6 +29145,9 @@ export namespace Prisma {
   export type LeadSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
+    contactEntryId?: boolean
+    claimedByUserId?: boolean
     name?: boolean
     email?: boolean
     phone?: boolean
@@ -28858,6 +29167,9 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Lead$workspaceArgs<ExtArgs>
+    contactEntry?: boolean | Lead$contactEntryArgs<ExtArgs>
+    claimedBy?: boolean | Lead$claimedByArgs<ExtArgs>
     interestedProduct?: boolean | Lead$interestedProductArgs<ExtArgs>
     conversation?: boolean | Lead$conversationArgs<ExtArgs>
   }, ExtArgs["result"]["lead"]>
@@ -28865,6 +29177,9 @@ export namespace Prisma {
   export type LeadSelectScalar = {
     id?: boolean
     profileId?: boolean
+    workspaceId?: boolean
+    contactEntryId?: boolean
+    claimedByUserId?: boolean
     name?: boolean
     email?: boolean
     phone?: boolean
@@ -28885,9 +29200,12 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "profileId" | "name" | "email" | "phone" | "wechat" | "message" | "sourceComponent" | "sourcePage" | "interestedProductId" | "interestedProductName" | "interestedProductPrice" | "interestedProductCategory" | "conversationId" | "status" | "notes" | "handlerNote" | "handledAt" | "createdAt" | "updatedAt", ExtArgs["result"]["lead"]>
+  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "profileId" | "workspaceId" | "contactEntryId" | "claimedByUserId" | "name" | "email" | "phone" | "wechat" | "message" | "sourceComponent" | "sourcePage" | "interestedProductId" | "interestedProductName" | "interestedProductPrice" | "interestedProductCategory" | "conversationId" | "status" | "notes" | "handlerNote" | "handledAt" | "createdAt" | "updatedAt", ExtArgs["result"]["lead"]>
   export type LeadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Lead$workspaceArgs<ExtArgs>
+    contactEntry?: boolean | Lead$contactEntryArgs<ExtArgs>
+    claimedBy?: boolean | Lead$claimedByArgs<ExtArgs>
     interestedProduct?: boolean | Lead$interestedProductArgs<ExtArgs>
     conversation?: boolean | Lead$conversationArgs<ExtArgs>
     followUps?: boolean | Lead$followUpsArgs<ExtArgs>
@@ -28895,11 +29213,17 @@ export namespace Prisma {
   }
   export type LeadIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Lead$workspaceArgs<ExtArgs>
+    contactEntry?: boolean | Lead$contactEntryArgs<ExtArgs>
+    claimedBy?: boolean | Lead$claimedByArgs<ExtArgs>
     interestedProduct?: boolean | Lead$interestedProductArgs<ExtArgs>
     conversation?: boolean | Lead$conversationArgs<ExtArgs>
   }
   export type LeadIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     profile?: boolean | ProfileDefaultArgs<ExtArgs>
+    workspace?: boolean | Lead$workspaceArgs<ExtArgs>
+    contactEntry?: boolean | Lead$contactEntryArgs<ExtArgs>
+    claimedBy?: boolean | Lead$claimedByArgs<ExtArgs>
     interestedProduct?: boolean | Lead$interestedProductArgs<ExtArgs>
     conversation?: boolean | Lead$conversationArgs<ExtArgs>
   }
@@ -28908,6 +29232,9 @@ export namespace Prisma {
     name: "Lead"
     objects: {
       profile: Prisma.$ProfilePayload<ExtArgs>
+      workspace: Prisma.$WorkspacePayload<ExtArgs> | null
+      contactEntry: Prisma.$LinkPayload<ExtArgs> | null
+      claimedBy: Prisma.$UserPayload<ExtArgs> | null
       interestedProduct: Prisma.$ProductPayload<ExtArgs> | null
       conversation: Prisma.$AiConversationPayload<ExtArgs> | null
       followUps: Prisma.$LeadFollowUpPayload<ExtArgs>[]
@@ -28915,6 +29242,9 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       profileId: string
+      workspaceId: string | null
+      contactEntryId: string | null
+      claimedByUserId: string | null
       name: string
       email: string | null
       phone: string | null
@@ -29328,6 +29658,9 @@ export namespace Prisma {
   export interface Prisma__LeadClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     profile<T extends ProfileDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProfileDefaultArgs<ExtArgs>>): Prisma__ProfileClient<$Result.GetResult<Prisma.$ProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    workspace<T extends Lead$workspaceArgs<ExtArgs> = {}>(args?: Subset<T, Lead$workspaceArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    contactEntry<T extends Lead$contactEntryArgs<ExtArgs> = {}>(args?: Subset<T, Lead$contactEntryArgs<ExtArgs>>): Prisma__LinkClient<$Result.GetResult<Prisma.$LinkPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    claimedBy<T extends Lead$claimedByArgs<ExtArgs> = {}>(args?: Subset<T, Lead$claimedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     interestedProduct<T extends Lead$interestedProductArgs<ExtArgs> = {}>(args?: Subset<T, Lead$interestedProductArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     conversation<T extends Lead$conversationArgs<ExtArgs> = {}>(args?: Subset<T, Lead$conversationArgs<ExtArgs>>): Prisma__AiConversationClient<$Result.GetResult<Prisma.$AiConversationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     followUps<T extends Lead$followUpsArgs<ExtArgs> = {}>(args?: Subset<T, Lead$followUpsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadFollowUpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -29362,6 +29695,9 @@ export namespace Prisma {
   interface LeadFieldRefs {
     readonly id: FieldRef<"Lead", 'String'>
     readonly profileId: FieldRef<"Lead", 'String'>
+    readonly workspaceId: FieldRef<"Lead", 'String'>
+    readonly contactEntryId: FieldRef<"Lead", 'String'>
+    readonly claimedByUserId: FieldRef<"Lead", 'String'>
     readonly name: FieldRef<"Lead", 'String'>
     readonly email: FieldRef<"Lead", 'String'>
     readonly phone: FieldRef<"Lead", 'String'>
@@ -29778,6 +30114,63 @@ export namespace Prisma {
      * Limit how many Leads to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Lead.workspace
+   */
+  export type Lead$workspaceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspaceInclude<ExtArgs> | null
+    where?: WorkspaceWhereInput
+  }
+
+  /**
+   * Lead.contactEntry
+   */
+  export type Lead$contactEntryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Link
+     */
+    select?: LinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Link
+     */
+    omit?: LinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkInclude<ExtArgs> | null
+    where?: LinkWhereInput
+  }
+
+  /**
+   * Lead.claimedBy
+   */
+  export type Lead$claimedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -34409,6 +34802,7 @@ export namespace Prisma {
     allowReport: boolean | null
     allowTransferToHuman: boolean | null
     privacyNoticeText: string | null
+    quickActionsJson: string | null
     providerMode: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -34426,6 +34820,7 @@ export namespace Prisma {
     allowReport: boolean | null
     allowTransferToHuman: boolean | null
     privacyNoticeText: string | null
+    quickActionsJson: string | null
     providerMode: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -34443,6 +34838,7 @@ export namespace Prisma {
     allowReport: number
     allowTransferToHuman: number
     privacyNoticeText: number
+    quickActionsJson: number
     providerMode: number
     createdAt: number
     updatedAt: number
@@ -34462,6 +34858,7 @@ export namespace Prisma {
     allowReport?: true
     allowTransferToHuman?: true
     privacyNoticeText?: true
+    quickActionsJson?: true
     providerMode?: true
     createdAt?: true
     updatedAt?: true
@@ -34479,6 +34876,7 @@ export namespace Prisma {
     allowReport?: true
     allowTransferToHuman?: true
     privacyNoticeText?: true
+    quickActionsJson?: true
     providerMode?: true
     createdAt?: true
     updatedAt?: true
@@ -34496,6 +34894,7 @@ export namespace Prisma {
     allowReport?: true
     allowTransferToHuman?: true
     privacyNoticeText?: true
+    quickActionsJson?: true
     providerMode?: true
     createdAt?: true
     updatedAt?: true
@@ -34586,6 +34985,7 @@ export namespace Prisma {
     allowReport: boolean
     allowTransferToHuman: boolean
     privacyNoticeText: string | null
+    quickActionsJson: string | null
     providerMode: string
     createdAt: Date
     updatedAt: Date
@@ -34620,6 +35020,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -34638,6 +35039,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -34656,6 +35058,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -34674,12 +35077,13 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: boolean
+    quickActionsJson?: boolean
     providerMode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type AiServiceConfigOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "enabled" | "assistantName" | "welcomeMessage" | "tone" | "allowProductRecommendation" | "collectLead" | "allowReport" | "allowTransferToHuman" | "privacyNoticeText" | "providerMode" | "createdAt" | "updatedAt", ExtArgs["result"]["aiServiceConfig"]>
+  export type AiServiceConfigOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "enabled" | "assistantName" | "welcomeMessage" | "tone" | "allowProductRecommendation" | "collectLead" | "allowReport" | "allowTransferToHuman" | "privacyNoticeText" | "quickActionsJson" | "providerMode" | "createdAt" | "updatedAt", ExtArgs["result"]["aiServiceConfig"]>
   export type AiServiceConfigInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -34707,6 +35111,7 @@ export namespace Prisma {
       allowReport: boolean
       allowTransferToHuman: boolean
       privacyNoticeText: string | null
+      quickActionsJson: string | null
       providerMode: string
       createdAt: Date
       updatedAt: Date
@@ -35145,6 +35550,7 @@ export namespace Prisma {
     readonly allowReport: FieldRef<"AiServiceConfig", 'Boolean'>
     readonly allowTransferToHuman: FieldRef<"AiServiceConfig", 'Boolean'>
     readonly privacyNoticeText: FieldRef<"AiServiceConfig", 'String'>
+    readonly quickActionsJson: FieldRef<"AiServiceConfig", 'String'>
     readonly providerMode: FieldRef<"AiServiceConfig", 'String'>
     readonly createdAt: FieldRef<"AiServiceConfig", 'DateTime'>
     readonly updatedAt: FieldRef<"AiServiceConfig", 'DateTime'>
@@ -38040,6 +38446,7 @@ export namespace Prisma {
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     ledger?: boolean | AiCreditAccount$ledgerArgs<ExtArgs>
+    buckets?: boolean | AiCreditAccount$bucketsArgs<ExtArgs>
     _count?: boolean | AiCreditAccountCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["aiCreditAccount"]>
 
@@ -38076,6 +38483,7 @@ export namespace Prisma {
   export type AiCreditAccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     ledger?: boolean | AiCreditAccount$ledgerArgs<ExtArgs>
+    buckets?: boolean | AiCreditAccount$bucketsArgs<ExtArgs>
     _count?: boolean | AiCreditAccountCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AiCreditAccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -38090,6 +38498,7 @@ export namespace Prisma {
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
       ledger: Prisma.$AiCreditLedgerPayload<ExtArgs>[]
+      buckets: Prisma.$AiCreditBucketPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -38494,6 +38903,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     ledger<T extends AiCreditAccount$ledgerArgs<ExtArgs> = {}>(args?: Subset<T, AiCreditAccount$ledgerArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditLedgerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    buckets<T extends AiCreditAccount$bucketsArgs<ExtArgs> = {}>(args?: Subset<T, AiCreditAccount$bucketsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -38951,6 +39361,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AiCreditLedgerScalarFieldEnum | AiCreditLedgerScalarFieldEnum[]
+  }
+
+  /**
+   * AiCreditAccount.buckets
+   */
+  export type AiCreditAccount$bucketsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    where?: AiCreditBucketWhereInput
+    orderBy?: AiCreditBucketOrderByWithRelationInput | AiCreditBucketOrderByWithRelationInput[]
+    cursor?: AiCreditBucketWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AiCreditBucketScalarFieldEnum | AiCreditBucketScalarFieldEnum[]
   }
 
   /**
@@ -40148,6 +40582,1199 @@ export namespace Prisma {
 
 
   /**
+   * Model AiCreditBucket
+   */
+
+  export type AggregateAiCreditBucket = {
+    _count: AiCreditBucketCountAggregateOutputType | null
+    _avg: AiCreditBucketAvgAggregateOutputType | null
+    _sum: AiCreditBucketSumAggregateOutputType | null
+    _min: AiCreditBucketMinAggregateOutputType | null
+    _max: AiCreditBucketMaxAggregateOutputType | null
+  }
+
+  export type AiCreditBucketAvgAggregateOutputType = {
+    grantedAmount: number | null
+    remainingAmount: number | null
+  }
+
+  export type AiCreditBucketSumAggregateOutputType = {
+    grantedAmount: number | null
+    remainingAmount: number | null
+  }
+
+  export type AiCreditBucketMinAggregateOutputType = {
+    id: string | null
+    accountId: string | null
+    sourceOrderId: string | null
+    sourceType: string | null
+    grantedAmount: number | null
+    remainingAmount: number | null
+    status: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AiCreditBucketMaxAggregateOutputType = {
+    id: string | null
+    accountId: string | null
+    sourceOrderId: string | null
+    sourceType: string | null
+    grantedAmount: number | null
+    remainingAmount: number | null
+    status: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AiCreditBucketCountAggregateOutputType = {
+    id: number
+    accountId: number
+    sourceOrderId: number
+    sourceType: number
+    grantedAmount: number
+    remainingAmount: number
+    status: number
+    expiresAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AiCreditBucketAvgAggregateInputType = {
+    grantedAmount?: true
+    remainingAmount?: true
+  }
+
+  export type AiCreditBucketSumAggregateInputType = {
+    grantedAmount?: true
+    remainingAmount?: true
+  }
+
+  export type AiCreditBucketMinAggregateInputType = {
+    id?: true
+    accountId?: true
+    sourceOrderId?: true
+    sourceType?: true
+    grantedAmount?: true
+    remainingAmount?: true
+    status?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AiCreditBucketMaxAggregateInputType = {
+    id?: true
+    accountId?: true
+    sourceOrderId?: true
+    sourceType?: true
+    grantedAmount?: true
+    remainingAmount?: true
+    status?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AiCreditBucketCountAggregateInputType = {
+    id?: true
+    accountId?: true
+    sourceOrderId?: true
+    sourceType?: true
+    grantedAmount?: true
+    remainingAmount?: true
+    status?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AiCreditBucketAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AiCreditBucket to aggregate.
+     */
+    where?: AiCreditBucketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditBuckets to fetch.
+     */
+    orderBy?: AiCreditBucketOrderByWithRelationInput | AiCreditBucketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AiCreditBucketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditBuckets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditBuckets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AiCreditBuckets
+    **/
+    _count?: true | AiCreditBucketCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AiCreditBucketAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AiCreditBucketSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AiCreditBucketMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AiCreditBucketMaxAggregateInputType
+  }
+
+  export type GetAiCreditBucketAggregateType<T extends AiCreditBucketAggregateArgs> = {
+        [P in keyof T & keyof AggregateAiCreditBucket]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAiCreditBucket[P]>
+      : GetScalarType<T[P], AggregateAiCreditBucket[P]>
+  }
+
+
+
+
+  export type AiCreditBucketGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AiCreditBucketWhereInput
+    orderBy?: AiCreditBucketOrderByWithAggregationInput | AiCreditBucketOrderByWithAggregationInput[]
+    by: AiCreditBucketScalarFieldEnum[] | AiCreditBucketScalarFieldEnum
+    having?: AiCreditBucketScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AiCreditBucketCountAggregateInputType | true
+    _avg?: AiCreditBucketAvgAggregateInputType
+    _sum?: AiCreditBucketSumAggregateInputType
+    _min?: AiCreditBucketMinAggregateInputType
+    _max?: AiCreditBucketMaxAggregateInputType
+  }
+
+  export type AiCreditBucketGroupByOutputType = {
+    id: string
+    accountId: string
+    sourceOrderId: string | null
+    sourceType: string
+    grantedAmount: number
+    remainingAmount: number
+    status: string
+    expiresAt: Date
+    createdAt: Date
+    updatedAt: Date
+    _count: AiCreditBucketCountAggregateOutputType | null
+    _avg: AiCreditBucketAvgAggregateOutputType | null
+    _sum: AiCreditBucketSumAggregateOutputType | null
+    _min: AiCreditBucketMinAggregateOutputType | null
+    _max: AiCreditBucketMaxAggregateOutputType | null
+  }
+
+  type GetAiCreditBucketGroupByPayload<T extends AiCreditBucketGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AiCreditBucketGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AiCreditBucketGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AiCreditBucketGroupByOutputType[P]>
+            : GetScalarType<T[P], AiCreditBucketGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AiCreditBucketSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    accountId?: boolean
+    sourceOrderId?: boolean
+    sourceType?: boolean
+    grantedAmount?: boolean
+    remainingAmount?: boolean
+    status?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    account?: boolean | AiCreditAccountDefaultArgs<ExtArgs>
+    sourceOrder?: boolean | AiCreditBucket$sourceOrderArgs<ExtArgs>
+  }, ExtArgs["result"]["aiCreditBucket"]>
+
+  export type AiCreditBucketSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    accountId?: boolean
+    sourceOrderId?: boolean
+    sourceType?: boolean
+    grantedAmount?: boolean
+    remainingAmount?: boolean
+    status?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    account?: boolean | AiCreditAccountDefaultArgs<ExtArgs>
+    sourceOrder?: boolean | AiCreditBucket$sourceOrderArgs<ExtArgs>
+  }, ExtArgs["result"]["aiCreditBucket"]>
+
+  export type AiCreditBucketSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    accountId?: boolean
+    sourceOrderId?: boolean
+    sourceType?: boolean
+    grantedAmount?: boolean
+    remainingAmount?: boolean
+    status?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    account?: boolean | AiCreditAccountDefaultArgs<ExtArgs>
+    sourceOrder?: boolean | AiCreditBucket$sourceOrderArgs<ExtArgs>
+  }, ExtArgs["result"]["aiCreditBucket"]>
+
+  export type AiCreditBucketSelectScalar = {
+    id?: boolean
+    accountId?: boolean
+    sourceOrderId?: boolean
+    sourceType?: boolean
+    grantedAmount?: boolean
+    remainingAmount?: boolean
+    status?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AiCreditBucketOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "accountId" | "sourceOrderId" | "sourceType" | "grantedAmount" | "remainingAmount" | "status" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["aiCreditBucket"]>
+  export type AiCreditBucketInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | AiCreditAccountDefaultArgs<ExtArgs>
+    sourceOrder?: boolean | AiCreditBucket$sourceOrderArgs<ExtArgs>
+  }
+  export type AiCreditBucketIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | AiCreditAccountDefaultArgs<ExtArgs>
+    sourceOrder?: boolean | AiCreditBucket$sourceOrderArgs<ExtArgs>
+  }
+  export type AiCreditBucketIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | AiCreditAccountDefaultArgs<ExtArgs>
+    sourceOrder?: boolean | AiCreditBucket$sourceOrderArgs<ExtArgs>
+  }
+
+  export type $AiCreditBucketPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AiCreditBucket"
+    objects: {
+      account: Prisma.$AiCreditAccountPayload<ExtArgs>
+      sourceOrder: Prisma.$OrderPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      accountId: string
+      sourceOrderId: string | null
+      sourceType: string
+      grantedAmount: number
+      remainingAmount: number
+      status: string
+      expiresAt: Date
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["aiCreditBucket"]>
+    composites: {}
+  }
+
+  type AiCreditBucketGetPayload<S extends boolean | null | undefined | AiCreditBucketDefaultArgs> = $Result.GetResult<Prisma.$AiCreditBucketPayload, S>
+
+  type AiCreditBucketCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AiCreditBucketFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AiCreditBucketCountAggregateInputType | true
+    }
+
+  export interface AiCreditBucketDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AiCreditBucket'], meta: { name: 'AiCreditBucket' } }
+    /**
+     * Find zero or one AiCreditBucket that matches the filter.
+     * @param {AiCreditBucketFindUniqueArgs} args - Arguments to find a AiCreditBucket
+     * @example
+     * // Get one AiCreditBucket
+     * const aiCreditBucket = await prisma.aiCreditBucket.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AiCreditBucketFindUniqueArgs>(args: SelectSubset<T, AiCreditBucketFindUniqueArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AiCreditBucket that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AiCreditBucketFindUniqueOrThrowArgs} args - Arguments to find a AiCreditBucket
+     * @example
+     * // Get one AiCreditBucket
+     * const aiCreditBucket = await prisma.aiCreditBucket.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AiCreditBucketFindUniqueOrThrowArgs>(args: SelectSubset<T, AiCreditBucketFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AiCreditBucket that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditBucketFindFirstArgs} args - Arguments to find a AiCreditBucket
+     * @example
+     * // Get one AiCreditBucket
+     * const aiCreditBucket = await prisma.aiCreditBucket.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AiCreditBucketFindFirstArgs>(args?: SelectSubset<T, AiCreditBucketFindFirstArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AiCreditBucket that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditBucketFindFirstOrThrowArgs} args - Arguments to find a AiCreditBucket
+     * @example
+     * // Get one AiCreditBucket
+     * const aiCreditBucket = await prisma.aiCreditBucket.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AiCreditBucketFindFirstOrThrowArgs>(args?: SelectSubset<T, AiCreditBucketFindFirstOrThrowArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AiCreditBuckets that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditBucketFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AiCreditBuckets
+     * const aiCreditBuckets = await prisma.aiCreditBucket.findMany()
+     * 
+     * // Get first 10 AiCreditBuckets
+     * const aiCreditBuckets = await prisma.aiCreditBucket.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const aiCreditBucketWithIdOnly = await prisma.aiCreditBucket.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AiCreditBucketFindManyArgs>(args?: SelectSubset<T, AiCreditBucketFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AiCreditBucket.
+     * @param {AiCreditBucketCreateArgs} args - Arguments to create a AiCreditBucket.
+     * @example
+     * // Create one AiCreditBucket
+     * const AiCreditBucket = await prisma.aiCreditBucket.create({
+     *   data: {
+     *     // ... data to create a AiCreditBucket
+     *   }
+     * })
+     * 
+     */
+    create<T extends AiCreditBucketCreateArgs>(args: SelectSubset<T, AiCreditBucketCreateArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AiCreditBuckets.
+     * @param {AiCreditBucketCreateManyArgs} args - Arguments to create many AiCreditBuckets.
+     * @example
+     * // Create many AiCreditBuckets
+     * const aiCreditBucket = await prisma.aiCreditBucket.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AiCreditBucketCreateManyArgs>(args?: SelectSubset<T, AiCreditBucketCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AiCreditBuckets and returns the data saved in the database.
+     * @param {AiCreditBucketCreateManyAndReturnArgs} args - Arguments to create many AiCreditBuckets.
+     * @example
+     * // Create many AiCreditBuckets
+     * const aiCreditBucket = await prisma.aiCreditBucket.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AiCreditBuckets and only return the `id`
+     * const aiCreditBucketWithIdOnly = await prisma.aiCreditBucket.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AiCreditBucketCreateManyAndReturnArgs>(args?: SelectSubset<T, AiCreditBucketCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AiCreditBucket.
+     * @param {AiCreditBucketDeleteArgs} args - Arguments to delete one AiCreditBucket.
+     * @example
+     * // Delete one AiCreditBucket
+     * const AiCreditBucket = await prisma.aiCreditBucket.delete({
+     *   where: {
+     *     // ... filter to delete one AiCreditBucket
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AiCreditBucketDeleteArgs>(args: SelectSubset<T, AiCreditBucketDeleteArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AiCreditBucket.
+     * @param {AiCreditBucketUpdateArgs} args - Arguments to update one AiCreditBucket.
+     * @example
+     * // Update one AiCreditBucket
+     * const aiCreditBucket = await prisma.aiCreditBucket.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AiCreditBucketUpdateArgs>(args: SelectSubset<T, AiCreditBucketUpdateArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AiCreditBuckets.
+     * @param {AiCreditBucketDeleteManyArgs} args - Arguments to filter AiCreditBuckets to delete.
+     * @example
+     * // Delete a few AiCreditBuckets
+     * const { count } = await prisma.aiCreditBucket.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AiCreditBucketDeleteManyArgs>(args?: SelectSubset<T, AiCreditBucketDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AiCreditBuckets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditBucketUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AiCreditBuckets
+     * const aiCreditBucket = await prisma.aiCreditBucket.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AiCreditBucketUpdateManyArgs>(args: SelectSubset<T, AiCreditBucketUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AiCreditBuckets and returns the data updated in the database.
+     * @param {AiCreditBucketUpdateManyAndReturnArgs} args - Arguments to update many AiCreditBuckets.
+     * @example
+     * // Update many AiCreditBuckets
+     * const aiCreditBucket = await prisma.aiCreditBucket.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AiCreditBuckets and only return the `id`
+     * const aiCreditBucketWithIdOnly = await prisma.aiCreditBucket.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AiCreditBucketUpdateManyAndReturnArgs>(args: SelectSubset<T, AiCreditBucketUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AiCreditBucket.
+     * @param {AiCreditBucketUpsertArgs} args - Arguments to update or create a AiCreditBucket.
+     * @example
+     * // Update or create a AiCreditBucket
+     * const aiCreditBucket = await prisma.aiCreditBucket.upsert({
+     *   create: {
+     *     // ... data to create a AiCreditBucket
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AiCreditBucket we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AiCreditBucketUpsertArgs>(args: SelectSubset<T, AiCreditBucketUpsertArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AiCreditBuckets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditBucketCountArgs} args - Arguments to filter AiCreditBuckets to count.
+     * @example
+     * // Count the number of AiCreditBuckets
+     * const count = await prisma.aiCreditBucket.count({
+     *   where: {
+     *     // ... the filter for the AiCreditBuckets we want to count
+     *   }
+     * })
+    **/
+    count<T extends AiCreditBucketCountArgs>(
+      args?: Subset<T, AiCreditBucketCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AiCreditBucketCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AiCreditBucket.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditBucketAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AiCreditBucketAggregateArgs>(args: Subset<T, AiCreditBucketAggregateArgs>): Prisma.PrismaPromise<GetAiCreditBucketAggregateType<T>>
+
+    /**
+     * Group by AiCreditBucket.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AiCreditBucketGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AiCreditBucketGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AiCreditBucketGroupByArgs['orderBy'] }
+        : { orderBy?: AiCreditBucketGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AiCreditBucketGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAiCreditBucketGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AiCreditBucket model
+   */
+  readonly fields: AiCreditBucketFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AiCreditBucket.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AiCreditBucketClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    account<T extends AiCreditAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AiCreditAccountDefaultArgs<ExtArgs>>): Prisma__AiCreditAccountClient<$Result.GetResult<Prisma.$AiCreditAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    sourceOrder<T extends AiCreditBucket$sourceOrderArgs<ExtArgs> = {}>(args?: Subset<T, AiCreditBucket$sourceOrderArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AiCreditBucket model
+   */
+  interface AiCreditBucketFieldRefs {
+    readonly id: FieldRef<"AiCreditBucket", 'String'>
+    readonly accountId: FieldRef<"AiCreditBucket", 'String'>
+    readonly sourceOrderId: FieldRef<"AiCreditBucket", 'String'>
+    readonly sourceType: FieldRef<"AiCreditBucket", 'String'>
+    readonly grantedAmount: FieldRef<"AiCreditBucket", 'Int'>
+    readonly remainingAmount: FieldRef<"AiCreditBucket", 'Int'>
+    readonly status: FieldRef<"AiCreditBucket", 'String'>
+    readonly expiresAt: FieldRef<"AiCreditBucket", 'DateTime'>
+    readonly createdAt: FieldRef<"AiCreditBucket", 'DateTime'>
+    readonly updatedAt: FieldRef<"AiCreditBucket", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AiCreditBucket findUnique
+   */
+  export type AiCreditBucketFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditBucket to fetch.
+     */
+    where: AiCreditBucketWhereUniqueInput
+  }
+
+  /**
+   * AiCreditBucket findUniqueOrThrow
+   */
+  export type AiCreditBucketFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditBucket to fetch.
+     */
+    where: AiCreditBucketWhereUniqueInput
+  }
+
+  /**
+   * AiCreditBucket findFirst
+   */
+  export type AiCreditBucketFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditBucket to fetch.
+     */
+    where?: AiCreditBucketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditBuckets to fetch.
+     */
+    orderBy?: AiCreditBucketOrderByWithRelationInput | AiCreditBucketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AiCreditBuckets.
+     */
+    cursor?: AiCreditBucketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditBuckets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditBuckets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AiCreditBuckets.
+     */
+    distinct?: AiCreditBucketScalarFieldEnum | AiCreditBucketScalarFieldEnum[]
+  }
+
+  /**
+   * AiCreditBucket findFirstOrThrow
+   */
+  export type AiCreditBucketFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditBucket to fetch.
+     */
+    where?: AiCreditBucketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditBuckets to fetch.
+     */
+    orderBy?: AiCreditBucketOrderByWithRelationInput | AiCreditBucketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AiCreditBuckets.
+     */
+    cursor?: AiCreditBucketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditBuckets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditBuckets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AiCreditBuckets.
+     */
+    distinct?: AiCreditBucketScalarFieldEnum | AiCreditBucketScalarFieldEnum[]
+  }
+
+  /**
+   * AiCreditBucket findMany
+   */
+  export type AiCreditBucketFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * Filter, which AiCreditBuckets to fetch.
+     */
+    where?: AiCreditBucketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AiCreditBuckets to fetch.
+     */
+    orderBy?: AiCreditBucketOrderByWithRelationInput | AiCreditBucketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AiCreditBuckets.
+     */
+    cursor?: AiCreditBucketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AiCreditBuckets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AiCreditBuckets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AiCreditBuckets.
+     */
+    distinct?: AiCreditBucketScalarFieldEnum | AiCreditBucketScalarFieldEnum[]
+  }
+
+  /**
+   * AiCreditBucket create
+   */
+  export type AiCreditBucketCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AiCreditBucket.
+     */
+    data: XOR<AiCreditBucketCreateInput, AiCreditBucketUncheckedCreateInput>
+  }
+
+  /**
+   * AiCreditBucket createMany
+   */
+  export type AiCreditBucketCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AiCreditBuckets.
+     */
+    data: AiCreditBucketCreateManyInput | AiCreditBucketCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AiCreditBucket createManyAndReturn
+   */
+  export type AiCreditBucketCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * The data used to create many AiCreditBuckets.
+     */
+    data: AiCreditBucketCreateManyInput | AiCreditBucketCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AiCreditBucket update
+   */
+  export type AiCreditBucketUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AiCreditBucket.
+     */
+    data: XOR<AiCreditBucketUpdateInput, AiCreditBucketUncheckedUpdateInput>
+    /**
+     * Choose, which AiCreditBucket to update.
+     */
+    where: AiCreditBucketWhereUniqueInput
+  }
+
+  /**
+   * AiCreditBucket updateMany
+   */
+  export type AiCreditBucketUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AiCreditBuckets.
+     */
+    data: XOR<AiCreditBucketUpdateManyMutationInput, AiCreditBucketUncheckedUpdateManyInput>
+    /**
+     * Filter which AiCreditBuckets to update
+     */
+    where?: AiCreditBucketWhereInput
+    /**
+     * Limit how many AiCreditBuckets to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AiCreditBucket updateManyAndReturn
+   */
+  export type AiCreditBucketUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * The data used to update AiCreditBuckets.
+     */
+    data: XOR<AiCreditBucketUpdateManyMutationInput, AiCreditBucketUncheckedUpdateManyInput>
+    /**
+     * Filter which AiCreditBuckets to update
+     */
+    where?: AiCreditBucketWhereInput
+    /**
+     * Limit how many AiCreditBuckets to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AiCreditBucket upsert
+   */
+  export type AiCreditBucketUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AiCreditBucket to update in case it exists.
+     */
+    where: AiCreditBucketWhereUniqueInput
+    /**
+     * In case the AiCreditBucket found by the `where` argument doesn't exist, create a new AiCreditBucket with this data.
+     */
+    create: XOR<AiCreditBucketCreateInput, AiCreditBucketUncheckedCreateInput>
+    /**
+     * In case the AiCreditBucket was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AiCreditBucketUpdateInput, AiCreditBucketUncheckedUpdateInput>
+  }
+
+  /**
+   * AiCreditBucket delete
+   */
+  export type AiCreditBucketDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    /**
+     * Filter which AiCreditBucket to delete.
+     */
+    where: AiCreditBucketWhereUniqueInput
+  }
+
+  /**
+   * AiCreditBucket deleteMany
+   */
+  export type AiCreditBucketDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AiCreditBuckets to delete
+     */
+    where?: AiCreditBucketWhereInput
+    /**
+     * Limit how many AiCreditBuckets to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AiCreditBucket.sourceOrder
+   */
+  export type AiCreditBucket$sourceOrderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+  }
+
+  /**
+   * AiCreditBucket without action
+   */
+  export type AiCreditBucketDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model MembershipSubscription
    */
 
@@ -41277,6 +42904,7 @@ export namespace Prisma {
     userId: string | null
     planCode: string | null
     planNameSnapshot: string | null
+    productType: string | null
     billingCycle: string | null
     originalAmount: number | null
     payableAmount: number | null
@@ -41303,6 +42931,7 @@ export namespace Prisma {
     userId: string | null
     planCode: string | null
     planNameSnapshot: string | null
+    productType: string | null
     billingCycle: string | null
     originalAmount: number | null
     payableAmount: number | null
@@ -41329,6 +42958,7 @@ export namespace Prisma {
     userId: number
     planCode: number
     planNameSnapshot: number
+    productType: number
     billingCycle: number
     originalAmount: number
     payableAmount: number
@@ -41368,6 +42998,7 @@ export namespace Prisma {
     userId?: true
     planCode?: true
     planNameSnapshot?: true
+    productType?: true
     billingCycle?: true
     originalAmount?: true
     payableAmount?: true
@@ -41394,6 +43025,7 @@ export namespace Prisma {
     userId?: true
     planCode?: true
     planNameSnapshot?: true
+    productType?: true
     billingCycle?: true
     originalAmount?: true
     payableAmount?: true
@@ -41420,6 +43052,7 @@ export namespace Prisma {
     userId?: true
     planCode?: true
     planNameSnapshot?: true
+    productType?: true
     billingCycle?: true
     originalAmount?: true
     payableAmount?: true
@@ -41534,6 +43167,7 @@ export namespace Prisma {
     userId: string
     planCode: string
     planNameSnapshot: string
+    productType: string
     billingCycle: string
     originalAmount: number
     payableAmount: number
@@ -41580,6 +43214,7 @@ export namespace Prisma {
     userId?: boolean
     planCode?: boolean
     planNameSnapshot?: boolean
+    productType?: boolean
     billingCycle?: boolean
     originalAmount?: boolean
     payableAmount?: boolean
@@ -41600,6 +43235,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    aiCreditBucket?: boolean | Order$aiCreditBucketArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -41608,6 +43244,7 @@ export namespace Prisma {
     userId?: boolean
     planCode?: boolean
     planNameSnapshot?: boolean
+    productType?: boolean
     billingCycle?: boolean
     originalAmount?: boolean
     payableAmount?: boolean
@@ -41636,6 +43273,7 @@ export namespace Prisma {
     userId?: boolean
     planCode?: boolean
     planNameSnapshot?: boolean
+    productType?: boolean
     billingCycle?: boolean
     originalAmount?: boolean
     payableAmount?: boolean
@@ -41664,6 +43302,7 @@ export namespace Prisma {
     userId?: boolean
     planCode?: boolean
     planNameSnapshot?: boolean
+    productType?: boolean
     billingCycle?: boolean
     originalAmount?: boolean
     payableAmount?: boolean
@@ -41685,9 +43324,10 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNo" | "userId" | "planCode" | "planNameSnapshot" | "billingCycle" | "originalAmount" | "payableAmount" | "currency" | "paymentChannel" | "providerTradeNo" | "idempotencyKey" | "status" | "paidAt" | "cancelledAt" | "closedAt" | "refundedAt" | "expiresAt" | "metadata" | "cancelReason" | "refundReason" | "refundBy" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNo" | "userId" | "planCode" | "planNameSnapshot" | "productType" | "billingCycle" | "originalAmount" | "payableAmount" | "currency" | "paymentChannel" | "providerTradeNo" | "idempotencyKey" | "status" | "paidAt" | "cancelledAt" | "closedAt" | "refundedAt" | "expiresAt" | "metadata" | "cancelReason" | "refundReason" | "refundBy" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    aiCreditBucket?: boolean | Order$aiCreditBucketArgs<ExtArgs>
   }
   export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -41700,6 +43340,7 @@ export namespace Prisma {
     name: "Order"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
+      aiCreditBucket: Prisma.$AiCreditBucketPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -41707,6 +43348,7 @@ export namespace Prisma {
       userId: string
       planCode: string
       planNameSnapshot: string
+      productType: string
       billingCycle: string
       originalAmount: number
       payableAmount: number
@@ -42121,6 +43763,7 @@ export namespace Prisma {
   export interface Prisma__OrderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    aiCreditBucket<T extends Order$aiCreditBucketArgs<ExtArgs> = {}>(args?: Subset<T, Order$aiCreditBucketArgs<ExtArgs>>): Prisma__AiCreditBucketClient<$Result.GetResult<Prisma.$AiCreditBucketPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -42155,6 +43798,7 @@ export namespace Prisma {
     readonly userId: FieldRef<"Order", 'String'>
     readonly planCode: FieldRef<"Order", 'String'>
     readonly planNameSnapshot: FieldRef<"Order", 'String'>
+    readonly productType: FieldRef<"Order", 'String'>
     readonly billingCycle: FieldRef<"Order", 'String'>
     readonly originalAmount: FieldRef<"Order", 'Int'>
     readonly payableAmount: FieldRef<"Order", 'Int'>
@@ -42572,6 +44216,25 @@ export namespace Prisma {
      * Limit how many Orders to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Order.aiCreditBucket
+   */
+  export type Order$aiCreditBucketArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AiCreditBucket
+     */
+    select?: AiCreditBucketSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AiCreditBucket
+     */
+    omit?: AiCreditBucketOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AiCreditBucketInclude<ExtArgs> | null
+    where?: AiCreditBucketWhereInput
   }
 
   /**
@@ -50670,6 +52333,8 @@ export namespace Prisma {
     members?: boolean | Workspace$membersArgs<ExtArgs>
     domains?: boolean | Workspace$domainsArgs<ExtArgs>
     publicProfiles?: boolean | Workspace$publicProfilesArgs<ExtArgs>
+    contactEntries?: boolean | Workspace$contactEntriesArgs<ExtArgs>
+    leads?: boolean | Workspace$leadsArgs<ExtArgs>
     quotaPool?: boolean | Workspace$quotaPoolArgs<ExtArgs>
     enterpriseQuotaConsumptions?: boolean | Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs>
     _count?: boolean | WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
@@ -50722,6 +52387,8 @@ export namespace Prisma {
     members?: boolean | Workspace$membersArgs<ExtArgs>
     domains?: boolean | Workspace$domainsArgs<ExtArgs>
     publicProfiles?: boolean | Workspace$publicProfilesArgs<ExtArgs>
+    contactEntries?: boolean | Workspace$contactEntriesArgs<ExtArgs>
+    leads?: boolean | Workspace$leadsArgs<ExtArgs>
     quotaPool?: boolean | Workspace$quotaPoolArgs<ExtArgs>
     enterpriseQuotaConsumptions?: boolean | Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs>
     _count?: boolean | WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
@@ -50740,6 +52407,8 @@ export namespace Prisma {
       members: Prisma.$WorkspaceMemberPayload<ExtArgs>[]
       domains: Prisma.$DomainPayload<ExtArgs>[]
       publicProfiles: Prisma.$WorkspacePublicProfilePayload<ExtArgs>[]
+      contactEntries: Prisma.$LinkPayload<ExtArgs>[]
+      leads: Prisma.$LeadPayload<ExtArgs>[]
       quotaPool: Prisma.$EnterpriseQuotaPoolPayload<ExtArgs> | null
       enterpriseQuotaConsumptions: Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>[]
     }
@@ -51152,6 +52821,8 @@ export namespace Prisma {
     members<T extends Workspace$membersArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     domains<T extends Workspace$domainsArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$domainsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DomainPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     publicProfiles<T extends Workspace$publicProfilesArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$publicProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePublicProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    contactEntries<T extends Workspace$contactEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$contactEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    leads<T extends Workspace$leadsArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$leadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     quotaPool<T extends Workspace$quotaPoolArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$quotaPoolArgs<ExtArgs>>): Prisma__EnterpriseQuotaPoolClient<$Result.GetResult<Prisma.$EnterpriseQuotaPoolPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     enterpriseQuotaConsumptions<T extends Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$enterpriseQuotaConsumptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnterpriseQuotaConsumptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -51663,6 +53334,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: WorkspacePublicProfileScalarFieldEnum | WorkspacePublicProfileScalarFieldEnum[]
+  }
+
+  /**
+   * Workspace.contactEntries
+   */
+  export type Workspace$contactEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Link
+     */
+    select?: LinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Link
+     */
+    omit?: LinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkInclude<ExtArgs> | null
+    where?: LinkWhereInput
+    orderBy?: LinkOrderByWithRelationInput | LinkOrderByWithRelationInput[]
+    cursor?: LinkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LinkScalarFieldEnum | LinkScalarFieldEnum[]
+  }
+
+  /**
+   * Workspace.leads
+   */
+  export type Workspace$leadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    where?: LeadWhereInput
+    orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
+    cursor?: LeadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
   }
 
   /**
@@ -55310,6 +57029,7 @@ export namespace Prisma {
     template: 'template',
     language: 'language',
     isPublic: 'isPublic',
+    firstPublishedAt: 'firstPublishedAt',
     company: 'company',
     jobTitle: 'jobTitle',
     phone: 'phone',
@@ -55363,6 +57083,7 @@ export namespace Prisma {
   export const LinkScalarFieldEnum: {
     id: 'id',
     profileId: 'profileId',
+    workspaceId: 'workspaceId',
     type: 'type',
     payloadJson: 'payloadJson',
     title: 'title',
@@ -55576,6 +57297,9 @@ export namespace Prisma {
   export const LeadScalarFieldEnum: {
     id: 'id',
     profileId: 'profileId',
+    workspaceId: 'workspaceId',
+    contactEntryId: 'contactEntryId',
+    claimedByUserId: 'claimedByUserId',
     name: 'name',
     email: 'email',
     phone: 'phone',
@@ -55676,6 +57400,7 @@ export namespace Prisma {
     allowReport: 'allowReport',
     allowTransferToHuman: 'allowTransferToHuman',
     privacyNoticeText: 'privacyNoticeText',
+    quickActionsJson: 'quickActionsJson',
     providerMode: 'providerMode',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -55739,6 +57464,22 @@ export namespace Prisma {
   export type AiCreditLedgerScalarFieldEnum = (typeof AiCreditLedgerScalarFieldEnum)[keyof typeof AiCreditLedgerScalarFieldEnum]
 
 
+  export const AiCreditBucketScalarFieldEnum: {
+    id: 'id',
+    accountId: 'accountId',
+    sourceOrderId: 'sourceOrderId',
+    sourceType: 'sourceType',
+    grantedAmount: 'grantedAmount',
+    remainingAmount: 'remainingAmount',
+    status: 'status',
+    expiresAt: 'expiresAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AiCreditBucketScalarFieldEnum = (typeof AiCreditBucketScalarFieldEnum)[keyof typeof AiCreditBucketScalarFieldEnum]
+
+
   export const MembershipSubscriptionScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -55759,6 +57500,7 @@ export namespace Prisma {
     userId: 'userId',
     planCode: 'planCode',
     planNameSnapshot: 'planNameSnapshot',
+    productType: 'productType',
     billingCycle: 'billingCycle',
     originalAmount: 'originalAmount',
     payableAmount: 'payableAmount',
@@ -56144,6 +57886,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceListRelationFilter
     workspacePublicProfiles?: WorkspacePublicProfileListRelationFilter
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
+    claimedWorkspaceLeads?: LeadListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -56179,6 +57922,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceOrderByRelationAggregateInput
     workspacePublicProfiles?: WorkspacePublicProfileOrderByRelationAggregateInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionOrderByRelationAggregateInput
+    claimedWorkspaceLeads?: LeadOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -56217,6 +57961,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceListRelationFilter
     workspacePublicProfiles?: WorkspacePublicProfileListRelationFilter
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
+    claimedWorkspaceLeads?: LeadListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -56517,6 +58262,7 @@ export namespace Prisma {
     template?: StringFilter<"Profile"> | string
     language?: StringFilter<"Profile"> | string
     isPublic?: BoolFilter<"Profile"> | boolean
+    firstPublishedAt?: DateTimeNullableFilter<"Profile"> | Date | string | null
     company?: StringNullableFilter<"Profile"> | string | null
     jobTitle?: StringNullableFilter<"Profile"> | string | null
     phone?: StringNullableFilter<"Profile"> | string | null
@@ -56552,6 +58298,7 @@ export namespace Prisma {
     template?: SortOrder
     language?: SortOrder
     isPublic?: SortOrder
+    firstPublishedAt?: SortOrderInput | SortOrder
     company?: SortOrderInput | SortOrder
     jobTitle?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
@@ -56590,6 +58337,7 @@ export namespace Prisma {
     template?: StringFilter<"Profile"> | string
     language?: StringFilter<"Profile"> | string
     isPublic?: BoolFilter<"Profile"> | boolean
+    firstPublishedAt?: DateTimeNullableFilter<"Profile"> | Date | string | null
     company?: StringNullableFilter<"Profile"> | string | null
     jobTitle?: StringNullableFilter<"Profile"> | string | null
     phone?: StringNullableFilter<"Profile"> | string | null
@@ -56625,6 +58373,7 @@ export namespace Prisma {
     template?: SortOrder
     language?: SortOrder
     isPublic?: SortOrder
+    firstPublishedAt?: SortOrderInput | SortOrder
     company?: SortOrderInput | SortOrder
     jobTitle?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
@@ -56661,6 +58410,7 @@ export namespace Prisma {
     template?: StringWithAggregatesFilter<"Profile"> | string
     language?: StringWithAggregatesFilter<"Profile"> | string
     isPublic?: BoolWithAggregatesFilter<"Profile"> | boolean
+    firstPublishedAt?: DateTimeNullableWithAggregatesFilter<"Profile"> | Date | string | null
     company?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     jobTitle?: StringNullableWithAggregatesFilter<"Profile"> | string | null
     phone?: StringNullableWithAggregatesFilter<"Profile"> | string | null
@@ -56851,6 +58601,7 @@ export namespace Prisma {
     NOT?: LinkWhereInput | LinkWhereInput[]
     id?: UuidFilter<"Link"> | string
     profileId?: UuidFilter<"Link"> | string
+    workspaceId?: UuidNullableFilter<"Link"> | string | null
     type?: StringFilter<"Link"> | string
     payloadJson?: StringNullableFilter<"Link"> | string | null
     title?: StringFilter<"Link"> | string
@@ -56866,12 +58617,15 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Link"> | Date | string
     updatedAt?: DateTimeFilter<"Link"> | Date | string
     profile?: XOR<ProfileScalarRelationFilter, ProfileWhereInput>
+    workspace?: XOR<WorkspaceNullableScalarRelationFilter, WorkspaceWhereInput> | null
     clicks?: LinkClickListRelationFilter
+    contactLeads?: LeadListRelationFilter
   }
 
   export type LinkOrderByWithRelationInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrderInput | SortOrder
     type?: SortOrder
     payloadJson?: SortOrderInput | SortOrder
     title?: SortOrder
@@ -56887,7 +58641,9 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     profile?: ProfileOrderByWithRelationInput
+    workspace?: WorkspaceOrderByWithRelationInput
     clicks?: LinkClickOrderByRelationAggregateInput
+    contactLeads?: LeadOrderByRelationAggregateInput
   }
 
   export type LinkWhereUniqueInput = Prisma.AtLeast<{
@@ -56896,6 +58652,7 @@ export namespace Prisma {
     OR?: LinkWhereInput[]
     NOT?: LinkWhereInput | LinkWhereInput[]
     profileId?: UuidFilter<"Link"> | string
+    workspaceId?: UuidNullableFilter<"Link"> | string | null
     type?: StringFilter<"Link"> | string
     payloadJson?: StringNullableFilter<"Link"> | string | null
     title?: StringFilter<"Link"> | string
@@ -56911,12 +58668,15 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Link"> | Date | string
     updatedAt?: DateTimeFilter<"Link"> | Date | string
     profile?: XOR<ProfileScalarRelationFilter, ProfileWhereInput>
+    workspace?: XOR<WorkspaceNullableScalarRelationFilter, WorkspaceWhereInput> | null
     clicks?: LinkClickListRelationFilter
+    contactLeads?: LeadListRelationFilter
   }, "id">
 
   export type LinkOrderByWithAggregationInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrderInput | SortOrder
     type?: SortOrder
     payloadJson?: SortOrderInput | SortOrder
     title?: SortOrder
@@ -56944,6 +58704,7 @@ export namespace Prisma {
     NOT?: LinkScalarWhereWithAggregatesInput | LinkScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"Link"> | string
     profileId?: UuidWithAggregatesFilter<"Link"> | string
+    workspaceId?: UuidNullableWithAggregatesFilter<"Link"> | string | null
     type?: StringWithAggregatesFilter<"Link"> | string
     payloadJson?: StringNullableWithAggregatesFilter<"Link"> | string | null
     title?: StringWithAggregatesFilter<"Link"> | string
@@ -57917,6 +59678,9 @@ export namespace Prisma {
     NOT?: LeadWhereInput | LeadWhereInput[]
     id?: UuidFilter<"Lead"> | string
     profileId?: UuidFilter<"Lead"> | string
+    workspaceId?: UuidNullableFilter<"Lead"> | string | null
+    contactEntryId?: UuidNullableFilter<"Lead"> | string | null
+    claimedByUserId?: UuidNullableFilter<"Lead"> | string | null
     name?: StringFilter<"Lead"> | string
     email?: StringNullableFilter<"Lead"> | string | null
     phone?: StringNullableFilter<"Lead"> | string | null
@@ -57936,6 +59700,9 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
     profile?: XOR<ProfileScalarRelationFilter, ProfileWhereInput>
+    workspace?: XOR<WorkspaceNullableScalarRelationFilter, WorkspaceWhereInput> | null
+    contactEntry?: XOR<LinkNullableScalarRelationFilter, LinkWhereInput> | null
+    claimedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     interestedProduct?: XOR<ProductNullableScalarRelationFilter, ProductWhereInput> | null
     conversation?: XOR<AiConversationNullableScalarRelationFilter, AiConversationWhereInput> | null
     followUps?: LeadFollowUpListRelationFilter
@@ -57944,6 +59711,9 @@ export namespace Prisma {
   export type LeadOrderByWithRelationInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrderInput | SortOrder
+    contactEntryId?: SortOrderInput | SortOrder
+    claimedByUserId?: SortOrderInput | SortOrder
     name?: SortOrder
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
@@ -57963,6 +59733,9 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     profile?: ProfileOrderByWithRelationInput
+    workspace?: WorkspaceOrderByWithRelationInput
+    contactEntry?: LinkOrderByWithRelationInput
+    claimedBy?: UserOrderByWithRelationInput
     interestedProduct?: ProductOrderByWithRelationInput
     conversation?: AiConversationOrderByWithRelationInput
     followUps?: LeadFollowUpOrderByRelationAggregateInput
@@ -57975,6 +59748,9 @@ export namespace Prisma {
     OR?: LeadWhereInput[]
     NOT?: LeadWhereInput | LeadWhereInput[]
     profileId?: UuidFilter<"Lead"> | string
+    workspaceId?: UuidNullableFilter<"Lead"> | string | null
+    contactEntryId?: UuidNullableFilter<"Lead"> | string | null
+    claimedByUserId?: UuidNullableFilter<"Lead"> | string | null
     name?: StringFilter<"Lead"> | string
     email?: StringNullableFilter<"Lead"> | string | null
     phone?: StringNullableFilter<"Lead"> | string | null
@@ -57993,6 +59769,9 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Lead"> | Date | string
     updatedAt?: DateTimeFilter<"Lead"> | Date | string
     profile?: XOR<ProfileScalarRelationFilter, ProfileWhereInput>
+    workspace?: XOR<WorkspaceNullableScalarRelationFilter, WorkspaceWhereInput> | null
+    contactEntry?: XOR<LinkNullableScalarRelationFilter, LinkWhereInput> | null
+    claimedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     interestedProduct?: XOR<ProductNullableScalarRelationFilter, ProductWhereInput> | null
     conversation?: XOR<AiConversationNullableScalarRelationFilter, AiConversationWhereInput> | null
     followUps?: LeadFollowUpListRelationFilter
@@ -58001,6 +59780,9 @@ export namespace Prisma {
   export type LeadOrderByWithAggregationInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrderInput | SortOrder
+    contactEntryId?: SortOrderInput | SortOrder
+    claimedByUserId?: SortOrderInput | SortOrder
     name?: SortOrder
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
@@ -58030,6 +59812,9 @@ export namespace Prisma {
     NOT?: LeadScalarWhereWithAggregatesInput | LeadScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"Lead"> | string
     profileId?: UuidWithAggregatesFilter<"Lead"> | string
+    workspaceId?: UuidNullableWithAggregatesFilter<"Lead"> | string | null
+    contactEntryId?: UuidNullableWithAggregatesFilter<"Lead"> | string | null
+    claimedByUserId?: UuidNullableWithAggregatesFilter<"Lead"> | string | null
     name?: StringWithAggregatesFilter<"Lead"> | string
     email?: StringNullableWithAggregatesFilter<"Lead"> | string | null
     phone?: StringNullableWithAggregatesFilter<"Lead"> | string | null
@@ -58392,6 +60177,7 @@ export namespace Prisma {
     allowReport?: BoolFilter<"AiServiceConfig"> | boolean
     allowTransferToHuman?: BoolFilter<"AiServiceConfig"> | boolean
     privacyNoticeText?: StringNullableFilter<"AiServiceConfig"> | string | null
+    quickActionsJson?: StringNullableFilter<"AiServiceConfig"> | string | null
     providerMode?: StringFilter<"AiServiceConfig"> | string
     createdAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
     updatedAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
@@ -58410,6 +60196,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrderInput | SortOrder
+    quickActionsJson?: SortOrderInput | SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -58431,6 +60218,7 @@ export namespace Prisma {
     allowReport?: BoolFilter<"AiServiceConfig"> | boolean
     allowTransferToHuman?: BoolFilter<"AiServiceConfig"> | boolean
     privacyNoticeText?: StringNullableFilter<"AiServiceConfig"> | string | null
+    quickActionsJson?: StringNullableFilter<"AiServiceConfig"> | string | null
     providerMode?: StringFilter<"AiServiceConfig"> | string
     createdAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
     updatedAt?: DateTimeFilter<"AiServiceConfig"> | Date | string
@@ -58449,6 +60237,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrderInput | SortOrder
+    quickActionsJson?: SortOrderInput | SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -58472,6 +60261,7 @@ export namespace Prisma {
     allowReport?: BoolWithAggregatesFilter<"AiServiceConfig"> | boolean
     allowTransferToHuman?: BoolWithAggregatesFilter<"AiServiceConfig"> | boolean
     privacyNoticeText?: StringNullableWithAggregatesFilter<"AiServiceConfig"> | string | null
+    quickActionsJson?: StringNullableWithAggregatesFilter<"AiServiceConfig"> | string | null
     providerMode?: StringWithAggregatesFilter<"AiServiceConfig"> | string
     createdAt?: DateTimeWithAggregatesFilter<"AiServiceConfig"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"AiServiceConfig"> | Date | string
@@ -58627,6 +60417,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"AiCreditAccount"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     ledger?: AiCreditLedgerListRelationFilter
+    buckets?: AiCreditBucketListRelationFilter
   }
 
   export type AiCreditAccountOrderByWithRelationInput = {
@@ -58638,6 +60429,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
     ledger?: AiCreditLedgerOrderByRelationAggregateInput
+    buckets?: AiCreditBucketOrderByRelationAggregateInput
   }
 
   export type AiCreditAccountWhereUniqueInput = Prisma.AtLeast<{
@@ -58652,6 +60444,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"AiCreditAccount"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     ledger?: AiCreditLedgerListRelationFilter
+    buckets?: AiCreditBucketListRelationFilter
   }, "id" | "userId">
 
   export type AiCreditAccountOrderByWithAggregationInput = {
@@ -58767,6 +60560,91 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"AiCreditLedger"> | Date | string
   }
 
+  export type AiCreditBucketWhereInput = {
+    AND?: AiCreditBucketWhereInput | AiCreditBucketWhereInput[]
+    OR?: AiCreditBucketWhereInput[]
+    NOT?: AiCreditBucketWhereInput | AiCreditBucketWhereInput[]
+    id?: UuidFilter<"AiCreditBucket"> | string
+    accountId?: UuidFilter<"AiCreditBucket"> | string
+    sourceOrderId?: UuidNullableFilter<"AiCreditBucket"> | string | null
+    sourceType?: StringFilter<"AiCreditBucket"> | string
+    grantedAmount?: IntFilter<"AiCreditBucket"> | number
+    remainingAmount?: IntFilter<"AiCreditBucket"> | number
+    status?: StringFilter<"AiCreditBucket"> | string
+    expiresAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    createdAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    updatedAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    account?: XOR<AiCreditAccountScalarRelationFilter, AiCreditAccountWhereInput>
+    sourceOrder?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
+  }
+
+  export type AiCreditBucketOrderByWithRelationInput = {
+    id?: SortOrder
+    accountId?: SortOrder
+    sourceOrderId?: SortOrderInput | SortOrder
+    sourceType?: SortOrder
+    grantedAmount?: SortOrder
+    remainingAmount?: SortOrder
+    status?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    account?: AiCreditAccountOrderByWithRelationInput
+    sourceOrder?: OrderOrderByWithRelationInput
+  }
+
+  export type AiCreditBucketWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    sourceOrderId?: string
+    AND?: AiCreditBucketWhereInput | AiCreditBucketWhereInput[]
+    OR?: AiCreditBucketWhereInput[]
+    NOT?: AiCreditBucketWhereInput | AiCreditBucketWhereInput[]
+    accountId?: UuidFilter<"AiCreditBucket"> | string
+    sourceType?: StringFilter<"AiCreditBucket"> | string
+    grantedAmount?: IntFilter<"AiCreditBucket"> | number
+    remainingAmount?: IntFilter<"AiCreditBucket"> | number
+    status?: StringFilter<"AiCreditBucket"> | string
+    expiresAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    createdAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    updatedAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    account?: XOR<AiCreditAccountScalarRelationFilter, AiCreditAccountWhereInput>
+    sourceOrder?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
+  }, "id" | "sourceOrderId">
+
+  export type AiCreditBucketOrderByWithAggregationInput = {
+    id?: SortOrder
+    accountId?: SortOrder
+    sourceOrderId?: SortOrderInput | SortOrder
+    sourceType?: SortOrder
+    grantedAmount?: SortOrder
+    remainingAmount?: SortOrder
+    status?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AiCreditBucketCountOrderByAggregateInput
+    _avg?: AiCreditBucketAvgOrderByAggregateInput
+    _max?: AiCreditBucketMaxOrderByAggregateInput
+    _min?: AiCreditBucketMinOrderByAggregateInput
+    _sum?: AiCreditBucketSumOrderByAggregateInput
+  }
+
+  export type AiCreditBucketScalarWhereWithAggregatesInput = {
+    AND?: AiCreditBucketScalarWhereWithAggregatesInput | AiCreditBucketScalarWhereWithAggregatesInput[]
+    OR?: AiCreditBucketScalarWhereWithAggregatesInput[]
+    NOT?: AiCreditBucketScalarWhereWithAggregatesInput | AiCreditBucketScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"AiCreditBucket"> | string
+    accountId?: UuidWithAggregatesFilter<"AiCreditBucket"> | string
+    sourceOrderId?: UuidNullableWithAggregatesFilter<"AiCreditBucket"> | string | null
+    sourceType?: StringWithAggregatesFilter<"AiCreditBucket"> | string
+    grantedAmount?: IntWithAggregatesFilter<"AiCreditBucket"> | number
+    remainingAmount?: IntWithAggregatesFilter<"AiCreditBucket"> | number
+    status?: StringWithAggregatesFilter<"AiCreditBucket"> | string
+    expiresAt?: DateTimeWithAggregatesFilter<"AiCreditBucket"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"AiCreditBucket"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AiCreditBucket"> | Date | string
+  }
+
   export type MembershipSubscriptionWhereInput = {
     AND?: MembershipSubscriptionWhereInput | MembershipSubscriptionWhereInput[]
     OR?: MembershipSubscriptionWhereInput[]
@@ -58846,6 +60724,7 @@ export namespace Prisma {
     userId?: UuidFilter<"Order"> | string
     planCode?: StringFilter<"Order"> | string
     planNameSnapshot?: StringFilter<"Order"> | string
+    productType?: StringFilter<"Order"> | string
     billingCycle?: StringFilter<"Order"> | string
     originalAmount?: IntFilter<"Order"> | number
     payableAmount?: IntFilter<"Order"> | number
@@ -58866,6 +60745,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    aiCreditBucket?: XOR<AiCreditBucketNullableScalarRelationFilter, AiCreditBucketWhereInput> | null
   }
 
   export type OrderOrderByWithRelationInput = {
@@ -58874,6 +60754,7 @@ export namespace Prisma {
     userId?: SortOrder
     planCode?: SortOrder
     planNameSnapshot?: SortOrder
+    productType?: SortOrder
     billingCycle?: SortOrder
     originalAmount?: SortOrder
     payableAmount?: SortOrder
@@ -58894,6 +60775,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
+    aiCreditBucket?: AiCreditBucketOrderByWithRelationInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -58906,6 +60788,7 @@ export namespace Prisma {
     userId?: UuidFilter<"Order"> | string
     planCode?: StringFilter<"Order"> | string
     planNameSnapshot?: StringFilter<"Order"> | string
+    productType?: StringFilter<"Order"> | string
     billingCycle?: StringFilter<"Order"> | string
     originalAmount?: IntFilter<"Order"> | number
     payableAmount?: IntFilter<"Order"> | number
@@ -58925,6 +60808,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    aiCreditBucket?: XOR<AiCreditBucketNullableScalarRelationFilter, AiCreditBucketWhereInput> | null
   }, "id" | "orderNo" | "providerTradeNo">
 
   export type OrderOrderByWithAggregationInput = {
@@ -58933,6 +60817,7 @@ export namespace Prisma {
     userId?: SortOrder
     planCode?: SortOrder
     planNameSnapshot?: SortOrder
+    productType?: SortOrder
     billingCycle?: SortOrder
     originalAmount?: SortOrder
     payableAmount?: SortOrder
@@ -58968,6 +60853,7 @@ export namespace Prisma {
     userId?: UuidWithAggregatesFilter<"Order"> | string
     planCode?: StringWithAggregatesFilter<"Order"> | string
     planNameSnapshot?: StringWithAggregatesFilter<"Order"> | string
+    productType?: StringWithAggregatesFilter<"Order"> | string
     billingCycle?: StringWithAggregatesFilter<"Order"> | string
     originalAmount?: IntWithAggregatesFilter<"Order"> | number
     payableAmount?: IntWithAggregatesFilter<"Order"> | number
@@ -59665,6 +61551,8 @@ export namespace Prisma {
     members?: WorkspaceMemberListRelationFilter
     domains?: DomainListRelationFilter
     publicProfiles?: WorkspacePublicProfileListRelationFilter
+    contactEntries?: LinkListRelationFilter
+    leads?: LeadListRelationFilter
     quotaPool?: XOR<EnterpriseQuotaPoolNullableScalarRelationFilter, EnterpriseQuotaPoolWhereInput> | null
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
   }
@@ -59684,6 +61572,8 @@ export namespace Prisma {
     members?: WorkspaceMemberOrderByRelationAggregateInput
     domains?: DomainOrderByRelationAggregateInput
     publicProfiles?: WorkspacePublicProfileOrderByRelationAggregateInput
+    contactEntries?: LinkOrderByRelationAggregateInput
+    leads?: LeadOrderByRelationAggregateInput
     quotaPool?: EnterpriseQuotaPoolOrderByWithRelationInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionOrderByRelationAggregateInput
   }
@@ -59706,6 +61596,8 @@ export namespace Prisma {
     members?: WorkspaceMemberListRelationFilter
     domains?: DomainListRelationFilter
     publicProfiles?: WorkspacePublicProfileListRelationFilter
+    contactEntries?: LinkListRelationFilter
+    leads?: LeadListRelationFilter
     quotaPool?: XOR<EnterpriseQuotaPoolNullableScalarRelationFilter, EnterpriseQuotaPoolWhereInput> | null
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionListRelationFilter
   }, "id" | "slug">
@@ -60032,6 +61924,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -60067,6 +61960,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUpdateInput = {
@@ -60102,6 +61996,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -60137,6 +62032,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -60476,6 +62372,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -60511,6 +62408,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -60544,6 +62442,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -60579,6 +62478,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -60613,6 +62513,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -60642,6 +62543,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -60672,6 +62574,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -60889,12 +62792,15 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     profile: ProfileCreateNestedOneWithoutLinksInput
+    workspace?: WorkspaceCreateNestedOneWithoutContactEntriesInput
     clicks?: LinkClickCreateNestedManyWithoutLinkInput
+    contactLeads?: LeadCreateNestedManyWithoutContactEntryInput
   }
 
   export type LinkUncheckedCreateInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
     type?: string
     payloadJson?: string | null
     title: string
@@ -60910,6 +62816,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     clicks?: LinkClickUncheckedCreateNestedManyWithoutLinkInput
+    contactLeads?: LeadUncheckedCreateNestedManyWithoutContactEntryInput
   }
 
   export type LinkUpdateInput = {
@@ -60929,12 +62836,15 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profile?: ProfileUpdateOneRequiredWithoutLinksNestedInput
+    workspace?: WorkspaceUpdateOneWithoutContactEntriesNestedInput
     clicks?: LinkClickUpdateManyWithoutLinkNestedInput
+    contactLeads?: LeadUpdateManyWithoutContactEntryNestedInput
   }
 
   export type LinkUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -60950,11 +62860,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clicks?: LinkClickUncheckedUpdateManyWithoutLinkNestedInput
+    contactLeads?: LeadUncheckedUpdateManyWithoutContactEntryNestedInput
   }
 
   export type LinkCreateManyInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
     type?: string
     payloadJson?: string | null
     title: string
@@ -60992,6 +62904,7 @@ export namespace Prisma {
   export type LinkUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -62108,6 +64021,9 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     profile: ProfileCreateNestedOneWithoutLeadsInput
+    workspace?: WorkspaceCreateNestedOneWithoutLeadsInput
+    contactEntry?: LinkCreateNestedOneWithoutContactLeadsInput
+    claimedBy?: UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput
     interestedProduct?: ProductCreateNestedOneWithoutLeadsInput
     conversation?: AiConversationCreateNestedOneWithoutLeadInput
     followUps?: LeadFollowUpCreateNestedManyWithoutLeadInput
@@ -62116,6 +64032,9 @@ export namespace Prisma {
   export type LeadUncheckedCreateInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -62156,6 +64075,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profile?: ProfileUpdateOneRequiredWithoutLeadsNestedInput
+    workspace?: WorkspaceUpdateOneWithoutLeadsNestedInput
+    contactEntry?: LinkUpdateOneWithoutContactLeadsNestedInput
+    claimedBy?: UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput
     interestedProduct?: ProductUpdateOneWithoutLeadsNestedInput
     conversation?: AiConversationUpdateOneWithoutLeadNestedInput
     followUps?: LeadFollowUpUpdateManyWithoutLeadNestedInput
@@ -62164,6 +64086,9 @@ export namespace Prisma {
   export type LeadUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62188,6 +64113,9 @@ export namespace Prisma {
   export type LeadCreateManyInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -62231,6 +64159,9 @@ export namespace Prisma {
   export type LeadUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -62634,6 +64565,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62652,6 +64584,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62668,6 +64601,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62686,6 +64620,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62703,6 +64638,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62719,6 +64655,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62736,6 +64673,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -62895,6 +64833,7 @@ export namespace Prisma {
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutAiCreditAccountInput
     ledger?: AiCreditLedgerCreateNestedManyWithoutAccountInput
+    buckets?: AiCreditBucketCreateNestedManyWithoutAccountInput
   }
 
   export type AiCreditAccountUncheckedCreateInput = {
@@ -62905,6 +64844,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdAt?: Date | string
     ledger?: AiCreditLedgerUncheckedCreateNestedManyWithoutAccountInput
+    buckets?: AiCreditBucketUncheckedCreateNestedManyWithoutAccountInput
   }
 
   export type AiCreditAccountUpdateInput = {
@@ -62915,6 +64855,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutAiCreditAccountNestedInput
     ledger?: AiCreditLedgerUpdateManyWithoutAccountNestedInput
+    buckets?: AiCreditBucketUpdateManyWithoutAccountNestedInput
   }
 
   export type AiCreditAccountUncheckedUpdateInput = {
@@ -62925,6 +64866,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ledger?: AiCreditLedgerUncheckedUpdateManyWithoutAccountNestedInput
+    buckets?: AiCreditBucketUncheckedUpdateManyWithoutAccountNestedInput
   }
 
   export type AiCreditAccountCreateManyInput = {
@@ -63050,6 +64992,95 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AiCreditBucketCreateInput = {
+    id?: string
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    account: AiCreditAccountCreateNestedOneWithoutBucketsInput
+    sourceOrder?: OrderCreateNestedOneWithoutAiCreditBucketInput
+  }
+
+  export type AiCreditBucketUncheckedCreateInput = {
+    id?: string
+    accountId: string
+    sourceOrderId?: string | null
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiCreditBucketUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    account?: AiCreditAccountUpdateOneRequiredWithoutBucketsNestedInput
+    sourceOrder?: OrderUpdateOneWithoutAiCreditBucketNestedInput
+  }
+
+  export type AiCreditBucketUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    sourceOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCreditBucketCreateManyInput = {
+    id?: string
+    accountId: string
+    sourceOrderId?: string | null
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiCreditBucketUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCreditBucketUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    sourceOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type MembershipSubscriptionCreateInput = {
     id?: string
     planCode?: string
@@ -63131,6 +65162,7 @@ export namespace Prisma {
     orderNo: string
     planCode: string
     planNameSnapshot: string
+    productType?: string
     billingCycle: string
     originalAmount: number
     payableAmount: number
@@ -63151,6 +65183,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutOrdersInput
+    aiCreditBucket?: AiCreditBucketCreateNestedOneWithoutSourceOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
@@ -63159,6 +65192,7 @@ export namespace Prisma {
     userId: string
     planCode: string
     planNameSnapshot: string
+    productType?: string
     billingCycle: string
     originalAmount: number
     payableAmount: number
@@ -63178,6 +65212,7 @@ export namespace Prisma {
     refundBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    aiCreditBucket?: AiCreditBucketUncheckedCreateNestedOneWithoutSourceOrderInput
   }
 
   export type OrderUpdateInput = {
@@ -63185,6 +65220,7 @@ export namespace Prisma {
     orderNo?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
     billingCycle?: StringFieldUpdateOperationsInput | string
     originalAmount?: IntFieldUpdateOperationsInput | number
     payableAmount?: IntFieldUpdateOperationsInput | number
@@ -63205,6 +65241,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutOrdersNestedInput
+    aiCreditBucket?: AiCreditBucketUpdateOneWithoutSourceOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
@@ -63213,6 +65250,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
     billingCycle?: StringFieldUpdateOperationsInput | string
     originalAmount?: IntFieldUpdateOperationsInput | number
     payableAmount?: IntFieldUpdateOperationsInput | number
@@ -63232,6 +65270,7 @@ export namespace Prisma {
     refundBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiCreditBucket?: AiCreditBucketUncheckedUpdateOneWithoutSourceOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
@@ -63240,6 +65279,7 @@ export namespace Prisma {
     userId: string
     planCode: string
     planNameSnapshot: string
+    productType?: string
     billingCycle: string
     originalAmount: number
     payableAmount: number
@@ -63266,6 +65306,7 @@ export namespace Prisma {
     orderNo?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
     billingCycle?: StringFieldUpdateOperationsInput | string
     originalAmount?: IntFieldUpdateOperationsInput | number
     payableAmount?: IntFieldUpdateOperationsInput | number
@@ -63293,6 +65334,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
     billingCycle?: StringFieldUpdateOperationsInput | string
     originalAmount?: IntFieldUpdateOperationsInput | number
     payableAmount?: IntFieldUpdateOperationsInput | number
@@ -64119,6 +66161,8 @@ export namespace Prisma {
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
@@ -64137,6 +66181,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
@@ -64155,6 +66201,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
@@ -64173,6 +66221,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
@@ -64674,6 +66724,12 @@ export namespace Prisma {
     none?: EnterpriseQuotaConsumptionWhereInput
   }
 
+  export type LeadListRelationFilter = {
+    every?: LeadWhereInput
+    some?: LeadWhereInput
+    none?: LeadWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -64732,6 +66788,10 @@ export namespace Prisma {
   }
 
   export type EnterpriseQuotaConsumptionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type LeadOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -65075,12 +67135,6 @@ export namespace Prisma {
     none?: LinkWhereInput
   }
 
-  export type LeadListRelationFilter = {
-    every?: LeadWhereInput
-    some?: LeadWhereInput
-    none?: LeadWhereInput
-  }
-
   export type AiConversationListRelationFilter = {
     every?: AiConversationWhereInput
     some?: AiConversationWhereInput
@@ -65094,10 +67148,6 @@ export namespace Prisma {
   }
 
   export type LinkOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type LeadOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -65125,6 +67175,7 @@ export namespace Prisma {
     template?: SortOrder
     language?: SortOrder
     isPublic?: SortOrder
+    firstPublishedAt?: SortOrder
     company?: SortOrder
     jobTitle?: SortOrder
     phone?: SortOrder
@@ -65155,6 +67206,7 @@ export namespace Prisma {
     template?: SortOrder
     language?: SortOrder
     isPublic?: SortOrder
+    firstPublishedAt?: SortOrder
     company?: SortOrder
     jobTitle?: SortOrder
     phone?: SortOrder
@@ -65184,6 +67236,7 @@ export namespace Prisma {
     template?: SortOrder
     language?: SortOrder
     isPublic?: SortOrder
+    firstPublishedAt?: SortOrder
     company?: SortOrder
     jobTitle?: SortOrder
     phone?: SortOrder
@@ -65324,6 +67377,11 @@ export namespace Prisma {
     isNot?: ProfileWhereInput
   }
 
+  export type WorkspaceNullableScalarRelationFilter = {
+    is?: WorkspaceWhereInput | null
+    isNot?: WorkspaceWhereInput | null
+  }
+
   export type LinkClickListRelationFilter = {
     every?: LinkClickWhereInput
     some?: LinkClickWhereInput
@@ -65337,6 +67395,7 @@ export namespace Prisma {
   export type LinkCountOrderByAggregateInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrder
     type?: SortOrder
     payloadJson?: SortOrder
     title?: SortOrder
@@ -65361,6 +67420,7 @@ export namespace Prisma {
   export type LinkMaxOrderByAggregateInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrder
     type?: SortOrder
     payloadJson?: SortOrder
     title?: SortOrder
@@ -65380,6 +67440,7 @@ export namespace Prisma {
   export type LinkMinOrderByAggregateInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrder
     type?: SortOrder
     payloadJson?: SortOrder
     title?: SortOrder
@@ -65908,6 +67969,16 @@ export namespace Prisma {
     success?: SortOrder
   }
 
+  export type LinkNullableScalarRelationFilter = {
+    is?: LinkWhereInput | null
+    isNot?: LinkWhereInput | null
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
   export type ProductNullableScalarRelationFilter = {
     is?: ProductWhereInput | null
     isNot?: ProductWhereInput | null
@@ -65931,6 +68002,9 @@ export namespace Prisma {
   export type LeadCountOrderByAggregateInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrder
+    contactEntryId?: SortOrder
+    claimedByUserId?: SortOrder
     name?: SortOrder
     email?: SortOrder
     phone?: SortOrder
@@ -65954,6 +68028,9 @@ export namespace Prisma {
   export type LeadMaxOrderByAggregateInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrder
+    contactEntryId?: SortOrder
+    claimedByUserId?: SortOrder
     name?: SortOrder
     email?: SortOrder
     phone?: SortOrder
@@ -65977,6 +68054,9 @@ export namespace Prisma {
   export type LeadMinOrderByAggregateInput = {
     id?: SortOrder
     profileId?: SortOrder
+    workspaceId?: SortOrder
+    contactEntryId?: SortOrder
+    claimedByUserId?: SortOrder
     name?: SortOrder
     email?: SortOrder
     phone?: SortOrder
@@ -66181,6 +68261,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrder
+    quickActionsJson?: SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -66198,6 +68279,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrder
+    quickActionsJson?: SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -66215,6 +68297,7 @@ export namespace Prisma {
     allowReport?: SortOrder
     allowTransferToHuman?: SortOrder
     privacyNoticeText?: SortOrder
+    quickActionsJson?: SortOrder
     providerMode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -66312,7 +68395,17 @@ export namespace Prisma {
     none?: AiCreditLedgerWhereInput
   }
 
+  export type AiCreditBucketListRelationFilter = {
+    every?: AiCreditBucketWhereInput
+    some?: AiCreditBucketWhereInput
+    none?: AiCreditBucketWhereInput
+  }
+
   export type AiCreditLedgerOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AiCreditBucketOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -66408,6 +68501,60 @@ export namespace Prisma {
     balanceAfter?: SortOrder
   }
 
+  export type OrderNullableScalarRelationFilter = {
+    is?: OrderWhereInput | null
+    isNot?: OrderWhereInput | null
+  }
+
+  export type AiCreditBucketCountOrderByAggregateInput = {
+    id?: SortOrder
+    accountId?: SortOrder
+    sourceOrderId?: SortOrder
+    sourceType?: SortOrder
+    grantedAmount?: SortOrder
+    remainingAmount?: SortOrder
+    status?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AiCreditBucketAvgOrderByAggregateInput = {
+    grantedAmount?: SortOrder
+    remainingAmount?: SortOrder
+  }
+
+  export type AiCreditBucketMaxOrderByAggregateInput = {
+    id?: SortOrder
+    accountId?: SortOrder
+    sourceOrderId?: SortOrder
+    sourceType?: SortOrder
+    grantedAmount?: SortOrder
+    remainingAmount?: SortOrder
+    status?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AiCreditBucketMinOrderByAggregateInput = {
+    id?: SortOrder
+    accountId?: SortOrder
+    sourceOrderId?: SortOrder
+    sourceType?: SortOrder
+    grantedAmount?: SortOrder
+    remainingAmount?: SortOrder
+    status?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AiCreditBucketSumOrderByAggregateInput = {
+    grantedAmount?: SortOrder
+    remainingAmount?: SortOrder
+  }
+
   export type MembershipSubscriptionCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -66441,12 +68588,18 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type AiCreditBucketNullableScalarRelationFilter = {
+    is?: AiCreditBucketWhereInput | null
+    isNot?: AiCreditBucketWhereInput | null
+  }
+
   export type OrderCountOrderByAggregateInput = {
     id?: SortOrder
     orderNo?: SortOrder
     userId?: SortOrder
     planCode?: SortOrder
     planNameSnapshot?: SortOrder
+    productType?: SortOrder
     billingCycle?: SortOrder
     originalAmount?: SortOrder
     payableAmount?: SortOrder
@@ -66479,6 +68632,7 @@ export namespace Prisma {
     userId?: SortOrder
     planCode?: SortOrder
     planNameSnapshot?: SortOrder
+    productType?: SortOrder
     billingCycle?: SortOrder
     originalAmount?: SortOrder
     payableAmount?: SortOrder
@@ -66505,6 +68659,7 @@ export namespace Prisma {
     userId?: SortOrder
     planCode?: SortOrder
     planNameSnapshot?: SortOrder
+    productType?: SortOrder
     billingCycle?: SortOrder
     originalAmount?: SortOrder
     payableAmount?: SortOrder
@@ -67253,6 +69408,13 @@ export namespace Prisma {
     connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
   }
 
+  export type LeadCreateNestedManyWithoutClaimedByInput = {
+    create?: XOR<LeadCreateWithoutClaimedByInput, LeadUncheckedCreateWithoutClaimedByInput> | LeadCreateWithoutClaimedByInput[] | LeadUncheckedCreateWithoutClaimedByInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutClaimedByInput | LeadCreateOrConnectWithoutClaimedByInput[]
+    createMany?: LeadCreateManyClaimedByInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+  }
+
   export type ProfileUncheckedCreateNestedOneWithoutUserInput = {
     create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
@@ -67373,6 +69535,13 @@ export namespace Prisma {
     connectOrCreate?: EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput | EnterpriseQuotaConsumptionCreateOrConnectWithoutUserInput[]
     createMany?: EnterpriseQuotaConsumptionCreateManyUserInputEnvelope
     connect?: EnterpriseQuotaConsumptionWhereUniqueInput | EnterpriseQuotaConsumptionWhereUniqueInput[]
+  }
+
+  export type LeadUncheckedCreateNestedManyWithoutClaimedByInput = {
+    create?: XOR<LeadCreateWithoutClaimedByInput, LeadUncheckedCreateWithoutClaimedByInput> | LeadCreateWithoutClaimedByInput[] | LeadUncheckedCreateWithoutClaimedByInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutClaimedByInput | LeadCreateOrConnectWithoutClaimedByInput[]
+    createMany?: LeadCreateManyClaimedByInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -67639,6 +69808,20 @@ export namespace Prisma {
     deleteMany?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
   }
 
+  export type LeadUpdateManyWithoutClaimedByNestedInput = {
+    create?: XOR<LeadCreateWithoutClaimedByInput, LeadUncheckedCreateWithoutClaimedByInput> | LeadCreateWithoutClaimedByInput[] | LeadUncheckedCreateWithoutClaimedByInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutClaimedByInput | LeadCreateOrConnectWithoutClaimedByInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutClaimedByInput | LeadUpsertWithWhereUniqueWithoutClaimedByInput[]
+    createMany?: LeadCreateManyClaimedByInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutClaimedByInput | LeadUpdateWithWhereUniqueWithoutClaimedByInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutClaimedByInput | LeadUpdateManyWithWhereWithoutClaimedByInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
+  }
+
   export type ProfileUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutUserInput
@@ -67873,6 +70056,20 @@ export namespace Prisma {
     update?: EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutUserInput | EnterpriseQuotaConsumptionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutUserInput | EnterpriseQuotaConsumptionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: EnterpriseQuotaConsumptionScalarWhereInput | EnterpriseQuotaConsumptionScalarWhereInput[]
+  }
+
+  export type LeadUncheckedUpdateManyWithoutClaimedByNestedInput = {
+    create?: XOR<LeadCreateWithoutClaimedByInput, LeadUncheckedCreateWithoutClaimedByInput> | LeadCreateWithoutClaimedByInput[] | LeadUncheckedCreateWithoutClaimedByInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutClaimedByInput | LeadCreateOrConnectWithoutClaimedByInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutClaimedByInput | LeadUpsertWithWhereUniqueWithoutClaimedByInput[]
+    createMany?: LeadCreateManyClaimedByInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutClaimedByInput | LeadUpdateWithWhereUniqueWithoutClaimedByInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutClaimedByInput | LeadUpdateManyWithWhereWithoutClaimedByInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutFreezeRecordsInput = {
@@ -68133,11 +70330,24 @@ export namespace Prisma {
     connect?: ProfileWhereUniqueInput
   }
 
+  export type WorkspaceCreateNestedOneWithoutContactEntriesInput = {
+    create?: XOR<WorkspaceCreateWithoutContactEntriesInput, WorkspaceUncheckedCreateWithoutContactEntriesInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutContactEntriesInput
+    connect?: WorkspaceWhereUniqueInput
+  }
+
   export type LinkClickCreateNestedManyWithoutLinkInput = {
     create?: XOR<LinkClickCreateWithoutLinkInput, LinkClickUncheckedCreateWithoutLinkInput> | LinkClickCreateWithoutLinkInput[] | LinkClickUncheckedCreateWithoutLinkInput[]
     connectOrCreate?: LinkClickCreateOrConnectWithoutLinkInput | LinkClickCreateOrConnectWithoutLinkInput[]
     createMany?: LinkClickCreateManyLinkInputEnvelope
     connect?: LinkClickWhereUniqueInput | LinkClickWhereUniqueInput[]
+  }
+
+  export type LeadCreateNestedManyWithoutContactEntryInput = {
+    create?: XOR<LeadCreateWithoutContactEntryInput, LeadUncheckedCreateWithoutContactEntryInput> | LeadCreateWithoutContactEntryInput[] | LeadUncheckedCreateWithoutContactEntryInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutContactEntryInput | LeadCreateOrConnectWithoutContactEntryInput[]
+    createMany?: LeadCreateManyContactEntryInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
   }
 
   export type LinkClickUncheckedCreateNestedManyWithoutLinkInput = {
@@ -68147,12 +70357,29 @@ export namespace Prisma {
     connect?: LinkClickWhereUniqueInput | LinkClickWhereUniqueInput[]
   }
 
+  export type LeadUncheckedCreateNestedManyWithoutContactEntryInput = {
+    create?: XOR<LeadCreateWithoutContactEntryInput, LeadUncheckedCreateWithoutContactEntryInput> | LeadCreateWithoutContactEntryInput[] | LeadUncheckedCreateWithoutContactEntryInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutContactEntryInput | LeadCreateOrConnectWithoutContactEntryInput[]
+    createMany?: LeadCreateManyContactEntryInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+  }
+
   export type ProfileUpdateOneRequiredWithoutLinksNestedInput = {
     create?: XOR<ProfileCreateWithoutLinksInput, ProfileUncheckedCreateWithoutLinksInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutLinksInput
     upsert?: ProfileUpsertWithoutLinksInput
     connect?: ProfileWhereUniqueInput
     update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutLinksInput, ProfileUpdateWithoutLinksInput>, ProfileUncheckedUpdateWithoutLinksInput>
+  }
+
+  export type WorkspaceUpdateOneWithoutContactEntriesNestedInput = {
+    create?: XOR<WorkspaceCreateWithoutContactEntriesInput, WorkspaceUncheckedCreateWithoutContactEntriesInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutContactEntriesInput
+    upsert?: WorkspaceUpsertWithoutContactEntriesInput
+    disconnect?: WorkspaceWhereInput | boolean
+    delete?: WorkspaceWhereInput | boolean
+    connect?: WorkspaceWhereUniqueInput
+    update?: XOR<XOR<WorkspaceUpdateToOneWithWhereWithoutContactEntriesInput, WorkspaceUpdateWithoutContactEntriesInput>, WorkspaceUncheckedUpdateWithoutContactEntriesInput>
   }
 
   export type LinkClickUpdateManyWithoutLinkNestedInput = {
@@ -68169,6 +70396,20 @@ export namespace Prisma {
     deleteMany?: LinkClickScalarWhereInput | LinkClickScalarWhereInput[]
   }
 
+  export type LeadUpdateManyWithoutContactEntryNestedInput = {
+    create?: XOR<LeadCreateWithoutContactEntryInput, LeadUncheckedCreateWithoutContactEntryInput> | LeadCreateWithoutContactEntryInput[] | LeadUncheckedCreateWithoutContactEntryInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutContactEntryInput | LeadCreateOrConnectWithoutContactEntryInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutContactEntryInput | LeadUpsertWithWhereUniqueWithoutContactEntryInput[]
+    createMany?: LeadCreateManyContactEntryInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutContactEntryInput | LeadUpdateWithWhereUniqueWithoutContactEntryInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutContactEntryInput | LeadUpdateManyWithWhereWithoutContactEntryInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
+  }
+
   export type LinkClickUncheckedUpdateManyWithoutLinkNestedInput = {
     create?: XOR<LinkClickCreateWithoutLinkInput, LinkClickUncheckedCreateWithoutLinkInput> | LinkClickCreateWithoutLinkInput[] | LinkClickUncheckedCreateWithoutLinkInput[]
     connectOrCreate?: LinkClickCreateOrConnectWithoutLinkInput | LinkClickCreateOrConnectWithoutLinkInput[]
@@ -68181,6 +70422,20 @@ export namespace Prisma {
     update?: LinkClickUpdateWithWhereUniqueWithoutLinkInput | LinkClickUpdateWithWhereUniqueWithoutLinkInput[]
     updateMany?: LinkClickUpdateManyWithWhereWithoutLinkInput | LinkClickUpdateManyWithWhereWithoutLinkInput[]
     deleteMany?: LinkClickScalarWhereInput | LinkClickScalarWhereInput[]
+  }
+
+  export type LeadUncheckedUpdateManyWithoutContactEntryNestedInput = {
+    create?: XOR<LeadCreateWithoutContactEntryInput, LeadUncheckedCreateWithoutContactEntryInput> | LeadCreateWithoutContactEntryInput[] | LeadUncheckedCreateWithoutContactEntryInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutContactEntryInput | LeadCreateOrConnectWithoutContactEntryInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutContactEntryInput | LeadUpsertWithWhereUniqueWithoutContactEntryInput[]
+    createMany?: LeadCreateManyContactEntryInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutContactEntryInput | LeadUpdateWithWhereUniqueWithoutContactEntryInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutContactEntryInput | LeadUpdateManyWithWhereWithoutContactEntryInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
   export type LinkCreateNestedOneWithoutClicksInput = {
@@ -68343,6 +70598,24 @@ export namespace Prisma {
     connect?: ProfileWhereUniqueInput
   }
 
+  export type WorkspaceCreateNestedOneWithoutLeadsInput = {
+    create?: XOR<WorkspaceCreateWithoutLeadsInput, WorkspaceUncheckedCreateWithoutLeadsInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutLeadsInput
+    connect?: WorkspaceWhereUniqueInput
+  }
+
+  export type LinkCreateNestedOneWithoutContactLeadsInput = {
+    create?: XOR<LinkCreateWithoutContactLeadsInput, LinkUncheckedCreateWithoutContactLeadsInput>
+    connectOrCreate?: LinkCreateOrConnectWithoutContactLeadsInput
+    connect?: LinkWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput = {
+    create?: XOR<UserCreateWithoutClaimedWorkspaceLeadsInput, UserUncheckedCreateWithoutClaimedWorkspaceLeadsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutClaimedWorkspaceLeadsInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type ProductCreateNestedOneWithoutLeadsInput = {
     create?: XOR<ProductCreateWithoutLeadsInput, ProductUncheckedCreateWithoutLeadsInput>
     connectOrCreate?: ProductCreateOrConnectWithoutLeadsInput
@@ -68375,6 +70648,36 @@ export namespace Prisma {
     upsert?: ProfileUpsertWithoutLeadsInput
     connect?: ProfileWhereUniqueInput
     update?: XOR<XOR<ProfileUpdateToOneWithWhereWithoutLeadsInput, ProfileUpdateWithoutLeadsInput>, ProfileUncheckedUpdateWithoutLeadsInput>
+  }
+
+  export type WorkspaceUpdateOneWithoutLeadsNestedInput = {
+    create?: XOR<WorkspaceCreateWithoutLeadsInput, WorkspaceUncheckedCreateWithoutLeadsInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutLeadsInput
+    upsert?: WorkspaceUpsertWithoutLeadsInput
+    disconnect?: WorkspaceWhereInput | boolean
+    delete?: WorkspaceWhereInput | boolean
+    connect?: WorkspaceWhereUniqueInput
+    update?: XOR<XOR<WorkspaceUpdateToOneWithWhereWithoutLeadsInput, WorkspaceUpdateWithoutLeadsInput>, WorkspaceUncheckedUpdateWithoutLeadsInput>
+  }
+
+  export type LinkUpdateOneWithoutContactLeadsNestedInput = {
+    create?: XOR<LinkCreateWithoutContactLeadsInput, LinkUncheckedCreateWithoutContactLeadsInput>
+    connectOrCreate?: LinkCreateOrConnectWithoutContactLeadsInput
+    upsert?: LinkUpsertWithoutContactLeadsInput
+    disconnect?: LinkWhereInput | boolean
+    delete?: LinkWhereInput | boolean
+    connect?: LinkWhereUniqueInput
+    update?: XOR<XOR<LinkUpdateToOneWithWhereWithoutContactLeadsInput, LinkUpdateWithoutContactLeadsInput>, LinkUncheckedUpdateWithoutContactLeadsInput>
+  }
+
+  export type UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput = {
+    create?: XOR<UserCreateWithoutClaimedWorkspaceLeadsInput, UserUncheckedCreateWithoutClaimedWorkspaceLeadsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutClaimedWorkspaceLeadsInput
+    upsert?: UserUpsertWithoutClaimedWorkspaceLeadsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutClaimedWorkspaceLeadsInput, UserUpdateWithoutClaimedWorkspaceLeadsInput>, UserUncheckedUpdateWithoutClaimedWorkspaceLeadsInput>
   }
 
   export type ProductUpdateOneWithoutLeadsNestedInput = {
@@ -68638,11 +70941,25 @@ export namespace Prisma {
     connect?: AiCreditLedgerWhereUniqueInput | AiCreditLedgerWhereUniqueInput[]
   }
 
+  export type AiCreditBucketCreateNestedManyWithoutAccountInput = {
+    create?: XOR<AiCreditBucketCreateWithoutAccountInput, AiCreditBucketUncheckedCreateWithoutAccountInput> | AiCreditBucketCreateWithoutAccountInput[] | AiCreditBucketUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutAccountInput | AiCreditBucketCreateOrConnectWithoutAccountInput[]
+    createMany?: AiCreditBucketCreateManyAccountInputEnvelope
+    connect?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+  }
+
   export type AiCreditLedgerUncheckedCreateNestedManyWithoutAccountInput = {
     create?: XOR<AiCreditLedgerCreateWithoutAccountInput, AiCreditLedgerUncheckedCreateWithoutAccountInput> | AiCreditLedgerCreateWithoutAccountInput[] | AiCreditLedgerUncheckedCreateWithoutAccountInput[]
     connectOrCreate?: AiCreditLedgerCreateOrConnectWithoutAccountInput | AiCreditLedgerCreateOrConnectWithoutAccountInput[]
     createMany?: AiCreditLedgerCreateManyAccountInputEnvelope
     connect?: AiCreditLedgerWhereUniqueInput | AiCreditLedgerWhereUniqueInput[]
+  }
+
+  export type AiCreditBucketUncheckedCreateNestedManyWithoutAccountInput = {
+    create?: XOR<AiCreditBucketCreateWithoutAccountInput, AiCreditBucketUncheckedCreateWithoutAccountInput> | AiCreditBucketCreateWithoutAccountInput[] | AiCreditBucketUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutAccountInput | AiCreditBucketCreateOrConnectWithoutAccountInput[]
+    createMany?: AiCreditBucketCreateManyAccountInputEnvelope
+    connect?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
   }
 
   export type UserUpdateOneRequiredWithoutAiCreditAccountNestedInput = {
@@ -68667,6 +70984,20 @@ export namespace Prisma {
     deleteMany?: AiCreditLedgerScalarWhereInput | AiCreditLedgerScalarWhereInput[]
   }
 
+  export type AiCreditBucketUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<AiCreditBucketCreateWithoutAccountInput, AiCreditBucketUncheckedCreateWithoutAccountInput> | AiCreditBucketCreateWithoutAccountInput[] | AiCreditBucketUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutAccountInput | AiCreditBucketCreateOrConnectWithoutAccountInput[]
+    upsert?: AiCreditBucketUpsertWithWhereUniqueWithoutAccountInput | AiCreditBucketUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: AiCreditBucketCreateManyAccountInputEnvelope
+    set?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    disconnect?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    delete?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    connect?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    update?: AiCreditBucketUpdateWithWhereUniqueWithoutAccountInput | AiCreditBucketUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: AiCreditBucketUpdateManyWithWhereWithoutAccountInput | AiCreditBucketUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: AiCreditBucketScalarWhereInput | AiCreditBucketScalarWhereInput[]
+  }
+
   export type AiCreditLedgerUncheckedUpdateManyWithoutAccountNestedInput = {
     create?: XOR<AiCreditLedgerCreateWithoutAccountInput, AiCreditLedgerUncheckedCreateWithoutAccountInput> | AiCreditLedgerCreateWithoutAccountInput[] | AiCreditLedgerUncheckedCreateWithoutAccountInput[]
     connectOrCreate?: AiCreditLedgerCreateOrConnectWithoutAccountInput | AiCreditLedgerCreateOrConnectWithoutAccountInput[]
@@ -68681,6 +71012,20 @@ export namespace Prisma {
     deleteMany?: AiCreditLedgerScalarWhereInput | AiCreditLedgerScalarWhereInput[]
   }
 
+  export type AiCreditBucketUncheckedUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<AiCreditBucketCreateWithoutAccountInput, AiCreditBucketUncheckedCreateWithoutAccountInput> | AiCreditBucketCreateWithoutAccountInput[] | AiCreditBucketUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutAccountInput | AiCreditBucketCreateOrConnectWithoutAccountInput[]
+    upsert?: AiCreditBucketUpsertWithWhereUniqueWithoutAccountInput | AiCreditBucketUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: AiCreditBucketCreateManyAccountInputEnvelope
+    set?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    disconnect?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    delete?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    connect?: AiCreditBucketWhereUniqueInput | AiCreditBucketWhereUniqueInput[]
+    update?: AiCreditBucketUpdateWithWhereUniqueWithoutAccountInput | AiCreditBucketUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: AiCreditBucketUpdateManyWithWhereWithoutAccountInput | AiCreditBucketUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: AiCreditBucketScalarWhereInput | AiCreditBucketScalarWhereInput[]
+  }
+
   export type AiCreditAccountCreateNestedOneWithoutLedgerInput = {
     create?: XOR<AiCreditAccountCreateWithoutLedgerInput, AiCreditAccountUncheckedCreateWithoutLedgerInput>
     connectOrCreate?: AiCreditAccountCreateOrConnectWithoutLedgerInput
@@ -68693,6 +71038,36 @@ export namespace Prisma {
     upsert?: AiCreditAccountUpsertWithoutLedgerInput
     connect?: AiCreditAccountWhereUniqueInput
     update?: XOR<XOR<AiCreditAccountUpdateToOneWithWhereWithoutLedgerInput, AiCreditAccountUpdateWithoutLedgerInput>, AiCreditAccountUncheckedUpdateWithoutLedgerInput>
+  }
+
+  export type AiCreditAccountCreateNestedOneWithoutBucketsInput = {
+    create?: XOR<AiCreditAccountCreateWithoutBucketsInput, AiCreditAccountUncheckedCreateWithoutBucketsInput>
+    connectOrCreate?: AiCreditAccountCreateOrConnectWithoutBucketsInput
+    connect?: AiCreditAccountWhereUniqueInput
+  }
+
+  export type OrderCreateNestedOneWithoutAiCreditBucketInput = {
+    create?: XOR<OrderCreateWithoutAiCreditBucketInput, OrderUncheckedCreateWithoutAiCreditBucketInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutAiCreditBucketInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type AiCreditAccountUpdateOneRequiredWithoutBucketsNestedInput = {
+    create?: XOR<AiCreditAccountCreateWithoutBucketsInput, AiCreditAccountUncheckedCreateWithoutBucketsInput>
+    connectOrCreate?: AiCreditAccountCreateOrConnectWithoutBucketsInput
+    upsert?: AiCreditAccountUpsertWithoutBucketsInput
+    connect?: AiCreditAccountWhereUniqueInput
+    update?: XOR<XOR<AiCreditAccountUpdateToOneWithWhereWithoutBucketsInput, AiCreditAccountUpdateWithoutBucketsInput>, AiCreditAccountUncheckedUpdateWithoutBucketsInput>
+  }
+
+  export type OrderUpdateOneWithoutAiCreditBucketNestedInput = {
+    create?: XOR<OrderCreateWithoutAiCreditBucketInput, OrderUncheckedCreateWithoutAiCreditBucketInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutAiCreditBucketInput
+    upsert?: OrderUpsertWithoutAiCreditBucketInput
+    disconnect?: OrderWhereInput | boolean
+    delete?: OrderWhereInput | boolean
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutAiCreditBucketInput, OrderUpdateWithoutAiCreditBucketInput>, OrderUncheckedUpdateWithoutAiCreditBucketInput>
   }
 
   export type UserCreateNestedOneWithoutMembershipSubscriptionInput = {
@@ -68715,12 +71090,44 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type AiCreditBucketCreateNestedOneWithoutSourceOrderInput = {
+    create?: XOR<AiCreditBucketCreateWithoutSourceOrderInput, AiCreditBucketUncheckedCreateWithoutSourceOrderInput>
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutSourceOrderInput
+    connect?: AiCreditBucketWhereUniqueInput
+  }
+
+  export type AiCreditBucketUncheckedCreateNestedOneWithoutSourceOrderInput = {
+    create?: XOR<AiCreditBucketCreateWithoutSourceOrderInput, AiCreditBucketUncheckedCreateWithoutSourceOrderInput>
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutSourceOrderInput
+    connect?: AiCreditBucketWhereUniqueInput
+  }
+
   export type UserUpdateOneRequiredWithoutOrdersNestedInput = {
     create?: XOR<UserCreateWithoutOrdersInput, UserUncheckedCreateWithoutOrdersInput>
     connectOrCreate?: UserCreateOrConnectWithoutOrdersInput
     upsert?: UserUpsertWithoutOrdersInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOrdersInput, UserUpdateWithoutOrdersInput>, UserUncheckedUpdateWithoutOrdersInput>
+  }
+
+  export type AiCreditBucketUpdateOneWithoutSourceOrderNestedInput = {
+    create?: XOR<AiCreditBucketCreateWithoutSourceOrderInput, AiCreditBucketUncheckedCreateWithoutSourceOrderInput>
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutSourceOrderInput
+    upsert?: AiCreditBucketUpsertWithoutSourceOrderInput
+    disconnect?: AiCreditBucketWhereInput | boolean
+    delete?: AiCreditBucketWhereInput | boolean
+    connect?: AiCreditBucketWhereUniqueInput
+    update?: XOR<XOR<AiCreditBucketUpdateToOneWithWhereWithoutSourceOrderInput, AiCreditBucketUpdateWithoutSourceOrderInput>, AiCreditBucketUncheckedUpdateWithoutSourceOrderInput>
+  }
+
+  export type AiCreditBucketUncheckedUpdateOneWithoutSourceOrderNestedInput = {
+    create?: XOR<AiCreditBucketCreateWithoutSourceOrderInput, AiCreditBucketUncheckedCreateWithoutSourceOrderInput>
+    connectOrCreate?: AiCreditBucketCreateOrConnectWithoutSourceOrderInput
+    upsert?: AiCreditBucketUpsertWithoutSourceOrderInput
+    disconnect?: AiCreditBucketWhereInput | boolean
+    delete?: AiCreditBucketWhereInput | boolean
+    connect?: AiCreditBucketWhereUniqueInput
+    update?: XOR<XOR<AiCreditBucketUpdateToOneWithWhereWithoutSourceOrderInput, AiCreditBucketUpdateWithoutSourceOrderInput>, AiCreditBucketUncheckedUpdateWithoutSourceOrderInput>
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -68758,6 +71165,20 @@ export namespace Prisma {
     connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
   }
 
+  export type LinkCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<LinkCreateWithoutWorkspaceInput, LinkUncheckedCreateWithoutWorkspaceInput> | LinkCreateWithoutWorkspaceInput[] | LinkUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LinkCreateOrConnectWithoutWorkspaceInput | LinkCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: LinkCreateManyWorkspaceInputEnvelope
+    connect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+  }
+
+  export type LeadCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<LeadCreateWithoutWorkspaceInput, LeadUncheckedCreateWithoutWorkspaceInput> | LeadCreateWithoutWorkspaceInput[] | LeadUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutWorkspaceInput | LeadCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: LeadCreateManyWorkspaceInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+  }
+
   export type EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput = {
     create?: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
     connectOrCreate?: EnterpriseQuotaPoolCreateOrConnectWithoutWorkspaceInput
@@ -68790,6 +71211,20 @@ export namespace Prisma {
     connectOrCreate?: WorkspacePublicProfileCreateOrConnectWithoutWorkspaceInput | WorkspacePublicProfileCreateOrConnectWithoutWorkspaceInput[]
     createMany?: WorkspacePublicProfileCreateManyWorkspaceInputEnvelope
     connect?: WorkspacePublicProfileWhereUniqueInput | WorkspacePublicProfileWhereUniqueInput[]
+  }
+
+  export type LinkUncheckedCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<LinkCreateWithoutWorkspaceInput, LinkUncheckedCreateWithoutWorkspaceInput> | LinkCreateWithoutWorkspaceInput[] | LinkUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LinkCreateOrConnectWithoutWorkspaceInput | LinkCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: LinkCreateManyWorkspaceInputEnvelope
+    connect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+  }
+
+  export type LeadUncheckedCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<LeadCreateWithoutWorkspaceInput, LeadUncheckedCreateWithoutWorkspaceInput> | LeadCreateWithoutWorkspaceInput[] | LeadUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutWorkspaceInput | LeadCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: LeadCreateManyWorkspaceInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
   }
 
   export type EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput = {
@@ -68853,6 +71288,34 @@ export namespace Prisma {
     update?: WorkspacePublicProfileUpdateWithWhereUniqueWithoutWorkspaceInput | WorkspacePublicProfileUpdateWithWhereUniqueWithoutWorkspaceInput[]
     updateMany?: WorkspacePublicProfileUpdateManyWithWhereWithoutWorkspaceInput | WorkspacePublicProfileUpdateManyWithWhereWithoutWorkspaceInput[]
     deleteMany?: WorkspacePublicProfileScalarWhereInput | WorkspacePublicProfileScalarWhereInput[]
+  }
+
+  export type LinkUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<LinkCreateWithoutWorkspaceInput, LinkUncheckedCreateWithoutWorkspaceInput> | LinkCreateWithoutWorkspaceInput[] | LinkUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LinkCreateOrConnectWithoutWorkspaceInput | LinkCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: LinkUpsertWithWhereUniqueWithoutWorkspaceInput | LinkUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: LinkCreateManyWorkspaceInputEnvelope
+    set?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    disconnect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    delete?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    connect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    update?: LinkUpdateWithWhereUniqueWithoutWorkspaceInput | LinkUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: LinkUpdateManyWithWhereWithoutWorkspaceInput | LinkUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: LinkScalarWhereInput | LinkScalarWhereInput[]
+  }
+
+  export type LeadUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<LeadCreateWithoutWorkspaceInput, LeadUncheckedCreateWithoutWorkspaceInput> | LeadCreateWithoutWorkspaceInput[] | LeadUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutWorkspaceInput | LeadCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutWorkspaceInput | LeadUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: LeadCreateManyWorkspaceInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutWorkspaceInput | LeadUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutWorkspaceInput | LeadUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
   export type EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput = {
@@ -68919,6 +71382,34 @@ export namespace Prisma {
     update?: WorkspacePublicProfileUpdateWithWhereUniqueWithoutWorkspaceInput | WorkspacePublicProfileUpdateWithWhereUniqueWithoutWorkspaceInput[]
     updateMany?: WorkspacePublicProfileUpdateManyWithWhereWithoutWorkspaceInput | WorkspacePublicProfileUpdateManyWithWhereWithoutWorkspaceInput[]
     deleteMany?: WorkspacePublicProfileScalarWhereInput | WorkspacePublicProfileScalarWhereInput[]
+  }
+
+  export type LinkUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<LinkCreateWithoutWorkspaceInput, LinkUncheckedCreateWithoutWorkspaceInput> | LinkCreateWithoutWorkspaceInput[] | LinkUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LinkCreateOrConnectWithoutWorkspaceInput | LinkCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: LinkUpsertWithWhereUniqueWithoutWorkspaceInput | LinkUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: LinkCreateManyWorkspaceInputEnvelope
+    set?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    disconnect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    delete?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    connect?: LinkWhereUniqueInput | LinkWhereUniqueInput[]
+    update?: LinkUpdateWithWhereUniqueWithoutWorkspaceInput | LinkUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: LinkUpdateManyWithWhereWithoutWorkspaceInput | LinkUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: LinkScalarWhereInput | LinkScalarWhereInput[]
+  }
+
+  export type LeadUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<LeadCreateWithoutWorkspaceInput, LeadUncheckedCreateWithoutWorkspaceInput> | LeadCreateWithoutWorkspaceInput[] | LeadUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutWorkspaceInput | LeadCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutWorkspaceInput | LeadUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: LeadCreateManyWorkspaceInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutWorkspaceInput | LeadUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutWorkspaceInput | LeadUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
   export type EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput = {
@@ -69304,6 +71795,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -69337,6 +71829,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -69669,6 +72162,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -69685,6 +72179,7 @@ export namespace Prisma {
     allowReport?: boolean
     allowTransferToHuman?: boolean
     privacyNoticeText?: string | null
+    quickActionsJson?: string | null
     providerMode?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -69702,6 +72197,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdAt?: Date | string
     ledger?: AiCreditLedgerCreateNestedManyWithoutAccountInput
+    buckets?: AiCreditBucketCreateNestedManyWithoutAccountInput
   }
 
   export type AiCreditAccountUncheckedCreateWithoutUserInput = {
@@ -69711,6 +72207,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdAt?: Date | string
     ledger?: AiCreditLedgerUncheckedCreateNestedManyWithoutAccountInput
+    buckets?: AiCreditBucketUncheckedCreateNestedManyWithoutAccountInput
   }
 
   export type AiCreditAccountCreateOrConnectWithoutUserInput = {
@@ -69748,6 +72245,7 @@ export namespace Prisma {
     orderNo: string
     planCode: string
     planNameSnapshot: string
+    productType?: string
     billingCycle: string
     originalAmount: number
     payableAmount: number
@@ -69767,6 +72265,7 @@ export namespace Prisma {
     refundBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    aiCreditBucket?: AiCreditBucketCreateNestedOneWithoutSourceOrderInput
   }
 
   export type OrderUncheckedCreateWithoutUserInput = {
@@ -69774,6 +72273,7 @@ export namespace Prisma {
     orderNo: string
     planCode: string
     planNameSnapshot: string
+    productType?: string
     billingCycle: string
     originalAmount: number
     payableAmount: number
@@ -69793,6 +72293,7 @@ export namespace Prisma {
     refundBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    aiCreditBucket?: AiCreditBucketUncheckedCreateNestedOneWithoutSourceOrderInput
   }
 
   export type OrderCreateOrConnectWithoutUserInput = {
@@ -69856,6 +72357,8 @@ export namespace Prisma {
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
@@ -69873,6 +72376,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
@@ -69949,6 +72454,68 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type LeadCreateWithoutClaimedByInput = {
+    id: string
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile: ProfileCreateNestedOneWithoutLeadsInput
+    workspace?: WorkspaceCreateNestedOneWithoutLeadsInput
+    contactEntry?: LinkCreateNestedOneWithoutContactLeadsInput
+    interestedProduct?: ProductCreateNestedOneWithoutLeadsInput
+    conversation?: AiConversationCreateNestedOneWithoutLeadInput
+    followUps?: LeadFollowUpCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadUncheckedCreateWithoutClaimedByInput = {
+    id: string
+    profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductId?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    conversationId?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    followUps?: LeadFollowUpUncheckedCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadCreateOrConnectWithoutClaimedByInput = {
+    where: LeadWhereUniqueInput
+    create: XOR<LeadCreateWithoutClaimedByInput, LeadUncheckedCreateWithoutClaimedByInput>
+  }
+
+  export type LeadCreateManyClaimedByInputEnvelope = {
+    data: LeadCreateManyClaimedByInput | LeadCreateManyClaimedByInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ProfileUpsertWithoutUserInput = {
     update: XOR<ProfileUpdateWithoutUserInput, ProfileUncheckedUpdateWithoutUserInput>
     create: XOR<ProfileCreateWithoutUserInput, ProfileUncheckedCreateWithoutUserInput>
@@ -69975,6 +72542,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -70008,6 +72576,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -70330,6 +72899,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70346,6 +72916,7 @@ export namespace Prisma {
     allowReport?: BoolFieldUpdateOperationsInput | boolean
     allowTransferToHuman?: BoolFieldUpdateOperationsInput | boolean
     privacyNoticeText?: NullableStringFieldUpdateOperationsInput | string | null
+    quickActionsJson?: NullableStringFieldUpdateOperationsInput | string | null
     providerMode?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70369,6 +72940,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ledger?: AiCreditLedgerUpdateManyWithoutAccountNestedInput
+    buckets?: AiCreditBucketUpdateManyWithoutAccountNestedInput
   }
 
   export type AiCreditAccountUncheckedUpdateWithoutUserInput = {
@@ -70378,6 +72950,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ledger?: AiCreditLedgerUncheckedUpdateManyWithoutAccountNestedInput
+    buckets?: AiCreditBucketUncheckedUpdateManyWithoutAccountNestedInput
   }
 
   export type MembershipSubscriptionUpsertWithoutUserInput = {
@@ -70436,6 +73009,7 @@ export namespace Prisma {
     userId?: UuidFilter<"Order"> | string
     planCode?: StringFilter<"Order"> | string
     planNameSnapshot?: StringFilter<"Order"> | string
+    productType?: StringFilter<"Order"> | string
     billingCycle?: StringFilter<"Order"> | string
     originalAmount?: IntFilter<"Order"> | number
     payableAmount?: IntFilter<"Order"> | number
@@ -70584,6 +73158,51 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"EnterpriseQuotaConsumption"> | Date | string
   }
 
+  export type LeadUpsertWithWhereUniqueWithoutClaimedByInput = {
+    where: LeadWhereUniqueInput
+    update: XOR<LeadUpdateWithoutClaimedByInput, LeadUncheckedUpdateWithoutClaimedByInput>
+    create: XOR<LeadCreateWithoutClaimedByInput, LeadUncheckedCreateWithoutClaimedByInput>
+  }
+
+  export type LeadUpdateWithWhereUniqueWithoutClaimedByInput = {
+    where: LeadWhereUniqueInput
+    data: XOR<LeadUpdateWithoutClaimedByInput, LeadUncheckedUpdateWithoutClaimedByInput>
+  }
+
+  export type LeadUpdateManyWithWhereWithoutClaimedByInput = {
+    where: LeadScalarWhereInput
+    data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyWithoutClaimedByInput>
+  }
+
+  export type LeadScalarWhereInput = {
+    AND?: LeadScalarWhereInput | LeadScalarWhereInput[]
+    OR?: LeadScalarWhereInput[]
+    NOT?: LeadScalarWhereInput | LeadScalarWhereInput[]
+    id?: UuidFilter<"Lead"> | string
+    profileId?: UuidFilter<"Lead"> | string
+    workspaceId?: UuidNullableFilter<"Lead"> | string | null
+    contactEntryId?: UuidNullableFilter<"Lead"> | string | null
+    claimedByUserId?: UuidNullableFilter<"Lead"> | string | null
+    name?: StringFilter<"Lead"> | string
+    email?: StringNullableFilter<"Lead"> | string | null
+    phone?: StringNullableFilter<"Lead"> | string | null
+    wechat?: StringNullableFilter<"Lead"> | string | null
+    message?: StringNullableFilter<"Lead"> | string | null
+    sourceComponent?: StringNullableFilter<"Lead"> | string | null
+    sourcePage?: StringNullableFilter<"Lead"> | string | null
+    interestedProductId?: UuidNullableFilter<"Lead"> | string | null
+    interestedProductName?: StringNullableFilter<"Lead"> | string | null
+    interestedProductPrice?: StringNullableFilter<"Lead"> | string | null
+    interestedProductCategory?: StringNullableFilter<"Lead"> | string | null
+    conversationId?: UuidNullableFilter<"Lead"> | string | null
+    status?: StringFilter<"Lead"> | string
+    notes?: StringNullableFilter<"Lead"> | string | null
+    handlerNote?: StringNullableFilter<"Lead"> | string | null
+    handledAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
+    createdAt?: DateTimeFilter<"Lead"> | Date | string
+    updatedAt?: DateTimeFilter<"Lead"> | Date | string
+  }
+
   export type UserCreateWithoutFreezeRecordsInput = {
     id: string
     email: string
@@ -70616,6 +73235,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutFreezeRecordsInput = {
@@ -70650,6 +73270,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutFreezeRecordsInput = {
@@ -70700,6 +73321,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFreezeRecordsInput = {
@@ -70734,6 +73356,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateWithoutUsernameHistoryInput = {
@@ -70768,6 +73391,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutUsernameHistoryInput = {
@@ -70802,6 +73426,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutUsernameHistoryInput = {
@@ -70852,6 +73477,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUsernameHistoryInput = {
@@ -70886,6 +73512,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateWithoutProfileInput = {
@@ -70920,6 +73547,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutProfileInput = {
@@ -70954,6 +73582,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutProfileInput = {
@@ -70977,11 +73606,14 @@ export namespace Prisma {
     totalClicks?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    workspace?: WorkspaceCreateNestedOneWithoutContactEntriesInput
     clicks?: LinkClickCreateNestedManyWithoutLinkInput
+    contactLeads?: LeadCreateNestedManyWithoutContactEntryInput
   }
 
   export type LinkUncheckedCreateWithoutProfileInput = {
     id: string
+    workspaceId?: string | null
     type?: string
     payloadJson?: string | null
     title: string
@@ -70997,6 +73629,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     clicks?: LinkClickUncheckedCreateNestedManyWithoutLinkInput
+    contactLeads?: LeadUncheckedCreateNestedManyWithoutContactEntryInput
   }
 
   export type LinkCreateOrConnectWithoutProfileInput = {
@@ -71027,6 +73660,9 @@ export namespace Prisma {
     handledAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    workspace?: WorkspaceCreateNestedOneWithoutLeadsInput
+    contactEntry?: LinkCreateNestedOneWithoutContactLeadsInput
+    claimedBy?: UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput
     interestedProduct?: ProductCreateNestedOneWithoutLeadsInput
     conversation?: AiConversationCreateNestedOneWithoutLeadInput
     followUps?: LeadFollowUpCreateNestedManyWithoutLeadInput
@@ -71034,6 +73670,9 @@ export namespace Prisma {
 
   export type LeadUncheckedCreateWithoutProfileInput = {
     id: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -71180,6 +73819,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProfileInput = {
@@ -71214,6 +73854,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type LinkUpsertWithWhereUniqueWithoutProfileInput = {
@@ -71238,6 +73879,7 @@ export namespace Prisma {
     NOT?: LinkScalarWhereInput | LinkScalarWhereInput[]
     id?: UuidFilter<"Link"> | string
     profileId?: UuidFilter<"Link"> | string
+    workspaceId?: UuidNullableFilter<"Link"> | string | null
     type?: StringFilter<"Link"> | string
     payloadJson?: StringNullableFilter<"Link"> | string | null
     title?: StringFilter<"Link"> | string
@@ -71268,32 +73910,6 @@ export namespace Prisma {
   export type LeadUpdateManyWithWhereWithoutProfileInput = {
     where: LeadScalarWhereInput
     data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyWithoutProfileInput>
-  }
-
-  export type LeadScalarWhereInput = {
-    AND?: LeadScalarWhereInput | LeadScalarWhereInput[]
-    OR?: LeadScalarWhereInput[]
-    NOT?: LeadScalarWhereInput | LeadScalarWhereInput[]
-    id?: UuidFilter<"Lead"> | string
-    profileId?: UuidFilter<"Lead"> | string
-    name?: StringFilter<"Lead"> | string
-    email?: StringNullableFilter<"Lead"> | string | null
-    phone?: StringNullableFilter<"Lead"> | string | null
-    wechat?: StringNullableFilter<"Lead"> | string | null
-    message?: StringNullableFilter<"Lead"> | string | null
-    sourceComponent?: StringNullableFilter<"Lead"> | string | null
-    sourcePage?: StringNullableFilter<"Lead"> | string | null
-    interestedProductId?: UuidNullableFilter<"Lead"> | string | null
-    interestedProductName?: StringNullableFilter<"Lead"> | string | null
-    interestedProductPrice?: StringNullableFilter<"Lead"> | string | null
-    interestedProductCategory?: StringNullableFilter<"Lead"> | string | null
-    conversationId?: UuidNullableFilter<"Lead"> | string | null
-    status?: StringFilter<"Lead"> | string
-    notes?: StringNullableFilter<"Lead"> | string | null
-    handlerNote?: StringNullableFilter<"Lead"> | string | null
-    handledAt?: DateTimeNullableFilter<"Lead"> | Date | string | null
-    createdAt?: DateTimeFilter<"Lead"> | Date | string
-    updatedAt?: DateTimeFilter<"Lead"> | Date | string
   }
 
   export type AiConversationUpsertWithWhereUniqueWithoutProfileInput = {
@@ -71373,6 +73989,8 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
@@ -71390,6 +74008,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
@@ -71423,6 +74043,8 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
@@ -71440,6 +74062,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
@@ -71457,6 +74081,8 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
@@ -71474,6 +74100,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
@@ -71515,6 +74143,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutWorkspacePublicProfilesInput = {
@@ -71549,6 +74178,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutWorkspacePublicProfilesInput = {
@@ -71580,6 +74210,8 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
@@ -71597,6 +74229,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
@@ -71644,6 +74278,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWorkspacePublicProfilesInput = {
@@ -71678,6 +74313,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type ProfileCreateWithoutLinksInput = {
@@ -71695,6 +74331,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -71729,6 +74366,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -71749,6 +74387,49 @@ export namespace Prisma {
   export type ProfileCreateOrConnectWithoutLinksInput = {
     where: ProfileWhereUniqueInput
     create: XOR<ProfileCreateWithoutLinksInput, ProfileUncheckedCreateWithoutLinksInput>
+  }
+
+  export type WorkspaceCreateWithoutContactEntriesInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
+    members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUncheckedCreateWithoutContactEntriesInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    ownerId: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceCreateOrConnectWithoutContactEntriesInput = {
+    where: WorkspaceWhereUniqueInput
+    create: XOR<WorkspaceCreateWithoutContactEntriesInput, WorkspaceUncheckedCreateWithoutContactEntriesInput>
   }
 
   export type LinkClickCreateWithoutLinkInput = {
@@ -71787,6 +74468,68 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type LeadCreateWithoutContactEntryInput = {
+    id: string
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile: ProfileCreateNestedOneWithoutLeadsInput
+    workspace?: WorkspaceCreateNestedOneWithoutLeadsInput
+    claimedBy?: UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput
+    interestedProduct?: ProductCreateNestedOneWithoutLeadsInput
+    conversation?: AiConversationCreateNestedOneWithoutLeadInput
+    followUps?: LeadFollowUpCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadUncheckedCreateWithoutContactEntryInput = {
+    id: string
+    profileId: string
+    workspaceId?: string | null
+    claimedByUserId?: string | null
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductId?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    conversationId?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    followUps?: LeadFollowUpUncheckedCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadCreateOrConnectWithoutContactEntryInput = {
+    where: LeadWhereUniqueInput
+    create: XOR<LeadCreateWithoutContactEntryInput, LeadUncheckedCreateWithoutContactEntryInput>
+  }
+
+  export type LeadCreateManyContactEntryInputEnvelope = {
+    data: LeadCreateManyContactEntryInput | LeadCreateManyContactEntryInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ProfileUpsertWithoutLinksInput = {
     update: XOR<ProfileUpdateWithoutLinksInput, ProfileUncheckedUpdateWithoutLinksInput>
     create: XOR<ProfileCreateWithoutLinksInput, ProfileUncheckedCreateWithoutLinksInput>
@@ -71813,6 +74556,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71847,6 +74591,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71862,6 +74607,55 @@ export namespace Prisma {
     leads?: LeadUncheckedUpdateManyWithoutProfileNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutProfileNestedInput
     visits?: ProfileVisitUncheckedUpdateManyWithoutProfileNestedInput
+  }
+
+  export type WorkspaceUpsertWithoutContactEntriesInput = {
+    update: XOR<WorkspaceUpdateWithoutContactEntriesInput, WorkspaceUncheckedUpdateWithoutContactEntriesInput>
+    create: XOR<WorkspaceCreateWithoutContactEntriesInput, WorkspaceUncheckedCreateWithoutContactEntriesInput>
+    where?: WorkspaceWhereInput
+  }
+
+  export type WorkspaceUpdateToOneWithWhereWithoutContactEntriesInput = {
+    where?: WorkspaceWhereInput
+    data: XOR<WorkspaceUpdateWithoutContactEntriesInput, WorkspaceUncheckedUpdateWithoutContactEntriesInput>
+  }
+
+  export type WorkspaceUpdateWithoutContactEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+    members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceUncheckedUpdateWithoutContactEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type LinkClickUpsertWithWhereUniqueWithoutLinkInput = {
@@ -71897,6 +74691,22 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"LinkClick"> | Date | string
   }
 
+  export type LeadUpsertWithWhereUniqueWithoutContactEntryInput = {
+    where: LeadWhereUniqueInput
+    update: XOR<LeadUpdateWithoutContactEntryInput, LeadUncheckedUpdateWithoutContactEntryInput>
+    create: XOR<LeadCreateWithoutContactEntryInput, LeadUncheckedCreateWithoutContactEntryInput>
+  }
+
+  export type LeadUpdateWithWhereUniqueWithoutContactEntryInput = {
+    where: LeadWhereUniqueInput
+    data: XOR<LeadUpdateWithoutContactEntryInput, LeadUncheckedUpdateWithoutContactEntryInput>
+  }
+
+  export type LeadUpdateManyWithWhereWithoutContactEntryInput = {
+    where: LeadScalarWhereInput
+    data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyWithoutContactEntryInput>
+  }
+
   export type LinkCreateWithoutClicksInput = {
     id: string
     type?: string
@@ -71914,11 +74724,14 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     profile: ProfileCreateNestedOneWithoutLinksInput
+    workspace?: WorkspaceCreateNestedOneWithoutContactEntriesInput
+    contactLeads?: LeadCreateNestedManyWithoutContactEntryInput
   }
 
   export type LinkUncheckedCreateWithoutClicksInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
     type?: string
     payloadJson?: string | null
     title: string
@@ -71933,6 +74746,7 @@ export namespace Prisma {
     totalClicks?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    contactLeads?: LeadUncheckedCreateNestedManyWithoutContactEntryInput
   }
 
   export type LinkCreateOrConnectWithoutClicksInput = {
@@ -71968,11 +74782,14 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profile?: ProfileUpdateOneRequiredWithoutLinksNestedInput
+    workspace?: WorkspaceUpdateOneWithoutContactEntriesNestedInput
+    contactLeads?: LeadUpdateManyWithoutContactEntryNestedInput
   }
 
   export type LinkUncheckedUpdateWithoutClicksInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -71987,6 +74804,7 @@ export namespace Prisma {
     totalClicks?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contactLeads?: LeadUncheckedUpdateManyWithoutContactEntryNestedInput
   }
 
   export type ProfileCreateWithoutVisitsInput = {
@@ -72004,6 +74822,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -72038,6 +74857,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -72086,6 +74906,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -72120,6 +74941,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -72169,6 +74991,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutShortLinksInput = {
@@ -72203,6 +75026,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutShortLinksInput = {
@@ -72309,6 +75133,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutShortLinksInput = {
@@ -72343,6 +75168,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type ShortLinkClickUpsertWithWhereUniqueWithoutShortLinkInput = {
@@ -72488,6 +75314,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -72522,6 +75349,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -72572,6 +75400,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -72606,6 +75435,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateWithoutResetTokensInput = {
@@ -72640,6 +75470,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutResetTokensInput = {
@@ -72674,6 +75505,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutResetTokensInput = {
@@ -72724,6 +75556,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutResetTokensInput = {
@@ -72758,6 +75591,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateWithoutVerifyTokensInput = {
@@ -72792,6 +75626,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutVerifyTokensInput = {
@@ -72826,6 +75661,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutVerifyTokensInput = {
@@ -72876,6 +75712,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVerifyTokensInput = {
@@ -72910,6 +75747,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateWithoutAiUsageLogsInput = {
@@ -72944,6 +75782,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutAiUsageLogsInput = {
@@ -72978,6 +75817,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutAiUsageLogsInput = {
@@ -73028,6 +75868,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiUsageLogsInput = {
@@ -73062,6 +75903,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type ProfileCreateWithoutLeadsInput = {
@@ -73079,6 +75921,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -73113,6 +75956,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -73133,6 +75977,171 @@ export namespace Prisma {
   export type ProfileCreateOrConnectWithoutLeadsInput = {
     where: ProfileWhereUniqueInput
     create: XOR<ProfileCreateWithoutLeadsInput, ProfileUncheckedCreateWithoutLeadsInput>
+  }
+
+  export type WorkspaceCreateWithoutLeadsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
+    members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUncheckedCreateWithoutLeadsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    workspaceType?: string
+    planCode?: string
+    ownerId: string
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+    domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
+    publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceCreateOrConnectWithoutLeadsInput = {
+    where: WorkspaceWhereUniqueInput
+    create: XOR<WorkspaceCreateWithoutLeadsInput, WorkspaceUncheckedCreateWithoutLeadsInput>
+  }
+
+  export type LinkCreateWithoutContactLeadsInput = {
+    id: string
+    type?: string
+    payloadJson?: string | null
+    title: string
+    url: string
+    description?: string | null
+    iconType?: string
+    iconValue?: string | null
+    iconUrl?: string | null
+    iconModerationStatus?: string
+    position?: number
+    isActive?: boolean
+    totalClicks?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile: ProfileCreateNestedOneWithoutLinksInput
+    workspace?: WorkspaceCreateNestedOneWithoutContactEntriesInput
+    clicks?: LinkClickCreateNestedManyWithoutLinkInput
+  }
+
+  export type LinkUncheckedCreateWithoutContactLeadsInput = {
+    id: string
+    profileId: string
+    workspaceId?: string | null
+    type?: string
+    payloadJson?: string | null
+    title: string
+    url: string
+    description?: string | null
+    iconType?: string
+    iconValue?: string | null
+    iconUrl?: string | null
+    iconModerationStatus?: string
+    position?: number
+    isActive?: boolean
+    totalClicks?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    clicks?: LinkClickUncheckedCreateNestedManyWithoutLinkInput
+  }
+
+  export type LinkCreateOrConnectWithoutContactLeadsInput = {
+    where: LinkWhereUniqueInput
+    create: XOR<LinkCreateWithoutContactLeadsInput, LinkUncheckedCreateWithoutContactLeadsInput>
+  }
+
+  export type UserCreateWithoutClaimedWorkspaceLeadsInput = {
+    id: string
+    email: string
+    passwordHash: string
+    emailVerified?: boolean
+    frozenReason?: string | null
+    frozenAt?: Date | string | null
+    usernameChanges?: number
+    role?: string
+    isSystem?: boolean
+    accountStatus?: string
+    deactivatedAt?: Date | string | null
+    deactivationReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile?: ProfileCreateNestedOneWithoutUserInput
+    usernameHistory?: UsernameHistoryCreateNestedManyWithoutUserInput
+    freezeRecords?: FreezeRecordCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    resetTokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    verifyTokens?: EmailVerificationTokenCreateNestedManyWithoutUserInput
+    aiUsageLogs?: AiUsageLogCreateNestedManyWithoutUserInput
+    shortLinks?: ShortLinkCreateNestedManyWithoutUserInput
+    products?: ProductCreateNestedManyWithoutUserInput
+    knowledgeDocs?: KnowledgeDocCreateNestedManyWithoutUserInput
+    aiServiceConfig?: AiServiceConfigCreateNestedOneWithoutUserInput
+    aiCreditAccount?: AiCreditAccountCreateNestedOneWithoutUserInput
+    membershipSubscription?: MembershipSubscriptionCreateNestedOneWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutUserInput
+    workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
+    ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
+    workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutClaimedWorkspaceLeadsInput = {
+    id: string
+    email: string
+    passwordHash: string
+    emailVerified?: boolean
+    frozenReason?: string | null
+    frozenAt?: Date | string | null
+    usernameChanges?: number
+    role?: string
+    isSystem?: boolean
+    accountStatus?: string
+    deactivatedAt?: Date | string | null
+    deactivationReason?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile?: ProfileUncheckedCreateNestedOneWithoutUserInput
+    usernameHistory?: UsernameHistoryUncheckedCreateNestedManyWithoutUserInput
+    freezeRecords?: FreezeRecordUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    resetTokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    verifyTokens?: EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
+    aiUsageLogs?: AiUsageLogUncheckedCreateNestedManyWithoutUserInput
+    shortLinks?: ShortLinkUncheckedCreateNestedManyWithoutUserInput
+    products?: ProductUncheckedCreateNestedManyWithoutUserInput
+    knowledgeDocs?: KnowledgeDocUncheckedCreateNestedManyWithoutUserInput
+    aiServiceConfig?: AiServiceConfigUncheckedCreateNestedOneWithoutUserInput
+    aiCreditAccount?: AiCreditAccountUncheckedCreateNestedOneWithoutUserInput
+    membershipSubscription?: MembershipSubscriptionUncheckedCreateNestedOneWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutUserInput
+    workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+    ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutClaimedWorkspaceLeadsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutClaimedWorkspaceLeadsInput, UserUncheckedCreateWithoutClaimedWorkspaceLeadsInput>
   }
 
   export type ProductCreateWithoutLeadsInput = {
@@ -73259,6 +76268,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73293,6 +76303,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73308,6 +76319,189 @@ export namespace Prisma {
     links?: LinkUncheckedUpdateManyWithoutProfileNestedInput
     aiConversations?: AiConversationUncheckedUpdateManyWithoutProfileNestedInput
     visits?: ProfileVisitUncheckedUpdateManyWithoutProfileNestedInput
+  }
+
+  export type WorkspaceUpsertWithoutLeadsInput = {
+    update: XOR<WorkspaceUpdateWithoutLeadsInput, WorkspaceUncheckedUpdateWithoutLeadsInput>
+    create: XOR<WorkspaceCreateWithoutLeadsInput, WorkspaceUncheckedCreateWithoutLeadsInput>
+    where?: WorkspaceWhereInput
+  }
+
+  export type WorkspaceUpdateToOneWithWhereWithoutLeadsInput = {
+    where?: WorkspaceWhereInput
+    data: XOR<WorkspaceUpdateWithoutLeadsInput, WorkspaceUncheckedUpdateWithoutLeadsInput>
+  }
+
+  export type WorkspaceUpdateWithoutLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
+    members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceUncheckedUpdateWithoutLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceType?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+    domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
+    publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type LinkUpsertWithoutContactLeadsInput = {
+    update: XOR<LinkUpdateWithoutContactLeadsInput, LinkUncheckedUpdateWithoutContactLeadsInput>
+    create: XOR<LinkCreateWithoutContactLeadsInput, LinkUncheckedCreateWithoutContactLeadsInput>
+    where?: LinkWhereInput
+  }
+
+  export type LinkUpdateToOneWithWhereWithoutContactLeadsInput = {
+    where?: LinkWhereInput
+    data: XOR<LinkUpdateWithoutContactLeadsInput, LinkUncheckedUpdateWithoutContactLeadsInput>
+  }
+
+  export type LinkUpdateWithoutContactLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconType?: StringFieldUpdateOperationsInput | string
+    iconValue?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconModerationStatus?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    totalClicks?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneRequiredWithoutLinksNestedInput
+    workspace?: WorkspaceUpdateOneWithoutContactEntriesNestedInput
+    clicks?: LinkClickUpdateManyWithoutLinkNestedInput
+  }
+
+  export type LinkUncheckedUpdateWithoutContactLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconType?: StringFieldUpdateOperationsInput | string
+    iconValue?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconModerationStatus?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    totalClicks?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clicks?: LinkClickUncheckedUpdateManyWithoutLinkNestedInput
+  }
+
+  export type UserUpsertWithoutClaimedWorkspaceLeadsInput = {
+    update: XOR<UserUpdateWithoutClaimedWorkspaceLeadsInput, UserUncheckedUpdateWithoutClaimedWorkspaceLeadsInput>
+    create: XOR<UserCreateWithoutClaimedWorkspaceLeadsInput, UserUncheckedCreateWithoutClaimedWorkspaceLeadsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutClaimedWorkspaceLeadsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutClaimedWorkspaceLeadsInput, UserUncheckedUpdateWithoutClaimedWorkspaceLeadsInput>
+  }
+
+  export type UserUpdateWithoutClaimedWorkspaceLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    frozenReason?: NullableStringFieldUpdateOperationsInput | string | null
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    usernameChanges?: IntFieldUpdateOperationsInput | number
+    role?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    accountStatus?: StringFieldUpdateOperationsInput | string
+    deactivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deactivationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneWithoutUserNestedInput
+    usernameHistory?: UsernameHistoryUpdateManyWithoutUserNestedInput
+    freezeRecords?: FreezeRecordUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    resetTokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    verifyTokens?: EmailVerificationTokenUpdateManyWithoutUserNestedInput
+    aiUsageLogs?: AiUsageLogUpdateManyWithoutUserNestedInput
+    shortLinks?: ShortLinkUpdateManyWithoutUserNestedInput
+    products?: ProductUpdateManyWithoutUserNestedInput
+    knowledgeDocs?: KnowledgeDocUpdateManyWithoutUserNestedInput
+    aiServiceConfig?: AiServiceConfigUpdateOneWithoutUserNestedInput
+    aiCreditAccount?: AiCreditAccountUpdateOneWithoutUserNestedInput
+    membershipSubscription?: MembershipSubscriptionUpdateOneWithoutUserNestedInput
+    orders?: OrderUpdateManyWithoutUserNestedInput
+    workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
+    ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutClaimedWorkspaceLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    frozenReason?: NullableStringFieldUpdateOperationsInput | string | null
+    frozenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    usernameChanges?: IntFieldUpdateOperationsInput | number
+    role?: StringFieldUpdateOperationsInput | string
+    isSystem?: BoolFieldUpdateOperationsInput | boolean
+    accountStatus?: StringFieldUpdateOperationsInput | string
+    deactivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deactivationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUncheckedUpdateOneWithoutUserNestedInput
+    usernameHistory?: UsernameHistoryUncheckedUpdateManyWithoutUserNestedInput
+    freezeRecords?: FreezeRecordUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    resetTokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    verifyTokens?: EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+    aiUsageLogs?: AiUsageLogUncheckedUpdateManyWithoutUserNestedInput
+    shortLinks?: ShortLinkUncheckedUpdateManyWithoutUserNestedInput
+    products?: ProductUncheckedUpdateManyWithoutUserNestedInput
+    knowledgeDocs?: KnowledgeDocUncheckedUpdateManyWithoutUserNestedInput
+    aiServiceConfig?: AiServiceConfigUncheckedUpdateOneWithoutUserNestedInput
+    aiCreditAccount?: AiCreditAccountUncheckedUpdateOneWithoutUserNestedInput
+    membershipSubscription?: MembershipSubscriptionUncheckedUpdateOneWithoutUserNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
+    workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+    ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
+    workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProductUpsertWithoutLeadsInput = {
@@ -73438,6 +76632,9 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     profile: ProfileCreateNestedOneWithoutLeadsInput
+    workspace?: WorkspaceCreateNestedOneWithoutLeadsInput
+    contactEntry?: LinkCreateNestedOneWithoutContactLeadsInput
+    claimedBy?: UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput
     interestedProduct?: ProductCreateNestedOneWithoutLeadsInput
     conversation?: AiConversationCreateNestedOneWithoutLeadInput
   }
@@ -73445,6 +76642,9 @@ export namespace Prisma {
   export type LeadUncheckedCreateWithoutFollowUpsInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -73500,6 +76700,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profile?: ProfileUpdateOneRequiredWithoutLeadsNestedInput
+    workspace?: WorkspaceUpdateOneWithoutLeadsNestedInput
+    contactEntry?: LinkUpdateOneWithoutContactLeadsNestedInput
+    claimedBy?: UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput
     interestedProduct?: ProductUpdateOneWithoutLeadsNestedInput
     conversation?: AiConversationUpdateOneWithoutLeadNestedInput
   }
@@ -73507,6 +76710,9 @@ export namespace Prisma {
   export type LeadUncheckedUpdateWithoutFollowUpsInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -73559,6 +76765,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutProductsInput = {
@@ -73593,6 +76800,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutProductsInput = {
@@ -73619,6 +76827,9 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     profile: ProfileCreateNestedOneWithoutLeadsInput
+    workspace?: WorkspaceCreateNestedOneWithoutLeadsInput
+    contactEntry?: LinkCreateNestedOneWithoutContactLeadsInput
+    claimedBy?: UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput
     conversation?: AiConversationCreateNestedOneWithoutLeadInput
     followUps?: LeadFollowUpCreateNestedManyWithoutLeadInput
   }
@@ -73626,6 +76837,9 @@ export namespace Prisma {
   export type LeadUncheckedCreateWithoutInterestedProductInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -73699,6 +76913,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProductsInput = {
@@ -73733,6 +76948,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type LeadUpsertWithWhereUniqueWithoutInterestedProductInput = {
@@ -73783,6 +76999,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutKnowledgeDocsInput = {
@@ -73817,6 +77034,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutKnowledgeDocsInput = {
@@ -73867,6 +77085,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutKnowledgeDocsInput = {
@@ -73901,6 +77120,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateWithoutAiServiceConfigInput = {
@@ -73935,6 +77155,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutAiServiceConfigInput = {
@@ -73969,6 +77190,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutAiServiceConfigInput = {
@@ -74019,6 +77241,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiServiceConfigInput = {
@@ -74053,6 +77276,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type ProfileCreateWithoutAiConversationsInput = {
@@ -74070,6 +77294,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -74104,6 +77329,7 @@ export namespace Prisma {
     template?: string
     language?: string
     isPublic?: boolean
+    firstPublishedAt?: Date | string | null
     company?: string | null
     jobTitle?: string | null
     phone?: string | null
@@ -74173,6 +77399,9 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     profile: ProfileCreateNestedOneWithoutLeadsInput
+    workspace?: WorkspaceCreateNestedOneWithoutLeadsInput
+    contactEntry?: LinkCreateNestedOneWithoutContactLeadsInput
+    claimedBy?: UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput
     interestedProduct?: ProductCreateNestedOneWithoutLeadsInput
     followUps?: LeadFollowUpCreateNestedManyWithoutLeadInput
   }
@@ -74180,6 +77409,9 @@ export namespace Prisma {
   export type LeadUncheckedCreateWithoutConversationInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -74231,6 +77463,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74265,6 +77498,7 @@ export namespace Prisma {
     template?: StringFieldUpdateOperationsInput | string
     language?: StringFieldUpdateOperationsInput | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
+    firstPublishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: NullableStringFieldUpdateOperationsInput | string | null
     jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74341,6 +77575,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profile?: ProfileUpdateOneRequiredWithoutLeadsNestedInput
+    workspace?: WorkspaceUpdateOneWithoutLeadsNestedInput
+    contactEntry?: LinkUpdateOneWithoutContactLeadsNestedInput
+    claimedBy?: UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput
     interestedProduct?: ProductUpdateOneWithoutLeadsNestedInput
     followUps?: LeadFollowUpUpdateManyWithoutLeadNestedInput
   }
@@ -74348,6 +77585,9 @@ export namespace Prisma {
   export type LeadUncheckedUpdateWithoutConversationInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74460,6 +77700,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutAiCreditAccountInput = {
@@ -74494,6 +77735,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutAiCreditAccountInput = {
@@ -74534,6 +77776,40 @@ export namespace Prisma {
 
   export type AiCreditLedgerCreateManyAccountInputEnvelope = {
     data: AiCreditLedgerCreateManyAccountInput | AiCreditLedgerCreateManyAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AiCreditBucketCreateWithoutAccountInput = {
+    id?: string
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sourceOrder?: OrderCreateNestedOneWithoutAiCreditBucketInput
+  }
+
+  export type AiCreditBucketUncheckedCreateWithoutAccountInput = {
+    id?: string
+    sourceOrderId?: string | null
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiCreditBucketCreateOrConnectWithoutAccountInput = {
+    where: AiCreditBucketWhereUniqueInput
+    create: XOR<AiCreditBucketCreateWithoutAccountInput, AiCreditBucketUncheckedCreateWithoutAccountInput>
+  }
+
+  export type AiCreditBucketCreateManyAccountInputEnvelope = {
+    data: AiCreditBucketCreateManyAccountInput | AiCreditBucketCreateManyAccountInput[]
     skipDuplicates?: boolean
   }
 
@@ -74580,6 +77856,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAiCreditAccountInput = {
@@ -74614,6 +77891,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type AiCreditLedgerUpsertWithWhereUniqueWithoutAccountInput = {
@@ -74649,6 +77927,38 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"AiCreditLedger"> | Date | string
   }
 
+  export type AiCreditBucketUpsertWithWhereUniqueWithoutAccountInput = {
+    where: AiCreditBucketWhereUniqueInput
+    update: XOR<AiCreditBucketUpdateWithoutAccountInput, AiCreditBucketUncheckedUpdateWithoutAccountInput>
+    create: XOR<AiCreditBucketCreateWithoutAccountInput, AiCreditBucketUncheckedCreateWithoutAccountInput>
+  }
+
+  export type AiCreditBucketUpdateWithWhereUniqueWithoutAccountInput = {
+    where: AiCreditBucketWhereUniqueInput
+    data: XOR<AiCreditBucketUpdateWithoutAccountInput, AiCreditBucketUncheckedUpdateWithoutAccountInput>
+  }
+
+  export type AiCreditBucketUpdateManyWithWhereWithoutAccountInput = {
+    where: AiCreditBucketScalarWhereInput
+    data: XOR<AiCreditBucketUpdateManyMutationInput, AiCreditBucketUncheckedUpdateManyWithoutAccountInput>
+  }
+
+  export type AiCreditBucketScalarWhereInput = {
+    AND?: AiCreditBucketScalarWhereInput | AiCreditBucketScalarWhereInput[]
+    OR?: AiCreditBucketScalarWhereInput[]
+    NOT?: AiCreditBucketScalarWhereInput | AiCreditBucketScalarWhereInput[]
+    id?: UuidFilter<"AiCreditBucket"> | string
+    accountId?: UuidFilter<"AiCreditBucket"> | string
+    sourceOrderId?: UuidNullableFilter<"AiCreditBucket"> | string | null
+    sourceType?: StringFilter<"AiCreditBucket"> | string
+    grantedAmount?: IntFilter<"AiCreditBucket"> | number
+    remainingAmount?: IntFilter<"AiCreditBucket"> | number
+    status?: StringFilter<"AiCreditBucket"> | string
+    expiresAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    createdAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+    updatedAt?: DateTimeFilter<"AiCreditBucket"> | Date | string
+  }
+
   export type AiCreditAccountCreateWithoutLedgerInput = {
     id?: string
     balance?: number
@@ -74656,6 +77966,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutAiCreditAccountInput
+    buckets?: AiCreditBucketCreateNestedManyWithoutAccountInput
   }
 
   export type AiCreditAccountUncheckedCreateWithoutLedgerInput = {
@@ -74665,6 +77976,7 @@ export namespace Prisma {
     version?: number
     updatedAt?: Date | string
     createdAt?: Date | string
+    buckets?: AiCreditBucketUncheckedCreateNestedManyWithoutAccountInput
   }
 
   export type AiCreditAccountCreateOrConnectWithoutLedgerInput = {
@@ -74690,6 +78002,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutAiCreditAccountNestedInput
+    buckets?: AiCreditBucketUpdateManyWithoutAccountNestedInput
   }
 
   export type AiCreditAccountUncheckedUpdateWithoutLedgerInput = {
@@ -74699,6 +78012,191 @@ export namespace Prisma {
     version?: IntFieldUpdateOperationsInput | number
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    buckets?: AiCreditBucketUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type AiCreditAccountCreateWithoutBucketsInput = {
+    id?: string
+    balance?: number
+    version?: number
+    updatedAt?: Date | string
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutAiCreditAccountInput
+    ledger?: AiCreditLedgerCreateNestedManyWithoutAccountInput
+  }
+
+  export type AiCreditAccountUncheckedCreateWithoutBucketsInput = {
+    id?: string
+    userId: string
+    balance?: number
+    version?: number
+    updatedAt?: Date | string
+    createdAt?: Date | string
+    ledger?: AiCreditLedgerUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type AiCreditAccountCreateOrConnectWithoutBucketsInput = {
+    where: AiCreditAccountWhereUniqueInput
+    create: XOR<AiCreditAccountCreateWithoutBucketsInput, AiCreditAccountUncheckedCreateWithoutBucketsInput>
+  }
+
+  export type OrderCreateWithoutAiCreditBucketInput = {
+    id?: string
+    orderNo: string
+    planCode: string
+    planNameSnapshot: string
+    productType?: string
+    billingCycle: string
+    originalAmount: number
+    payableAmount: number
+    currency?: string
+    paymentChannel?: string | null
+    providerTradeNo?: string | null
+    idempotencyKey?: string | null
+    status?: string
+    paidAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    closedAt?: Date | string | null
+    refundedAt?: Date | string | null
+    expiresAt?: Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    cancelReason?: string | null
+    refundReason?: string | null
+    refundBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutOrdersInput
+  }
+
+  export type OrderUncheckedCreateWithoutAiCreditBucketInput = {
+    id?: string
+    orderNo: string
+    userId: string
+    planCode: string
+    planNameSnapshot: string
+    productType?: string
+    billingCycle: string
+    originalAmount: number
+    payableAmount: number
+    currency?: string
+    paymentChannel?: string | null
+    providerTradeNo?: string | null
+    idempotencyKey?: string | null
+    status?: string
+    paidAt?: Date | string | null
+    cancelledAt?: Date | string | null
+    closedAt?: Date | string | null
+    refundedAt?: Date | string | null
+    expiresAt?: Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    cancelReason?: string | null
+    refundReason?: string | null
+    refundBy?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderCreateOrConnectWithoutAiCreditBucketInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutAiCreditBucketInput, OrderUncheckedCreateWithoutAiCreditBucketInput>
+  }
+
+  export type AiCreditAccountUpsertWithoutBucketsInput = {
+    update: XOR<AiCreditAccountUpdateWithoutBucketsInput, AiCreditAccountUncheckedUpdateWithoutBucketsInput>
+    create: XOR<AiCreditAccountCreateWithoutBucketsInput, AiCreditAccountUncheckedCreateWithoutBucketsInput>
+    where?: AiCreditAccountWhereInput
+  }
+
+  export type AiCreditAccountUpdateToOneWithWhereWithoutBucketsInput = {
+    where?: AiCreditAccountWhereInput
+    data: XOR<AiCreditAccountUpdateWithoutBucketsInput, AiCreditAccountUncheckedUpdateWithoutBucketsInput>
+  }
+
+  export type AiCreditAccountUpdateWithoutBucketsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    balance?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutAiCreditAccountNestedInput
+    ledger?: AiCreditLedgerUpdateManyWithoutAccountNestedInput
+  }
+
+  export type AiCreditAccountUncheckedUpdateWithoutBucketsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    balance?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ledger?: AiCreditLedgerUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type OrderUpsertWithoutAiCreditBucketInput = {
+    update: XOR<OrderUpdateWithoutAiCreditBucketInput, OrderUncheckedUpdateWithoutAiCreditBucketInput>
+    create: XOR<OrderCreateWithoutAiCreditBucketInput, OrderUncheckedCreateWithoutAiCreditBucketInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutAiCreditBucketInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutAiCreditBucketInput, OrderUncheckedUpdateWithoutAiCreditBucketInput>
+  }
+
+  export type OrderUpdateWithoutAiCreditBucketInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderNo?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
+    billingCycle?: StringFieldUpdateOperationsInput | string
+    originalAmount?: IntFieldUpdateOperationsInput | number
+    payableAmount?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTradeNo?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    refundReason?: NullableStringFieldUpdateOperationsInput | string | null
+    refundBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutOrdersNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutAiCreditBucketInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderNo?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    planCode?: StringFieldUpdateOperationsInput | string
+    planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
+    billingCycle?: StringFieldUpdateOperationsInput | string
+    originalAmount?: IntFieldUpdateOperationsInput | number
+    payableAmount?: IntFieldUpdateOperationsInput | number
+    currency?: StringFieldUpdateOperationsInput | string
+    paymentChannel?: NullableStringFieldUpdateOperationsInput | string | null
+    providerTradeNo?: NullableStringFieldUpdateOperationsInput | string | null
+    idempotencyKey?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    refundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    refundReason?: NullableStringFieldUpdateOperationsInput | string | null
+    refundBy?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserCreateWithoutMembershipSubscriptionInput = {
@@ -74733,6 +78231,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutMembershipSubscriptionInput = {
@@ -74767,6 +78266,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutMembershipSubscriptionInput = {
@@ -74817,6 +78317,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMembershipSubscriptionInput = {
@@ -74851,6 +78352,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserCreateWithoutOrdersInput = {
@@ -74885,6 +78387,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutOrdersInput = {
@@ -74919,11 +78422,41 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutOrdersInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutOrdersInput, UserUncheckedCreateWithoutOrdersInput>
+  }
+
+  export type AiCreditBucketCreateWithoutSourceOrderInput = {
+    id?: string
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    account: AiCreditAccountCreateNestedOneWithoutBucketsInput
+  }
+
+  export type AiCreditBucketUncheckedCreateWithoutSourceOrderInput = {
+    id?: string
+    accountId: string
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AiCreditBucketCreateOrConnectWithoutSourceOrderInput = {
+    where: AiCreditBucketWhereUniqueInput
+    create: XOR<AiCreditBucketCreateWithoutSourceOrderInput, AiCreditBucketUncheckedCreateWithoutSourceOrderInput>
   }
 
   export type UserUpsertWithoutOrdersInput = {
@@ -74969,6 +78502,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrdersInput = {
@@ -75003,6 +78537,42 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
+  }
+
+  export type AiCreditBucketUpsertWithoutSourceOrderInput = {
+    update: XOR<AiCreditBucketUpdateWithoutSourceOrderInput, AiCreditBucketUncheckedUpdateWithoutSourceOrderInput>
+    create: XOR<AiCreditBucketCreateWithoutSourceOrderInput, AiCreditBucketUncheckedCreateWithoutSourceOrderInput>
+    where?: AiCreditBucketWhereInput
+  }
+
+  export type AiCreditBucketUpdateToOneWithWhereWithoutSourceOrderInput = {
+    where?: AiCreditBucketWhereInput
+    data: XOR<AiCreditBucketUpdateWithoutSourceOrderInput, AiCreditBucketUncheckedUpdateWithoutSourceOrderInput>
+  }
+
+  export type AiCreditBucketUpdateWithoutSourceOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    account?: AiCreditAccountUpdateOneRequiredWithoutBucketsNestedInput
+  }
+
+  export type AiCreditBucketUncheckedUpdateWithoutSourceOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserCreateWithoutOwnedWorkspacesInput = {
@@ -75037,6 +78607,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutOwnedWorkspacesInput = {
@@ -75071,6 +78642,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutOwnedWorkspacesInput = {
@@ -75186,6 +78758,120 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type LinkCreateWithoutWorkspaceInput = {
+    id: string
+    type?: string
+    payloadJson?: string | null
+    title: string
+    url: string
+    description?: string | null
+    iconType?: string
+    iconValue?: string | null
+    iconUrl?: string | null
+    iconModerationStatus?: string
+    position?: number
+    isActive?: boolean
+    totalClicks?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile: ProfileCreateNestedOneWithoutLinksInput
+    clicks?: LinkClickCreateNestedManyWithoutLinkInput
+    contactLeads?: LeadCreateNestedManyWithoutContactEntryInput
+  }
+
+  export type LinkUncheckedCreateWithoutWorkspaceInput = {
+    id: string
+    profileId: string
+    type?: string
+    payloadJson?: string | null
+    title: string
+    url: string
+    description?: string | null
+    iconType?: string
+    iconValue?: string | null
+    iconUrl?: string | null
+    iconModerationStatus?: string
+    position?: number
+    isActive?: boolean
+    totalClicks?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    clicks?: LinkClickUncheckedCreateNestedManyWithoutLinkInput
+    contactLeads?: LeadUncheckedCreateNestedManyWithoutContactEntryInput
+  }
+
+  export type LinkCreateOrConnectWithoutWorkspaceInput = {
+    where: LinkWhereUniqueInput
+    create: XOR<LinkCreateWithoutWorkspaceInput, LinkUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type LinkCreateManyWorkspaceInputEnvelope = {
+    data: LinkCreateManyWorkspaceInput | LinkCreateManyWorkspaceInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type LeadCreateWithoutWorkspaceInput = {
+    id: string
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profile: ProfileCreateNestedOneWithoutLeadsInput
+    contactEntry?: LinkCreateNestedOneWithoutContactLeadsInput
+    claimedBy?: UserCreateNestedOneWithoutClaimedWorkspaceLeadsInput
+    interestedProduct?: ProductCreateNestedOneWithoutLeadsInput
+    conversation?: AiConversationCreateNestedOneWithoutLeadInput
+    followUps?: LeadFollowUpCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadUncheckedCreateWithoutWorkspaceInput = {
+    id: string
+    profileId: string
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductId?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    conversationId?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    followUps?: LeadFollowUpUncheckedCreateNestedManyWithoutLeadInput
+  }
+
+  export type LeadCreateOrConnectWithoutWorkspaceInput = {
+    where: LeadWhereUniqueInput
+    create: XOR<LeadCreateWithoutWorkspaceInput, LeadUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type LeadCreateManyWorkspaceInputEnvelope = {
+    data: LeadCreateManyWorkspaceInput | LeadCreateManyWorkspaceInput[]
+    skipDuplicates?: boolean
+  }
+
   export type EnterpriseQuotaPoolCreateWithoutWorkspaceInput = {
     id?: string
     totalQuota?: number
@@ -75290,6 +78976,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedWorkspacesInput = {
@@ -75324,6 +79011,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type WorkspaceMemberUpsertWithWhereUniqueWithoutWorkspaceInput = {
@@ -75394,6 +79082,38 @@ export namespace Prisma {
     data: XOR<WorkspacePublicProfileUpdateManyMutationInput, WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceInput>
   }
 
+  export type LinkUpsertWithWhereUniqueWithoutWorkspaceInput = {
+    where: LinkWhereUniqueInput
+    update: XOR<LinkUpdateWithoutWorkspaceInput, LinkUncheckedUpdateWithoutWorkspaceInput>
+    create: XOR<LinkCreateWithoutWorkspaceInput, LinkUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type LinkUpdateWithWhereUniqueWithoutWorkspaceInput = {
+    where: LinkWhereUniqueInput
+    data: XOR<LinkUpdateWithoutWorkspaceInput, LinkUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type LinkUpdateManyWithWhereWithoutWorkspaceInput = {
+    where: LinkScalarWhereInput
+    data: XOR<LinkUpdateManyMutationInput, LinkUncheckedUpdateManyWithoutWorkspaceInput>
+  }
+
+  export type LeadUpsertWithWhereUniqueWithoutWorkspaceInput = {
+    where: LeadWhereUniqueInput
+    update: XOR<LeadUpdateWithoutWorkspaceInput, LeadUncheckedUpdateWithoutWorkspaceInput>
+    create: XOR<LeadCreateWithoutWorkspaceInput, LeadUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type LeadUpdateWithWhereUniqueWithoutWorkspaceInput = {
+    where: LeadWhereUniqueInput
+    data: XOR<LeadUpdateWithoutWorkspaceInput, LeadUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type LeadUpdateManyWithWhereWithoutWorkspaceInput = {
+    where: LeadScalarWhereInput
+    data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyWithoutWorkspaceInput>
+  }
+
   export type EnterpriseQuotaPoolUpsertWithoutWorkspaceInput = {
     update: XOR<EnterpriseQuotaPoolUpdateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedUpdateWithoutWorkspaceInput>
     create: XOR<EnterpriseQuotaPoolCreateWithoutWorkspaceInput, EnterpriseQuotaPoolUncheckedCreateWithoutWorkspaceInput>
@@ -75456,6 +79176,8 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutOwnedWorkspacesInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
@@ -75473,6 +79195,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
@@ -75514,6 +79238,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
@@ -75548,6 +79273,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutWorkspaceMembershipsInput = {
@@ -75579,6 +79305,8 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
@@ -75596,6 +79324,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
@@ -75643,6 +79373,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
@@ -75677,6 +79408,7 @@ export namespace Prisma {
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type WorkspaceCreateWithoutQuotaPoolInput = {
@@ -75693,6 +79425,8 @@ export namespace Prisma {
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionCreateNestedManyWithoutWorkspaceInput
   }
 
@@ -75710,6 +79444,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedCreateNestedManyWithoutWorkspaceInput
   }
 
@@ -75743,6 +79479,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
 
@@ -75760,6 +79498,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
@@ -75777,6 +79517,8 @@ export namespace Prisma {
     members?: WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
     domains?: DomainCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolCreateNestedOneWithoutWorkspaceInput
   }
 
@@ -75794,6 +79536,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
     domains?: DomainUncheckedCreateNestedManyWithoutWorkspaceInput
     publicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutWorkspaceInput
+    contactEntries?: LinkUncheckedCreateNestedManyWithoutWorkspaceInput
+    leads?: LeadUncheckedCreateNestedManyWithoutWorkspaceInput
     quotaPool?: EnterpriseQuotaPoolUncheckedCreateNestedOneWithoutWorkspaceInput
   }
 
@@ -75834,6 +79578,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserUncheckedCreateWithoutEnterpriseQuotaConsumptionsInput = {
@@ -75868,6 +79613,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
     ownedWorkspaces?: WorkspaceUncheckedCreateNestedManyWithoutOwnerInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedCreateNestedManyWithoutUserInput
+    claimedWorkspaceLeads?: LeadUncheckedCreateNestedManyWithoutClaimedByInput
   }
 
   export type UserCreateOrConnectWithoutEnterpriseQuotaConsumptionsInput = {
@@ -75900,6 +79646,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
   }
 
@@ -75917,6 +79665,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
   }
 
@@ -75963,6 +79713,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEnterpriseQuotaConsumptionsInput = {
@@ -75997,6 +79748,7 @@ export namespace Prisma {
     workspaceMemberships?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
     ownedWorkspaces?: WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput
     workspacePublicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutUserNestedInput
+    claimedWorkspaceLeads?: LeadUncheckedUpdateManyWithoutClaimedByNestedInput
   }
 
   export type UsernameHistoryCreateManyUserInput = {
@@ -76106,6 +79858,7 @@ export namespace Prisma {
     orderNo: string
     planCode: string
     planNameSnapshot: string
+    productType?: string
     billingCycle: string
     originalAmount: number
     payableAmount: number
@@ -76172,6 +79925,31 @@ export namespace Prisma {
     failureReason?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+  }
+
+  export type LeadCreateManyClaimedByInput = {
+    id: string
+    profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductId?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    conversationId?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type UsernameHistoryUpdateWithoutUserInput = {
@@ -76489,6 +80267,7 @@ export namespace Prisma {
     orderNo?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
     billingCycle?: StringFieldUpdateOperationsInput | string
     originalAmount?: IntFieldUpdateOperationsInput | number
     payableAmount?: IntFieldUpdateOperationsInput | number
@@ -76508,6 +80287,7 @@ export namespace Prisma {
     refundBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiCreditBucket?: AiCreditBucketUpdateOneWithoutSourceOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutUserInput = {
@@ -76515,6 +80295,7 @@ export namespace Prisma {
     orderNo?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
     billingCycle?: StringFieldUpdateOperationsInput | string
     originalAmount?: IntFieldUpdateOperationsInput | number
     payableAmount?: IntFieldUpdateOperationsInput | number
@@ -76534,6 +80315,7 @@ export namespace Prisma {
     refundBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    aiCreditBucket?: AiCreditBucketUncheckedUpdateOneWithoutSourceOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutUserInput = {
@@ -76541,6 +80323,7 @@ export namespace Prisma {
     orderNo?: StringFieldUpdateOperationsInput | string
     planCode?: StringFieldUpdateOperationsInput | string
     planNameSnapshot?: StringFieldUpdateOperationsInput | string
+    productType?: StringFieldUpdateOperationsInput | string
     billingCycle?: StringFieldUpdateOperationsInput | string
     originalAmount?: IntFieldUpdateOperationsInput | number
     payableAmount?: IntFieldUpdateOperationsInput | number
@@ -76617,6 +80400,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUpdateManyWithoutWorkspaceNestedInput
   }
@@ -76634,6 +80419,8 @@ export namespace Prisma {
     members?: WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
     domains?: DomainUncheckedUpdateManyWithoutWorkspaceNestedInput
     publicProfiles?: WorkspacePublicProfileUncheckedUpdateManyWithoutWorkspaceNestedInput
+    contactEntries?: LinkUncheckedUpdateManyWithoutWorkspaceNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutWorkspaceNestedInput
     quotaPool?: EnterpriseQuotaPoolUncheckedUpdateOneWithoutWorkspaceNestedInput
     enterpriseQuotaConsumptions?: EnterpriseQuotaConsumptionUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
@@ -76713,8 +80500,86 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type LeadUpdateWithoutClaimedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneRequiredWithoutLeadsNestedInput
+    workspace?: WorkspaceUpdateOneWithoutLeadsNestedInput
+    contactEntry?: LinkUpdateOneWithoutContactLeadsNestedInput
+    interestedProduct?: ProductUpdateOneWithoutLeadsNestedInput
+    conversation?: AiConversationUpdateOneWithoutLeadNestedInput
+    followUps?: LeadFollowUpUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateWithoutClaimedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductId?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    followUps?: LeadFollowUpUncheckedUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateManyWithoutClaimedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductId?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type LinkCreateManyProfileInput = {
     id: string
+    workspaceId?: string | null
     type?: string
     payloadJson?: string | null
     title: string
@@ -76733,6 +80598,9 @@ export namespace Prisma {
 
   export type LeadCreateManyProfileInput = {
     id: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -76793,11 +80661,14 @@ export namespace Prisma {
     totalClicks?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneWithoutContactEntriesNestedInput
     clicks?: LinkClickUpdateManyWithoutLinkNestedInput
+    contactLeads?: LeadUpdateManyWithoutContactEntryNestedInput
   }
 
   export type LinkUncheckedUpdateWithoutProfileInput = {
     id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -76813,10 +80684,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clicks?: LinkClickUncheckedUpdateManyWithoutLinkNestedInput
+    contactLeads?: LeadUncheckedUpdateManyWithoutContactEntryNestedInput
   }
 
   export type LinkUncheckedUpdateManyWithoutProfileInput = {
     id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: StringFieldUpdateOperationsInput | string
     payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -76851,6 +80724,9 @@ export namespace Prisma {
     handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneWithoutLeadsNestedInput
+    contactEntry?: LinkUpdateOneWithoutContactLeadsNestedInput
+    claimedBy?: UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput
     interestedProduct?: ProductUpdateOneWithoutLeadsNestedInput
     conversation?: AiConversationUpdateOneWithoutLeadNestedInput
     followUps?: LeadFollowUpUpdateManyWithoutLeadNestedInput
@@ -76858,6 +80734,9 @@ export namespace Prisma {
 
   export type LeadUncheckedUpdateWithoutProfileInput = {
     id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76881,6 +80760,9 @@ export namespace Prisma {
 
   export type LeadUncheckedUpdateManyWithoutProfileInput = {
     id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76990,6 +80872,31 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type LeadCreateManyContactEntryInput = {
+    id: string
+    profileId: string
+    workspaceId?: string | null
+    claimedByUserId?: string | null
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductId?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    conversationId?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type LinkClickUpdateWithoutLinkInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
@@ -77027,6 +80934,83 @@ export namespace Prisma {
     referer?: NullableStringFieldUpdateOperationsInput | string | null
     ipHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LeadUpdateWithoutContactEntryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneRequiredWithoutLeadsNestedInput
+    workspace?: WorkspaceUpdateOneWithoutLeadsNestedInput
+    claimedBy?: UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput
+    interestedProduct?: ProductUpdateOneWithoutLeadsNestedInput
+    conversation?: AiConversationUpdateOneWithoutLeadNestedInput
+    followUps?: LeadFollowUpUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateWithoutContactEntryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductId?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    followUps?: LeadFollowUpUncheckedUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateManyWithoutContactEntryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductId?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ShortLinkClickCreateManyShortLinkInput = {
@@ -77168,6 +81152,9 @@ export namespace Prisma {
   export type LeadCreateManyInterestedProductInput = {
     id: string
     profileId: string
+    workspaceId?: string | null
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
     name: string
     email?: string | null
     phone?: string | null
@@ -77206,6 +81193,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profile?: ProfileUpdateOneRequiredWithoutLeadsNestedInput
+    workspace?: WorkspaceUpdateOneWithoutLeadsNestedInput
+    contactEntry?: LinkUpdateOneWithoutContactLeadsNestedInput
+    claimedBy?: UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput
     conversation?: AiConversationUpdateOneWithoutLeadNestedInput
     followUps?: LeadFollowUpUpdateManyWithoutLeadNestedInput
   }
@@ -77213,6 +81203,9 @@ export namespace Prisma {
   export type LeadUncheckedUpdateWithoutInterestedProductInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -77236,6 +81229,9 @@ export namespace Prisma {
   export type LeadUncheckedUpdateManyWithoutInterestedProductInput = {
     id?: StringFieldUpdateOperationsInput | string
     profileId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -77304,6 +81300,18 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type AiCreditBucketCreateManyAccountInput = {
+    id?: string
+    sourceOrderId?: string | null
+    sourceType?: string
+    grantedAmount: number
+    remainingAmount: number
+    status?: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type AiCreditLedgerUpdateWithoutAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     entryType?: StringFieldUpdateOperationsInput | string
@@ -77343,6 +81351,42 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AiCreditBucketUpdateWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sourceOrder?: OrderUpdateOneWithoutAiCreditBucketNestedInput
+  }
+
+  export type AiCreditBucketUncheckedUpdateWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourceOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AiCreditBucketUncheckedUpdateManyWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sourceOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    grantedAmount?: IntFieldUpdateOperationsInput | number
+    remainingAmount?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type WorkspaceMemberCreateManyWorkspaceInput = {
     id?: string
     userId: string
@@ -77378,6 +81422,50 @@ export namespace Prisma {
     userId: string
     slug: string
     status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LinkCreateManyWorkspaceInput = {
+    id: string
+    profileId: string
+    type?: string
+    payloadJson?: string | null
+    title: string
+    url: string
+    description?: string | null
+    iconType?: string
+    iconValue?: string | null
+    iconUrl?: string | null
+    iconModerationStatus?: string
+    position?: number
+    isActive?: boolean
+    totalClicks?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LeadCreateManyWorkspaceInput = {
+    id: string
+    profileId: string
+    contactEntryId?: string | null
+    claimedByUserId?: string | null
+    name: string
+    email?: string | null
+    phone?: string | null
+    wechat?: string | null
+    message?: string | null
+    sourceComponent?: string | null
+    sourcePage?: string | null
+    interestedProductId?: string | null
+    interestedProductName?: string | null
+    interestedProductPrice?: string | null
+    interestedProductCategory?: string | null
+    conversationId?: string | null
+    status?: string
+    notes?: string | null
+    handlerNote?: string | null
+    handledAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -77507,6 +81595,144 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LinkUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconType?: StringFieldUpdateOperationsInput | string
+    iconValue?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconModerationStatus?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    totalClicks?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneRequiredWithoutLinksNestedInput
+    clicks?: LinkClickUpdateManyWithoutLinkNestedInput
+    contactLeads?: LeadUpdateManyWithoutContactEntryNestedInput
+  }
+
+  export type LinkUncheckedUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconType?: StringFieldUpdateOperationsInput | string
+    iconValue?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconModerationStatus?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    totalClicks?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clicks?: LinkClickUncheckedUpdateManyWithoutLinkNestedInput
+    contactLeads?: LeadUncheckedUpdateManyWithoutContactEntryNestedInput
+  }
+
+  export type LinkUncheckedUpdateManyWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    payloadJson?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconType?: StringFieldUpdateOperationsInput | string
+    iconValue?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconModerationStatus?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    totalClicks?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LeadUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profile?: ProfileUpdateOneRequiredWithoutLeadsNestedInput
+    contactEntry?: LinkUpdateOneWithoutContactLeadsNestedInput
+    claimedBy?: UserUpdateOneWithoutClaimedWorkspaceLeadsNestedInput
+    interestedProduct?: ProductUpdateOneWithoutLeadsNestedInput
+    conversation?: AiConversationUpdateOneWithoutLeadNestedInput
+    followUps?: LeadFollowUpUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductId?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    followUps?: LeadFollowUpUncheckedUpdateManyWithoutLeadNestedInput
+  }
+
+  export type LeadUncheckedUpdateManyWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    profileId?: StringFieldUpdateOperationsInput | string
+    contactEntryId?: NullableStringFieldUpdateOperationsInput | string | null
+    claimedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    wechat?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceComponent?: NullableStringFieldUpdateOperationsInput | string | null
+    sourcePage?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductId?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductName?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductPrice?: NullableStringFieldUpdateOperationsInput | string | null
+    interestedProductCategory?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    handlerNote?: NullableStringFieldUpdateOperationsInput | string | null
+    handledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

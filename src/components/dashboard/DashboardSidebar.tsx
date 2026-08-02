@@ -74,7 +74,7 @@ export function DashboardSidebar({ activeNav, setActiveNav, extra }: DashboardSi
         </div>
 
         <div className="mt-auto border-t border-[var(--ui-line)] pt-3">
-          <Link href="/workbench" className="flex items-center gap-2 rounded-[var(--ui-radius-sm)] px-3 py-2 text-sm font-semibold text-[var(--ui-muted)] transition hover:bg-[var(--ui-surface-muted)] hover:text-[var(--ui-ink)]">
+          <Link href="/console" className="flex items-center gap-2 rounded-[var(--ui-radius-sm)] px-3 py-2 text-sm font-semibold text-[var(--ui-muted)] transition hover:bg-[var(--ui-surface-muted)] hover:text-[var(--ui-ink)]">
             <ArrowLeft aria-hidden className="size-4" />
             <span>返回 AI 工作台</span>
           </Link>

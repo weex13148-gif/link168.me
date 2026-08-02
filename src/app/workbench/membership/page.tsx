@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   AlertCircle,
   Check,
@@ -83,6 +84,21 @@ type OrderItem = {
   updatedAt: string;
 };
 
+type AiCreditAddon = {
+  code: string;
+  name: string;
+  description: string;
+  priceCents: number;
+  points: number;
+  validityDays: number;
+};
+
+type AddonCatalog = {
+  addons: AiCreditAddon[];
+  purchasable: boolean;
+  reason: string | null;
+};
+
 const STATUS_TEXT: Record<string, string> = {
   pending: "待支付",
   processing: "支付处理中",
@@ -150,6 +166,12 @@ export default function WorkbenchMembershipPage() {
   const [refundReason, setRefundReason] = useState("");
   const [refundSubmitting, setRefundSubmitting] = useState(false);
   const [refundError, setRefundError] = useState("");
+  const [acceptedLegalTerms, setAcceptedLegalTerms] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("yearly");
+  const [addonCatalog, setAddonCatalog] = useState<AddonCatalog>({ addons: [], purchasable: false, reason: null });
+  const [addonLoadingCode, setAddonLoadingCode] = useState<string | null>(null);
+  const [addonMessage, setAddonMessage] = useState("");
+  const [addonError, setAddonError] = useState("");
 
   const loadMembership = useCallback(async () => {
     const response = await fetch("/api/workbench/membership", { cache: "no-store" });
@@ -174,11 +196,28 @@ export default function WorkbenchMembershipPage() {
     }
   }, []);
 
+  const loadAddons = useCallback(async () => {
+    const response = await fetch("/api/billing/addons/ai-reception", { cache: "no-store" });
+    const result = (await response.json()) as {
+      success?: boolean;
+      addons?: AiCreditAddon[];
+      purchasable?: boolean;
+      reason?: string | null;
+    };
+    if (response.ok && result.success) {
+      setAddonCatalog({
+        addons: result.addons ?? [],
+        purchasable: Boolean(result.purchasable),
+        reason: result.reason ?? null,
+      });
+    }
+  }, []);
+
   useEffect(() => {
     let active = true;
     (async () => {
       try {
-        await Promise.all([loadMembership(), loadOrders()]);
+        await Promise.all([loadMembership(), loadOrders(), loadAddons()]);
       } catch {
         if (active) setData(null);
       } finally {
@@ -188,7 +227,7 @@ export default function WorkbenchMembershipPage() {
     return () => {
       active = false;
     };
-  }, [loadMembership, loadOrders]);
+  }, [loadMembership, loadOrders, loadAddons]);
 
   const selectedPlanDef = useMemo(
     () =>
@@ -213,9 +252,10 @@ export default function WorkbenchMembershipPage() {
           };
           const status = result.order?.status;
           if (response.ok && result.success && status === "paid") {
-            setCheckoutMessage("支付成功，会员权益已经开通。");
+            setCheckoutMessage("支付成功，会员或点数包权益已经开通。");
+            setAddonMessage("支付成功，AI 点数已经进入账户。");
             setActiveOrderId(null);
-            await Promise.all([loadMembership(), loadOrders()]);
+            await Promise.all([loadMembership(), loadOrders(), loadAddons()]);
             setCheckoutOpen(false);
             return;
           }
@@ -241,14 +281,54 @@ export default function WorkbenchMembershipPage() {
       };
       window.setTimeout(run, 1500);
     },
-    [loadMembership, loadOrders]
+    [loadMembership, loadOrders, loadAddons]
   );
 
+  async function buyAddon(addon: AiCreditAddon) {
+    if (!addonCatalog.purchasable) return;
+    const confirmed = window.confirm(
+      `确认使用支付宝购买“${addon.name}”？\n价格：${formatYuan(addon.priceCents)}\n点数：${addon.points.toLocaleString("zh-CN")}，支付后 ${addon.validityDays} 天有效。`,
+    );
+    if (!confirmed) return;
+
+    setAddonLoadingCode(addon.code);
+    setAddonError("");
+    setAddonMessage("");
+    try {
+      const response = await fetch("/api/billing/addons/ai-reception", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ addonCode: addon.code }),
+      });
+      const result = (await response.json()) as {
+        success?: boolean;
+        error?: string;
+        message?: string;
+        order?: OrderItem;
+        payment?: { payUrl?: string };
+      };
+      if (!response.ok || !result.success || !result.order) {
+        throw new Error(result.error || result.message || "创建点数包订单失败");
+      }
+      setAddonMessage("订单已创建，请在支付宝完成付款；本页会自动确认到账。");
+      await loadOrders();
+      if (result.payment?.payUrl) window.open(result.payment.payUrl, "_blank", "noopener,noreferrer");
+      pollOrder(result.order.id);
+    } catch (error) {
+      setAddonError(error instanceof Error ? error.message : "购买点数包失败");
+    } finally {
+      setAddonLoadingCode(null);
+    }
+  }
+
   function openCheckout(planCode: string) {
+    const plan = data?.plan_definitions[planCode];
+    if (!plan || plan.price_cents[billingCycle] === null) return;
     setSelectedPlan(planCode);
     setCheckoutError("");
     setCheckoutMessage("");
     setActiveOrderId(null);
+    setAcceptedLegalTerms(false);
     setCheckoutOpen(true);
   }
 
@@ -266,6 +346,10 @@ export default function WorkbenchMembershipPage() {
 
   async function createAlipayOrder() {
     if (!selectedPlan || !data) return;
+    if (!acceptedLegalTerms) {
+      setCheckoutError("请先阅读并同意会员服务协议、支付与退款规则和 AI 服务说明。");
+      return;
+    }
     if (!data.email_verified) {
       setCheckoutError("请先完成邮箱验证，再购买会员。");
       return;
@@ -286,7 +370,7 @@ export default function WorkbenchMembershipPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           planCode: selectedPlan,
-          billingCycle: "yearly",
+          billingCycle,
           paymentChannel: "alipay",
         }),
       });
@@ -511,10 +595,13 @@ export default function WorkbenchMembershipPage() {
       <section className="mt-6">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="ui-eyebrow">年费方案</p>
+            <p className="ui-eyebrow">会员方案</p>
             <h2 className="mt-1 text-2xl font-black">按经营阶段升级</h2>
           </div>
-          <p className="text-sm ui-muted">当前仅开放年付，所有金额均为人民币。</p>
+          <div className="inline-flex rounded-full border border-[#E8DCCB] bg-white p-1 text-xs font-black">
+            <button type="button" onClick={() => setBillingCycle("monthly")} className={`rounded-full px-4 py-2 ${billingCycle === "monthly" ? "bg-[#6F8F4E] text-white" : "ui-muted"}`}>月付</button>
+            <button type="button" onClick={() => setBillingCycle("yearly")} className={`rounded-full px-4 py-2 ${billingCycle === "yearly" ? "bg-[#6F8F4E] text-white" : "ui-muted"}`}>年付</button>
+          </div>
         </div>
 
         <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -552,8 +639,7 @@ export default function WorkbenchMembershipPage() {
                   ) : null}
                 </div>
                 <p className="mt-5 text-3xl font-black text-[#2B241E]">
-                  {plan.price_display.yearly}
-                  <span className="ml-1 text-sm font-bold ui-muted">/年</span>
+                  {plan.contact_sales ? plan.price_display.yearly : plan.price_display[billingCycle]}
                 </p>
                 <ul className="mt-5 grid gap-3 text-sm">
                   {plan.features.map((feature) => (
@@ -600,6 +686,41 @@ export default function WorkbenchMembershipPage() {
               </article>
             );
           })}
+        </div>
+      </section>
+
+      <section className="ui-surface mt-6 p-5 sm:p-6">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="ui-eyebrow">AI 点数加量包</p>
+            <h2 className="mt-1 text-xl font-black">套餐点数用完后继续使用</h2>
+            <p className="mt-2 text-sm ui-muted">仅限有效付费会员购买；按到期时间优先扣减，购买后 365 天有效。</p>
+          </div>
+          {!addonCatalog.purchasable && addonCatalog.reason ? (
+            <span className="rounded-full bg-[#FFF7ED] px-3 py-1.5 text-xs font-bold text-[#9A4E12]">
+              {addonCatalog.reason}
+            </span>
+          ) : null}
+        </div>
+        {addonError ? <p className="mt-4 rounded-2xl bg-[#FEE2E2] p-3 text-sm font-bold text-[#991B1B]">{addonError}</p> : null}
+        {addonMessage ? <p className="mt-4 rounded-2xl bg-[#ECFDF5] p-3 text-sm font-bold text-[#065F46]">{addonMessage}</p> : null}
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {addonCatalog.addons.map((addon) => (
+            <article key={addon.code} className="rounded-2xl border border-[#E8DCCB] bg-white p-4">
+              <p className="font-black">{addon.name}</p>
+              <p className="mt-2 text-2xl font-black text-[#6F8F4E]">{addon.points.toLocaleString("zh-CN")} 点</p>
+              <p className="mt-1 text-sm ui-muted">{formatYuan(addon.priceCents)} · {addon.validityDays} 天有效</p>
+              <button
+                type="button"
+                onClick={() => void buyAddon(addon)}
+                disabled={!addonCatalog.purchasable || addonLoadingCode !== null}
+                className="ui-button-secondary mt-4 w-full disabled:cursor-not-allowed disabled:opacity-45"
+              >
+                {addonLoadingCode === addon.code ? <Loader2 className="size-4 animate-spin" /> : <Zap className="size-4" />}
+                支付宝购买
+              </button>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -684,7 +805,7 @@ export default function WorkbenchMembershipPage() {
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="ui-eyebrow">支付宝年付</p>
+                <p className="ui-eyebrow">支付宝{billingCycle === "yearly" ? "年付" : "月付"}</p>
                 <h2 className="mt-1 text-2xl font-black">
                   {selectedPlanDef.name}
                 </h2>
@@ -707,13 +828,28 @@ export default function WorkbenchMembershipPage() {
                   应付金额
                 </span>
                 <span className="text-3xl font-black text-[#1677FF]">
-                  {selectedPlanDef.price_display.yearly}
+                  {selectedPlanDef.price_display[billingCycle]}
                 </span>
               </div>
               <p className="mt-2 text-xs text-[#58708A]">
-                支付成功后立即开通，有效期 365 天
+                支付成功后立即开通，有效期{billingCycle === "yearly" ? "一年" : "一个月"}
               </p>
             </div>
+            <label className="mt-4 flex items-start gap-3 rounded-2xl border border-[#E8DCCB] bg-white p-4 text-xs leading-5 ui-muted">
+              <input
+                type="checkbox"
+                checked={acceptedLegalTerms}
+                onChange={(event) => setAcceptedLegalTerms(event.target.checked)}
+                className="mt-0.5 size-4"
+              />
+              <span>
+                我已阅读并同意
+                <Link href="/membership-agreement" target="_blank" className="font-black text-[#355126]">《会员服务协议》</Link>、
+                <Link href="/refund-policy" target="_blank" className="font-black text-[#355126]">《支付与退款规则》</Link>和
+                <Link href="/ai-disclaimer" target="_blank" className="font-black text-[#355126]">《AI 服务说明》</Link>。
+              </span>
+            </label>
+
             {checkoutError ? (
               <p className="mt-4 rounded-2xl bg-[#FFF1F0] p-4 text-sm font-bold text-[#B42318]">
                 <AlertCircle className="mr-1 inline size-4" />
@@ -742,7 +878,7 @@ export default function WorkbenchMembershipPage() {
               <button
                 type="button"
                 onClick={() => void createAlipayOrder()}
-                disabled={submitting || Boolean(activeOrderId)}
+                disabled={!acceptedLegalTerms || submitting || Boolean(activeOrderId)}
                 className="ui-button-primary disabled:opacity-50"
               >
                 {submitting ? (

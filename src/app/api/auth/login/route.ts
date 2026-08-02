@@ -13,6 +13,7 @@ import {
   RESTRICTION_TYPE_SECURITY_RISK,
 } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { resolveAuthenticatedDestination } from "@/lib/onboarding";
 
 export const runtime = "nodejs";
 
@@ -118,9 +119,14 @@ export async function POST(request: Request) {
     );
   }
 
+  const profile = await db.profile.findUnique({
+    where: { userId: user.id },
+    select: { username: true, displayName: true, bio: true, isPublic: true },
+  });
   const { token, expiresAt } = await createSession(user.id, request);
   const response = NextResponse.json({
     success: true,
+    redirectTo: resolveAuthenticatedDestination(profile),
     user: { id: user.id, email: user.email, emailVerified: user.emailVerified },
     restrictions: { items: restrictions, blockedType: null, loginBlocked: false, reason: null },
   });

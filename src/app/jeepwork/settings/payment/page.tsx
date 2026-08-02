@@ -52,7 +52,7 @@ export default function JeepworkPaymentSettingsPage() {
         highlight: "#1677FF",
       }}
     >
-      <AdminAlertBanner tone="danger" title="已知限制：退款未调用支付宝接口"><p>当前退款流程仅更新本地订单状态，未调用支付宝退款 API。需人工在支付宝后台确认退款到账。</p></AdminAlertBanner>
+      <AdminAlertBanner tone="danger" title="已知限制：退款未调用支付宝接口"><p>生产退款仅在支付宝确认成功后更新订单与权益；测试模式在生产环境被禁止。</p></AdminAlertBanner>
       <AdminPaymentSettingsClient />
       {logout.Modal}
     </AdminShell>

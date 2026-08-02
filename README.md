@@ -1,89 +1,54 @@
 # Link168
 
-Link168 is a personal digital identity homepage and QR-code marketing tool for Chinese users.
+Link168（链接一路发）是面向个人创业者、小商家和轻量团队的 AI 经营名片 SaaS。它把业务展示、访客咨询、AI 接待、客户留资、线索跟进、经营数据和会员订阅连成一个闭环。
 
-Brand slogan:
+## 当前唯一开发入口
 
-- Link168 链接一路发
-- 一个人，一个链接，连接全网
+- 当前收口分支：`recovery/direct-goal-closeout-20260722`
+- 产品宪法：`01_PRODUCT_DOCS/PRODUCT_CONSTITUTION.md`
+- 当前 PRD：`01_PRODUCT_DOCS/PRD.md`
+- 价格与 AI 额度：`docs/PRICING_AND_ENTITLEMENTS.md`
+- 工程与安全规则：`PROJECT_RULES.md`
+- 开发助手入口：`AGENTS.md`
 
-## V0.1 Scope
+旧分支、旧 PRD、研究文档和历史报告只作参考，不能覆盖以上正式文件。
 
-V0.1 only supports the core path:
+## 已有产品能力
 
-1. Register
-2. Log in
-3. Create one public profile
-4. Edit profile information
-5. Add, edit, and delete links
-6. Visit the public profile by username
-7. Submit reports through the report center
-8. Review basic reports in the admin area
+- 注册、登录、邮箱验证、账号安全和会话管理
+- 经营名片、产品/服务、平台链接、图片、二维码和公开页
+- 访客访问、咨询、留资、Lead 跟进和经营统计
+- AI 接待、知识库、风险降级和转人工
+- Free、Plus、Pro、Enterprise、Enterprise Pro 权益
+- 支付订单、回调、退款、对账和运营后台
+- 企业 Workspace、成员、企业额度和自定义域名基础能力
 
-Users can aggregate WeChat official accounts, Xiaohongshu, Douyin, WeChat Channels, website links, product links, consultation bookings, and other destinations into one public page.
+真实 AI、邮件、支付、退款、对象存储和生产域名仍需在隔离或生产环境配置后验证，代码测试不能替代真实供应商验收。
 
-## Tech Stack
+## 本地运行
 
-- Next.js App Router
-- Tailwind CSS
-- Prisma
-- PostgreSQL
-- Self-built register and login flow
-- bcrypt password hashing
-- HttpOnly Cookie Session
-
-## Pages
-
-- `/` V0.1 entry page
-- `/register` register page
-- `/login` login page
-- `/dashboard` user dashboard
-- `/[username]` public profile route
-- `/report` report center
-- `/admin/reports` basic admin report area
-
-## Product Rules
-
-- Brand name: Link168
-- Official URL: `https://link168.me`
-- Free plan: one profile and one username
-- Free public profiles must show a clickable `Powered by Link168` brand footer
-- Logo asset: `public/brand/link168-logo.png`
-- Logo should be rendered through a clickable `BrandLogo` component that returns to `/`
-- V0.1 does not include membership, payment, AI, complex analytics, a template marketplace, or real WeChat login
-- VLink is only a functional layout reference. Do not copy its brand, images, copy, or colors.
-
-## Deployment Direction
-
-- Prefer Aliyun ECS for deployment.
-- Do not prioritize Vercel, Supabase, or other overseas services for the primary deployment path.
-- During HTTP public IP testing, set `COOKIE_SECURE=false`.
-- After the official HTTPS domain is live, set `COOKIE_SECURE=true`.
-
-## Security Rules
-
-- Do not commit `.env`, `.env.local`, or `.env.production`.
-- Do not commit database passwords, `SESSION_SECRET`, or `ADMIN_SECRET`.
-- Passwords must be stored as bcrypt hashes.
-- Login state must use HttpOnly Cookie.
-- Admin APIs require `ADMIN_SECRET` or equivalent protection.
-
-## Local Setup
-
-Create `.env.local` from `.env.example`:
+需要 Node.js、npm 和 PostgreSQL。Windows 请使用 `npm.cmd`。
 
 ```bash
-DATABASE_URL=postgresql://user:password@host:5432/link168
-ADMIN_SECRET=replace-with-a-random-secret-at-least-32-characters
-SESSION_SECRET=replace-with-a-random-secret-at-least-32-characters
-COOKIE_SECURE=false
-```
-
-Install dependencies and run:
-
-```bash
-npm install
+copy .env.example .env.local
+npm ci
+npx prisma generate
+npx prisma migrate deploy
 npm run dev
 ```
 
-Then open `http://localhost:3000`.
+将 `.env.local` 中的 `DATABASE_URL`、`SESSION_SECRET`、`ADMIN_SECRET` 和 `CONFIG_ENCRYPTION_KEY` 替换为本地测试值，然后访问 `http://localhost:3000`。不要提交 `.env.local`。
+
+## 质量门禁
+
+```bash
+npx prisma validate
+npx prisma generate
+npm run lint
+npm run typecheck
+npm test -- --runInBand
+npm run build
+git diff --check
+```
+
+部署与数据库脚本见 `scripts/release/`、`scripts/db/` 和 `.env.example`。

@@ -21,12 +21,18 @@ import { sanitizePublicUrl } from "@/lib/public-url-security";
 import { addAiDisclaimer } from "@/lib/ai/compliance";
 import { buildPrivacyNoticeFromConfig, type AiChatPrivacyNotice } from "@/lib/ai/privacy";
 import { assertAiEntitlement, buildAiUsageMetadata } from "@/lib/ai/entitlement-guard";
-import { createAiTraceContext, logAiTraceInfo, type AiTraceContext } from "@/lib/observability/ai-trace";
+import { createAiTraceContext, logAiTraceInfo } from "@/lib/observability/ai-trace";
 import { recordAiMetrics, recordSafetyRejection } from "@/lib/observability/ai-metrics";
 import { mapProviderErrorToAiCode, type AiErrorCode } from "@/lib/ai/provider-error";
 import { logAiRiskEvent } from "@/lib/ai/risk-log";
+import { classifyAiBusinessRisk } from "@/lib/ai/business-risk";
+import { CONTACT_ENTRY_TYPE } from "@/lib/contact-entries";
 
 export type CommercialAgentKind = "sales" | "customer-service" | "conversion";
+
+export type CommercialAgentRequestContext = {
+  expectedWorkspaceId: string | null;
+};
 
 type LeadInput = {
   name?: unknown;
@@ -49,6 +55,7 @@ type ConversionEvent = {
 type CommercialAgentInput = {
   username?: unknown;
   message?: unknown;
+  handoffContactEntryId?: unknown;
   visitorSessionId?: unknown;
   conversationId?: unknown;
   lead?: LeadInput;
@@ -61,6 +68,7 @@ type AgentAction = {
   label?: string;
   url?: string;
   productId?: string;
+  contactEntryId?: string;
 };
 
 type ProductContext = {
@@ -80,6 +88,7 @@ export type CommercialAgentResponse = {
   data?: {
     agent: CommercialAgentKind;
     reply: string;
+    replyKind: "ai" | "preset";
     conversationId: string;
     visitorSessionId: string;
     action: AgentAction;
@@ -141,6 +150,90 @@ function safeActionUrl(raw: string | null | undefined) {
   if (!raw) return undefined;
   const checked = sanitizePublicUrl(raw);
   return checked.safe && checked.url ? checked.url : undefined;
+}
+
+function asksForHuman(message: string) {
+  return /(转人工|人工客服|人工处理|真人客服|联系本人|本人联系|找(人|客服)|请.*联系我|让.*联系我)/i.test(message);
+}
+
+function pickContactEntry(links: Array<{
+  id: string;
+  type: string;
+  title: string;
+  workspaceId: string | null;
+}>, preferredEntryId: string, expectedWorkspaceId: string | null) {
+  const contacts = links.filter(
+    (link) => link.type === CONTACT_ENTRY_TYPE && link.workspaceId === expectedWorkspaceId,
+  );
+  if (preferredEntryId) return contacts.find((link) => link.id === preferredEntryId) || null;
+  // 团队页必须显式提供当前已验证 workspace 的联系入口；个人页可回退到个人入口。
+  return expectedWorkspaceId === null ? contacts[0] || null : null;
+}
+
+async function createHandoffLead(args: {
+  profileId: string;
+  visitorSessionId: string;
+  requestedConversationId: string;
+  message: string;
+  reply: string;
+  contactEntry: { id: string; title: string; workspaceId: string | null } | null;
+}) {
+  let conversation = args.requestedConversationId
+    ? await db.aiConversation.findFirst({
+        where: { id: args.requestedConversationId, profileId: args.profileId, status: "active" },
+      })
+    : null;
+  if (!conversation) {
+    conversation = await db.aiConversation.findFirst({
+      where: { profileId: args.profileId, visitorSessionId: args.visitorSessionId, status: "active" },
+      orderBy: { updatedAt: "desc" },
+    });
+  }
+  if (!conversation) {
+    conversation = await db.aiConversation.create({
+      data: { profileId: args.profileId, visitorSessionId: args.visitorSessionId, status: "active", transferredToHuman: true },
+    });
+  } else if (!conversation.transferredToHuman) {
+    conversation = await db.aiConversation.update({
+      where: { id: conversation.id },
+      data: { transferredToHuman: true },
+    });
+  }
+
+  await db.$transaction(async (tx) => {
+    await tx.aiMessage.create({
+      data: { conversationId: conversation!.id, role: "user", content: args.message, sourceRefs: { handoff: true }, creditCost: 0 },
+    });
+    await tx.aiMessage.create({
+      data: { conversationId: conversation!.id, role: "assistant", content: args.reply, sourceRefs: { handoff: true }, creditCost: 0 },
+    });
+
+    const leadData = {
+      message: args.message,
+      sourceComponent: "ai-handoff",
+      sourcePage: "public-profile",
+      handlerNote: `建议动作：通过${args.contactEntry?.title || "联系入口"}人工跟进访客问题。`,
+      workspaceId: args.contactEntry?.workspaceId || null,
+      contactEntryId: args.contactEntry?.id || null,
+      status: "new",
+    };
+    const existingLead = await tx.lead.findUnique({ where: { conversationId: conversation!.id } });
+    if (existingLead) {
+      await tx.lead.update({ where: { id: existingLead.id }, data: leadData });
+    } else {
+      await tx.lead.create({
+        data: {
+          id: crypto.randomUUID(),
+          profileId: args.profileId,
+          conversationId: conversation!.id,
+          name: "AI 转人工访客",
+          ...leadData,
+        },
+      });
+    }
+  });
+
+  return conversation.id;
 }
 
 function resolveConversionAction(event: ConversionEvent | undefined, products: ProductContext[]): AgentAction {
@@ -289,6 +382,7 @@ async function captureLead(args: {
 export async function runCommercialAgent(
   kind: CommercialAgentKind,
   rawInput: CommercialAgentInput,
+  requestContext: CommercialAgentRequestContext = { expectedWorkspaceId: null },
 ): Promise<CommercialAgentResponse> {
   // ===== AI 调用链路追踪 =====
   const traceCtx = createAiTraceContext({
@@ -311,6 +405,7 @@ export async function runCommercialAgent(
       data: {
         agent: kind,
         reply: "",
+        replyKind: "preset",
         conversationId: "",
         visitorSessionId,
         action: initialAction,
@@ -336,7 +431,11 @@ export async function runCommercialAgent(
   const profile = await db.profile.findUnique({
     where: { username },
     include: {
-      links: { where: { isActive: true }, orderBy: { position: "asc" }, take: 30 },
+      links: {
+        where: { isActive: true, workspaceId: requestContext.expectedWorkspaceId },
+        orderBy: { position: "asc" },
+        take: 30,
+      },
       user: {
         select: {
           id: true,
@@ -359,8 +458,40 @@ export async function runCommercialAgent(
     },
   });
 
-  if (!profile || !profile.isPublic) {
+  if (!profile) {
     return { success: false, status: 404, error: "该公开主页不存在或未公开。", code: "PROFILE_UNAVAILABLE", traceId: traceCtx.traceId };
+  }
+  if (requestContext.expectedWorkspaceId === null && !profile.isPublic) {
+    return { success: false, status: 404, error: "该公开主页不存在或未公开。", code: "PROFILE_UNAVAILABLE", traceId: traceCtx.traceId };
+  }
+  const scopedLinks = profile.links.filter(
+    (link) => link.workspaceId === requestContext.expectedWorkspaceId,
+  );
+  if (requestContext.expectedWorkspaceId !== null) {
+    const workspace = await db.workspace.findUnique({
+      where: { id: requestContext.expectedWorkspaceId },
+      select: {
+        ownerId: true,
+        isActive: true,
+        publicProfiles: {
+          where: { userId: profile.user.id, status: "active" },
+          select: { id: true },
+          take: 1,
+        },
+      },
+    });
+    const belongsToWorkspace = Boolean(
+      workspace && (workspace.ownerId === profile.user.id || workspace.publicProfiles.length > 0),
+    );
+    if (!workspace?.isActive || !belongsToWorkspace) {
+      return {
+        success: false,
+        status: 403,
+        error: "公开页面与企业空间不匹配。",
+        code: "PUBLIC_CONTEXT_UNVERIFIED",
+        traceId: traceCtx.traceId,
+      };
+    }
   }
   if (!profile.user.emailVerified) {
     return { success: false, status: 403, error: "该主页尚未完成邮箱验证。", code: "OWNER_UNVERIFIED", traceId: traceCtx.traceId };
@@ -410,11 +541,6 @@ export async function runCommercialAgent(
     };
   }
 
-  const resolved = resolveEnterpriseBailianConfig(platformConfig);
-  if (!isBailianApplicationConfigured(resolved)) {
-    return { success: false, status: 503, error: "AI 服务暂不可用，请稍后再试。", code: "AI_NOT_CONFIGURED", traceId: traceCtx.traceId };
-  }
-
   const message = sanitizeUserMessage(rawMessage || "请根据当前访客行为生成一句合规、克制的下一步引导文案。");
   if (detectPromptInjection(message).detected) {
     recordSafetyRejection({
@@ -437,6 +563,108 @@ export async function runCommercialAgent(
       requestSource: `commercial-agent:${kind}`,
     });
     return { success: false, status: 400, error: "问题包含平台限制内容，请修改后重试。", code: "SENSITIVE_CONTENT", traceId: traceCtx.traceId };
+  }
+
+  const businessRisk = classifyAiBusinessRisk(message);
+  const explicitHumanRequest = asksForHuman(message);
+  const preferredContactEntryId = text(rawInput.handoffContactEntryId, 64);
+  const handoffContact = pickContactEntry(
+    scopedLinks,
+    preferredContactEntryId,
+    requestContext.expectedWorkspaceId,
+  );
+  const needsHumanHandoff = businessRisk.level === 3 || explicitHumanRequest;
+  if (
+    needsHumanHandoff
+    && ((preferredContactEntryId && !handoffContact)
+      || (requestContext.expectedWorkspaceId !== null && !handoffContact))
+  ) {
+    return {
+      success: false,
+      status: 403,
+      error: "人工联系入口与当前公开页面不匹配。",
+      code: "HANDOFF_CONTEXT_MISMATCH",
+      traceId: traceCtx.traceId,
+    };
+  }
+  if (businessRisk.level !== 1 || needsHumanHandoff) {
+    if (businessRisk.level !== 1 && businessRisk.level >= 3) {
+      await logAiRiskEvent({
+        userId: profile.user.id,
+        eventType: "manual_review",
+        assistant: kind,
+        riskLevel: businessRisk.riskLevel,
+        metadata: {
+          category: businessRisk.code,
+          traceId: traceCtx.traceId,
+          source: "commercial-agent-business-risk",
+        },
+      });
+    }
+
+    const businessReply = businessRisk.level === 1 ? "" : businessRisk.reply;
+    const handoffReply = needsHumanHandoff
+      ? (businessRisk.level === 3
+        ? businessReply
+        : "我已为你转入人工联系入口，请通过下方联系卡继续沟通。")
+      : businessReply;
+    let handoffConversationId = "";
+    let handoffLeadCaptured = false;
+    if (needsHumanHandoff) {
+      try {
+        handoffConversationId = await createHandoffLead({
+          profileId: profile.id,
+          visitorSessionId,
+          requestedConversationId: text(rawInput.conversationId, 64),
+          message,
+          reply: handoffReply,
+          contactEntry: handoffContact,
+        });
+        handoffLeadCaptured = true;
+      } catch (handoffError) {
+        await logAiRiskEvent({
+          userId: profile.user.id,
+          eventType: "model_error",
+          assistant: kind,
+          riskLevel: "high",
+          metadata: { reason: "转人工线索保存失败", traceId: traceCtx.traceId, error: String(handoffError) },
+        });
+      }
+    }
+
+    const privacyNotice = buildPrivacyNoticeFromConfig({
+      collectLead: serviceConfig.collectLead,
+      allowReport: serviceConfig.allowReport,
+      allowTransferToHuman: true,
+      privacyNoticeText: serviceConfig.privacyNoticeText,
+    });
+
+    return {
+      success: true,
+      status: 200,
+      traceId: traceCtx.traceId,
+      data: {
+        agent: kind,
+        reply: handoffReply,
+        replyKind: "preset",
+        conversationId: handoffConversationId,
+        visitorSessionId,
+        action: needsHumanHandoff
+          ? { type: "contact", label: handoffContact?.title || "联系本人", contactEntryId: handoffContact?.id }
+          : { type: "reply" },
+        leadCaptured: handoffLeadCaptured,
+        creditBalance: guard.entitlements.limits.aiChatsPerMonth.remaining,
+        privacyNotice,
+        collectLeadEnabled: serviceConfig.collectLead,
+        transferToHumanEnabled: true,
+        allowReportEnabled: serviceConfig.allowReport,
+      },
+    };
+  }
+
+  const resolved = resolveEnterpriseBailianConfig(platformConfig);
+  if (!isBailianApplicationConfigured(resolved)) {
+    return { success: false, status: 503, error: "AI 服务暂不可用，请稍后再试。", code: "AI_NOT_CONFIGURED", traceId: traceCtx.traceId };
   }
 
   const requestedConversationId = text(rawInput.conversationId, 64);
@@ -550,7 +778,7 @@ export async function runCommercialAgent(
     message,
     action,
     history: history.reverse(),
-    links: profile.links.map((item) => ({ title: item.title, description: item.description, url: item.url })),
+    links: scopedLinks.map((item) => ({ title: item.title, description: item.description, url: item.url })),
     products,
     docs: profile.user.knowledgeDocs.map((item) => ({ title: item.title, category: item.category, content: item.content })),
   });
@@ -722,7 +950,7 @@ export async function runCommercialAgent(
   const privacyNotice = buildPrivacyNoticeFromConfig({
     collectLead: serviceConfig.collectLead,
     allowReport: serviceConfig.allowReport,
-    allowTransferToHuman: false,
+    allowTransferToHuman: true,
     privacyNoticeText: serviceConfig.privacyNoticeText,
   });
 
@@ -746,6 +974,7 @@ export async function runCommercialAgent(
     data: {
       agent: kind,
       reply,
+      replyKind: "ai",
       conversationId: conversation.id,
       visitorSessionId,
       action: finalAction,
@@ -753,7 +982,7 @@ export async function runCommercialAgent(
       creditBalance: consumed.balanceAfter ?? 0,
       privacyNotice,
       collectLeadEnabled: serviceConfig.collectLead ?? false,
-      transferToHumanEnabled: false,
+      transferToHumanEnabled: true,
       allowReportEnabled: serviceConfig.allowReport ?? false,
     },
   };

@@ -1,10 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import Link from "next/link";
 import { SharePageWithContact } from "@/components/share/SharePageWithContact";
-import { ShareActions } from "@/components/share/ShareActions";
-import { QrSharePanel } from "@/components/share/QrSharePanel";
 import { MobileOptimizer } from "./MobileOptimizer";
 import type { SharePageTemplate } from "@/components/share/SharePageRenderer";
 import type { ProductDto } from "@/components/share/PublicProductsSection";
@@ -35,13 +32,6 @@ interface PublicProfileClientWrapperProps {
 }
 
 export function PublicProfileClientWrapper(props: PublicProfileClientWrapperProps) {
-  const [showQrPanel, setShowQrPanel] = useState(false);
-
-  const pageUrl = useMemo(() => {
-    if (typeof window === "undefined") return "";
-    return window.location.href;
-  }, []);
-
   const {
     isPreview,
     ...sharePageProps
@@ -51,7 +41,7 @@ export function PublicProfileClientWrapper(props: PublicProfileClientWrapperProp
     <MobileOptimizer>
       {isPreview ? (
         <Link
-          href="/dashboard"
+          href="/console/card"
           className="mb-4 inline-flex w-fit items-center rounded-full bg-[#6F8F4E] px-4 py-2 text-sm font-black text-white shadow-sm"
         >
           返回操作后台
@@ -61,25 +51,9 @@ export function PublicProfileClientWrapper(props: PublicProfileClientWrapperProp
       <div className="mx-auto w-full max-w-md">
         <SharePageWithContact
           {...sharePageProps}
-          onQrCodeClick={() => setShowQrPanel(true)}
-          onShareClick={() => setShowQrPanel(true)}
+          renderMode={isPreview ? "preview" : "public"}
         />
       </div>
-
-      <ShareActions
-        pageUrl={pageUrl}
-        displayName={props.displayName}
-        username={props.username}
-        onOpenQrCode={() => setShowQrPanel(true)}
-      />
-
-      <QrSharePanel
-        isOpen={showQrPanel}
-        onClose={() => setShowQrPanel(false)}
-        pageUrl={pageUrl}
-        displayName={props.displayName}
-        username={props.username}
-      />
     </MobileOptimizer>
   );
 }

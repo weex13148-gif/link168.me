@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { requireDashboardUser } from "@/lib/auth";
-import { db } from "@/lib/db";
 import {
   closeExpiredOrders,
   createOrder,
@@ -69,9 +68,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "免费版无需下单" }, { status: 400 });
     }
 
-    if (billingCycleRaw !== "yearly") {
-      return NextResponse.json({ success: false, error: "当前正式销售仅支持年付" }, { status: 400 });
+    if (billingCycleRaw !== "monthly" && billingCycleRaw !== "yearly") {
+      return NextResponse.json({ success: false, error: "请选择月付或年付" }, { status: 400 });
     }
+    const billingCycle = billingCycleRaw as "monthly" | "yearly";
 
     if (paymentChannelRaw === "wechat") {
       return NextResponse.json({ success: false, error: "微信支付后续开放，当前请使用支付宝。" }, { status: 400 });
@@ -84,9 +84,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "无权使用内部测试套餐" }, { status: 403 });
     }
 
-    if (!isPriceConfirmed(planCode, "yearly")) {
+    if (!isPriceConfirmed(planCode, billingCycle)) {
       const plan = getPlanDefinition(planCode);
-      return NextResponse.json({ success: false, error: `${plan.name} 年付价格尚未确认` }, { status: 400 });
+      return NextResponse.json({ success: false, error: `${plan.name} ${billingCycle === "yearly" ? "年付" : "月付"}价格尚未确认` }, { status: 400 });
     }
 
     const availability = await getPaymentAvailability();
@@ -100,17 +100,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // 支付成功发放额度时依赖额度账户；下单前幂等创建，兼容历史用户。
-    await db.aiCreditAccount.upsert({
-      where: { userId: user.id },
-      create: { userId: user.id },
-      update: {},
-    });
-
     const order = await createOrder({
       userId: user.id,
       planCode,
-      billingCycle: "yearly",
+      billingCycle,
       metadata: { source: "workbench_membership", paymentChannel: "alipay" },
     });
 

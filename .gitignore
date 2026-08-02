@@ -17,6 +17,7 @@ test-dev.*.log
 test-screenshots/
 visual-screenshots/
 outputs/
+.local-postgres/
 .local-artifacts/
 .dev-server.pid
 npm-debug.log*

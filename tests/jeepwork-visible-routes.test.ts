@@ -57,4 +57,14 @@ describe("Jeepwork visible route closure", () => {
     );
     expect(shell).toContain('currentUserRole !== "super_admin"');
   });
+
+  test("settings API cannot bypass the audited user-role workflow", () => {
+    const settingsApi = fs.readFileSync(
+      path.join(root, "src", "app", "api", "jeepwork", "settings", "api", "route.ts"),
+      "utf8",
+    );
+    expect(settingsApi).not.toContain("promote-super-admin");
+    expect(settingsApi).not.toContain("ROLE_SUPER_ADMIN");
+    expect(settingsApi).not.toContain("db.user.update");
+  });
 });

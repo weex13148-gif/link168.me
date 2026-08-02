@@ -110,6 +110,7 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const statusFilter = searchParams.get("status");
+  const statusGroup = searchParams.get("statusGroup");
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
   const pageSize = Math.min(100, Math.max(1, parseInt(searchParams.get("pageSize") ?? "50", 10)));
   const skip = (page - 1) * pageSize;
@@ -154,9 +155,22 @@ export async function GET(request: Request) {
     }
   }
 
+  const groupedStatuses =
+    statusGroup === "pending"
+      ? ["new", "viewed"]
+      : statusGroup === "following_up"
+        ? ["following_up"]
+        : statusGroup === "completed"
+          ? ["won", "closed"]
+          : null;
+
   const where = {
     profileId: profile.id,
-    ...(normalizedFilter ? { status: normalizedFilter } : {}),
+    ...(groupedStatuses
+      ? { status: { in: groupedStatuses } }
+      : normalizedFilter
+        ? { status: normalizedFilter }
+        : {}),
     ...search,
     ...dateRange,
     ...sourceFilterClause,

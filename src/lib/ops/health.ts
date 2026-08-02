@@ -153,7 +153,7 @@ function formatBytes(bytes: number): string {
 }
 
 function getUploadDirectory(): string {
-  return process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads");
+  return process.env.UPLOAD_DIR || path.join(/* turbopackIgnore: true */ process.cwd(), "uploads");
 }
 
 // ============ 系统总览 ============
@@ -420,14 +420,14 @@ export async function checkUploadHealth(): Promise<UploadHealth> {
     result.directoryWritable = false;
 
     try {
-      await fs.access(uploadDir);
+      await fs.access(/* turbopackIgnore: true */ uploadDir);
       result.directoryExists = true;
 
       // 检查写权限
-      const testFile = path.join(uploadDir, `.write-test-${Date.now()}.tmp`);
+      const testFile = path.join(/* turbopackIgnore: true */ uploadDir, `.write-test-${Date.now()}.tmp`);
       try {
-        await fs.writeFile(testFile, "test");
-        await fs.unlink(testFile);
+        await fs.writeFile(/* turbopackIgnore: true */ testFile, "test");
+        await fs.unlink(/* turbopackIgnore: true */ testFile);
         result.directoryWritable = true;
       } catch {
         result.directoryWritable = false;
@@ -437,10 +437,12 @@ export async function checkUploadHealth(): Promise<UploadHealth> {
       let totalSize = 0;
       let tempCount = 0;
       try {
-        const entries = await fs.readdir(uploadDir, { withFileTypes: true });
+        const entries = await fs.readdir(/* turbopackIgnore: true */ uploadDir, { withFileTypes: true });
         for (const entry of entries) {
           if (entry.isFile()) {
-            const stat = await fs.stat(path.join(uploadDir, entry.name));
+            const stat = await fs.stat(
+              /* turbopackIgnore: true */ path.join(/* turbopackIgnore: true */ uploadDir, entry.name),
+            );
             totalSize += stat.size;
             // 临时文件通常是 .tmp 或以 . 开头的文件
             if (entry.name.endsWith(".tmp") || entry.name.startsWith(".")) {

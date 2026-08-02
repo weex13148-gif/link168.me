@@ -48,7 +48,7 @@ export function SharePanel({
             <div className="mt-6 flex flex-wrap gap-2">
               <button type="button" onClick={onCopy} className="ui-button-secondary"><Copy className="size-4" />复制地址</button>
               <Link href={publicUrl} target="_blank" rel="noopener noreferrer" className="ui-button-secondary"><ExternalLink className="size-4" />打开主页</Link>
-              <button type="button" onClick={onShare} className="ui-button-primary"><Share2 className="size-4" />系统分享</button>
+              <button type="button" onClick={onShare} className="ui-button-secondary"><Share2 className="size-4" />系统分享</button>
             </div>
 
             <div className="mt-8 border-t border-[var(--ui-line)] pt-6">
@@ -68,7 +68,7 @@ export function SharePanel({
             </div>
             <p className="mt-4 text-xs ui-muted">扫码直接打开 {publicUrl}</p>
             <div className="mt-5 grid gap-2">
-              <a href={qrCodeUrl} download={`${username}_qrcode.png`} className="ui-button-primary w-full"><Download className="size-4" />下载二维码</a>
+              <a href={qrCodeUrl} download={`${username}_qrcode.png`} className="ui-button-secondary w-full"><Download className="size-4" />下载二维码</a>
               <button type="button" onClick={onQr} className="ui-button-secondary w-full"><QrCode className="size-4" />放大查看</button>
             </div>
           </section>

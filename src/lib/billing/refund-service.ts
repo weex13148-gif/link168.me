@@ -4,7 +4,15 @@ import { ORDER_STATUS, type DbOrder, type PaymentChannel } from "./orders";
 import { transitionOrderState, canInitiateRefund, ORDER_STATE_MACHINE } from "./payment-state-machine";
 import { getPaymentConfig, amountStringToCents } from "./payments";
 import { normalizePlanCode } from "./plans";
+import { isPaymentSimulationAllowed } from "./payment-safety";
 import { writeAdminAuditLog } from "@/lib/admin-audit-log";
+import {
+  assertAddonRefundable,
+  isAiCreditAddonOrder,
+  releaseAddonRefundReservation,
+  reserveAddonCreditsForRefund,
+  revokeAddonCredits,
+} from "./ai-credit-buckets";
 
 export type RefundRequestParams = {
   orderId: string;
@@ -69,6 +77,9 @@ async function callAlipayRefund(
   config: Awaited<ReturnType<typeof getPaymentConfig>>,
 ): Promise<{ success: boolean; refundId?: string; error?: string }> {
   if (config.testMode) {
+    if (!isPaymentSimulationAllowed(config.testMode)) {
+      return { success: false, error: "当前环境禁止测试退款模式，请关闭测试模式后使用支付宝真实退款。" };
+    }
     return {
       success: true,
       refundId: `test_refund_${orderNo}_${Date.now()}`,
@@ -220,7 +231,15 @@ export async function requestRefund(params: RefundRequestParams): Promise<Refund
     return { success: false, error: "没有可退金额" };
   }
 
+  const addonRefundError = await assertAddonRefundable(order, refundAmount);
+  if (addonRefundError) {
+    return { success: false, error: addonRefundError };
+  }
+
   const refundId = generateRefundId();
+  const addonOrder = isAiCreditAddonOrder(order);
+  let addonReserved = false;
+  let providerRefundSucceeded = false;
 
   try {
     const stateResult = await transitionOrderState({
@@ -241,6 +260,21 @@ export async function requestRefund(params: RefundRequestParams): Promise<Refund
       return { success: false, error: stateResult.error || "订单状态更新失败" };
     }
 
+    if (addonOrder) {
+      const reservationError = await reserveAddonCreditsForRefund(order);
+      if (reservationError) {
+        await transitionOrderState({
+          orderId,
+          toState: ORDER_STATE_MACHINE.PAID,
+          actorUserId,
+          actorRole,
+          reason: `点数包退款预留失败：${reservationError}`,
+        });
+        return { success: false, error: reservationError };
+      }
+      addonReserved = true;
+    }
+
     const config = await getPaymentConfig();
 
     let providerResult: { success: boolean; refundId?: string; error?: string };
@@ -259,6 +293,10 @@ export async function requestRefund(params: RefundRequestParams): Promise<Refund
         refundId: `sandbox_refund_${order.orderNo}`,
       };
     } else {
+      if (addonReserved) {
+        await releaseAddonRefundReservation(order);
+        addonReserved = false;
+      }
       await transitionOrderState({
         orderId,
         toState: order.status === "partially_refunded"
@@ -272,6 +310,10 @@ export async function requestRefund(params: RefundRequestParams): Promise<Refund
     }
 
     if (!providerResult.success) {
+      if (addonReserved) {
+        await releaseAddonRefundReservation(order);
+        addonReserved = false;
+      }
       await transitionOrderState({
         orderId,
         toState: ORDER_STATE_MACHINE.REFUND_FAILED,
@@ -291,6 +333,7 @@ export async function requestRefund(params: RefundRequestParams): Promise<Refund
         orderStatus: ORDER_STATE_MACHINE.REFUND_FAILED,
       };
     }
+    providerRefundSucceeded = true;
 
     const alreadyRefunded = Number(
       (order.metadata as Record<string, unknown>)?.refundAmount ?? 0,
@@ -327,7 +370,11 @@ export async function requestRefund(params: RefundRequestParams): Promise<Refund
       }
 
       if (isFullRefund) {
-        await revokeMembershipOnFullRefund(order, tx);
+        if (addonOrder) {
+          await revokeAddonCredits(tx, order);
+        } else {
+          await revokeMembershipOnFullRefund(order, tx);
+        }
       }
 
       return { finalState, isFullRefund };
@@ -362,6 +409,9 @@ export async function requestRefund(params: RefundRequestParams): Promise<Refund
       providerRefundId: providerResult.refundId,
     };
   } catch (err) {
+    if (addonReserved && !providerRefundSucceeded) {
+      await releaseAddonRefundReservation(order).catch(() => undefined);
+    }
     const errorMsg = err instanceof Error ? err.message : String(err);
     console.error("[refund-service] 退款处理异常:", { orderId, error: errorMsg });
 

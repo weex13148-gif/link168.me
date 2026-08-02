@@ -8,15 +8,16 @@ import {
 } from "@/lib/external-service-readiness";
 import {
   getEnterpriseAiSettingsUrlValidationError,
+  resolveEnterpriseBailianConfig,
   validateEnterpriseAiSettingsPatch,
 } from "@/lib/ai/enterprise-bailian";
+import { callBailianApplication } from "@/lib/ai/providers/bailian-application";
 
 export const runtime = "nodejs";
 
 function apiError(code: string, message: string, status = 400) {
   return NextResponse.json({ success: false, data: null, error: { code, message } }, { status });
 }
-
 function redactKeys(message: string) {
   if (!message) return message;
   return message
@@ -108,123 +109,86 @@ export async function PUT(request: Request) {
 
 async function handleTestAiConnection(): Promise<NextResponse> {
   const config = await getConfig();
-  if (!config.aiApiKey) {
-    return apiError("BAD_BODY", "请先填写完整 AI API Key", 400);
+  const resolved = resolveEnterpriseBailianConfig(config);
+
+  if (!resolved.appId) {
+    return apiError("BAD_BODY", "请先填写完整的百炼应用 App ID", 400);
+  }
+  if (!resolved.apiKey) {
+    return apiError("BAD_BODY", "请先填写完整的百炼 API Key", 400);
   }
 
-  const baseUrl = config.aiBaseUrl.endsWith("/") ? config.aiBaseUrl.slice(0, -1) : config.aiBaseUrl;
-  const validationError = getEnterpriseAiSettingsUrlValidationError({ aiBaseUrl: baseUrl });
+  const validationError = getEnterpriseAiSettingsUrlValidationError({
+    aiBailianBaseUrl: resolved.baseUrl,
+  });
   if (validationError) {
     return apiError(validationError.code, validationError.message, 400);
   }
 
   const startTime = Date.now();
-  const controller = new AbortController();
-  const timeoutMs = 45000;
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const result = await callBailianApplication(
+    {
+      appId: resolved.appId,
+      apiKey: resolved.apiKey,
+      baseUrl: resolved.baseUrl,
+      timeoutMs: resolved.timeoutMs,
+      workspaceId: resolved.dashscopeWorkspaceId || undefined,
+    },
+    "请只回复：连接测试成功",
+  );
+  const duration = Date.now() - startTime;
 
-  try {
-    const response = await fetch(`${baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${config.aiApiKey}`,
-      },
-      body: JSON.stringify({
-        model: config.aiModel,
-        messages: [{ role: "user", content: "Hello" }],
-        max_tokens: 50,
-        temperature: 0.3,
-      }),
-      signal: controller.signal,
-      cache: "no-store",
-    });
+  if (!result.ok) {
+    const safeError = sanitizeExternalServiceMessage(redactKeys(result.error));
+    await recordExternalServiceTest("bailian", config, {
+      passed: false,
+      message: safeError,
+    }).catch(() => undefined);
 
-    const duration = Date.now() - startTime;
-    clearTimeout(timer);
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => "");
-      const safeError = sanitizeExternalServiceMessage(
-        `AI 服务返回错误（${response.status}）：${errorText.slice(0, 200)}`,
-      );
-      if (config.aiProvider === "bailian") {
-        await recordExternalServiceTest("bailian", config, {
-          passed: false,
-          message: safeError,
-        }).catch(() => undefined);
-      }
-      return NextResponse.json(
-        {
-          success: false,
-          data: {
-            success: false,
-            status: response.status,
-            error: safeError,
-          } satisfies AiTestResult,
-          error: null,
-        },
-        { status: 502 },
-      );
-    }
-
-    const data = (await response.json()) as {
-      id?: string;
-      model?: string;
-      usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
-    };
-
-    if (config.aiProvider === "bailian") {
-      try {
-        await recordExternalServiceTest("bailian", config, {
-          passed: true,
-          message: "百炼真实连接测试成功",
-        });
-      } catch {
-        return apiError("READINESS_RECORD_FAILED", "百炼连接成功，但测试证据保存失败，请稍后重试。", 500);
-      }
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        success: true,
-        status: response.status,
-        model: data.model || config.aiModel,
-        duration,
-        promptTokens: data.usage?.prompt_tokens,
-        completionTokens: data.usage?.completion_tokens,
-        totalTokens: data.usage?.total_tokens,
-        requestId: data.id,
-        message: "AI 连接测试成功",
-      } satisfies AiTestResult,
-      error: null,
-    });
-  } catch (error) {
-    const duration = Date.now() - startTime;
-    clearTimeout(timer);
-    const message = sanitizeExternalServiceMessage(
-      redactKeys(error instanceof Error ? error.message : "无法连接 AI 服务"),
-    );
-    if (config.aiProvider === "bailian") {
-      await recordExternalServiceTest("bailian", config, {
-        passed: false,
-        message,
-      }).catch(() => undefined);
-    }
     return NextResponse.json(
       {
         success: false,
         data: {
           success: false,
+          status: result.status,
           duration,
-          error: `AI 连接测试失败：${message}`,
+          requestId: result.requestId,
+          error: safeError,
         } satisfies AiTestResult,
         error: null,
       },
       { status: 502 },
     );
   }
+
+  try {
+    await recordExternalServiceTest("bailian", config, {
+      passed: true,
+      message: "百炼应用真实连接测试成功",
+    });
+  } catch {
+    return apiError(
+      "READINESS_RECORD_FAILED",
+      "百炼应用连接成功，但测试证据保存失败，请稍后重试。",
+      500,
+    );
+  }
+
+  return NextResponse.json({
+    success: true,
+    data: {
+      success: true,
+      status: 200,
+      model: result.usage?.modelId || config.aiModel,
+      duration,
+      promptTokens: result.usage?.inputTokens ?? undefined,
+      completionTokens: result.usage?.outputTokens ?? undefined,
+      totalTokens: result.usage?.totalTokens ?? undefined,
+      requestId: result.requestId,
+      message: "百炼应用连接测试成功",
+    } satisfies AiTestResult,
+    error: null,
+  });
 }
 
 export async function POST(request: Request) {

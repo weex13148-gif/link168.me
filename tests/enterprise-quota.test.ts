@@ -95,6 +95,7 @@ function makeExpiredEntitlements(planCode: string, aiMax: number) {
 
 const PERIOD_START = new Date(2026, 6, 1);
 const PERIOD_END = new Date(2026, 6, 31, 23, 59, 59, 999);
+const TEST_NOW = new Date(2026, 6, 15, 12, 0, 0, 0);
 
 function setupWorkspaceAndMember(workspaceId: string, userId: string, memberStatus = "active") {
   mockDb.workspace.findUnique.mockResolvedValue({
@@ -124,8 +125,14 @@ function setupPool(workspaceId: string, totalQuota: number, usedQuota: number, v
 }
 
 beforeEach(() => {
+  jest.useFakeTimers();
+  jest.setSystemTime(TEST_NOW);
   jest.clearAllMocks();
   mockDb.$transaction.mockImplementation(async (fn: (tx: unknown) => Promise<unknown>) => fn(mockDb));
+});
+
+afterEach(() => {
+  jest.useRealTimers();
 });
 
 // ============================================

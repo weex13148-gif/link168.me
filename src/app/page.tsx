@@ -43,7 +43,7 @@ const capabilities = [
   },
   {
     title: "AI 接待",
-    description: "访客进入主页后，AI 助手自动接待、解答常见问题并引导留资，7×24 小时不漏掉任何一次商机。",
+    description: "访客进入主页后，AI 助手自动接待、解答常见问题并引导留资，帮助及时回应咨询并减少遗漏。",
     icon: Bot,
     points: ["知识库问答", "智能引导留资", "按月赠送 AI 额度"],
   },
@@ -78,7 +78,7 @@ const plans = PUBLIC_PLAN_ORDER.map((code: PlanCode) => {
     price: formatPriceDisplay(code, "yearly"),
     description: plan.description,
     features: plan.features,
-    href: isFree ? "/register" : contactSales ? "mailto:business@link168.me" : "/workbench/membership",
+    href: isFree ? "/register" : contactSales ? "mailto:business@link168.me" : "/console/membership",
     action: isFree ? "免费创建" : contactSales ? "联系销售" : "支付宝开通",
     featured: Boolean(plan.highlight),
     contactSales,
@@ -182,7 +182,7 @@ export default function Home() {
                 </article>
               ))}
             </div>
-            <p className="ui-muted mt-5 text-xs leading-5">展示的套餐与权益均来自统一的套餐定义，与 <Link href="/pricing" className="font-bold text-[var(--ui-brand-hover)] underline-offset-2 hover:underline">定价页</Link> 和 <Link href="/workbench/membership" className="font-bold text-[var(--ui-brand-hover)] underline-offset-2 hover:underline">会员中心</Link> 保持一致。</p>
+            <p className="ui-muted mt-5 text-xs leading-5">展示的套餐与权益均来自统一的套餐定义，与 <Link href="/pricing" className="font-bold text-[var(--ui-brand-hover)] underline-offset-2 hover:underline">定价页</Link> 和 <Link href="/console/membership" className="font-bold text-[var(--ui-brand-hover)] underline-offset-2 hover:underline">会员中心</Link> 保持一致。</p>
           </div>
         </section>
 

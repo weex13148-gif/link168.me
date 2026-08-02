@@ -1,25 +1,15 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { resolveDomain, WORKSPACE_RESERVED_SLUGS } from "@/lib/domains";
+import { isPlatformHost } from "@/lib/platform-hosts";
 import {
   WORKSPACE_ROUTING_HOST_HEADER,
   WORKSPACE_ROUTING_PROOF_HEADER,
   createWorkspaceRoutingProof,
   verifyWorkspaceRoutingProof,
 } from "@/lib/workspace-routing-proof";
+import { resolveLegacyConsoleRoute } from "@/lib/legacy-console-routes";
 
 // proxy.ts 在 Next.js 16 中始终运行于 Node.js runtime，可安全使用 Prisma Node Client
-const BASE_DOMAIN = "link168.me";
-
-const RESERVED_HOSTS = new Set([
-  BASE_DOMAIN,
-  `www.${BASE_DOMAIN}`,
-  `app.${BASE_DOMAIN}`,
-  `api.${BASE_DOMAIN}`,
-  `admin.${BASE_DOMAIN}`,
-  `workbench.${BASE_DOMAIN}`,
-  `dashboard.${BASE_DOMAIN}`,
-]);
-
 const STATIC_PATHS = [
   "/_next/static",
   "/_next/image",
@@ -90,6 +80,14 @@ function rewriteRequest(
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
+  const legacyConsoleTarget = resolveLegacyConsoleRoute(
+    pathname,
+    request.nextUrl.searchParams.get("tab"),
+  );
+  if (legacyConsoleTarget) {
+    return NextResponse.redirect(new URL(legacyConsoleTarget, request.url), 308);
+  }
+
   // 静态资源直接放行
   for (const staticPath of STATIC_PATHS) {
     if (pathname.startsWith(staticPath)) {
@@ -121,7 +119,7 @@ export async function proxy(request: NextRequest) {
   const normalizedHost = host.toLowerCase().replace(/:\d+$/, "").replace(/\.$/, "");
 
   // 系统保留主机：主站、www、app、api、admin 等
-  if (RESERVED_HOSTS.has(normalizedHost)) {
+  if (isPlatformHost(normalizedHost)) {
     return continueRequest(request, normalizedHost);
   }
 

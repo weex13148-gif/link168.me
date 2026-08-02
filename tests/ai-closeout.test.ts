@@ -20,6 +20,7 @@ const mockDb: Record<string, any> = {
   aiMessage: { findMany: jest.fn(), create: jest.fn() },
   aiCreditAccount: { findUnique: jest.fn(), upsert: jest.fn(), update: jest.fn(), updateMany: jest.fn(), findUniqueOrThrow: jest.fn(), create: jest.fn() },
   aiCreditLedger: { findUnique: jest.fn(), create: jest.fn(), aggregate: jest.fn().mockResolvedValue({ _sum: { amount: 0 } }) },
+  aiCreditBucket: { findUnique: jest.fn(), findMany: jest.fn().mockResolvedValue([]), create: jest.fn(), updateMany: jest.fn().mockResolvedValue({ count: 1 }) },
   freezeRecord: { findMany: jest.fn().mockResolvedValue([]), create: jest.fn(), updateMany: jest.fn() },
   lead: { findUnique: jest.fn(), update: jest.fn(), create: jest.fn() },
   // 兼容其他测试需要的模型，避免 jest.mock 缓存冲突
@@ -215,6 +216,197 @@ describe("AI Closeout Tests", () => {
     );
     return entries;
   }
+
+  function setupHandoffProfile() {
+    const profile: any = setupProfile();
+    profile.user.id = "owner-1";
+    profile.links = [
+      { id: "personal-entry", type: "contact-entry", title: "联系本人", workspaceId: null },
+      { id: "workspace-one-entry", type: "contact-entry", title: "团队一", workspaceId: "workspace-1" },
+      { id: "workspace-two-entry", type: "contact-entry", title: "团队二", workspaceId: "workspace-2" },
+    ];
+    mockDb.profile.findUnique.mockResolvedValue(profile);
+    mockDb.aiConversation.findFirst.mockResolvedValue(null);
+    mockDb.aiConversation.create.mockResolvedValue({
+      id: "handoff-conversation",
+      profileId: profile.id,
+      transferredToHuman: true,
+    });
+    mockDb.aiMessage.create.mockResolvedValue({ id: "message-1" });
+    mockDb.lead.findUnique.mockResolvedValue(null);
+    mockDb.lead.create.mockResolvedValue({ id: "lead-1" });
+    mockSafety.detectPromptInjection.mockReturnValue({ detected: false });
+    mockSafety.hasSensitiveContent.mockReturnValue({ detected: false });
+    return profile;
+  }
+
+  describe("0. Handoff workspace isolation", () => {
+    test("个人主页未公开时仍然拒绝 AI 接待", async () => {
+      const profile = setupHandoffProfile();
+      profile.isPublic = false;
+
+      const result = await runCommercialAgent(
+        "customer-service",
+        {
+          username: "testuser",
+          message: "请联系人工客服",
+          handoffContactEntryId: "personal-entry",
+          requestId: "private-personal-profile-request",
+        },
+        { expectedWorkspaceId: null },
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.code).toBe("PROFILE_UNAVAILABLE");
+      expect(mockDb.workspace.findUnique).not.toHaveBeenCalled();
+      expect(mockDb.lead.create).not.toHaveBeenCalled();
+    });
+
+    test("已验证团队 owner 不依赖个人名片公开状态", async () => {
+      const profile = setupHandoffProfile();
+      profile.isPublic = false;
+      mockDb.workspace.findUnique.mockResolvedValue({
+        ownerId: "owner-1",
+        isActive: true,
+        publicProfiles: [],
+      });
+
+      const result = await runCommercialAgent(
+        "customer-service",
+        {
+          username: "testuser",
+          message: "请联系人工客服",
+          handoffContactEntryId: "workspace-one-entry",
+          requestId: "private-owner-team-request",
+        },
+        { expectedWorkspaceId: "workspace-1" },
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.data?.action.contactEntryId).toBe("workspace-one-entry");
+      expect(mockDb.lead.create).toHaveBeenCalledWith(expect.objectContaining({
+        data: expect.objectContaining({ workspaceId: "workspace-1" }),
+      }));
+    });
+
+    test("个人页只能写入个人联系入口", async () => {
+      setupHandoffProfile();
+
+      const result = await runCommercialAgent(
+        "customer-service",
+        {
+          username: "testuser",
+          message: "请联系人工客服",
+          handoffContactEntryId: "personal-entry",
+          requestId: "personal-handoff-request",
+        },
+        { expectedWorkspaceId: null },
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.data?.action.contactEntryId).toBe("personal-entry");
+      expect(mockDb.workspace.findUnique).not.toHaveBeenCalled();
+      expect(mockDb.lead.create).toHaveBeenCalledWith(expect.objectContaining({
+        data: expect.objectContaining({ workspaceId: null, contactEntryId: "personal-entry" }),
+      }));
+    });
+
+    test("已验证企业上下文只写入同一 workspace 的联系入口", async () => {
+      setupHandoffProfile();
+      mockDb.workspace.findUnique.mockResolvedValue({ ownerId: "owner-1", isActive: true });
+
+      const result = await runCommercialAgent(
+        "customer-service",
+        {
+          username: "testuser",
+          message: "请联系人工客服",
+          handoffContactEntryId: "workspace-one-entry",
+          requestId: "workspace-handoff-request",
+        },
+        { expectedWorkspaceId: "workspace-1" },
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.data?.action.contactEntryId).toBe("workspace-one-entry");
+      expect(mockDb.lead.create).toHaveBeenCalledWith(expect.objectContaining({
+        data: expect.objectContaining({ workspaceId: "workspace-1", contactEntryId: "workspace-one-entry" }),
+      }));
+    });
+
+    test("跨 workspace 伪造联系入口时 fail closed 且不写线索", async () => {
+      setupHandoffProfile();
+      mockDb.workspace.findUnique.mockResolvedValue({ ownerId: "owner-1", isActive: true });
+
+      const result = await runCommercialAgent(
+        "customer-service",
+        {
+          username: "testuser",
+          message: "请联系人工客服",
+          handoffContactEntryId: "workspace-two-entry",
+          requestId: "forged-workspace-handoff-request",
+        },
+        { expectedWorkspaceId: "workspace-1" },
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.status).toBe(403);
+      expect(result.code).toBe("HANDOFF_CONTEXT_MISMATCH");
+      expect(mockDb.aiConversation.create).not.toHaveBeenCalled();
+      expect(mockDb.lead.create).not.toHaveBeenCalled();
+    });
+
+    test("百炼 prompt 只包含当前 workspace 的链接", async () => {
+      const profile = setupHandoffProfile();
+      profile.links = profile.links.map((link: Record<string, unknown>) => ({
+        ...link,
+        description: `${String(link.title)}说明`,
+        url: `https://example.com/${String(link.id)}`,
+      }));
+      mockDb.workspace.findUnique.mockResolvedValue({
+        ownerId: "owner-1",
+        isActive: true,
+        publicProfiles: [],
+      });
+      mockDb.aiMessage.findMany.mockResolvedValue([]);
+      mockDb.aiCreditAccount.findUnique.mockResolvedValue(setupCreditAccount(100));
+      setupPersistentCreditLedger();
+      mockDb.aiCreditAccount.updateMany.mockResolvedValue({ count: 1 });
+      mockDb.aiCreditAccount.findUniqueOrThrow.mockResolvedValue({ balance: 99 });
+      mockBailian.callBailianApplication.mockResolvedValue({
+        ok: true,
+        reply: "团队一回复",
+        requestId: "workspace-provider-request",
+        usage: { modelId: "test-model", inputTokens: 10, outputTokens: 5 },
+      });
+      mockSafety.moderateAiOutput.mockReturnValue({
+        blocked: false,
+        summary: "摘要",
+        content: "团队一回复",
+        disclaimer: "免责声明",
+      });
+
+      const result = await runCommercialAgent(
+        "customer-service",
+        {
+          username: "testuser",
+          message: "请介绍服务",
+          requestId: "workspace-prompt-request",
+        },
+        { expectedWorkspaceId: "workspace-1" },
+      );
+
+      expect(result.success).toBe(true);
+      const profileQuery = mockDb.profile.findUnique.mock.calls[0][0];
+      expect(profileQuery.include.links.where).toEqual({
+        isActive: true,
+        workspaceId: "workspace-1",
+      });
+      const prompt = mockBailian.callBailianApplication.mock.calls[0][1] as string;
+      expect(prompt).toContain("团队一");
+      expect(prompt).not.toContain("联系本人");
+      expect(prompt).not.toContain("团队二");
+    });
+  });
 
   describe("1. Idempotency", () => {
     test("缺少 requestId 返回 400", async () => {

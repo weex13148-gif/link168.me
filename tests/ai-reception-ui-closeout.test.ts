@@ -42,13 +42,24 @@ describe("AI reception customer and visitor UI closeout", () => {
     expect(chat).not.toMatch(/阿里百炼|通义千问|DeepSeek|OpenAI|qwen-|providerMode|apiKey|baseUrl/);
   });
 
+  test("public chat reports availability and exposes the real contact handoff", () => {
+    const chat = source("src/components/share/modules/AiChatModule.tsx");
+
+    expect(chat).toContain("onAvailabilityChange?: (available: boolean) => void");
+    expect(chat).toContain("onOpenContact?: () => void");
+    expect(chat).toContain('aria-label="AI 咨询问题"');
+    expect(chat).toContain("data-ai-reception-input={username}");
+    expect(chat).toContain("联系本人");
+    expect(chat).toContain("onOpenContact?.()");
+  });
+
   test("preset replies are distinguished from model-generated replies", () => {
     const chat = source("src/components/share/modules/AiChatModule.tsx");
 
     expect(chat).toContain('source?: "preset" | "ai"');
     expect(chat).toContain('message.source === "preset" ? "— 预设回复" : "— AI 生成内容"');
     expect(chat).toContain('appendMessage("assistant", action.value, "preset")');
-    expect(chat).toContain('appendMessage("assistant", reply, "ai")');
+    expect(chat).toContain('appendMessage("assistant", reply, result.data.replyKind === "preset" ? "preset" : "ai")');
     expect(chat).toContain('appendMessage("system", publicErrorMessage(result.code))');
   });
 
@@ -56,14 +67,23 @@ describe("AI reception customer and visitor UI closeout", () => {
     const renderer = source("src/components/share/SharePageRenderer.tsx");
     const editor = source("src/components/dashboard-v1/LinksPanel.tsx");
 
-    expect(renderer).toContain('<AiChatModule username={username} mode="customer-service" />');
+    expect(renderer).toContain("onAvailabilityChange");
+    expect(renderer).toContain("onOpenContact");
     expect(renderer).not.toContain("aiPayload.assistantName");
     expect(renderer).not.toContain("aiPayload.greeting");
-    expect(editor).toContain("/workbench/ai/reception");
+    expect(editor).toContain("/console/ai-reception");
     expect(editor).toContain("助手名称、欢迎语、业务资料和快捷回复");
     expect(editor).not.toContain('payloadField(draft.payloadJson, "assistantName")');
     expect(editor).not.toContain('payloadField(draft.payloadJson, "greeting")');
     expect(editor).not.toContain('payloadField(draft.payloadJson, "tone")');
+  });
+
+  test("the public profile has one shared sticky action and no legacy floating assistant", () => {
+    const page = source("src/components/share/SharePageWithContact.tsx");
+
+    expect(page).toContain("PublicProfileStickyAction");
+    expect(page).not.toContain("PublicAiAssistant");
+    expect(fs.existsSync(path.join(process.cwd(), "src/components/share/PublicAiAssistant.tsx"))).toBe(false);
   });
 
   test("commercial agent uses customer recommendation switch and public-safe errors", () => {

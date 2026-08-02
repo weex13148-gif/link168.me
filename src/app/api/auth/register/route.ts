@@ -83,7 +83,7 @@ export async function POST(request: Request) {
           id: profileId,
           userId,
           username: initialUsername,
-          isPublic: true,
+          isPublic: false,
           theme: "Link168 草木默认",
           template: "business",
           language: "zh",
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
   }));
 
   const { token, expiresAt } = await createSession(userId, request);
-  const redirectTo = `/verify-email?email=${encodeURIComponent(email)}`;
+  const redirectTo = "/onboarding";
   const response = NextResponse.json({
     success: true,
     redirectTo,
@@ -111,8 +111,8 @@ export async function POST(request: Request) {
     meta: {
       needVerifyEmail: true,
       message: sendResult.ok
-        ? "注册成功！验证码已发送，请检查收件箱或垃圾箱。"
-        : `注册成功！${sendResult.message}`,
+        ? "注册成功！验证邮件已发送，你可以先创建经营名片。"
+        : `注册成功！${sendResult.message} 你仍可以先创建经营名片。`,
     },
   });
   setSessionCookie(response, token, expiresAt);

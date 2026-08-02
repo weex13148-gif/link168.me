@@ -49,6 +49,8 @@ export default function PricingPage() {
   } | null>(null);
   const [sandboxAction, setSandboxAction] = useState<"success" | "fail" | "cancel" | "timeout">("success");
   const [sandboxDelay, setSandboxDelay] = useState(0);
+  const [acceptedLegalTerms, setAcceptedLegalTerms] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("yearly");
 
   const fetchMembership = async () => {
     try {
@@ -84,12 +86,13 @@ export default function PricingPage() {
       return;
     }
 
-    const priceCents = plan.price_cents?.yearly;
+    const priceCents = plan.price_cents?.[billingCycle];
     if (priceCents === null || priceCents === undefined || priceCents <= 0) {
       return;
     }
 
     setSelectedPlan(planCode);
+    setAcceptedLegalTerms(false);
     setShowPaymentModal(true);
     setOrderResult(null);
     setPollingStatus("idle");
@@ -98,7 +101,7 @@ export default function PricingPage() {
   const handleSelectSandboxPlan = (planCode: string) => {
     const plan = plans?.[planCode];
     if (!plan || plan.contact_sales) return;
-    const priceCents = plan.price_cents?.yearly;
+    const priceCents = plan.price_cents?.[billingCycle];
     if (priceCents === null || priceCents === undefined || priceCents <= 0) return;
 
     setSelectedPlan(planCode);
@@ -108,6 +111,10 @@ export default function PricingPage() {
 
   const handleCreateOrder = async () => {
     if (!selectedPlan) return;
+    if (!acceptedLegalTerms) {
+      setOrderResult({ error: "请先阅读并同意会员服务协议、支付与退款规则和 AI 服务说明。" });
+      return;
+    }
 
     setOrderLoading(true);
     setOrderResult(null);
@@ -118,7 +125,7 @@ export default function PricingPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           plan_code: selectedPlan,
-          billing_cycle: "yearly",
+          billing_cycle: billingCycle,
         }),
       });
 
@@ -170,7 +177,7 @@ export default function PricingPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           plan_code: selectedPlan,
-          billing_cycle: "yearly",
+          billing_cycle: billingCycle,
           is_test: true,
         }),
       });
@@ -278,16 +285,16 @@ export default function PricingPage() {
 
             <div className="mt-8 inline-flex items-center gap-1 rounded-full border border-[#E8DCCB] bg-[#FFFDF8] p-1 shadow-sm">
               <button
-                disabled
-                className="rounded-full px-5 py-2 text-sm font-semibold text-[#A89888] cursor-not-allowed"
+                type="button"
+                onClick={() => setBillingCycle("monthly")}
+                className={`rounded-full px-5 py-2 text-sm font-semibold transition ${billingCycle === "monthly" ? "bg-[#6F8F4E] text-white shadow" : "text-[#7A6D5E] hover:bg-[#F5F0E8]"}`}
               >
                 按月付费
-                <span className="ml-2 rounded-full bg-[#F5F0E8] px-2 py-0.5 text-[10px] font-black text-[#A89888]">
-                  不可用
-                </span>
               </button>
               <button
-                className="inline-flex items-center gap-2 rounded-full bg-[#6F8F4E] px-5 py-2 text-sm font-semibold text-white shadow"
+                type="button"
+                onClick={() => setBillingCycle("yearly")}
+                className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold transition ${billingCycle === "yearly" ? "bg-[#6F8F4E] text-white shadow" : "text-[#7A6D5E] hover:bg-[#F5F0E8]"}`}
               >
                 按年付费
                 <span className="rounded-full bg-[#F6E7C8] px-2 py-0.5 text-[10px] font-black text-[#8C612E]">
@@ -306,7 +313,7 @@ export default function PricingPage() {
                 if (!plan) return null;
 
                 const isCurrentPlan = currentPlanCode === planCode;
-                const priceDisplay = plan.price_display?.yearly ?? "不可用";
+                const priceDisplay = plan.price_display?.[billingCycle] ?? "不可用";
 
                 return (
                   <div
@@ -338,7 +345,7 @@ export default function PricingPage() {
 
                     <div className="mt-5">
                       {plan.contact_sales ? (
-                        <p className="text-2xl font-black tracking-tight">联系销售</p>
+                        <p className="text-2xl font-black tracking-tight">{priceDisplay === "不可用" ? "联系销售" : priceDisplay}</p>
                       ) : priceDisplay === "免费" ? (
                         <p className="text-3xl font-black tracking-tight">
                           免费
@@ -442,7 +449,7 @@ export default function PricingPage() {
                 },
                 {
                   q: "退款政策是怎样的？",
-                  a: "退款政策以服务条款为准。",
+                  a: "具体适用条件、处理流程和到账时间请查看《支付与退款规则》。",
                 },
               ].map((faq, idx) => (
                 <div key={idx} className="rounded-[24px] border border-[#E8DCCB] bg-[#F7F1E7] p-5">
@@ -465,7 +472,7 @@ export default function PricingPage() {
                   开通 {plans?.[selectedPlan]?.name}
                 </p>
                 <p className="mt-1 text-sm text-[#7A6D5E]">
-                  按年付费
+                  {billingCycle === "yearly" ? "按年付费" : "按月付费"}
                 </p>
               </div>
               <button
@@ -480,7 +487,7 @@ export default function PricingPage() {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[#7A6D5E]">应付金额</span>
                 <span className="text-2xl font-black text-[#2B241E]">
-                  {plans?.[selectedPlan]?.price_display?.yearly}
+                  {plans?.[selectedPlan]?.price_display?.[billingCycle]}
                 </span>
               </div>
             </div>
@@ -503,6 +510,21 @@ export default function PricingPage() {
                 当前为沙箱测试环境，请使用沙箱测试功能体验完整流程。
               </p>
             </div>
+
+            <label className="mt-4 flex items-start gap-3 rounded-2xl border border-[#E8DCCB] bg-white p-4 text-xs leading-5 text-[#5F5347]">
+              <input
+                type="checkbox"
+                checked={acceptedLegalTerms}
+                onChange={(event) => setAcceptedLegalTerms(event.target.checked)}
+                className="mt-0.5 size-4"
+              />
+              <span>
+                我已阅读并同意
+                <Link href="/membership-agreement" target="_blank" className="font-black text-[#3F5F31]">《会员服务协议》</Link>、
+                <Link href="/refund-policy" target="_blank" className="font-black text-[#3F5F31]">《支付与退款规则》</Link>和
+                <Link href="/ai-disclaimer" target="_blank" className="font-black text-[#3F5F31]">《AI 服务说明》</Link>。
+              </span>
+            </label>
 
             {orderResult?.error && (
               <div className="mt-4 rounded-2xl bg-red-50 p-4 text-sm text-red-600">
@@ -542,7 +564,7 @@ export default function PricingPage() {
               </button>
               <button
                 onClick={handleCreateOrder}
-                disabled={orderLoading || pollingStatus === "polling" || pollingStatus === "success"}
+                disabled={!acceptedLegalTerms || orderLoading || pollingStatus === "polling" || pollingStatus === "success"}
                 className="flex-1 min-h-11 rounded-full bg-[#6F8F4E] text-sm font-black text-white transition hover:bg-[#5E7F3F] disabled:opacity-50"
               >
                 {orderLoading ? "创建订单中..." : pollingStatus === "success" ? "支付成功" : "确认支付"}
@@ -561,7 +583,7 @@ export default function PricingPage() {
                   沙箱测试支付
                 </p>
                 <p className="mt-1 text-sm text-[#7A6D5E]">
-                  套餐：{plans?.[selectedPlan]?.name} | 按年
+                  套餐：{plans?.[selectedPlan]?.name} | {billingCycle === "yearly" ? "按年" : "按月"}
                 </p>
               </div>
               <button
@@ -586,7 +608,7 @@ export default function PricingPage() {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-[#7A6D5E]">测试金额</span>
                 <span className="text-2xl font-black text-[#2B241E]">
-                  {plans?.[selectedPlan]?.price_display?.yearly}
+                  {plans?.[selectedPlan]?.price_display?.[billingCycle]}
                 </span>
               </div>
             </div>

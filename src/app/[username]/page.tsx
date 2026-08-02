@@ -18,7 +18,6 @@ import {
   serializeSchema,
 } from "@/lib/seo/json-ld";
 import type { SharePageTemplate } from "@/components/share/SharePageRenderer";
-import { getThemeClasses } from "@/components/theme/presetThemes";
 import {
   canShowPublicProfile,
   getActiveRestrictions,
@@ -27,6 +26,7 @@ import {
 } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { sanitizePublicUrl } from "@/lib/public-url-security";
+import { resolvePublicAvatarUrl } from "@/lib/public-avatar";
 
 export const dynamic = "force-dynamic";
 
@@ -46,7 +46,8 @@ async function loadProfileByUserId(userId: string) {
     where: { userId },
     include: {
       links: {
-        where: { isActive: true },
+        // 团队联系入口只在对应企业站点展示，避免泄漏到成员个人名片。
+        where: { isActive: true, workspaceId: null },
         orderBy: { position: "asc" },
       },
     },
@@ -62,7 +63,8 @@ async function resolveUsername(rawUsername: string) {
       where: { username: normalized },
       include: {
         links: {
-          where: { isActive: true },
+          // 团队联系入口只在对应企业站点展示，避免泄漏到成员个人名片。
+          where: { isActive: true, workspaceId: null },
           orderBy: { position: "asc" },
         },
       },
@@ -123,6 +125,7 @@ type CurrentProfile = Extract<
 
 export async function generateMetadata({ params }: PublicProfilePageProps): Promise<Metadata> {
   const { username } = await params;
+  if (normalizeUsername(username) === "showcase") notFound();
   const result = await resolveUsername(username);
 
   if (result.type !== "current") {
@@ -141,9 +144,11 @@ export async function generateMetadata({ params }: PublicProfilePageProps): Prom
     indexable = false;
   }
 
-  const avatarUrl = profile.avatarUrl
-    ? `${profile.avatarUrl.split("?")[0]}?v=${profile.updatedAt.getTime()}`
-    : null;
+  const avatarUrl = resolvePublicAvatarUrl({
+    avatarUrl: profile.avatarUrl,
+    avatarModerationStatus: profile.avatarModerationStatus,
+    updatedAt: profile.updatedAt,
+  });
 
   return buildPublicProfileMetadata({
     username: profile.username,
@@ -197,6 +202,7 @@ function restrictionPage(restrictions: ActiveRestriction[]) {
 
 export default async function PublicProfilePage({ params, searchParams }: PublicProfilePageProps) {
   const { username } = await params;
+  if (normalizeUsername(username) === "showcase") notFound();
   const query = searchParams ? await searchParams : {};
   const result = await resolveUsername(username);
 
@@ -269,6 +275,7 @@ export default async function PublicProfilePage({ params, searchParams }: Public
       type: item.iconType || null,
       componentType: item.type || null,
       payload: item.payloadJson || null,
+      workspaceId: item.workspaceId || null,
     };
   });
 
@@ -299,12 +306,12 @@ export default async function PublicProfilePage({ params, searchParams }: Public
 
   const reportUrl = `/report?url=${encodeURIComponent(`${appUrl}/${profile.username}`)}`;
   const themeName = profile.theme || "Link168 草木默认";
-  const surfaceClass = getThemeClasses(themeName).surfaceClassName;
 
-  const rawAvatarUrl = profile.avatarUrl || null;
-  const avatarUrlWithCacheBust = rawAvatarUrl
-    ? `${rawAvatarUrl.split("?")[0]}?t=${profile.updatedAt.getTime()}`
-    : null;
+  const avatarUrlWithCacheBust = resolvePublicAvatarUrl({
+    avatarUrl: profile.avatarUrl,
+    avatarModerationStatus: profile.avatarModerationStatus,
+    updatedAt: profile.updatedAt,
+  });
   const contactIsPublic = profile.contactVisibility === "public";
 
   // JSON-LD 结构化数据
@@ -337,12 +344,12 @@ export default async function PublicProfilePage({ params, searchParams }: Public
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeSchema(profilePageSchema) }}
       />
-      <main className={`mx-auto flex min-h-dvh w-full max-w-2xl flex-col px-4 py-6 sm:py-10 ${surfaceClass}`}>
+      <main className="min-h-dvh w-full bg-[#F4EEE5] sm:px-4 sm:py-8">
         <PublicProfileClientWrapper
           profileId={profile.id}
           template={resolveTemplate(profile, query.template)}
           username={profile.username}
-          displayName={profile.displayName || `@${profile.username}`}
+          displayName={profile.displayName || profile.company || "经营主页"}
           bio={profile.bio}
           avatarUrl={avatarUrlWithCacheBust}
           links={links}

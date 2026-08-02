@@ -412,7 +412,7 @@ export default function ReceptionConfigClient({
             <p className="text-sm font-black text-[#8C612E]">AI 转客户线索</p>
             <p className="mt-1 text-xs leading-5 text-[#7A6D5E]">
               只有访客主动留下的联系方式才会保存。可在
-              <Link href="/workbench/leads" className="font-bold text-[#6F8F4E] hover:underline"> 客户线索</Link>
+              <Link href="/console/leads" className="font-bold text-[#6F8F4E] hover:underline"> 客户线索</Link>
               中查看。
             </p>
           </div>

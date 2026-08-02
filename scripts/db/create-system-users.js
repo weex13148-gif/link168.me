@@ -1,11 +1,10 @@
-// Link168 系统账号 / 测试账号生成脚本（Node.js + Prisma）
+// Link168 系统管理员账号生成脚本（Node.js + Prisma）
 // 运行：node scripts/db/create-system-users.js
 // 环境变量覆盖：
-//   DEMO_EMAIL / DEMO_PASSWORD
-//   ADMIN_EMAIL / ADMIN_PASSWORD
 //   SUPER_ADMIN_EMAIL / SUPER_ADMIN_PASSWORD
 //
-// 本脚本只在账号不存在时插入。密码只写 bcrypt hash，从不写明文。
+// 本脚本只创建新的系统账号，或轮换已有系统账号的凭据。
+// 密码只写 bcrypt hash，从不写明文。
 // 输出中不会打印明文密码或完整 API Key。
 
 "use strict";
@@ -13,7 +12,10 @@
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const path = require("path");
-require("dotenv").config({ path: path.join(__dirname, "..", "..", ".env.local") });
+require("dotenv").config({
+  path: path.join(__dirname, "..", "..", ".env.local"),
+  quiet: true,
+});
 
 // 方案A：直接 require 生成路径（适配 Link168 自定义输出目录）
 // 方案B：标准 @prisma/client（适配其他项目）
@@ -53,16 +55,12 @@ function getPrisma() {
 }
 
 const RED = "\x1b[31m";
-const YELLOW = "\x1b[33m";
 const GREEN = "\x1b[32m";
 const CYAN = "\x1b[36m";
 const RESET = "\x1b[0m";
 
 function logInfo(msg) {
   console.log(`${CYAN}[db:create-users]${RESET} ${msg}`);
-}
-function logWarn(msg) {
-  console.log(`${YELLOW}[db:create-users]${RESET} ${msg}`);
 }
 function logOk(msg) {
   console.log(`${GREEN}[db:create-users]${RESET} ${msg}`);
@@ -72,57 +70,73 @@ function logErr(msg) {
 }
 
 const HASH_ROUNDS = 12;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const BOOTSTRAP_PASSWORD_MIN_LENGTH = 16;
+
+function assertValidBootstrapEmail(email) {
+  if (!EMAIL_PATTERN.test(email)) {
+    throw new Error("SUPER_ADMIN_EMAIL 必须是完整有效的邮箱地址");
+  }
+}
+
+function assertStrongBootstrapPassword(password) {
+  if (password.length < BOOTSTRAP_PASSWORD_MIN_LENGTH) {
+    throw new Error(`SUPER_ADMIN_PASSWORD 长度不能少于 ${BOOTSTRAP_PASSWORD_MIN_LENGTH} 位`);
+  }
+  if (/replace-with|password|superadmin|123456/i.test(password)) {
+    throw new Error("SUPER_ADMIN_PASSWORD 不能使用占位值或常见弱口令");
+  }
+  const classes = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z0-9]/]
+    .filter((pattern) => pattern.test(password)).length;
+  if (classes < 3) {
+    throw new Error("SUPER_ADMIN_PASSWORD 必须至少包含大写字母、小写字母、数字、特殊字符中的三类");
+  }
+}
 
 const USER_SPECS = [
-  {
-    role: "user",
-    emailEnv: "DEMO_EMAIL",
-    passwordEnv: "DEMO_PASSWORD",
-    fallbackEmail: "demo@example.com",
-    fallbackPassword: "demo-password-1234",
-    isSystem: true,
-    bio: "Demo 用户，用于功能验证；其主页数据可随时被管理员重置。",
-  },
-  {
-    role: "admin",
-    emailEnv: "ADMIN_EMAIL",
-    passwordEnv: "ADMIN_PASSWORD",
-    fallbackEmail: "admin@example.com",
-    fallbackPassword: "admin-password-1234",
-    isSystem: true,
-    bio: "系统管理员账号，可处理举报、隐藏/恢复主页。",
-  },
   {
     role: "super_admin",
     emailEnv: "SUPER_ADMIN_EMAIL",
     passwordEnv: "SUPER_ADMIN_PASSWORD",
-    fallbackEmail: "super-admin@example.com",
-    fallbackPassword: "super-admin-password-1234",
+    required: true,
     isSystem: true,
     bio: "超级管理员账号，可管理其他管理员与系统配置。",
   },
 ];
 
 async function upsertUser(prisma, spec) {
-  const email = (process.env[spec.emailEnv] || spec.fallbackEmail).toLowerCase().trim();
-  const password = process.env[spec.passwordEnv] || spec.fallbackPassword;
+  const email = (process.env[spec.emailEnv] || "").toLowerCase().trim();
+  const password = process.env[spec.passwordEnv] || "";
 
-  if (!email || !email.includes("@")) {
-    logWarn(`跳过账号（邮箱不合法）：role=${spec.role} email=${email}`);
-    return false;
+  if (!email || !password) {
+    throw new Error(`账号 ${spec.role} 必须同时配置 ${spec.emailEnv} 和 ${spec.passwordEnv}`);
   }
+  assertValidBootstrapEmail(email);
+  assertStrongBootstrapPassword(password);
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    if (existing.role !== spec.role) {
-      await prisma.user.update({
-        where: { id: existing.id },
-        data: { role: spec.role, isSystem: spec.isSystem },
-      });
-      logOk(`账号已存在并更新角色：${email} -> ${spec.role}`);
-    } else {
-      logInfo(`账号已存在，跳过：${email}（role=${existing.role}）`);
+    if (!existing.isSystem) {
+      throw new Error(
+        `邮箱 ${email} 已属于普通用户；为防止越权，脚本拒绝将其提升为系统账号`,
+      );
     }
+
+    const passwordHash = await bcrypt.hash(password, HASH_ROUNDS);
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: existing.id },
+        data: {
+          passwordHash,
+          role: spec.role,
+          isSystem: true,
+          emailVerified: true,
+          accountStatus: "active",
+        },
+      });
+      await tx.session.deleteMany({ where: { userId: existing.id } });
+    });
+    logOk(`系统账号凭据已轮换并撤销旧会话：${email} -> ${spec.role}`);
     return true;
   }
 
@@ -130,13 +144,15 @@ async function upsertUser(prisma, spec) {
   const userId = crypto.randomUUID();
   const profileId = crypto.randomUUID();
 
-  const { id: newUserId } = await prisma.user.create({
+  await prisma.user.create({
     data: {
       id: userId,
       email,
       passwordHash,
       role: spec.role,
       isSystem: spec.isSystem,
+      emailVerified: true,
+      accountStatus: "active",
       profile: {
         create: {
           id: profileId,
@@ -172,7 +188,15 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  logErr("创建系统账号失败：" + (err && err.message ? err.message : String(err)));
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((err) => {
+    logErr("创建系统账号失败：" + (err && err.message ? err.message : String(err)));
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  assertStrongBootstrapPassword,
+  assertValidBootstrapEmail,
+  upsertUser,
+};

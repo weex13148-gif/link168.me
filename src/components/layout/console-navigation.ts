@@ -1,24 +1,15 @@
-/**
- * 共享导航配置 —— ConsoleShell / WorkbenchShell / DashboardFrame 共同读取
- * 确保导航名称、顺序、入口地址、状态分类在三套入口中保持一致。
- *
- * 普通用户一级入口严格限制为 5 个：首页、名片、客户、AI、我的
- * 企业入口、Jeepwork、/showcase 不得出现在普通用户导航中。
- */
-
 import {
-  LayoutDashboard,
-  Palette,
-  Users,
-  Link2,
   BarChart3,
   Bot,
-  Package,
+  Building2,
   Crown,
-  Settings,
+  FileText,
   Home,
-  PieChart,
+  Link2,
+  Package,
+  Palette,
   UserCog,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 
@@ -35,45 +26,34 @@ export type SharedNavItem = {
   badgeTone?: string;
 };
 
-/**
- * 一级入口（桌面端与手机端统一只显示这 5 个）
- * 1. 首页   (/console)
- * 2. 名片   (/dashboard)
- * 3. 客户   (/workbench/leads)
- * 4. AI     (/workbench/ai)
- * 5. 我的   (/workbench/account)
- */
 export const PRIMARY_NAV_ITEMS: SharedNavItem[] = [
-  { href: "/console", label: "首页", icon: Home, tone: "bg-[#F7F1E7] text-[#3F5F31]", status: "live", group: "core" },
-  { href: "/dashboard", label: "名片", icon: Palette, tone: "bg-[#DDE8CD] text-[#3F5F31]", status: "live", group: "core", badge: "推荐", badgeTone: "bg-[#FFFDF8] text-[#6F8F4E]" },
-  { href: "/workbench/leads", label: "客户", icon: Users, tone: "bg-[#FFE6E2] text-[#B42318]", status: "live", group: "growth" },
-  { href: "/workbench/ai", label: "AI", icon: Bot, tone: "bg-[#F6E7C8] text-[#8C612E]", status: "beta", group: "ai", badge: "Beta", badgeTone: "bg-[#F6E7C8] text-[#8C612E]" },
-  { href: "/workbench/account", label: "我的", icon: UserCog, tone: "bg-[#F5F0E6] text-[#2B241E]", status: "live", group: "settings" },
+  { href: "/console", label: "概览", icon: Home, tone: "bg-[#F7F1E7] text-[#3F5F31]", status: "live", group: "core" },
+  { href: "/console/card", label: "名片", icon: Palette, tone: "bg-[#DDE8CD] text-[#3F5F31]", status: "live", group: "core" },
+  { href: "/console/leads", label: "客户", icon: Users, tone: "bg-[#FFE6E2] text-[#B42318]", status: "live", group: "growth" },
+  { href: "/console/analytics", label: "经营数据", icon: BarChart3, tone: "bg-[#E8E6FF] text-[#3D48B8]", status: "live", group: "growth" },
+  { href: "/console/ai-reception", label: "AI 接待", icon: Bot, tone: "bg-[#F6E7C8] text-[#8C612E]", status: "beta", group: "ai", badge: "Beta", badgeTone: "bg-[#F6E7C8] text-[#8C612E]" },
 ];
 
-/** 二级功能入口（仅出现在桌面端侧边栏次级区域或「更多」菜单） */
 export const SECONDARY_NAV_ITEMS: SharedNavItem[] = [
-  { href: "/workbench/products", label: "产品与服务", icon: Package, tone: "bg-[#EAF3FF] text-[#2563EB]", status: "live", group: "core" },
-  { href: "/workbench/short-links", label: "短链接", icon: Link2, tone: "bg-[#E8E6FF] text-[#3D48B8]", status: "live", group: "growth" },
-  { href: "/workbench/analytics", label: "数据分析", icon: BarChart3, tone: "bg-[#E8E6FF] text-[#3D48B8]", status: "live", group: "growth" },
-  { href: "/workbench/membership", label: "会员与套餐", icon: Crown, tone: "bg-[#F6E7C8] text-[#8C612E]", status: "live", group: "settings" },
+  { href: "/console/products", label: "产品与服务", icon: Package, tone: "bg-[#EAF3FF] text-[#2563EB]", status: "live", group: "core" },
+  { href: "/console/knowledge", label: "知识库", icon: FileText, tone: "bg-[#DDE8CD] text-[#3F5F31]", status: "live", group: "ai" },
+  { href: "/console/short-links", label: "短链接", icon: Link2, tone: "bg-[#E8E6FF] text-[#3D48B8]", status: "live", group: "growth" },
+  { href: "/console/membership", label: "会员与额度", icon: Crown, tone: "bg-[#F6E7C8] text-[#8C612E]", status: "live", group: "settings" },
+  { href: "/console/enterprise", label: "企业", icon: Building2, tone: "bg-[#EAF3FF] text-[#2563EB]", status: "live", group: "settings" },
+  { href: "/console/account", label: "账号", icon: UserCog, tone: "bg-[#F5F0E6] text-[#2B241E]", status: "live", group: "settings" },
 ];
 
-/** 完整导航列表（向后兼容，供 DashboardFrame 模块切换等使用） */
 export const SHARED_NAV_ITEMS: SharedNavItem[] = [
   ...PRIMARY_NAV_ITEMS,
   ...SECONDARY_NAV_ITEMS,
 ];
 
-/** 移动端底部导航（严格五入口，第四项必须是 AI） */
-export const SHARED_MOBILE_NAV: SharedNavItem[] = PRIMARY_NAV_ITEMS;
-
-/** WorkbenchShell 侧栏使用的子集（排除 /console 和 /dashboard） */
-export const WORKBENCH_NAV_ITEMS = SECONDARY_NAV_ITEMS.filter(
-  (item) => item.href.startsWith("/workbench") && item.href !== "/workbench",
-);
-
-/** WorkbenchShell 需要额外显示的工作台首页 */
-export const WORKBENCH_EXTRA_ITEMS: SharedNavItem[] = [
-  { href: "/workbench", label: "工作台", icon: LayoutDashboard, tone: "bg-[#F7F1E7] text-[#3F5F31]", status: "live", group: "core" },
+export const SHARED_MOBILE_NAV: SharedNavItem[] = [
+  PRIMARY_NAV_ITEMS[0],
+  PRIMARY_NAV_ITEMS[1],
+  PRIMARY_NAV_ITEMS[2],
+  SECONDARY_NAV_ITEMS.find((item) => item.href === "/console/account")!,
 ];
+
+export const WORKBENCH_NAV_ITEMS = SECONDARY_NAV_ITEMS;
+export const WORKBENCH_EXTRA_ITEMS: SharedNavItem[] = [];

@@ -12,7 +12,7 @@ import { logAiRiskEvent } from "@/lib/ai/risk-log";
 import { createAiTraceContext, setTraceIdOnNextResponse, logAiTraceInfo } from "@/lib/observability/ai-trace";
 import { recordAiMetrics, recordSafetyRejection } from "@/lib/observability/ai-metrics";
 import { mapProviderErrorToAiCode, getAiErrorMessage, type AiErrorCode } from "@/lib/ai/provider-error";
-import { validateIdempotencyKey } from "@/lib/ai/credits";
+import { AI_BASIC_TASK_CREDIT_COST, validateIdempotencyKey } from "@/lib/ai/credits";
 
 export const runtime = "nodejs";
 
@@ -266,7 +266,7 @@ export async function POST(request: Request) {
     .filter(Boolean) as { role: "user" | "assistant"; content: string }[];
 
   // 先尝试扣额度（调用失败会回补）
-  const creditCost = 1;
+  const creditCost = AI_BASIC_TASK_CREDIT_COST;
   const creditResult = await consumeCredit(
     user.id,
     creditCost,

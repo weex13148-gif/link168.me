@@ -5,7 +5,7 @@
 - 把当前数据库迁移到新服务器
 - 恢复到某次备份快照
 - 部署 Prisma migrations 到生产环境
-- 创建 demo / admin / super-admin 系统账号
+- 创建 super-admin 系统账号
 - 验证数据库结构是否完整
 
 所有脚本均通过 `npm run` 调用，见 [package.json](../../package.json)。
@@ -110,23 +110,18 @@ npm run db:create-users
 
 行为：
 
-- 创建 3 个账号 + 3 个 profile：
-  - `demo@link168.me` / 角色 `user` / profile 用户名 `demo`
-  - `admin@link168.me` / 角色 `admin` / profile 用户名 `admin`
-  - `superadmin@link168.me` / 角色 `super_admin` / profile 用户名 `superadmin`
-- 使用 `bcrypt` 12 轮做密码 hash，**只写入 `password_hash`**，
-  **不写明文密码**。
-- 若用户已存在，则更新其 `password_hash / role / email_verified`。
-- 密码来源：
-  - 若设置了环境变量 `DEMO_PASSWORD / ADMIN_PASSWORD / SUPER_ADMIN_PASSWORD`
-    则使用提供的值；否则生成 20 位随机强密码。
-- 密码 **只在控制台显示一次**，请即时保存到服务器安全位置。
-- 邮箱可通过 `DEMO_EMAIL / ADMIN_EMAIL / SUPER_ADMIN_EMAIL` 覆盖。
+- 只创建显式配置的 `super_admin` 系统账号，不创建 demo 或普通 admin 用户。
+- `SUPER_ADMIN_EMAIL` 和 `SUPER_ADMIN_PASSWORD` 必须同时配置。
+- 邮箱必须是完整格式；密码至少 16 位、包含至少三类字符，且不能使用示例占位值或常见弱口令。
+- 使用 `bcrypt` 12 轮做密码 hash，**只写入 `password_hash`**，**不写明文密码**。
+- 若邮箱属于已有普通用户，脚本会拒绝静默提权；请改用一个专属系统账号邮箱。
+- 若邮箱属于已有系统账号，脚本会轮换密码、恢复 `super_admin` / active 状态并撤销全部旧会话。
+- 新建的系统账号会直接标记邮箱已验证；脚本不会发送验证邮件。
 
 安全注意：
 
 - 不要把密码写入仓库 / .env.example / 文档。
-- `create-system-users` 输出的密码只在终端显示一次，不会落盘。
+- 不要使用固定默认密码；缺少必要账号配置时脚本会失败。
 
 ---
 
@@ -183,7 +178,7 @@ pm2 start npm --name link168 -- start
 pm2 save
 
 # 10) 人工检查
-#    - 登录页 / 登录（demo / admin / super-admin）
+#    - 登录页 / 登录（super-admin）
 #    - 主页正常渲染
 #    - 短链接功能可用
 #    - AI 功能（如启用）可用
@@ -248,8 +243,7 @@ npm run db:verify
 - `create-system-users.js` 只写入 `password_hash`（bcrypt 12 轮）。
 - 所有脚本 **不会** 把明文密码写到磁盘 / 日志 / Git。
 - 数据库中唯一与密码相关的字段是 `users.password_hash`。
-- 不要把 `DEMO_PASSWORD / ADMIN_PASSWORD / SUPER_ADMIN_PASSWORD` 的真实
-  值放入 `.env.example`。
+- 不要把 `SUPER_ADMIN_PASSWORD` 的真实值放入 `.env.example`。
 
 ---
 
@@ -276,4 +270,4 @@ npm run db:verify
 | `restore-db.js` | 从备份恢复 | **覆盖现有数据库** | `DATABASE_URL`, `CONFIRM_RESTORE=yes` |
 | `migrate-db.js` | Prisma migrate deploy | 是（schema 写操作） | `DATABASE_URL`；若 `NODE_ENV=production` 需 `CONFIRM_PRODUCTION_MIGRATE=yes` |
 | `verify-db.js` | 结构 / 行数校验 | 否（只读） | `DATABASE_URL` |
-| `create-system-users.js` | 初始化 demo/admin/super-admin | 是（会 upsert 用户记录） | `DATABASE_URL`，可选 `DEMO_EMAIL` 等 |
+| `create-system-users.js` | 初始化 super-admin | 是（会 upsert 用户记录） | `DATABASE_URL`, `SUPER_ADMIN_EMAIL`, `SUPER_ADMIN_PASSWORD` |

@@ -1,28 +1,25 @@
 "use client";
 
 import type { CSSProperties, ReactNode } from "react";
-import { useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpRight,
   CalendarClock,
-  Copy,
-  Download,
   Globe,
   Mail,
   MapPin,
-  MessageCircle,
   Phone,
-  QrCode,
-  Share2,
   ShoppingBag,
-  UserCircle,
 } from "lucide-react";
 import { getThemeClasses, type ShareThemeClassSet } from "@/components/theme/presetThemes";
 import type { CustomTheme } from "@/components/theme/types";
 import { normalizeCustomTheme } from "@/components/theme/normalize";
 import { sanitizeMapUrl, sanitizePhoneNumber, sanitizePublicUrl } from "@/lib/public-url-security";
+import { PublicContactActions } from "@/components/share/PublicContactActions";
+import { PublicModuleList, PUBLIC_MODULE_SURFACE_STYLE, PUBLIC_PROFILE_BUTTON_STYLE } from "@/components/share/PublicModuleList";
+import { PublicProfileHero } from "@/components/share/PublicProfileHero";
+import type { PublicProfileIdentity, PublicProfileRenderMode } from "@/components/share/public-profile-types";
 import { resolvePlatformIcon } from "@/lib/link-icons";
 import { CoverImageModule } from "@/components/share/modules/CoverImageModule";
 import { PopupImageModule } from "@/components/share/modules/PopupImageModule";
@@ -42,6 +39,8 @@ import ServiceCardModule from "@/components/share/modules/ServiceCardModule";
 import OfferModule from "@/components/share/modules/OfferModule";
 import { QuoteModule } from "@/components/share/modules/QuoteModule";
 import { ContactFormModule } from "@/components/share/modules/ContactFormModule";
+import { ContactEntryCard } from "@/components/share/ContactEntryCard";
+import { CONTACT_ENTRY_TYPE } from "@/lib/contact-entries";
 import {
   isModuleType,
   validateModulePayload,
@@ -76,16 +75,13 @@ export type SharePageLink = {
   type?: string | null;
   componentType?: string | null;
   payload?: string | null;
+  workspaceId?: string | null;
 };
 
-export interface SharePageRendererProps {
+export interface SharePageRendererProps extends PublicProfileIdentity {
   template?: SharePageTemplate;
-  profileId?: string;
-  username: string;
-  displayName: string;
-  bio?: string | null;
-  avatarUrl?: string | null;
   links: SharePageLink[];
+  renderMode?: PublicProfileRenderMode;
   themeName?: string | null;
   customTheme?: string | null;
   surfaceClassName?: string;
@@ -98,16 +94,11 @@ export interface SharePageRendererProps {
   bioFallback?: string;
   onQrCodeClick?: () => void;
   onShareClick?: () => void;
-  company?: string | null;
-  jobTitle?: string | null;
-  phone?: string | null;
-  email?: string | null;
-  wechat?: string | null;
-  city?: string | null;
-  address?: string | null;
-  website?: string | null;
-  contactVisibility?: string;
   onContactInteraction?: (linkId: string) => void;
+  onAiAvailabilityChange?: (available: boolean) => void;
+  onOpenContact?: () => void;
+  onOpenContactEntry?: (contactEntryId?: string) => void;
+  stickyAction?: ReactNode;
 }
 
 function safeParseJson<T = unknown>(value: string | null | undefined): T | null {
@@ -133,22 +124,6 @@ function parseCustomTheme(themeName: string | null | undefined, customThemeJson:
   } catch {
     return null;
   }
-}
-
-function buildSurfaceStyle(custom: CustomTheme | null): CSSProperties {
-  if (!custom) return {};
-  if (custom.backgroundType === "solid") return { backgroundColor: custom.backgroundValue, color: custom.textColor };
-  if (custom.backgroundType === "gradient") return { background: custom.backgroundValue, color: custom.textColor };
-  if (custom.backgroundType === "image") {
-    return {
-      backgroundImage: `url(${custom.backgroundValue})`,
-      backgroundPosition: "center",
-      backgroundRepeat: "no-repeat",
-      backgroundSize: "cover",
-      color: custom.textColor,
-    };
-  }
-  return { color: custom.textColor };
 }
 
 function buildLinkClassSet(base: ShareThemeClassSet, linkStyle: ShareLinkStyle, override?: string): string {
@@ -197,23 +172,6 @@ function sanitizeHref(componentType: string, itemUrl: string | null | undefined,
     : { href: null, displayFallback: "链接被系统判定为不安全" };
 }
 
-function SafeAvatar({ src, alt, fallbackInitial, className, avatarClassName }: {
-  src?: string | null;
-  alt: string;
-  fallbackInitial: string;
-  className: string;
-  avatarClassName: string;
-}) {
-  const [imgError, setImgError] = useState(false);
-  if (!src || imgError) {
-    return <div className={`grid shrink-0 place-items-center ${className} ${avatarClassName}`}>{fallbackInitial.slice(0, 1).toUpperCase()}</div>;
-  }
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} className={className} onError={() => setImgError(true)} loading="lazy" />
-  );
-}
-
 function renderLinkIcon(iconValue: string | null | undefined, iconType: string | null | undefined, defaultClass: string): ReactNode {
   const value = (iconValue || "").trim();
   if (iconType === "platform") {
@@ -253,80 +211,16 @@ function BrandFoot({ classes }: { classes: ShareThemeClassSet }) {
   );
 }
 
-function HeaderActions({ onQrCodeClick, onShareClick }: { onQrCodeClick?: () => void; onShareClick?: () => void }) {
-  if (!onQrCodeClick && !onShareClick) return null;
-  return (
-    <div className="flex items-center gap-2">
-      {onQrCodeClick ? (
-        <button type="button" onClick={onQrCodeClick} className="grid size-10 place-items-center rounded-xl border border-black/10 bg-white/70 shadow-sm transition hover:bg-white" aria-label="二维码">
-          <QrCode aria-hidden className="size-5 text-[#2B241E]" />
-        </button>
-      ) : null}
-      {onShareClick ? (
-        <button type="button" onClick={onShareClick} className="grid size-10 place-items-center rounded-xl border border-black/10 bg-white/70 shadow-sm transition hover:bg-white" aria-label="分享">
-          <Share2 aria-hidden className="size-5 text-[#2B241E]" />
-        </button>
-      ) : null}
-    </div>
-  );
-}
-
-function ContactInfoSection({ phone, email, wechat, address, website, username, classes }: {
-  phone?: string | null;
-  email?: string | null;
-  wechat?: string | null;
-  address?: string | null;
-  website?: string | null;
-  username: string;
-  classes: ShareThemeClassSet;
-}) {
-  if (!phone && !email && !wechat && !address && !website) return null;
-  const itemClass = "flex min-h-[44px] items-center gap-3 rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-3 py-2.5 shadow-sm";
-  const iconClass = "grid size-9 shrink-0 place-items-center rounded-xl";
-  return (
-    <div className="w-full space-y-2">
-      {phone ? <a href={`tel:${phone}`} className={itemClass}><span className={`${iconClass} bg-[#F3E7D1]`}><Phone className="size-4 text-[#8A6A2E]" /></span><span className={`truncate text-sm font-black ${classes.nameClassName}`}>{phone}</span></a> : null}
-      {email ? <a href={`mailto:${email}`} className={itemClass}><span className={`${iconClass} bg-[#DDE8CD]`}><Mail className="size-4 text-[#3F5F31]" /></span><span className={`truncate text-sm font-black ${classes.nameClassName}`}>{email}</span></a> : null}
-      {wechat ? (
-        <button type="button" onClick={() => navigator.clipboard?.writeText(wechat).catch(() => undefined)} className={`${itemClass} w-full text-left`}>
-          <span className={`${iconClass} bg-[#DDE8CD]`}><MessageCircle className="size-4 text-[#3F5F31]" /></span>
-          <span className="min-w-0 flex-1"><span className={`block truncate text-sm font-black ${classes.nameClassName}`}>微信：{wechat}</span><span className={`block text-xs ${classes.subClassName}`}>点击复制微信号</span></span>
-          <Copy className="size-4 shrink-0 opacity-40" />
-        </button>
-      ) : null}
-      {address ? <div className={itemClass}><span className={`${iconClass} bg-[#F3E7D1]`}><MapPin className="size-4 text-[#8A6A2E]" /></span><span className={`truncate text-sm font-black ${classes.nameClassName}`}>{address}</span></div> : null}
-      {website ? <a href={website.startsWith("http") ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className={itemClass}><span className={`${iconClass} bg-[#F3E7D1]`}><Globe className="size-4 text-[#8A6A2E]" /></span><span className={`truncate text-sm font-black ${classes.nameClassName}`}>官网</span><ArrowUpRight className="ml-auto size-4 shrink-0 opacity-70" /></a> : null}
-      <a href={`/api/public/${username}/vcard`} download className="flex min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-[#DDE8CD] bg-[#EEF4E7] px-3 py-2.5 text-sm font-black text-[#3F5F31] shadow-sm transition hover:bg-[#DDE8CD]">
-        <Download className="size-4" />
-        保存到通讯录
-      </a>
-    </div>
-  );
-}
-
-function renderHeader(props: SharePageRendererProps, classes: ShareThemeClassSet, compact = false) {
-  const name = props.displayName || "Link168 名片";
-  const initial = name.slice(0, 1).toUpperCase();
-  const companyLine = props.company || props.jobTitle ? [props.jobTitle, props.company].filter(Boolean).join(" · ") : null;
-  const bioText = props.bio || props.bioFallback || "这个主页还没有简介。";
-  const avatarSize = compact ? "size-14 rounded-2xl" : "size-16 rounded-full sm:size-20";
-  return (
-    <section className={`relative w-full overflow-hidden rounded-2xl p-4 shadow-sm ${classes.cardClassName}`}>
-      <div className="absolute right-3 top-3 z-10"><HeaderActions onQrCodeClick={props.onQrCodeClick} onShareClick={props.onShareClick} /></div>
-      <div className={compact ? "flex items-start gap-3 pr-20" : "flex flex-col items-center text-center"}>
-        <SafeAvatar src={props.avatarUrl} alt={`${name} 的头像`} fallbackInitial={initial} className={`${avatarSize} shrink-0 ring-2 ring-white/60`} avatarClassName={`text-xl font-black ${classes.avatarClassName}`} />
-        <div className="min-w-0">
-          <h2 className={`mt-3 truncate text-lg font-black ${classes.nameClassName}`}>{name}</h2>
-          {companyLine ? <p className={`mt-0.5 flex items-center justify-center gap-1 text-xs font-bold ${classes.subClassName}`}><UserCircle className="size-3.5" />{companyLine}</p> : null}
-          <p className={`mt-0.5 text-xs font-bold ${classes.subClassName}`}>@{props.username || "yourname"}</p>
-          <p className={`mt-2 line-clamp-3 text-xs leading-5 ${classes.subClassName} sm:text-sm sm:leading-6`}>{bioText}</p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function renderNewModule(item: SharePageLink, componentType: string, payload: Record<string, unknown> | null, username: string, profileId?: string): ReactNode {
+function renderNewModule(
+  item: SharePageLink,
+  componentType: string,
+  payload: Record<string, unknown> | null,
+  username: string,
+  profileId?: string,
+  onAvailabilityChange?: (available: boolean) => void,
+  onOpenContact?: () => void,
+  onOpenContactEntry?: (contactEntryId?: string) => void,
+): ReactNode {
   if (!payload) return <div key={item.id}><ModuleFallback message="模块数据为空" /></div>;
   if (!isModuleType(componentType)) return <div key={item.id}><ModuleFallback message="未知模块类型" /></div>;
   const validation = validateModulePayload(componentType, payload);
@@ -343,7 +237,7 @@ function renderNewModule(item: SharePageLink, componentType: string, payload: Re
     case "music-link": return <div key={item.id}><MusicLinkModule payload={payload as MusicLinkPayload} /></div>;
     case "divider": return <div key={item.id}><DividerModule payload={payload as DividerPayload} /></div>;
     case "copy-text": return <div key={item.id}><CopyTextModule payload={payload as CopyTextPayload} /></div>;
-    case "ai-chat": return <div key={item.id}><AiChatModule username={username} mode="customer-service" /></div>;
+    case "ai-chat": return <div key={item.id}><AiChatModule username={username} mode="customer-service" onAvailabilityChange={onAvailabilityChange} onOpenContact={onOpenContact} onOpenContactEntry={onOpenContactEntry} /></div>;
     case "product-card": return <div key={item.id}><ProductCardModule payload={payload as ProductCardPayload} username={username} /></div>;
     case "service-card": return <div key={item.id}><ServiceCardModule payload={payload as ServiceCardPayload} username={username} /></div>;
     case "offer": return <div key={item.id}><OfferModule payload={payload as OfferPayload} username={username} /></div>;
@@ -363,6 +257,9 @@ function renderLegacyItem(
   linkClassName: string,
   onContactInteraction?: (linkId: string) => void,
 ) {
+  if (componentType === CONTACT_ENTRY_TYPE) {
+    return <div key={item.id}><ContactEntryCard entry={{ id: item.id, title: item.title, description: item.description, payload: item.payload, workspaceId: item.workspaceId }} /></div>;
+  }
   const safe = sanitizeHref(componentType, item.url, payload);
   const title = item.title || "链接";
   const description = item.description;
@@ -386,46 +283,34 @@ function renderLegacyItem(
       return <div key={item.id} className="flex items-center gap-3 px-1 py-2"><span className="h-px flex-1 bg-[#E8DCCB]" /><span className={`text-xs font-black uppercase ${classes.subClassName}`}>{title}</span><span className="h-px flex-1 bg-[#E8DCCB]" /></div>;
     }
     if (componentType === "text") {
-      return <div key={item.id} className={`rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 py-3 ${classes.subClassName}`}><div className="font-black text-[#2B241E]">{title}</div>{description ? <div className="mt-1 text-sm leading-6">{description}</div> : null}</div>;
+      return <div key={item.id} data-public-module-surface style={PUBLIC_MODULE_SURFACE_STYLE} className={`rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] px-4 py-3 ${classes.subClassName}`}><div className="font-black text-[#2B241E]">{title}</div>{description ? <div className="mt-1 text-sm leading-6">{description}</div> : null}</div>;
     }
     if (componentType === "wechat") {
       const wechatId = typeof payload?.wechat === "string" ? payload.wechat : item.url || description || "";
-      return <button key={item.id} type="button" onClick={() => { onContactInteraction?.(item.id); if (wechatId) void navigator.clipboard?.writeText(wechatId).catch(() => undefined); }} className={`${common} w-full text-left`}>{body}<span className="rounded-full bg-[#3F5F31]/10 px-2 py-1 text-xs font-black text-[#3F5F31]">{wechatId || "微信"}</span></button>;
+      return <button key={item.id} type="button" data-public-button style={PUBLIC_PROFILE_BUTTON_STYLE} onClick={() => { onContactInteraction?.(item.id); if (wechatId) void navigator.clipboard?.writeText(wechatId).catch(() => undefined); }} className={`${common} w-full text-left`}>{body}<span className="rounded-full bg-[#3F5F31]/10 px-2 py-1 text-xs font-black text-[#3F5F31]">{wechatId || "微信"}</span></button>;
     }
-    return <div key={item.id} className={common}>{body}</div>;
+    return <div key={item.id} data-public-module-surface style={PUBLIC_MODULE_SURFACE_STYLE} className={common}>{body}</div>;
   }
 
   return (
-    <a key={item.id} href={safe.href} onClick={() => { if (["phone", "email"].includes(componentType)) onContactInteraction?.(item.id); }} target={safe.href.startsWith("tel:") || safe.href.startsWith("mailto:") ? undefined : "_blank"} rel={safe.href.startsWith("tel:") || safe.href.startsWith("mailto:") ? undefined : "noopener noreferrer"} className={common}>
+    <a key={item.id} href={safe.href} data-public-button style={PUBLIC_PROFILE_BUTTON_STYLE} onClick={() => { if (["phone", "email"].includes(componentType)) onContactInteraction?.(item.id); }} target={safe.href.startsWith("tel:") || safe.href.startsWith("mailto:") ? undefined : "_blank"} rel={safe.href.startsWith("tel:") || safe.href.startsWith("mailto:") ? undefined : "noopener noreferrer"} className={common}>
       {body}
       {variant === "conversion" ? <ArrowRight className="size-4 shrink-0 opacity-80" /> : <ArrowUpRight className="size-4 shrink-0 opacity-70" />}
     </a>
   );
 }
 
-function renderComponentList(props: SharePageRendererProps, classes: ShareThemeClassSet, custom: CustomTheme | null) {
-  if (props.links.length === 0) {
-    return (
-      <div className={`rounded-2xl border border-dashed border-[#E8DCCB] bg-[#FFFDF8]/70 px-5 py-10 text-center ${classes.subClassName}`}>
-        <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#DDE8CD]"><Globe className="size-7 text-[#6F8F4E]" /></div>
-        <p className="mt-4 text-base font-black text-[#2B241E]">{props.emptyText || "暂无公开内容"}</p>
-        <p className="mt-2 text-sm leading-6 text-[#7A6D5E]">你仍然可以通过页面上的联系方式与主页所有者沟通。</p>
-      </div>
-    );
-  }
-
+function buildComponentItems(props: SharePageRendererProps, classes: ShareThemeClassSet) {
   const linkClassName = buildLinkClassSet(classes, props.linkStyle || "solid", props.linkClassName);
   const moduleTypes = new Set(["cover-image", "popup-image", "carousel", "bilibili-video", "youtube-video", "video-link", "netease-music", "music-link", "divider", "copy-text", "ai-chat", "product-card", "service-card", "offer", "booking", "quote", "contact-form"]);
-  return (
-    <div className="space-y-2" style={custom?.moduleGap ? { gap: `${custom.moduleGap}px` } : undefined}>
-      {props.links.map((item) => {
-        const componentType = normalizeComponentType(item);
-        const payload = safeParseJson<Record<string, unknown>>(item.payload);
-        if (moduleTypes.has(componentType)) return renderNewModule(item, componentType, payload, props.username, props.profileId);
-        return renderLegacyItem(item, componentType, payload, classes, props.template || "business", linkClassName, props.onContactInteraction);
-      })}
-    </div>
-  );
+  return props.links.map((item) => {
+    const componentType = normalizeComponentType(item);
+    const payload = safeParseJson<Record<string, unknown>>(item.payload);
+    const node = moduleTypes.has(componentType)
+      ? renderNewModule(item, componentType, payload, props.username, props.profileId, props.onAiAvailabilityChange, props.onOpenContact, props.onOpenContactEntry)
+      : renderLegacyItem(item, componentType, payload, classes, props.template || "business", linkClassName, props.onContactInteraction);
+    return { id: item.id, node };
+  });
 }
 
 export function SharePageRenderer(props: SharePageRendererProps) {
@@ -436,28 +321,62 @@ export function SharePageRenderer(props: SharePageRendererProps) {
     surfaceClassName: props.surfaceClassName || baseClasses.surfaceClassName,
     cardClassName: props.cardClassName || baseClasses.cardClassName,
   };
-  const showContact = props.contactVisibility !== "private" && props.contactVisibility !== "contacts_only";
-  const compact = props.template === "conversion";
+  const renderMode = props.renderMode || "public";
+  const identity: PublicProfileIdentity = {
+    profileId: props.profileId,
+    username: props.username,
+    displayName: props.displayName,
+    bio: props.bio,
+    avatarUrl: props.avatarUrl,
+    company: props.company,
+    jobTitle: props.jobTitle,
+    phone: props.phone,
+    email: props.email,
+    wechat: props.wechat,
+    city: props.city,
+    address: props.address,
+    website: props.website,
+    contactVisibility: props.contactVisibility,
+  };
+  const cardOpacity = Math.max(0, Math.min(100, custom?.cardOpacity ?? 100)) / 100;
+  const textColor = custom?.textColor || "#2B241E";
+  const cardStyle = custom?.cardStyle || "solid";
+  const buttonStyle = custom?.buttonStyle || "solid";
+  const cardBackground = cardStyle === "outline"
+    ? "transparent"
+    : "rgb(255 253 248 / var(--profile-card-opacity, 1))";
+  const buttonTokens = buttonStyle === "outline"
+    ? { background: "transparent", border: textColor, color: textColor }
+    : buttonStyle === "soft"
+      ? { background: "rgb(49 84 61 / 0.12)", border: "transparent", color: textColor }
+      : { background: "#31543D", border: "#31543D", color: "#FFFFFF" };
+  const sharedStyle = {
+    "--profile-card-opacity": String(cardOpacity),
+    "--profile-card-background": cardBackground,
+    "--profile-card-border-color": cardStyle === "outline" ? textColor : "#E8DCCB",
+    "--profile-card-shadow": cardStyle === "solid" ? "0 1px 2px rgb(86 68 46 / 0.08)" : cardStyle === "glass" ? "0 8px 24px rgb(86 68 46 / 0.10)" : "none",
+    "--profile-card-backdrop": cardStyle === "glass" ? "blur(14px)" : "none",
+    "--profile-button-radius": `${custom?.buttonRadius ?? 16}px`,
+    "--profile-button-background": buttonTokens.background,
+    "--profile-button-border-color": buttonTokens.border,
+    "--profile-button-color": buttonTokens.color,
+    "--profile-text-color": textColor,
+    color: "var(--profile-text-color)",
+  } as CSSProperties;
+  const items = buildComponentItems(props, classes);
 
   return (
-    <div className={`min-h-full w-full ${classes.surfaceClassName}`} style={buildSurfaceStyle(custom)}>
-      <div className="mx-auto flex w-full max-w-xl flex-col items-center px-3 py-4 sm:px-4">
-        {renderHeader(props, classes, compact)}
-        {showContact ? (
-          <div className="mt-4 w-full">
-            <ContactInfoSection phone={props.phone} email={props.email} wechat={props.wechat} address={props.address} website={props.website} username={props.username} classes={classes} />
-          </div>
-        ) : null}
-        <div className="mt-4 w-full text-sm">{renderComponentList(props, classes, custom)}</div>
-        {!showContact ? (
-          <a href={`/api/public/${props.username}/vcard`} download className="mt-4 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-2xl border border-[#DDE8CD] bg-[#EEF4E7] px-3 py-2.5 text-sm font-black text-[#3F5F31] shadow-sm transition hover:bg-[#DDE8CD]">
-            <Download className="size-4" />
-            保存到通讯录
-          </a>
-        ) : null}
-        {props.showBrandFoot ? <BrandFoot classes={classes} /> : null}
-        {props.reportUrl ? <Link href={props.reportUrl} className={`mt-2 block text-center text-xs font-bold opacity-60 hover:opacity-90 ${classes.footerClassName}`}>举报此主页</Link> : null}
+    <div className="min-h-full w-full bg-[#F4EEE5]" style={sharedStyle} data-profile-template={props.template || "business"} data-profile-card-style={cardStyle} data-profile-button-style={buttonStyle}>
+      <div className="mx-auto w-full max-w-xl overflow-hidden bg-[#FFFDF8]">
+        <PublicProfileHero identity={identity} customTheme={custom} renderMode={renderMode} onQrCodeClick={props.onQrCodeClick} onShareClick={props.onShareClick} />
+        <div className="px-5 pb-6 text-sm">
+          <PublicModuleList renderMode={renderMode} gap={custom?.moduleGap ?? 8} items={items} />
+        </div>
+        <PublicContactActions identity={identity} />
+        {props.showBrandFoot ? <div className="flex justify-center px-5 pb-4"><BrandFoot classes={classes} /></div> : null}
+        {props.reportUrl ? <Link href={props.reportUrl} className="block pb-5 text-center text-xs font-bold text-[#7A6D5E] opacity-70 hover:opacity-100">举报此主页</Link> : null}
       </div>
+      {props.stickyAction}
     </div>
   );
 }

@@ -37,7 +37,6 @@ const shortcuts = [
   { href: "/jeepwork/logs", title: "访问与安全日志", description: "登录、会话、管理员操作和原始 IP" },
   { href: "/jeepwork/reports", title: "举报管理", description: "处理用户举报和违规主页" },
   { href: "/jeepwork/profiles", title: "主页管理", description: "搜索、隐藏和恢复公开主页" },
-  { href: "/jeepwork/showcase", title: "比赛展示中心", description: "管理演示页面和访问控制" },
 ];
 
 const serviceLabels: Record<string, string> = {
@@ -118,7 +117,7 @@ export default function JeepworkHomePage() {
           <AdminAlertBanner tone="warning" title="已知限制：以下能力为后续 P0 项，当前仅为 UI 展示">
             <ul className="space-y-1">
               <li>· AI 成本页仅展示 Credit 计数，未对接真实供应商账单</li>
-              <li>· 退款流程仅更新本地订单状态，未调用支付宝接口</li>
+              <li>· 退款成功状态必须以支付宝确认结果为准，生产环境禁止测试退款模式</li>
               <li>· 会员到期降级无定时任务，需人工触发</li>
               <li>· 限流计数存于单机内存，多实例部署时不生效</li>
             </ul>
@@ -258,10 +257,6 @@ export default function JeepworkHomePage() {
                 </div>
                 <div className="rounded-[var(--ui-radius-sm)] border border-dashed border-[var(--ui-line)] bg-[var(--ui-surface-muted)]/40 px-4 py-3">
                   <p className="text-xs font-black text-[var(--ui-muted)]">AI 调用概况（聚合）</p>
-                  <p className="mt-1 text-xs text-[var(--ui-faint)]">暂无数据</p>
-                </div>
-                <div className="rounded-[var(--ui-radius-sm)] border border-dashed border-[var(--ui-line)] bg-[var(--ui-surface-muted)]/40 px-4 py-3">
-                  <p className="text-xs font-black text-[var(--ui-muted)]">/showcase 当前状态</p>
                   <p className="mt-1 text-xs text-[var(--ui-faint)]">暂无数据</p>
                 </div>
                 <div className="rounded-[var(--ui-radius-sm)] border border-dashed border-[var(--ui-line)] bg-[var(--ui-surface-muted)]/40 px-4 py-3">

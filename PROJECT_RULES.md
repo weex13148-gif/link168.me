@@ -1,221 +1,60 @@
-# PROJECT_RULES
+# Link168 工程与安全规则
 
-> 版本：v0.2
-> 更新日期：2026-06-20
->
-> 本文档仅保留**工程和安全规则**。完整产品需求见 `PRD.md`。
+> 版本：v1.1
+> 生效日期：2026-07-31
+> 状态：正式生效
 
----
+本文件只规定工程、安全和交付红线。产品方向以
+`01_PRODUCT_DOCS/PRODUCT_CONSTITUTION.md` 为最高长期规则，当前需求以
+`01_PRODUCT_DOCS/PRD.md` 为准，价格与 AI 额度以
+`docs/PRICING_AND_ENTITLEMENTS.md` 和 `src/lib/billing/plans.ts` 为准。
 
-## 一、品牌与名称
+## 1. 唯一主线
 
-- 产品名称：**Link168**
-- 官方域名：`link168.me`
-- 品牌拼写规范：`Link168`（首字母 L 大写，其余小写，168 连续，中间无空格或连字符）
-- 展示时使用的品牌名需严格遵循上述拼写规范
-- Logo 资产：`public/brand/link168-logo.png`
-- 主页点击入口：可点击的 `BrandLogo` 组件，返回 `/`
+- 当前收口主线：`recovery/direct-goal-closeout-20260722`。
+- `master` 只接收经过门禁、复审和明确批准的发布变更。
+- 旧分支、旧 worktree、旧 PRD、研究资料、审计过程文档和独立演示站不属于现役产品资产；不得反向覆盖当前正式规则。
+- 本地收口完成后，只保留一条真实 SaaS 收口主线和一个工作区；不为临时过程保留备份分支、stash 或嵌套仓库。
+- 不 force-push，不删除 Release Tag，不改写共享 Git 历史。
 
----
+## 2. 必须通过的门禁
 
-## 二、文档读取优先级
+提交前至少执行：
 
-> Agent 在判断规则、写代码、写文档时必须遵循以下优先级。不得自行推断、不得反向改写正式文档。
+```bash
+npm ci
+npx prisma validate
+npx prisma generate
+npm run lint
+npm run typecheck
+npm test -- --runInBand
+npm run build
+git diff --check
+```
 
-### 2.1 正式文档优先级（由高到低）
+代码存在、页面可见或构建成功都不等于业务已完成。核心闭环还必须通过真实数据库和浏览器验收；第三方接口未配置时只能标记为“待配置验证”。
 
-1. `PROJECT_RULES.md`（本文件。工程与安全红线，最高优先级）
-2. `PRD.md`（产品总 PRD。用户角色、四层结构、经营组件、套餐权益等）
-3. `ROADMAP.md`（版本路线图。每版目标与交付边界）
-4. `SPRINT.md`（当前 Sprint 目标与交付物）
-5. `docs/PRICING_AND_ENTITLEMENTS.md`（套餐与权益明细）
-6. `docs/UI_ARCHITECTURE.md`（用户后台结构、编辑器结构、三套分享页模板）
+## 3. 密钥与数据
 
-### 2.2 以下文档不得作为新开发需求依据
+- 禁止提交 `.env*`、密码、Session/Admin 密钥、支付/邮件/AI/存储密钥和生产数据库凭据。
+- 敏感配置只放服务端环境或受控配置中心，不进入客户端 Bundle、URL、日志和文档。
+- 不读取、修改或删除生产数据，除非先说明范围、完成备份并获得明确批准。
+- 生产迁移只使用已在隔离数据库验证的 migration；严禁生产执行 `prisma migrate reset`。
+- 用户联系方式、AI 对话、订单、额度、退款和审计日志按敏感数据处理。
 
-- `docs/archive/**`
-- `docs/plan/**`
-- `docs/product/01-PRD.md`
-- 任何标注为“历史代码快照”的文档（例如 `docs/product/02-PROJECT_STATUS.md`、`docs/product/03-FEATURE_COMPLETION.md`、`docs/tech/07-SECURITY_AND_KEYS.md`、`docs/ADMIN_PRODUCT_AUDIT.md`）
-- `docs/UI_REFERENCE_PROMPTS.md` 仅为视觉与图片生成参考提示词库，不作为正式品牌定义
+## 4. 权限与外部服务
 
-### 2.3 冲突时处理方式
+- 平台最高权限只保留 `super_admin`；企业管理员不能获得平台权限。
+- 所有 Workspace、Lead、知识库、媒体、订单和额度操作必须服务端校验归属。
+- AI、邮件、支付、退款、存储和内容审核未配置时必须安全失败，不伪造成功。
+- 真实退款成功前不得显示“已退款”；支付回调、额度扣减与退款必须幂等。
 
-- 正式文档之间冲突时，以**优先级高者**为准。
-- 正式文档与历史文档冲突时，以**正式文档**为准。
-- 出现“仍无法确定”的规则（例如管理员 Session 实现、路由最终命名、188 元会员版正式价格）时，停止执行并在响应中明确标注“待老板确认”或“待代码审计”，不得自行推断。
+## 5. 部署边界
 
----
+- 先本地/隔离环境验证，再只读检查服务器，最后经明确批准执行上传、migration、重启或配置变更。
+- 生产必须使用 HTTPS、安全 Cookie、强密钥、持久化上传目录和共享限流存储。
+- 发布后必须验证健康检查、注册登录、公开名片、留资、后台线索、支付回调与降级行为。
 
-## 三、密钥与 API Key 安全
+## 6. 历史规则退役
 
-### 3.1 不泄露密钥
-
-- **绝不**把以下信息提交到 Git 仓库：
-  - 数据库密码
-  - `SESSION_SECRET`
-  - `ADMIN_SECRET`
-  - AI Provider API Key（如 OpenAI、Anthropic、通义、豆包等）
-  - 邮件服务密码 / SMTP 凭据
-  - 文件存储服务（如 OSS、S3）Access Key
-  - 任何以 `SECRET`、`KEY`、`TOKEN`、`PASSWORD` 结尾的环境变量
-- `.env`、`.env.local`、`.env.production` 必须在 `.gitignore` 中
-- 所有密钥需通过环境变量或安全的密钥管理服务（KMS）注入
-
-### 3.2 API Key 不进入前端
-
-- **绝不**在前端 JS Bundle 中包含任何 API Key
-- **绝不**在客户端代码中 `process.env.NEXT_PUBLIC_*` 暴露敏感信息
-- `NEXT_PUBLIC_*` 前缀只能用于：
-  - 公开可访问的 API Base URL（且该 URL 本身无密钥）
-  - 产品版本号
-  - 品牌名、支持邮箱等非敏感元信息
-- 任何需要 API Key 的调用必须经由服务端（Server Component / Route Handler）代理
-
-### 3.3 AI Provider Key 管理
-
-- AI Provider Key 仅存储在服务端环境变量中
-- 每个 Provider Key 须配置独立的额度/费用预警阈值
-- Key 轮换须通过运维流程，不得由代码中直接修改 Key 值
-
----
-
-## 四、生产环境访问约束
-
-### 4.1 不允许 Agent 擅自连接生产环境
-
-- 开发者 Agent / AI Agent **不得**擅自连接生产环境
-- 连接生产环境必须走运维流程：
-  1. 填写访问申请（原因、范围、时间窗口）
-  2. 超级管理员或运维负责人审批
-  3. 使用只读凭据（如需写操作，须额外注明）
-  4. 访问期间所有操作留痕
-
-### 4.2 不允许擅自操作 GitHub
-
-- Agent / 开发者 **不得**擅自：
-  - Force push 到主分支
-  - 删除已有 Release Tag
-  - 修改仓库的 Branch Protection 规则
-  - 添加/删除仓库协作者
-- 正常开发流程（push 到 feature 分支、提交 PR）不受此限
-
-### 4.3 不允许擅自修改生产数据库
-
-- **绝不**在没有备份的情况下修改生产数据库
-- 任何生产数据库修改须满足：
-  1. 先执行 `scripts/db/backup-db.js` 或等效备份脚本
-  2. 变更内容写在迁移脚本（而非手动 SQL）中
-  3. 迁移脚本已在测试数据库验证
-  4. 超级管理员或运维负责人审批
-  5. 通过 `prisma migrate deploy`（而非 `prisma migrate dev`）应用
-- `prisma migrate reset` 严禁在生产环境执行
-- 内部 Service Account（`isSystem=true`）的密码或角色**不可通过后台 API 修改**（待架构审计）
-
----
-
-## 五、渐进式重构
-
-- 所有大型重构须以**渐进式**方式推进：先在独立分支验证，再逐步合入主分支
-- 每个渐进式步骤必须满足：
-  - `npm run lint` 通过
-  - `npx tsc --noEmit` 通过
-  - `npm run build` 通过
-- 不可一次性替换整个模块导致部署风险
-- 删除代码前须确认：无其他模块隐式依赖该代码
-
----
-
-## 六、不删除现有可用数据
-
-- 无明确产品决策前，**不得**在生产环境删除用户数据、举报数据、审计日志等
-- 用户主动删除账号须遵循以下流程：
-  1. 二次确认弹窗
-  2. 延迟删除策略（待老板确认）
-  3. 删除前输出用户可下载的个人数据摘要
-  4. 审计日志中留痕
-- 审计日志 `admin_audit_logs` 不可被任何人删除
-
----
-
-## 七、上线前只读检查
-
-- 每次上线前须进行**只读检查**：
-  1. 有测试环境时先在测试环境启动服务；无测试环境时采用本地验证、阿里云快照、服务器 2 分钟只读检查和最小生产更新
-  2. 以普通用户身份访问所有公开页面
-  3. 以管理员身份访问后台管理页面
-  4. 确认无意外的数据库写操作发生
-  5. 确认生产日志中不输出敏感信息（密码、完整 IP、Session Token、API Key）
-- 只读检查通过后才能推进到生产部署
-
----
-
-## 八、服务器 Agent 部署边界
-
-- 服务器上部署的 Agent / Bot / 守护进程须明确其部署边界：
-  - **禁止输出、泄露或擅自修改真实密钥**
-  - 允许在老板授权的部署任务中使用服务器已有环境配置
-  - 可以验证环境变量名称是否存在，但**不得输出值**
-  - 可以进行**只读数据库检查**和**经批准的迁移**
-  - **不得无目的读取用户上传内容**
-  - 其所有操作须可审计（操作日志、时间戳、操作者）
-- 任何突破上述边界的操作须提交运维审批
-
----
-
-## 九、关于旧规则的说明
-
-以下旧表述**均已失效**，不再作为产品或工程约束：
-
-- "永久禁止 AI"
-- "永久禁止会员"
-- "永久禁止支付"
-- "永久禁止企业版"
-- "Link168 只是链接聚合工具"
-
-替代规则：
-
-> 当前阶段暂不开发的功能，不代表产品长期不包含。
-> 具体各功能的开发阶段和计划见 `PRD.md` 与 `ROADMAP.md`。
-
----
-
-## 十、文档引用
-
-- 完整产品需求：`PRD.md`
-- 路线图：`ROADMAP.md`
-- 当前 Sprint：`SPRINT.md`
-- UI 架构：`docs/UI_ARCHITECTURE.md`
-- 套餐与权益：`docs/PRICING_AND_ENTITLEMENTS.md`
-- 技术架构：`docs/tech/05-ARCHITECTURE.md`
-- 部署：`docs/tech/06-DEPLOYMENT.md`
-- 安全与密钥：`docs/tech/07-SECURITY_AND_KEYS.md`
-- 数据库运维脚本：`scripts/db/README.md`
-
----
-
-## 十一、TRAE 比赛流程规则
-
-> 本条规则于 2026-06-20 生效，适用于 Link168 的 TRAE 比赛阶段。
-
-1. **所有 Agent 必须登记**：任何 Agent（包括子 Agent）在开始执行任务前，
-   必须先在 `docs/competition/AGENT_LEDGER.md` 中登记，明确其"允许修改范围"
-   与"禁止范围"。未登记的 Agent 不得修改任何文件。
-2. **任务结果必须提交比赛记录 Agent**：每一轮任务结束后，
-   执行 Agent 必须向"比赛记录 Agent"提交一份任务结果（至少列出：
-   修改文件清单、tsc 与 build 结果、验收结果、风险评估、是否需要老板审核）。
-3. **比赛记录 Agent 必须更新四项台账**：在收到任务结果后，
-   比赛记录 Agent 必须更新 `docs/competition/AGENT_LEDGER.md`、
-   `docs/competition/DECISION_LOG.md`、`docs/competition/CHANGE_LEDGER.md`、
-   以及当日 `docs/competition/DAILY_REPORT_YYYY-MM-DD.md`。
-4. **未完成记录的任务不得标记为比赛项目完成**：
-   即使 `npx tsc --noEmit` 与 `npm run build` 均 exit 0，
-   只要比赛记录文件未更新，该轮任务就**不得**被视为"可发布"
-   或"比赛项目完成"。tsc/build 仅视为构建过程必要条件，
-   不能替代产品级决策、权限边界审核、端到端验证、变更登记。
-5. **老板决策优先于任何自动化规则**：所有上述登记、汇报、记录机制，
-   若与老板当日的明确指令冲突，以老板明确指令为准；
-   但冲突本身必须写入当日日报，便于后续追溯。
-6. **文档引用**：比赛案卷根目录为 `docs/competition/`，
-   相关产品/技术文档见上文"十、文档引用"；
-   管理后台变更审计见 `docs/ADMIN_CHANGE_AUDIT.md`。
+2026-06-20 的 TRAE 比赛登记、四份比赛台账和“两批五 Agent”编排已结束，不再作为开发前置条件。其历史材料只作追溯，不得阻塞当前唯一主线。

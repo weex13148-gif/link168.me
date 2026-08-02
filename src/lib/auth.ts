@@ -258,7 +258,7 @@ export async function validatePasswordResetToken(token: string) {
   const tokenHash = hashResetToken(token);
   const record = await db.passwordResetToken.findUnique({
     where: { tokenHash },
-    include: { user: { select: { id: true, email: true } } },
+    include: { user: { select: { id: true, email: true, role: true } } },
   });
 
   if (!record || record.used || record.expiresAt < new Date()) {

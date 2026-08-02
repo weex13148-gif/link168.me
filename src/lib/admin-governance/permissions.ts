@@ -34,7 +34,6 @@ export const ROLE_ROUTE_ACCESS: Record<Role, string[]> = {
     "/jeepwork/ai-usage",
     "/jeepwork/logs",
     "/jeepwork/settings/api",
-    "/jeepwork/competition-center",
     "/jeepwork/governance",
     "/jeepwork/roles",
     "/jeepwork/audit",

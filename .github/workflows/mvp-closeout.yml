@@ -1,19 +1,20 @@
-name: MVP Closeout
+name: Link168 SaaS Full Gates
 
 on:
   push:
     branches:
-      - integration/mvp-closeout-r1
+      - master
+      - recovery/direct-goal-closeout-20260722
   pull_request:
     branches:
-      - integration/mvp-closeout-r1
+      - master
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: mvp-closeout-${{ github.ref }}
+  group: link168-saas-gates-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -37,13 +38,14 @@ jobs:
           --health-retries 5
 
     env:
-      NODE_ENV: test
       DATABASE_URL: postgresql://link168:link168@127.0.0.1:5432/link168_ci
-      SESSION_SECRET: link168-mvp-closeout-ci-session-secret-2026
+      SESSION_SECRET: link168-saas-full-gates-ci-session-secret-2026
+      ADMIN_SECRET: link168-saas-full-gates-ci-admin-secret-2026
       CONFIG_ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
-      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NEXT_PUBLIC_APP_URL: https://example.invalid
+      PAYMENT_RECONCILE_SECRET: link168-saas-full-gates-ci-payment-secret-2026
       MAIL_ENABLED: "false"
-      COOKIE_SECURE: "false"
+      COOKIE_SECURE: "true"
       RATE_LIMIT_STORE: memory
 
     steps:
@@ -68,17 +70,27 @@ jobs:
       - name: Apply test migrations
         run: npx prisma migrate deploy
 
-      - name: Typecheck
-        run: npm run typecheck
-
       - name: Lint
         run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
 
       - name: Test
         run: npm test -- --runInBand
 
       - name: Build
         run: npm run build
+
+      - name: Release preflight
+        env:
+          NODE_ENV: production
+        run: npm run release:preflight
+
+      - name: Standalone runtime smoke
+        env:
+          RELEASE_SMOKE_REQUIRE_DB: "true"
+        run: npm run release:smoke
 
       - name: Diff check
         run: git diff --check

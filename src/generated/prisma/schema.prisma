@@ -45,6 +45,7 @@ model User {
   ownedWorkspaces             Workspace[]                  @relation("WorkspaceOwner")
   workspacePublicProfiles     WorkspacePublicProfile[]
   enterpriseQuotaConsumptions EnterpriseQuotaConsumption[]
+  claimedWorkspaceLeads       Lead[]                       @relation("WorkspaceLeadClaimer")
 
   @@map("users")
 }
@@ -124,7 +125,8 @@ model Profile {
   // V2-004: 模板选择持久化 — business / creator / conversion
   template                   String           @default("business")
   language                   String           @default("zh")
-  isPublic                   Boolean          @default(true) @map("is_public")
+  isPublic                   Boolean          @default(false) @map("is_public")
+  firstPublishedAt           DateTime?        @map("first_published_at") @db.Timestamptz(6)
   // 联系方式字段
   company                    String?          @map("company")
   jobTitle                   String?          @map("job_title")
@@ -211,6 +213,8 @@ model WorkspacePublicProfile {
 model Link {
   id                   String      @id @db.Uuid
   profileId            String      @map("profile_id") @db.Uuid
+  // 团队联系入口归属；为空时是个人入口。普通链接继续仅归 Profile 所有。
+  workspaceId          String?     @map("workspace_id") @db.Uuid
   // V2-005: 组件类型 — link/text/group-title/qr/wechat/shop/booking/map/phone
   type                 String      @default("link")
   // V2-005: 组件扩展字段（微信账号、商品价格、预约时间段、地图坐标等）
@@ -228,9 +232,12 @@ model Link {
   createdAt            DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt            DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
   profile              Profile     @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  workspace            Workspace?  @relation("WorkspaceContactEntries", fields: [workspaceId], references: [id], onDelete: Restrict)
   clicks               LinkClick[]
+  contactLeads         Lead[]      @relation("ContactEntryLeads")
 
   @@index([profileId, type])
+  @@index([workspaceId, type, position])
   @@map("links")
 }
 
@@ -447,6 +454,10 @@ model AdminAuditLog {
 model Lead {
   id                        String          @id @db.Uuid
   profileId                 String          @map("profile_id") @db.Uuid
+  // 团队联系入口产生的线索进入共享池；为空时保持原有个人线索行为。
+  workspaceId               String?         @map("workspace_id") @db.Uuid
+  contactEntryId            String?         @map("contact_entry_id") @db.Uuid
+  claimedByUserId           String?         @map("claimed_by_user_id") @db.Uuid
   name                      String
   email                     String?
   phone                     String?
@@ -470,12 +481,18 @@ model Lead {
   createdAt                 DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt                 DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
   profile                   Profile         @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  workspace                 Workspace?      @relation("WorkspaceLeads", fields: [workspaceId], references: [id], onDelete: SetNull)
+  contactEntry              Link?           @relation("ContactEntryLeads", fields: [contactEntryId], references: [id], onDelete: SetNull)
+  claimedBy                 User?           @relation("WorkspaceLeadClaimer", fields: [claimedByUserId], references: [id], onDelete: SetNull)
   interestedProduct         Product?        @relation(fields: [interestedProductId], references: [id], onDelete: SetNull)
   conversation              AiConversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
   // 独立跟进记录
   followUps                 LeadFollowUp[]
 
   @@index([profileId, createdAt])
+  @@index([workspaceId, status, createdAt])
+  @@index([workspaceId, claimedByUserId, createdAt])
+  @@index([contactEntryId, createdAt])
   @@index([status])
   @@index([interestedProductId])
   @@map("leads")
@@ -583,6 +600,7 @@ model AiServiceConfig {
   allowReport                Boolean  @default(true) @map("allow_report")
   allowTransferToHuman       Boolean  @default(true) @map("allow_transfer_to_human")
   privacyNoticeText          String?  @map("privacy_notice_text")
+  quickActionsJson           String?  @map("quick_actions_json")
   // providerMode：mock / 真实模型名（如 "gpt-4o-mini"）。具体模型的 API Key 不存本表
   providerMode               String   @default("mock") @map("provider_mode")
   createdAt                  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -641,6 +659,7 @@ model AiCreditAccount {
   // 账户与经营数据不允许用户删除时静默清零；物理删除需管理员显式操作
   user      User             @relation(fields: [userId], references: [id], onDelete: Restrict)
   ledger    AiCreditLedger[]
+  buckets   AiCreditBucket[]
 
   @@map("ai_credit_accounts")
 }
@@ -674,6 +693,27 @@ model AiCreditLedger {
   @@map("ai_credit_ledgers")
 }
 
+// 一次性 AI 点数包余额桶：按到期时间先进先出消费。
+// AiCreditAccount.balance 保留为快速汇总；本表是到期与退款的明细权威来源。
+model AiCreditBucket {
+  id              String   @id @default(uuid()) @db.Uuid
+  accountId       String   @map("account_id") @db.Uuid
+  sourceOrderId   String?  @unique @map("source_order_id") @db.Uuid
+  sourceType      String   @default("addon") @map("source_type")
+  grantedAmount   Int      @map("granted_amount")
+  remainingAmount Int      @map("remaining_amount")
+  status          String   @default("active")
+  expiresAt       DateTime @map("expires_at") @db.Timestamptz(6)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  account     AiCreditAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  sourceOrder Order?          @relation(fields: [sourceOrderId], references: [id], onDelete: Restrict)
+
+  @@index([accountId, status, expiresAt])
+  @@map("ai_credit_buckets")
+}
+
 // 会员订阅（最小模型：当前不接支付，仅标记套餐与状态）
 model MembershipSubscription {
   id                 String    @id @default(uuid()) @db.Uuid
@@ -693,45 +733,48 @@ model MembershipSubscription {
 // 正式订单模型：禁止将订单存入 AppConfig，必须使用独立表
 // 订单状态：pending（待支付）/ paid（已支付）/ cancelled（用户取消）/ closed（超时关闭）/ refunded（已退款）
 model Order {
-  id               String    @id @default(uuid()) @db.Uuid
+  id               String          @id @default(uuid()) @db.Uuid
   // 业务订单号：L + 时间戳 + 随机字符，全局唯一
-  orderNo          String    @unique @map("order_no")
-  userId           String    @map("user_id") @db.Uuid
+  orderNo          String          @unique @map("order_no")
+  userId           String          @map("user_id") @db.Uuid
   // 套餐快照
-  planCode         String    @map("plan_code")
-  planNameSnapshot String    @map("plan_name_snapshot")
-  billingCycle     String    @map("billing_cycle") // monthly / yearly
+  planCode         String          @map("plan_code")
+  planNameSnapshot String          @map("plan_name_snapshot")
+  productType      String          @default("membership") @map("product_type") // membership / ai_credit_addon
+  billingCycle     String          @map("billing_cycle") // monthly / yearly / one_time
   // 金额快照（下单时锁定，不允许后续修改）
-  originalAmount   Int       @map("original_amount") // 原价（分）
-  payableAmount    Int       @map("payable_amount") // 应付（分）
-  currency         String    @default("CNY") @map("currency")
+  originalAmount   Int             @map("original_amount") // 原价（分）
+  payableAmount    Int             @map("payable_amount") // 应付（分）
+  currency         String          @default("CNY") @map("currency")
   // 支付信息
-  paymentChannel   String?   @map("payment_channel") // wechat / alipay
-  providerTradeNo  String?   @unique @map("provider_trade_no") // 支付通道交易号（非空时唯一）
+  paymentChannel   String?         @map("payment_channel") // wechat / alipay
+  providerTradeNo  String?         @unique @map("provider_trade_no") // 支付通道交易号（非空时唯一）
   // 幂等键：避免重复回调
-  idempotencyKey   String?   @map("idempotency_key")
+  idempotencyKey   String?         @map("idempotency_key")
   // 状态
-  status           String    @default("pending") @map("status") // pending / paid / cancelled / closed / refunded
+  status           String          @default("pending") @map("status") // pending / paid / cancelled / closed / refunded
   // 时间戳
-  paidAt           DateTime? @map("paid_at") @db.Timestamptz(6)
-  cancelledAt      DateTime? @map("cancelled_at") @db.Timestamptz(6)
-  closedAt         DateTime? @map("closed_at") @db.Timestamptz(6)
-  refundedAt       DateTime? @map("refunded_at") @db.Timestamptz(6)
-  expiresAt        DateTime? @map("expires_at") @db.Timestamptz(6) // 订单超时时间
+  paidAt           DateTime?       @map("paid_at") @db.Timestamptz(6)
+  cancelledAt      DateTime?       @map("cancelled_at") @db.Timestamptz(6)
+  closedAt         DateTime?       @map("closed_at") @db.Timestamptz(6)
+  refundedAt       DateTime?       @map("refunded_at") @db.Timestamptz(6)
+  expiresAt        DateTime?       @map("expires_at") @db.Timestamptz(6) // 订单超时时间
   // 扩展数据
-  metadata         Json?     @db.JsonB
+  metadata         Json?           @db.JsonB
   // 审计字段
-  cancelReason     String?   @map("cancel_reason")
-  refundReason     String?   @map("refund_reason")
-  refundBy         String?   @map("refund_by") // admin_id 或 system
+  cancelReason     String?         @map("cancel_reason")
+  refundReason     String?         @map("refund_reason")
+  refundBy         String?         @map("refund_by") // admin_id 或 system
   // 时间戳
-  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
   // 关系
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  aiCreditBucket   AiCreditBucket?
 
   @@index([userId, createdAt])
   @@index([userId, status])
+  @@index([productType, status])
   @@index([status, expiresAt])
   @@map("orders")
 }
@@ -941,6 +984,8 @@ model Workspace {
   members                     WorkspaceMember[]
   domains                     Domain[]
   publicProfiles              WorkspacePublicProfile[]
+  contactEntries              Link[]                       @relation("WorkspaceContactEntries")
+  leads                       Lead[]                       @relation("WorkspaceLeads")
   quotaPool                   EnterpriseQuotaPool?
   enterpriseQuotaConsumptions EnterpriseQuotaConsumption[]
 

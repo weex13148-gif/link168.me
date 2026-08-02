@@ -15,31 +15,36 @@ describe("single-mainline closeout guardrails", () => {
     expect((raw.match(/"test:d4"\s*:/g) ?? []).length).toBe(1);
   });
 
-  test("MVP Closeout targets only the integration branch", () => {
+  test("SaaS gates verify only master and the current closeout branch", () => {
     const workflow = read(".github/workflows/mvp-closeout.yml");
-    expect(workflow).toContain("name: MVP Closeout");
-    expect(workflow).toContain("integration/mvp-closeout-r1");
-    expect(workflow).not.toMatch(/^\s*-?\s*master\s*$/m);
+    expect(workflow).toContain("name: Link168 SaaS Full Gates");
+    expect(workflow).toContain("master");
+    expect(workflow).toContain("recovery/direct-goal-closeout-20260722");
+    expect(workflow).not.toContain("integration/");
+    expect(workflow).not.toContain("agent/p0-");
+    expect(workflow).not.toContain("release/internal-test-20260630");
   });
 
-  test("MVP Closeout uses Node 22 and PostgreSQL 16", () => {
+  test("SaaS gates use Node 22 and PostgreSQL 16", () => {
     const workflow = read(".github/workflows/mvp-closeout.yml");
     expect(workflow).toContain("image: postgres:16");
     expect(workflow).toMatch(/node-version:\s*["']?22["']?/);
     expect(workflow).toContain("pg_isready");
   });
 
-  test("MVP Closeout runs every hard gate in order", () => {
+  test("SaaS gates run every hard gate in order", () => {
     const workflow = read(".github/workflows/mvp-closeout.yml");
     const commands = [
       "npm ci",
       "npx prisma validate",
       "npx prisma generate",
       "npx prisma migrate deploy",
-      "npm run typecheck",
       "npm run lint",
+      "npm run typecheck",
       "npm test -- --runInBand",
       "npm run build",
+      "npm run release:preflight",
+      "npm run release:smoke",
       "git diff --check",
     ];
 
@@ -62,6 +67,29 @@ describe("single-mainline closeout guardrails", () => {
     expect(`${home}\n${member}\n${guard}`).not.toMatch(/if\s*\(host\)/);
     expect(`${home}\n${member}\n${guard}`).not.toContain(
       "NEXT_PUBLIC_APP_URL ? null",
+    );
+  });
+
+  test("profile publication schema has a deployable migration", () => {
+    const schema = read("prisma/schema.prisma");
+    const migration = read(
+      "prisma/migrations/20260729_add_contact_entries_and_workspace_leads/migration.sql",
+    );
+
+    expect(schema).toContain(
+      'isPublic                   Boolean          @default(false) @map("is_public")',
+    );
+    expect(schema).toContain('@map("first_published_at")');
+    expect(migration).toContain('ALTER COLUMN "is_public" SET DEFAULT false');
+    expect(migration).toContain(
+      'ADD COLUMN "first_published_at" TIMESTAMPTZ(6)',
+    );
+  });
+
+  test("personal publication readiness cannot borrow a team contact entry", () => {
+    const profileRoute = read("src/app/api/dashboard/profile/route.ts");
+    expect(profileRoute).toMatch(
+      /links:\s*{\s*where:\s*{\s*isActive:\s*true,\s*workspaceId:\s*null\s*}/,
     );
   });
 

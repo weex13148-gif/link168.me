@@ -57,11 +57,12 @@ export type CustomerAiReceptionConfig = {
   allowProductRecommendation: boolean;
   collectLead: boolean;
   allowReport: boolean;
+  allowTransferToHuman: boolean;
   privacyNoticeText: string | null;
   quickActions: AiReceptionQuickAction[];
 };
 
-export type PublicAiReceptionConfig = CustomerAiReceptionConfig;
+export type PublicAiReceptionConfig = Omit<CustomerAiReceptionConfig, "allowTransferToHuman">;
 
 export const DEFAULT_AI_RECEPTION_CONFIG: AiReceptionConfigPatch = Object.freeze({
   enabled: false,
@@ -71,7 +72,7 @@ export const DEFAULT_AI_RECEPTION_CONFIG: AiReceptionConfigPatch = Object.freeze
   allowProductRecommendation: true,
   collectLead: true,
   allowReport: true,
-  allowTransferToHuman: false,
+  allowTransferToHuman: true,
   privacyNoticeText: null,
   quickActionsJson: "[]",
 });
@@ -212,8 +213,8 @@ export function normalizeAiReceptionConfig(input: unknown): AiReceptionConfigPat
     ),
     collectLead: booleanValue(input.collectLead, DEFAULT_AI_RECEPTION_CONFIG.collectLead),
     allowReport: booleanValue(input.allowReport, DEFAULT_AI_RECEPTION_CONFIG.allowReport),
-    // 人工坐席与实时接管不属于当前 MVP，客户端不能开启该能力。
-    allowTransferToHuman: false,
+    // 转人工只展示商家已配置的联系卡，不冒充实时人工坐席。
+    allowTransferToHuman: true,
     privacyNoticeText: nullableText(input.privacyNoticeText, "隐私提示", 300),
     quickActionsJson: JSON.stringify(actions),
   };
@@ -231,6 +232,7 @@ export function toCustomerAiReceptionConfig(
     allowProductRecommendation: normalized.allowProductRecommendation,
     collectLead: normalized.collectLead,
     allowReport: normalized.allowReport,
+    allowTransferToHuman: normalized.allowTransferToHuman,
     privacyNoticeText: normalized.privacyNoticeText,
     quickActions: parseAiReceptionQuickActions(normalized.quickActionsJson),
   };
@@ -238,8 +240,9 @@ export function toCustomerAiReceptionConfig(
 
 export function toPublicAiReceptionConfig(config: AiReceptionConfigRecord): PublicAiReceptionConfig {
   const customer = toCustomerAiReceptionConfig(config);
+  const { allowTransferToHuman: _allowTransferToHuman, ...publicConfig } = customer;
   return {
-    ...customer,
+    ...publicConfig,
     quickActions: customer.quickActions.filter((action) => action.enabled),
   };
 }

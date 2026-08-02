@@ -21,7 +21,7 @@ export default async function WorkbenchProductsPage() {
     db.profile.findUnique({ where: { userId: user.id } }),
   ]);
 
-  if (!profile) redirect("/dashboard");
+  if (!profile) redirect("/console/card");
 
   const activeCount = products.filter((p) => p.isActive).length;
   const draftCount = 0; // 草稿概念暂不实现

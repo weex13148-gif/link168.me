@@ -329,7 +329,7 @@ export default function AiChatClient({
           ))}
         </div>
         <Link
-          href="/workbench/membership"
+          href="/console/membership"
           className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#8C612E] px-6 text-sm font-black text-white hover:bg-[#6F4F24]"
         >
           <Crown className="size-4" />
@@ -496,7 +496,7 @@ export default function AiChatClient({
           {quotaDisplay && !quotaDisplay.canCall && (
             <div className="mb-2 rounded-xl bg-[#F6E7C8] px-3 py-2 text-xs text-[#8C612E]">
               {quotaDisplay.reason || "额度已用完，请升级套餐或购买额度包。"}
-              <Link href="/workbench/membership" className="ml-2 underline font-black">
+              <Link href="/console/membership" className="ml-2 underline font-black">
                 升级套餐
               </Link>
             </div>
@@ -606,7 +606,7 @@ export default function AiChatClient({
               </div>
             </div>
             <Link
-              href="/workbench/membership"
+              href="/console/membership"
               className="mt-3 inline-flex min-h-8 w-full items-center justify-center gap-1.5 rounded-full bg-[#F7F1E7] px-3 text-xs font-black text-[#8C612E] hover:bg-[#EDE4D3]"
             >
               <CreditCard className="size-3" />

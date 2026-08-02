@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { db } from "@/lib/db";
+import { toAvatarModerationStatus } from "@/components/dashboard-v1/types";
 
 export function toProfileDto(profile: {
   id: string;
@@ -7,11 +8,13 @@ export function toProfileDto(profile: {
   displayName: string | null;
   bio: string | null;
   avatarUrl: string | null;
+  avatarModerationStatus: string;
   theme: string;
   template: string;
   language: string;
   customTheme: string | null;
   isPublic: boolean;
+  firstPublishedAt: Date | null;
   company: string | null;
   jobTitle: string | null;
   phone: string | null;
@@ -31,11 +34,13 @@ export function toProfileDto(profile: {
     display_name: profile.displayName,
     bio: profile.bio,
     avatar_url: profile.avatarUrl,
+    avatar_moderation_status: toAvatarModerationStatus(profile.avatarModerationStatus),
     theme: profile.theme,
     template: profile.template,
     language: profile.language,
     custom_theme: profile.customTheme,
     is_public: profile.isPublic,
+    first_published_at: profile.firstPublishedAt?.toISOString() ?? null,
     company: profile.company,
     job_title: profile.jobTitle,
     phone: profile.phone,
@@ -141,7 +146,7 @@ export async function getDashboardData(userId: string) {
   // V2: profile 显式 include template 与会员字段
   const profile = await db.profile.findUnique({
     where: { userId },
-    include: { links: { orderBy: { position: "asc" } } },
+    include: { links: { where: { workspaceId: null }, orderBy: { position: "asc" } } },
   });
 
   // V2-006: 同时拉取最新 20 条线索用于 Dashboard 摘要

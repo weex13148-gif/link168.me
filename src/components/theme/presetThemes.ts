@@ -145,6 +145,7 @@ const themeV2NaturalGreen: CustomTheme = {
   buttonStyle: "solid",
   buttonRadius: 16,
   avatarFrame: "circle",
+  avatarMode: "portrait",
   moduleGap: 8,
 };
 
@@ -157,6 +158,7 @@ const themeV2PureWhite: CustomTheme = {
   buttonStyle: "outline",
   buttonRadius: 12,
   avatarFrame: "circle",
+  avatarMode: "portrait",
   moduleGap: 12,
 };
 
@@ -169,6 +171,7 @@ const themeV2BusinessBlack: CustomTheme = {
   buttonStyle: "solid",
   buttonRadius: 12,
   avatarFrame: "ring",
+  avatarMode: "portrait",
   moduleGap: 12,
 };
 
@@ -181,6 +184,7 @@ const themeV2BlueTech: CustomTheme = {
   buttonStyle: "solid",
   buttonRadius: 14,
   avatarFrame: "circle",
+  avatarMode: "portrait",
   moduleGap: 10,
 };
 
@@ -193,6 +197,7 @@ const themeV2OrangeVibrant: CustomTheme = {
   buttonStyle: "solid",
   buttonRadius: 16,
   avatarFrame: "rounded",
+  avatarMode: "portrait",
   moduleGap: 10,
 };
 
@@ -205,6 +210,7 @@ const themeV2MintFresh: CustomTheme = {
   buttonStyle: "soft",
   buttonRadius: 16,
   avatarFrame: "circle",
+  avatarMode: "portrait",
   moduleGap: 8,
 };
 
@@ -217,6 +223,7 @@ const themeV2NightCherry: CustomTheme = {
   buttonStyle: "solid",
   buttonRadius: 20,
   avatarFrame: "circle",
+  avatarMode: "portrait",
   moduleGap: 12,
 };
 
@@ -229,6 +236,7 @@ const themeV2SunsetOrange: CustomTheme = {
   buttonStyle: "soft",
   buttonRadius: 20,
   avatarFrame: "ring",
+  avatarMode: "portrait",
   moduleGap: 12,
 };
 
@@ -241,6 +249,7 @@ const themeV2OceanBlue: CustomTheme = {
   buttonStyle: "outline",
   buttonRadius: 14,
   avatarFrame: "ring",
+  avatarMode: "portrait",
   moduleGap: 10,
 };
 
@@ -253,6 +262,7 @@ const themeV2ForestGreen: CustomTheme = {
   buttonStyle: "solid",
   buttonRadius: 16,
   avatarFrame: "rounded",
+  avatarMode: "portrait",
   moduleGap: 10,
 };
 
@@ -265,6 +275,7 @@ const themeV2MinimalGray: CustomTheme = {
   buttonStyle: "outline",
   buttonRadius: 8,
   avatarFrame: "square",
+  avatarMode: "portrait",
   moduleGap: 16,
 };
 
@@ -277,6 +288,7 @@ const themeV2WarmTeaBrown: CustomTheme = {
   buttonStyle: "solid",
   buttonRadius: 12,
   avatarFrame: "rounded",
+  avatarMode: "portrait",
   moduleGap: 12,
 };
 

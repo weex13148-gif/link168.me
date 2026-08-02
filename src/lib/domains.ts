@@ -1,5 +1,9 @@
 import crypto from "crypto";
 import { db } from "@/lib/db";
+import {
+  isPlatformHost,
+  PLATFORM_BASE_DOMAIN,
+} from "@/lib/platform-hosts";
 
 // ============================================
 // 类型定义
@@ -62,17 +66,7 @@ export type ResolvedWorkspaceProfile = {
 // 常量
 // ============================================
 
-const BASE_DOMAIN = "link168.me";
-
-const RESERVED_HOSTS = new Set([
-  BASE_DOMAIN,
-  `www.${BASE_DOMAIN}`,
-  `app.${BASE_DOMAIN}`,
-  `api.${BASE_DOMAIN}`,
-  `admin.${BASE_DOMAIN}`,
-  `workbench.${BASE_DOMAIN}`,
-  `dashboard.${BASE_DOMAIN}`,
-]);
+const BASE_DOMAIN = PLATFORM_BASE_DOMAIN;
 
 // 企业员工名片保留 slug（不可被员工注册）
 // 这些路径用于企业官网自身的页面或系统路径
@@ -172,7 +166,11 @@ export function validateCustomDomainInput(input: string): {
     return { valid: false, normalized: "", error: "域名格式无效" };
   }
 
-  if (noTrailingDot === BASE_DOMAIN || noTrailingDot.endsWith(`.${BASE_DOMAIN}`)) {
+  if (
+    isPlatformHost(noTrailingDot) ||
+    noTrailingDot === BASE_DOMAIN ||
+    noTrailingDot.endsWith(`.${BASE_DOMAIN}`)
+  ) {
     return { valid: false, normalized: "", error: "不允许绑定 link168.me 域名" };
   }
 
@@ -628,7 +626,7 @@ export async function resolveDomain(host: string): Promise<ResolvedDomain | null
   const normalizedDomain = normalizeRequestHost(host);
   if (!normalizedDomain) return null;
 
-  if (RESERVED_HOSTS.has(normalizedDomain)) return null;
+  if (isPlatformHost(normalizedDomain)) return null;
 
   // link168.me 系统域名：username.link168.me 个人主页
   if (normalizedDomain === BASE_DOMAIN || normalizedDomain.endsWith(`.${BASE_DOMAIN}`)) {

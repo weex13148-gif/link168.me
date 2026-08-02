@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Bot, Copy, ExternalLink, Flag, Loader2, Phone, Send, ShieldAlert, UserRound, X } from "lucide-react";
 import type { AiReceptionQuickAction, PublicAiReceptionConfig } from "@/lib/ai/reception-config";
+import { PUBLIC_MODULE_SURFACE_STYLE } from "@/components/share/PublicModuleList";
 
 function makeId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -18,12 +19,20 @@ type ChatMessage = {
 type Props = {
   username: string;
   mode?: "customer-service" | "sales-agent";
+  handoffContactEntryId?: string;
+  onAvailabilityChange?: (available: boolean) => void;
+  onOpenContact?: () => void;
+  onOpenContactEntry?: (contactEntryId?: string) => void;
 };
 
 type ChatApiResult = {
   success?: boolean;
   code?: string;
-  data?: { reply?: string };
+  data?: {
+    reply?: string;
+    replyKind?: "ai" | "preset";
+    action?: { type?: string; contactEntryId?: string };
+  };
 };
 
 function publicErrorMessage(code?: string) {
@@ -46,7 +55,7 @@ function actionIcon(action: AiReceptionQuickAction) {
   return <Send className="size-3.5" />;
 }
 
-export function AiChatModule({ username, mode = "customer-service" }: Props) {
+export function AiChatModule({ username, mode = "customer-service", handoffContactEntryId, onAvailabilityChange, onOpenContact, onOpenContactEntry }: Props) {
   const [config, setConfig] = useState<PublicAiReceptionConfig | null>(null);
   const [configLoading, setConfigLoading] = useState(true);
   const [configUnavailable, setConfigUnavailable] = useState(false);
@@ -61,6 +70,7 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
     let cancelled = false;
     setConfigLoading(true);
     setConfigUnavailable(false);
+    onAvailabilityChange?.(false);
 
     fetch(`/api/public/${encodeURIComponent(username)}/ai-reception-config`, { cache: "no-store" })
       .then(async (response) => {
@@ -68,6 +78,7 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
         if (!response.ok || !result.success || !result.config?.enabled) throw new Error("unavailable");
         if (cancelled) return;
         setConfig(result.config);
+        onAvailabilityChange?.(true);
         setMessages([{
           id: "welcome",
           role: "assistant",
@@ -76,7 +87,10 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
         }]);
       })
       .catch(() => {
-        if (!cancelled) setConfigUnavailable(true);
+        if (!cancelled) {
+          setConfigUnavailable(true);
+          onAvailabilityChange?.(false);
+        }
       })
       .finally(() => {
         if (!cancelled) setConfigLoading(false);
@@ -84,8 +98,9 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
 
     return () => {
       cancelled = true;
+      onAvailabilityChange?.(false);
     };
-  }, [username]);
+  }, [username, onAvailabilityChange]);
 
   function scrollToBottom() {
     if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
@@ -114,12 +129,15 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         cache: "no-store",
-        body: JSON.stringify({ username, message, requestId }),
+        body: JSON.stringify({ username, message, requestId, handoffContactEntryId }),
       });
       const result = await response.json() as ChatApiResult;
       if (response.ok && result.success && result.data?.reply) {
         const reply = result.data.reply;
-        appendMessage("assistant", reply, "ai");
+        appendMessage("assistant", reply, result.data.replyKind === "preset" ? "preset" : "ai");
+        if (result.data.action?.type === "contact") {
+          window.setTimeout(() => onOpenContactEntry?.(result.data?.action?.contactEntryId), 0);
+        }
       } else {
         appendMessage("system", publicErrorMessage(result.code));
       }
@@ -160,7 +178,7 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
 
   if (configLoading) {
     return (
-      <div className="flex min-h-28 items-center justify-center rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] text-sm font-bold text-[#7A6D5E]">
+      <div data-public-module-surface style={PUBLIC_MODULE_SURFACE_STYLE} className="flex min-h-28 items-center justify-center rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] text-sm font-bold text-[#7A6D5E]">
         <Loader2 className="mr-2 size-4 animate-spin" />
         正在加载 AI 接待…
       </div>
@@ -169,16 +187,19 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
 
   if (configUnavailable || !config) {
     return (
-      <div className="rounded-2xl border border-dashed border-[#E8DCCB] bg-[#FFFDF8] px-4 py-6 text-center">
+      <div data-public-module-surface style={PUBLIC_MODULE_SURFACE_STYLE} className="rounded-2xl border border-dashed border-[#E8DCCB] bg-[#FFFDF8] px-4 py-6 text-center">
         <Bot className="mx-auto size-6 text-[#7A6D5E]" />
         <p className="mt-2 text-sm font-black text-[#2B241E]">AI 接待暂未开启</p>
         <p className="mt-1 text-xs text-[#7A6D5E]">你仍可以使用主页上的其他联系方式。</p>
+        <button type="button" onClick={() => onOpenContact?.()} className="mt-4 min-h-10 rounded-xl px-4 text-sm font-black text-[#4F6D37] hover:bg-[#F5F0E8]">
+          联系本人
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="w-full overflow-hidden rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] shadow-sm">
+    <div data-public-module-surface style={PUBLIC_MODULE_SURFACE_STYLE} className="w-full overflow-hidden rounded-2xl border border-[#E8DCCB] bg-[#FFFDF8] shadow-sm">
       <div className="flex items-center justify-between border-b border-[#E8DCCB] bg-white px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">
           <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#EEF4E7] text-[#4F6D37]">
@@ -251,6 +272,8 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
       <div className="border-t border-[#E8DCCB] bg-white p-3">
         <div className="flex gap-2">
           <input
+            aria-label="AI 咨询问题"
+            data-ai-reception-input={username}
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={(event) => {
@@ -267,6 +290,9 @@ export function AiChatModule({ username, mode = "customer-service" }: Props) {
             <Send className="size-4" />
           </button>
         </div>
+        <button type="button" onClick={() => onOpenContact?.()} className="mt-2 flex w-full items-center justify-center rounded-xl py-2 text-xs font-black text-[#4F6D37]">
+          联系本人
+        </button>
         <p className="mt-2 text-[10px] font-bold text-[#B0A090]">AI 生成内容 · 请自行核实重要信息</p>
       </div>
     </div>

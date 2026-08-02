@@ -10,7 +10,7 @@ import { useJeepworkLogout } from "@/components/admin/useJeepworkLogout";
 type AdminUser = { email: string; role: string };
 
 type RoleGroup = {
-  role: "super_admin" | "admin";
+  role: "super_admin";
   label: string;
   users: {
     id: string;
@@ -32,7 +32,6 @@ function formatDate(value: string) {
 
 function roleLabel(role: string) {
   if (role === "super_admin") return "超级管理员";
-  if (role === "admin") return "历史管理员";
   if (role === "user") return "普通用户";
   return role;
 }
@@ -81,20 +80,13 @@ export default function JeepworkRolesPage() {
     setLoading(true);
     setError("");
     try {
-      const [superAdminResponse, historicalAdminResponse] = await Promise.all([
-        fetch("/api/jeepwork/users?role=super_admin&page=1", { cache: "no-store" }),
-        fetch("/api/jeepwork/users?role=admin&page=1", { cache: "no-store" }),
-      ]);
+      const superAdminResponse = await fetch("/api/jeepwork/users?role=super_admin&page=1", { cache: "no-store" });
       const superAdminJson = (await superAdminResponse.json()) as {
         success?: boolean;
         data?: { users?: RoleGroup["users"] };
       };
-      const historicalAdminJson = (await historicalAdminResponse.json()) as {
-        success?: boolean;
-        data?: { users?: RoleGroup["users"] };
-      };
 
-      if (!superAdminResponse.ok || !historicalAdminResponse.ok) {
+      if (!superAdminResponse.ok || superAdminJson.success !== true) {
         setError("加载角色列表失败");
         return;
       }
@@ -104,11 +96,6 @@ export default function JeepworkRolesPage() {
           role: "super_admin",
           label: "超级管理员",
           users: superAdminJson.data?.users ?? [],
-        },
-        {
-          role: "admin",
-          label: "历史管理员账号",
-          users: historicalAdminJson.data?.users ?? [],
         },
       ]);
     } catch {
@@ -153,7 +140,7 @@ export default function JeepworkRolesPage() {
       pageHeader={{
         eyebrow: "Roles",
         title: "角色管理",
-        subtitle: "平台后台只保留超级管理员；历史 admin 账号仅供查询和迁移，不再允许新分配。",
+        subtitle: "平台后台只保留超级管理员；普通用户的角色变更统一在用户管理中完成。",
         highlight: "#8C612E",
       }}
     >
@@ -183,18 +170,11 @@ export default function JeepworkRolesPage() {
           {groups.map((group) => (
             <section key={group.role} className="rounded-[28px] border border-[#E8DCCB] bg-white p-6 shadow-sm">
               <div className="flex flex-wrap items-center gap-3">
-                <span className={`rounded-2xl px-3 py-1 text-sm font-black ${
-                  group.role === "super_admin" ? "bg-[#5B6FFF] text-white" : "bg-[#8C612E] text-white"
-                }`}>
+                <span className="rounded-2xl bg-[#5B6FFF] px-3 py-1 text-sm font-black text-white">
                   {group.label}
                 </span>
                 <span className="text-sm font-bold text-[#7A6D5E]">共 {group.users.length} 人</span>
               </div>
-              {group.role === "admin" ? (
-                <p className="mt-3 rounded-2xl bg-[#FFF9E8] px-4 py-3 text-xs font-bold leading-6 text-[#8C612E]">
-                  历史 admin 已无平台后台权限。请根据实际归属将账号升级为超级管理员或降为普通用户；系统不再接受新的 admin 分配。
-                </p>
-              ) : null}
 
               {group.users.length === 0 ? (
                 <p className="mt-4 text-sm text-[#7A6D5E]">暂无 {group.label}</p>
@@ -218,15 +198,6 @@ export default function JeepworkRolesPage() {
                             </span>
                           ) : (
                             <>
-                              {group.role === "admin" ? (
-                                <button
-                                  type="button"
-                                  onClick={() => setModal({ type: "changeRole", targetId: item.id, targetEmail: item.email, newRole: "super_admin" })}
-                                  className="min-h-10 rounded-2xl bg-[#5B6FFF] px-4 text-sm font-black text-white"
-                                >
-                                  升为超级管理员
-                                </button>
-                              ) : null}
                               <button
                                 type="button"
                                 onClick={() => setModal({ type: "changeRole", targetId: item.id, targetEmail: item.email, newRole: "user" })}
@@ -253,17 +224,11 @@ export default function JeepworkRolesPage() {
 
           <section className="rounded-[28px] border border-dashed border-[#E8DCCB] bg-white p-6 shadow-sm">
             <h2 className="text-sm font-black uppercase tracking-[0.1em] text-[#7A6D5E]">角色权限说明</h2>
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div className="mt-4">
               <div className="rounded-2xl bg-[#5B6FFF]/5 p-4">
                 <p className="font-black text-[#5B6FFF]">超级管理员（super_admin）</p>
                 <p className="mt-2 text-xs leading-5 text-[#7A6D5E]">
-                  唯一平台后台角色，可管理用户、主页、举报、AI、支付配置、审计、系统健康和比赛中心。
-                </p>
-              </div>
-              <div className="rounded-2xl bg-[#8C612E]/5 p-4">
-                <p className="font-black text-[#8C612E]">历史管理员（admin）</p>
-                <p className="mt-2 text-xs leading-5 text-[#7A6D5E]">
-                  仅为兼容旧数据保留，不能登录平台后台，也不能再次分配；应迁移为普通用户或超级管理员。
+                  唯一平台后台角色，可管理用户、主页、举报、AI、支付配置、审计和系统健康。
                 </p>
               </div>
             </div>

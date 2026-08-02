@@ -73,6 +73,9 @@ export async function POST(request: Request) {
   }
 
   let moderationStatus = "pending_manual_review";
+  let moderationRiskLevel: string | null = null;
+  let moderationReason: string | null = "待配置验证";
+  let moderationProvider = "local";
   try {
     const moderated = await moderateImageContent({
       size: file.size,
@@ -83,9 +86,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "该图片未能通过内容安全审核，请更换其他图片。" }, { status: 400 });
     }
     moderationStatus = moderated.status;
+    moderationRiskLevel = moderated.riskLevel || null;
+    moderationReason = moderated.status === "pending_manual_review" && !moderated.reason
+      ? "待配置验证"
+      : moderated.reason || null;
+    moderationProvider = moderated.provider || "local";
   } catch (err) {
     console.error("[dashboard:avatar] image moderation failed", err && (err as { message?: unknown }).message ? String((err as { message?: unknown }).message) : String(err));
     moderationStatus = "pending_manual_review";
+    moderationRiskLevel = null;
+    moderationReason = "待配置验证";
+    moderationProvider = "local";
   }
 
   const username = profile.username || `user-${user.id}`;
@@ -108,21 +119,65 @@ export async function POST(request: Request) {
 
   let createdFile: string | null = null;
   const previousAvatarUrl = profile.avatarUrl;
+  const avatarUrl = `${AVATAR_API_PREFIX}${username}`;
+  let updatedProfile: Awaited<ReturnType<typeof db.profile.update>>;
   try {
     createdFile = pathValidation.fullPath;
     await writeFile(createdFile, buffer);
 
-    const avatarUrl = `${AVATAR_API_PREFIX}${username}`;
+    updatedProfile = await db.$transaction(async (tx) => {
+      const updated = await tx.profile.update({
+        where: { id: profile.id },
+        data: {
+          avatarUrl,
+          avatarModerationStatus: moderationStatus,
+        },
+      });
 
-    const updatedProfile = await db.profile.update({
-      where: { id: profile.id },
-      data: {
-        avatarUrl,
-        avatarModerationStatus: moderationStatus,
-      },
+      await tx.contentModerationRecord.upsert({
+        where: {
+          contentType_contentRef: {
+            contentType: "avatar",
+            contentRef: profile.id,
+          },
+        },
+        create: {
+          id: crypto.randomUUID(),
+          contentType: "avatar",
+          contentRef: profile.id,
+          status: moderationStatus,
+          riskLevel: moderationRiskLevel,
+          reason: moderationReason,
+          provider: moderationProvider,
+          reviewedAt: null,
+          reviewerId: null,
+        },
+        update: {
+          status: moderationStatus,
+          riskLevel: moderationRiskLevel,
+          reason: moderationReason,
+          provider: moderationProvider,
+          reviewedAt: null,
+          reviewerId: null,
+        },
+      });
+
+      return updated;
     });
 
-    const mediaCleanup = await deletePreviousAvatar({
+  } catch (err) {
+    if (createdFile) await rm(createdFile, { force: true }).catch(() => undefined);
+    console.error("[dashboard:avatar] upload failed", err && (err as { message?: unknown }).message ? String((err as { message?: unknown }).message) : String(err));
+    return NextResponse.json({ success: false, error: "头像上传失败，请稍后重试。" }, { status: 500 });
+  }
+
+  if (!createdFile) {
+    return NextResponse.json({ success: false, error: "头像上传失败，请稍后重试。" }, { status: 500 });
+  }
+
+  let mediaCleanup: { status: string; [key: string]: unknown } = { status: "failed", reason: "post_commit_cleanup_failed" };
+  try {
+    mediaCleanup = await deletePreviousAvatar({
       previousAvatarUrl,
       profileId: profile.id,
       username,
@@ -132,26 +187,28 @@ export async function POST(request: Request) {
       legacyAvatarDirs: getLegacyAvatarDirs(),
       isSafeAvatarFileName,
     });
-
-    await revalidatePublicProfileByUser(user.id);
-
-    const versionedAvatarUrl = `${avatarUrl}?v=${updatedProfile.updatedAt.getTime()}`;
-    return NextResponse.json(
-      {
-        success: true,
-        profile: { ...toProfileDto(updatedProfile), avatar_url: versionedAvatarUrl },
-        avatarUrl: versionedAvatarUrl,
-        moderationStatus,
-        mediaCleanup,
-        mediaCleanupOk: mediaCleanup.status !== "failed",
-      },
-      { headers: { "Cache-Control": "no-store" } },
-    );
   } catch (err) {
-    if (createdFile) await rm(createdFile, { force: true }).catch(() => undefined);
-    console.error("[dashboard:avatar] upload failed", err && (err as { message?: unknown }).message ? String((err as { message?: unknown }).message) : String(err));
-    return NextResponse.json({ success: false, error: "头像上传失败，请稍后重试。" }, { status: 500 });
+    console.error("[dashboard:avatar] previous avatar cleanup failed", err && (err as { message?: unknown }).message ? String((err as { message?: unknown }).message) : String(err));
   }
+
+  try {
+    await revalidatePublicProfileByUser(user.id);
+  } catch (err) {
+    console.error("[dashboard:avatar] public profile revalidation failed", err && (err as { message?: unknown }).message ? String((err as { message?: unknown }).message) : String(err));
+  }
+
+  const versionedAvatarUrl = `${avatarUrl}?v=${updatedProfile.updatedAt.getTime()}`;
+  return NextResponse.json(
+    {
+      success: true,
+      profile: { ...toProfileDto(updatedProfile), avatar_url: versionedAvatarUrl },
+      avatarUrl: versionedAvatarUrl,
+      moderationStatus,
+      mediaCleanup,
+      mediaCleanupOk: mediaCleanup.status !== "failed",
+    },
+    { headers: { "Cache-Control": "no-store" } },
+  );
 }
 
 export async function DELETE(request: Request) {

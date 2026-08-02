@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CheckCircle2, Loader2, MessageSquareText, ReceiptText } from "lucide-react";
 import type { LeadFormPayload } from "@/features/profile-modules";
+import { PUBLIC_MODULE_SURFACE_STYLE } from "@/components/share/PublicModuleList";
 
 type LeadCaptureModuleProps = {
   payload: LeadFormPayload;
@@ -84,7 +85,7 @@ export function LeadCaptureModule({
   const Icon = isQuote ? ReceiptText : MessageSquareText;
   if (leadId) {
     return (
-      <section className="w-full rounded-lg border border-[#DDE8CD] bg-[#EEF4E7] p-5 text-center">
+      <section data-public-module-surface style={PUBLIC_MODULE_SURFACE_STYLE} className="w-full rounded-lg border border-[#DDE8CD] bg-[#EEF4E7] p-5 text-center">
         <CheckCircle2 className="mx-auto size-10 text-[#4F6D37]" />
         <h3 className="mt-3 font-black text-[#2B241E]">提交成功</h3>
         <p className="mt-1 text-xs text-[#4F633F]">主页所有者已收到这条线索。</p>
@@ -93,7 +94,7 @@ export function LeadCaptureModule({
   }
 
   return (
-    <section className="w-full rounded-lg border border-[#E8DCCB] bg-[#FFFDF8] p-4 shadow-sm">
+    <section data-public-module-surface style={PUBLIC_MODULE_SURFACE_STYLE} className="w-full rounded-lg border border-[#E8DCCB] bg-[#FFFDF8] p-4 shadow-sm">
       <div className="flex items-start gap-3">
         <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-[#DDE8CD] text-[#3F5F31]">
           <Icon className="size-5" />

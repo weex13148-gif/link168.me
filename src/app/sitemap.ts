@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { db } from "@/lib/db";
+import { db, isDatabaseConfigured } from "@/lib/db";
 
 const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://link168.me").replace(/\/$/, "");
 
@@ -10,7 +10,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${appUrl}/pricing`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
     { url: `${appUrl}/login`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: `${appUrl}/register`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
-    { url: `${appUrl}/showcase`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 },
     { url: `${appUrl}/help`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
     { url: `${appUrl}/privacy`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
     { url: `${appUrl}/terms`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
@@ -19,6 +18,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 公开主页
   let publicProfiles: MetadataRoute.Sitemap = [];
+  if (!isDatabaseConfigured) {
+    return staticRoutes;
+  }
   try {
     const profiles = await db.profile.findMany({
       where: { isPublic: true },

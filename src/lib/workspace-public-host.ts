@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { normalizeRequestHost } from "@/lib/domains";
-
-const PLATFORM_DOMAIN = "link168.me";
+import { isPlatformHost, PLATFORM_BASE_DOMAIN } from "@/lib/platform-hosts";
 
 function normalizeWorkspacePublicHost(
   requestHost: string | null | undefined,
@@ -10,8 +9,8 @@ function normalizeWorkspacePublicHost(
   const normalizedHost = normalizeRequestHost(requestHost);
   if (!normalizedHost) return null;
   if (
-    normalizedHost === PLATFORM_DOMAIN ||
-    normalizedHost.endsWith(`.${PLATFORM_DOMAIN}`)
+    isPlatformHost(normalizedHost) ||
+    normalizedHost.endsWith(`.${PLATFORM_BASE_DOMAIN}`)
   ) {
     return null;
   }

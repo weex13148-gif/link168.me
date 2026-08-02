@@ -23,7 +23,7 @@ const sections: LegalSection[] = [
           {PUBLIC_PLANS.map((plan) => (
             <li key={plan.code}>
               <strong>{plan.name}</strong>
-              {plan.contactSales ? "：联系销售" : `：${formatPriceYuan(plan.priceYearlyCents)}`}
+              {plan.contactSales ? `：${formatPriceYuan(plan.priceYearlyCents)}起，联系销售` : `：${formatPriceYuan(plan.priceYearlyCents)}`}
               {plan.aiChatsPerMonth >= 0 ? `，AI 工具箱点数 ${plan.aiChatsPerMonth === 0 ? "0" : plan.aiChatsPerMonth.toLocaleString()} / 月` : "，AI 工具箱点数不限"}
             </li>
           ))}
@@ -41,9 +41,10 @@ const sections: LegalSection[] = [
         <p>各套餐对应的核心权益如下，具体以购买时页面展示为准：</p>
         <ul>
           <li><strong>免费版</strong>：1 个公开主页、基础主题、基础访问数据、AI 功能演示（不产生真实调用）。</li>
-          <li><strong>Plus 会员</strong>：1 个公开主页、隐藏 Link168 品牌标识、90 天访问数据、产品数量 10 个、知识库 3 篇、AI 工具箱 300 点/月。</li>
-          <li><strong>Pro 年付</strong>：1 个公开主页、隐藏品牌标识、客户线索收集、高级数据统计与导出、产品数量 50 个、知识库 20 篇、AI 工具箱 2000 点/月、优先客服。</li>
-          <li><strong>企业版</strong>：团队席位 3 个、独立域名绑定（以实际实现为准）、品牌主题定制、产品数量 200 个、知识库 100 篇、AI 工具箱 10000 点/月、专属客户经理。需联系销售洽谈。</li>
+          <li><strong>Plus 会员</strong>：1 个公开主页、隐藏 Link168 品牌标识、90 天访问数据、产品数量 10 个、知识库 3 篇、AI 工具箱 800 点/月。</li>
+          <li><strong>Pro 会员</strong>：1 个公开主页、隐藏品牌标识、客户线索收集、高级数据统计与导出、产品数量 50 个、知识库 20 篇、AI 工具箱 3,000 点/月、优先客服。</li>
+          <li><strong>企业版</strong>：团队席位 5 个、独立域名绑定（以实际实现为准）、品牌主题定制、产品数量 200 个、知识库 100 篇、AI 工具箱 15,000 点/月、专属客户经理。需联系销售洽谈。</li>
+          <li><strong>企业 Pro</strong>：团队席位 20 个、多产品与多知识空间、AI 工具箱 50,000 点/月、额度与成本管理。需联系销售洽谈。</li>
         </ul>
         <p>AI 工具箱点数按月结算，未用完的点数不累计至下月。额度耗尽后，用户可次月恢复或升级套餐。</p>
       </>
@@ -56,7 +57,7 @@ const sections: LegalSection[] = [
       <>
         <p>用户通过 Link168 支付页面选择套餐并完成支付后，会员权益将在支付成功后立即生效。</p>
         <p>订单状态以系统记录为准。支付成功后，用户可在工作台查看当前套餐、有效期和权益使用情况。</p>
-        <p>当前系统仅支持年付。月付功能如后续上线，将另行说明。</p>
+        <p>Plus 与 Pro 可选择月付或年付；企业套餐按合同年付并由销售协助开通。实际可用支付方式以订单页面为准。</p>
       </>
     ),
   },

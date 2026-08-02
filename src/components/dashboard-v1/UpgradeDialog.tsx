@@ -35,7 +35,7 @@ export function UpgradeDialog({ open, onClose }: { open: boolean; onClose: () =>
 
         <div className="mt-6 flex flex-col-reverse gap-2 border-t border-[var(--ui-line)] pt-5 sm:flex-row sm:justify-end">
           <button type="button" onClick={onClose} className="ui-button-secondary">继续使用免费版</button>
-          <a href="/workbench/membership" className="ui-button-primary">查看收费方案</a>
+          <a href="/console/membership" className="ui-button-primary">查看收费方案</a>
         </div>
       </section>
     </div>

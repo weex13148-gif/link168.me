@@ -6,6 +6,8 @@ export type ButtonStyle = "solid" | "outline" | "soft";
 
 export type AvatarFrame = "circle" | "square" | "rounded" | "ring";
 
+export type AvatarMode = "portrait" | "logo";
+
 export interface CustomTheme {
   backgroundType: BackgroundType;
   backgroundValue: string;
@@ -15,6 +17,7 @@ export interface CustomTheme {
   buttonStyle: ButtonStyle;
   buttonRadius: number;
   avatarFrame: AvatarFrame;
+  avatarMode: AvatarMode;
   moduleGap: number;
 }
 
@@ -27,5 +30,6 @@ export const defaultCustomTheme: CustomTheme = {
   buttonStyle: "solid",
   buttonRadius: 16,
   avatarFrame: "circle",
+  avatarMode: "portrait",
   moduleGap: 8,
 };

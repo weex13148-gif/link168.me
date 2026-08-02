@@ -2,10 +2,19 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Crown, LayoutTemplate, Loader2, Palette, Save, Settings, Trash2, Upload } from "lucide-react";
-import { defaultCustomTheme, type AvatarFrame, type BackgroundType, type ButtonStyle, type CardStyle, type CustomTheme } from "@/components/theme/types";
-import { getPresetThemeV2, listPresetThemeNamesV2, FREE_THEME_NAMES_V2, isFreeThemeV2 } from "@/components/theme/presetThemes";
+import { type AvatarFrame, type AvatarMode, type BackgroundType, type ButtonStyle, type CardStyle, type CustomTheme } from "@/components/theme/types";
+import { normalizeCustomTheme, validateCustomTheme } from "@/components/theme/normalize";
+import { getPresetThemeV2, listPresetThemeNamesV2, isFreeThemeV2 } from "@/components/theme/presetThemes";
+import { BUILT_IN_WALLPAPERS } from "@/components/theme/wallpapers";
+import { RangeControl } from "@/components/dashboard-v1/RangeControl";
 
 type AppearanceTab = "themes" | "custom" | "system";
+
+export type AppearancePreviewState = {
+  themeName: string;
+  template: string;
+  customTheme: string | null;
+};
 
 type AppearancePanelProps = {
   theme: string;
@@ -19,34 +28,17 @@ type AppearancePanelProps = {
   onSave: (theme: string, template: string) => Promise<boolean>;
   onSaveCustom: (customTheme: CustomTheme) => Promise<boolean>;
   onSaveSystem: (settings: { isPublic: boolean; language: string; contactVisibility: string }) => Promise<boolean>;
+  onPreviewChange: (state: AppearancePreviewState) => void;
   onUpgrade: () => void;
+  showSystemSettings?: boolean;
 };
 
-function validateCustomTheme(theme: Partial<CustomTheme>): CustomTheme {
-  return {
-    backgroundType: (theme.backgroundType as BackgroundType) || defaultCustomTheme.backgroundType,
-    backgroundValue: theme.backgroundValue || defaultCustomTheme.backgroundValue,
-    textColor: theme.textColor || defaultCustomTheme.textColor,
-    cardStyle: (theme.cardStyle as CardStyle) || defaultCustomTheme.cardStyle,
-    cardOpacity: typeof theme.cardOpacity === "number" ? Math.max(0, Math.min(100, theme.cardOpacity)) : defaultCustomTheme.cardOpacity,
-    buttonStyle: (theme.buttonStyle as ButtonStyle) || defaultCustomTheme.buttonStyle,
-    buttonRadius: typeof theme.buttonRadius === "number" ? Math.max(0, Math.min(32, theme.buttonRadius)) : defaultCustomTheme.buttonRadius,
-    avatarFrame: (theme.avatarFrame as AvatarFrame) || defaultCustomTheme.avatarFrame,
-    moduleGap: typeof theme.moduleGap === "number" ? Math.max(0, Math.min(32, theme.moduleGap)) : defaultCustomTheme.moduleGap,
-  };
-}
-
 function parseCustomTheme(value: string | null | undefined): CustomTheme {
-  if (!value) return { ...defaultCustomTheme };
-  try {
-    return validateCustomTheme(JSON.parse(value) as Partial<CustomTheme>);
-  } catch {
-    return { ...defaultCustomTheme };
-  }
+  return normalizeCustomTheme(null, value || null);
 }
 
 function updateCustomField<K extends keyof CustomTheme>(theme: CustomTheme, field: K, value: CustomTheme[K]): CustomTheme {
-  return validateCustomTheme({ ...theme, [field]: value });
+  return validateCustomTheme({ ...theme, [field]: value }).sanitized;
 }
 
 function BackgroundUploadField({ value, onChange }: { value: string; onChange: (url: string) => void }) {
@@ -137,22 +129,36 @@ export function AppearancePanel({
   onSave,
   onSaveCustom,
   onSaveSystem,
+  onPreviewChange,
   onUpgrade,
+  showSystemSettings = true,
 }: AppearancePanelProps) {
   const [activeTab, setActiveTab] = useState<AppearanceTab>("themes");
   const [selectedTheme, setSelectedTheme] = useState(theme || "草木原色");
   const [selectedTemplate, setSelectedTemplate] = useState(template || "business");
   const [customDraft, setCustomDraft] = useState<CustomTheme>(() => parseCustomTheme(customTheme));
+  const [savedCustomTheme, setSavedCustomTheme] = useState<CustomTheme>(() => parseCustomTheme(customTheme));
   const [systemDraft, setSystemDraft] = useState({ isPublic, language: language || "zh", contactVisibility: contactVisibility || "public" });
 
   useEffect(() => setSelectedTheme(theme || "草木原色"), [theme]);
   useEffect(() => setSelectedTemplate(template || "business"), [template]);
-  useEffect(() => setCustomDraft(parseCustomTheme(customTheme)), [customTheme]);
+  useEffect(() => {
+    const next = parseCustomTheme(customTheme);
+    setCustomDraft(next);
+    setSavedCustomTheme(next);
+  }, [customTheme]);
   useEffect(() => setSystemDraft({ isPublic, language: language || "zh", contactVisibility: contactVisibility || "public" }), [isPublic, language, contactVisibility]);
+  useEffect(() => {
+    onPreviewChange({
+      themeName: selectedTheme,
+      template: selectedTemplate,
+      customTheme: activeTab === "custom" ? JSON.stringify(customDraft) : activeTab === "themes" ? null : customTheme,
+    });
+  }, [activeTab, customDraft, customTheme, onPreviewChange, selectedTemplate, selectedTheme]);
 
   const presetThemeNames = listPresetThemeNamesV2();
   const themesDirty = selectedTheme !== theme || selectedTemplate !== template;
-  const customDirty = useMemo(() => JSON.stringify(customDraft) !== JSON.stringify(parseCustomTheme(customTheme)), [customDraft, customTheme]);
+  const customDirty = useMemo(() => JSON.stringify(customDraft) !== JSON.stringify(savedCustomTheme), [customDraft, savedCustomTheme]);
   const systemDirty = systemDraft.isPublic !== isPublic || systemDraft.language !== language || systemDraft.contactVisibility !== contactVisibility;
 
   function canUseTheme(name: string) {
@@ -167,6 +173,16 @@ export function AppearancePanel({
     setSelectedTheme(name);
   }
 
+  async function saveCustomTheme() {
+    const next = validateCustomTheme(customDraft).sanitized;
+    if (await onSaveCustom(next)) setSavedCustomTheme(next);
+  }
+
+  async function saveSystemSettings() {
+    const previous = { isPublic, language: language || "zh", contactVisibility: contactVisibility || "public" };
+    if (!await onSaveSystem(systemDraft)) setSystemDraft(previous);
+  }
+
   const templates = [
     { value: "business", label: "商务名片", description: "结构清晰，适合顾问、商家和个人服务。" },
     { value: "creator", label: "创作者主页", description: "突出头像、简介和内容平台入口。" },
@@ -178,9 +194,12 @@ export function AppearancePanel({
     { key: "custom", label: "自定义", icon: <LayoutTemplate className="size-4" /> },
     { key: "system", label: "系统设置", icon: <Settings className="size-4" /> },
   ];
+  const visibleTabs = showSystemSettings
+    ? tabs
+    : tabs.filter((tab) => tab.key !== "system");
 
   return (
-    <div className="grid gap-5">
+    <fieldset disabled={saving} className="m-0 grid min-w-0 gap-5 border-0 p-0">
       <header>
         <p className="ui-eyebrow">主题装修</p>
         <h1 className="mt-1 text-2xl ui-title sm:text-3xl">打造你的专属主页风格</h1>
@@ -188,7 +207,7 @@ export function AppearancePanel({
       </header>
 
       <div className="flex gap-1 rounded-xl bg-[var(--ui-surface-muted)] p-1">
-        {tabs.map((tab) => (
+        {visibleTabs.map((tab) => (
           <button
             key={tab.key}
             type="button"
@@ -212,7 +231,7 @@ export function AppearancePanel({
           </div>
 
           <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {presetThemeNames.map((name, index) => {
+            {presetThemeNames.map((name) => {
               const preset = getPresetThemeV2(name);
               if (!preset) return null;
               const locked = !canUseTheme(name);
@@ -271,6 +290,38 @@ export function AppearancePanel({
           </div>
 
           <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            <div className="grid gap-3 lg:col-span-2">
+              <div>
+                <h3 className="text-sm font-black">内置壁纸</h3>
+                <p className="mt-1 text-xs ui-muted">选择后立即预览，保存后才会发布到公开主页。</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {BUILT_IN_WALLPAPERS.map((wallpaper) => {
+                  const selected = customDraft.backgroundType === "image" && customDraft.backgroundValue === wallpaper.src;
+                  return (
+                    <button
+                      key={wallpaper.id}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => setCustomDraft((current) => validateCustomTheme({
+                        ...current,
+                        backgroundType: "image",
+                        backgroundValue: wallpaper.src,
+                      }).sanitized)}
+                      className={`overflow-hidden rounded-[16px] border bg-white p-2 text-left transition-colors duration-200 motion-reduce:transition-none ${selected ? "border-[var(--ui-brand)] ring-2 ring-[color:var(--ui-brand)]/15" : "border-[var(--ui-line)] hover:border-[color:var(--ui-brand)]/35"}`}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="block h-20 rounded-xl bg-cover bg-center"
+                        style={{ backgroundImage: `url(${wallpaper.src}), ${wallpaper.fallback}` }}
+                      />
+                      <span className="mt-2 block text-xs font-black">{wallpaper.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <label className="grid gap-2">
               <span className="text-sm font-black">背景类型</span>
               <select value={customDraft.backgroundType} onChange={(event) => setCustomDraft((prev) => updateCustomField(prev, "backgroundType", event.target.value as BackgroundType))} className="ui-input">
@@ -321,10 +372,40 @@ export function AppearancePanel({
                 <option value="ring">光环</option>
               </select>
             </label>
+
+            <fieldset className="grid gap-2 lg:col-span-2">
+              <legend className="text-sm font-black">身份图片显示方式</legend>
+              <div className="grid grid-cols-2 gap-3">
+                {([
+                  { value: "portrait", label: "人物头像", description: "裁切为圆形或圆角头像" },
+                  { value: "logo", label: "企业标志", description: "完整显示横向品牌标志" },
+                ] as const).map((item) => (
+                  <label key={item.value} className={`cursor-pointer rounded-xl border p-3 transition-colors duration-200 motion-reduce:transition-none ${customDraft.avatarMode === item.value ? "border-[var(--ui-brand)] bg-[var(--ui-brand-soft)]/40" : "border-[var(--ui-line)] bg-white"}`}>
+                    <span className="flex items-center gap-2 text-sm font-black">
+                      <input
+                        aria-label={item.label}
+                        type="radio"
+                        name="avatar-mode"
+                        value={item.value}
+                        checked={customDraft.avatarMode === item.value}
+                        onChange={() => setCustomDraft((current) => updateCustomField(current, "avatarMode", item.value as AvatarMode))}
+                        className="accent-[var(--ui-brand)]"
+                      />
+                      {item.label}
+                    </span>
+                    <span className="mt-1 block pl-5 text-xs ui-muted">{item.description}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <RangeControl label="卡片透明度" value={customDraft.cardOpacity} min={0} max={100} unit="%" onChange={(value) => setCustomDraft((current) => updateCustomField(current, "cardOpacity", value))} />
+            <RangeControl label="按钮圆角" value={customDraft.buttonRadius} min={0} max={32} unit="px" onChange={(value) => setCustomDraft((current) => updateCustomField(current, "buttonRadius", value))} />
+            <RangeControl label="模块间距" value={customDraft.moduleGap} min={0} max={32} unit="px" onChange={(value) => setCustomDraft((current) => updateCustomField(current, "moduleGap", value))} />
           </div>
 
           <div className="mt-6 flex justify-end">
-            <button type="button" disabled={!customDirty || saving} onClick={() => void onSaveCustom(validateCustomTheme(customDraft))} className="ui-button-primary disabled:cursor-not-allowed disabled:opacity-45">
+            <button type="button" disabled={!customDirty || saving} onClick={() => void saveCustomTheme()} className="ui-button-primary disabled:cursor-not-allowed disabled:opacity-45">
               {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
               {saving ? "正在保存" : "保存自定义主题"}
             </button>
@@ -343,10 +424,19 @@ export function AppearancePanel({
           </div>
 
           <div className="mt-5 grid gap-4 lg:grid-cols-2">
-            <label className="grid gap-2">
+            <div className="grid gap-2">
               <span className="text-sm font-black">公开状态</span>
               <div className="flex items-center gap-3 rounded-xl border border-[var(--ui-line)] bg-white p-4">
-                <input type="checkbox" checked={systemDraft.isPublic} onChange={(event) => setSystemDraft((prev) => ({ ...prev, isPublic: event.target.checked }))} className="size-5 accent-[var(--ui-brand)]" />
+                <button
+                  type="button"
+                  role="switch"
+                  aria-label="公开主页"
+                  aria-checked={systemDraft.isPublic}
+                  onClick={() => setSystemDraft((current) => ({ ...current, isPublic: !current.isPublic }))}
+                  className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 motion-reduce:transition-none ${systemDraft.isPublic ? "bg-[var(--ui-brand)]" : "bg-[var(--ui-line)]"}`}
+                >
+                  <span className={`absolute top-1 size-5 rounded-full bg-white transition-transform duration-200 motion-reduce:transition-none ${systemDraft.isPublic ? "translate-x-6" : "translate-x-1"}`} />
+                </button>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <p className="font-black">{systemDraft.isPublic ? "主页公开中" : "主页已下线"}</p>
@@ -355,7 +445,7 @@ export function AppearancePanel({
                   <p className="text-xs ui-muted">{systemDraft.isPublic ? "任何人都可以访问你的主页" : "只有你自己可以查看"}</p>
                 </div>
               </div>
-            </label>
+            </div>
 
             <label className="grid gap-2">
               <span className="text-sm font-black">语言</span>
@@ -377,13 +467,13 @@ export function AppearancePanel({
           </div>
 
           <div className="mt-6 flex justify-end">
-            <button type="button" disabled={!systemDirty || saving} onClick={() => void onSaveSystem(systemDraft)} className="ui-button-primary disabled:cursor-not-allowed disabled:opacity-45">
+            <button type="button" disabled={!systemDirty || saving} onClick={() => void saveSystemSettings()} className="ui-button-primary disabled:cursor-not-allowed disabled:opacity-45">
               {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
               {saving ? "正在保存" : "保存设置"}
             </button>
           </div>
         </section>
       ) : null}
-    </div>
+    </fieldset>
   );
 }

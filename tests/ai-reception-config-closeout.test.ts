@@ -17,7 +17,7 @@ describe("AI reception customer configuration boundary", () => {
       allowProductRecommendation: false,
       collectLead: true,
       allowReport: false,
-      allowTransferToHuman: false,
+      allowTransferToHuman: true,
       privacyNoticeText: "请勿发送敏感信息。",
       providerMode: "internal-provider",
       aiProvider: "internal-provider",
@@ -35,7 +35,7 @@ describe("AI reception customer configuration boundary", () => {
       allowProductRecommendation: false,
       collectLead: true,
       allowReport: false,
-      allowTransferToHuman: false,
+      allowTransferToHuman: true,
       privacyNoticeText: "请勿发送敏感信息。",
       quickActionsJson: "[]",
     });

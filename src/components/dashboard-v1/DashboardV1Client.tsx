@@ -1,38 +1,37 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, Loader2, Mail, RefreshCcw, X } from "lucide-react";
 import { PhonePreview, type PhonePreviewLink } from "@/components/PhonePreview";
 import { QrCodeModal } from "@/components/share/QrCodeModal";
 import { ShareModal } from "@/components/share/ShareModal";
-import { AccountPanel } from "@/components/dashboard-v1/AccountPanel";
-import { AppearancePanel } from "@/components/dashboard-v1/AppearancePanel";
+import { AppearancePanel, type AppearancePreviewState } from "@/components/dashboard-v1/AppearancePanel";
 import { DashboardFrame } from "@/components/dashboard-v1/DashboardFrame";
-import { HomePanel } from "@/components/dashboard-v1/HomePanel";
 import { LinksPanel } from "@/components/dashboard-v1/LinksPanel";
 import { ProfilePanel } from "@/components/dashboard-v1/ProfilePanel";
-import { SharePanel } from "@/components/dashboard-v1/SharePanel";
-import { StatsPanel } from "@/components/dashboard-v1/StatsPanel";
+import { PublicationPanel } from "@/components/dashboard-v1/PublicationPanel";
 import { UpgradeDialog } from "@/components/dashboard-v1/UpgradeDialog";
 import { useDashboardCore } from "@/components/dashboard-v1/core-store";
 import { useDashboardLinks } from "@/components/dashboard-v1/link-state";
-import { useAccountState } from "@/components/dashboard-v1/account-store";
-import { logoutRequest } from "@/components/dashboard-v1/dashboard-api";
-import type { DashboardLink, DashboardTab } from "@/components/dashboard-v1/types";
+import type { CardEditorSection, DashboardLink } from "@/components/dashboard-v1/types";
 import { publicProfileUrl } from "@/components/dashboard-v1/types";
+import { resolvePublicAvatarUrl } from "@/lib/public-avatar";
 
 type ToastState = { message: string; tone: "success" | "error" } | null;
 
+const VALID_SECTIONS = new Set<CardEditorSection>(["content", "style", "publish"]);
+
 export default function DashboardV1Client() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<DashboardTab>("home");
+  const [activeSection, setActiveSection] = useState<CardEditorSection>("content");
   const [loadedLinks, setLoadedLinks] = useState<DashboardLink[]>([]);
   const [toast, setToast] = useState<ToastState>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [emailBannerOpen, setEmailBannerOpen] = useState(true);
+  const [appearancePreview, setAppearancePreview] = useState<AppearancePreviewState | null>(null);
 
   const showToast = useCallback((message: string, tone: "success" | "error" = "success") => {
     setToast({ message, tone });
@@ -40,9 +39,14 @@ export default function DashboardV1Client() {
   }, []);
   const onUnauthorized = useCallback(() => router.replace("/login"), [router]);
   const onUpgrade = useCallback(() => setUpgradeOpen(true), []);
-  const onNeedProfile = useCallback(() => setActiveTab("profile"), []);
+  const onNeedProfile = useCallback(() => setActiveSection("content"), []);
 
-  const core = useDashboardCore({ onUnauthorized, onLinksLoaded: setLoadedLinks, onUpgrade, showToast });
+  const core = useDashboardCore({
+    onUnauthorized,
+    onLinksLoaded: setLoadedLinks,
+    onUpgrade,
+    showToast,
+  });
   const publicUrl = publicProfileUrl(core.profile?.username);
   const linkState = useDashboardLinks({
     initialLinks: loadedLinks,
@@ -52,86 +56,278 @@ export default function DashboardV1Client() {
     onNeedProfile,
     onUpgrade,
   });
-  const account = useAccountState(showToast);
 
-  useEffect(() => { void core.load(); }, [core.load]);
-  useEffect(() => { linkState.replaceLinks(loadedLinks); }, [loadedLinks, linkState.replaceLinks]);
   useEffect(() => {
-    if (activeTab === "account" && !account.sessionsLoaded && !account.sessionsLoading) void account.loadSessions();
-  }, [account.loadSessions, account.sessionsLoaded, account.sessionsLoading, activeTab]);
+    void core.load();
+  }, [core.load]);
+  useEffect(() => {
+    linkState.replaceLinks(loadedLinks);
+  }, [loadedLinks, linkState.replaceLinks]);
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("section");
+    if (requested && VALID_SECTIONS.has(requested as CardEditorSection)) {
+      setActiveSection(requested as CardEditorSection);
+    }
+  }, []);
 
-  const previewLinks: PhonePreviewLink[] = useMemo(() => linkState.sortedLinks
-    .filter((link) => link.is_active)
-    .map((link) => ({
-      id: link.id,
-      label: link.title,
-      caption: link.description,
-      url: link.url,
-      icon: link.icon_url || link.icon_value,
-      iconType: link.icon_type,
-      type: link.type,
-      componentType: link.type,
-      payload: link.payload_json,
-      isActive: true,
-    })), [linkState.sortedLinks]);
-
-  async function logout() {
-    await logoutRequest();
-    router.replace("/login");
-    router.refresh();
-  }
+  const previewLinks: PhonePreviewLink[] = useMemo(
+    () =>
+      linkState.sortedLinks
+        .filter((link) => link.is_active)
+        .map((link) => ({
+          id: link.id,
+          label: link.title,
+          caption: link.description,
+          url: link.url,
+          icon: link.icon_url || link.icon_value,
+          iconType: link.icon_type,
+          type: link.type,
+          componentType: link.type,
+          payload: link.payload_json,
+          isActive: true,
+        })),
+    [linkState.sortedLinks],
+  );
 
   function copyText(value: string) {
     if (!value) {
-      showToast("请先设置公开主页地址。", "error");
-      setActiveTab("profile");
+      showToast("请先完善公开地址。", "error");
+      setActiveSection("content");
       return;
     }
-    void navigator.clipboard.writeText(value).then(() => showToast("已复制"), () => showToast("复制失败，请手动复制。", "error"));
+    void navigator.clipboard.writeText(value).then(
+      () => showToast("已复制"),
+      () => showToast("复制失败，请手动复制。", "error"),
+    );
   }
 
   function openShare() {
-    if (!publicUrl) {
-      showToast("请先设置公开主页地址。", "error");
-      setActiveTab("profile");
+    if (!publicUrl || !core.profile?.is_public) {
+      showToast("请先发布名片。", "error");
+      setActiveSection("publish");
       return;
     }
     setShareOpen(true);
   }
 
   function openQr() {
-    if (!publicUrl) {
-      showToast("请先设置公开主页地址。", "error");
-      setActiveTab("profile");
+    if (!publicUrl || !core.profile?.is_public) {
+      showToast("请先发布名片。", "error");
+      setActiveSection("publish");
       return;
     }
     setQrOpen(true);
   }
 
-  if (core.loading) return <main className="ui-page grid min-h-dvh place-items-center px-4"><div className="ui-surface flex items-center gap-3 px-5 py-4 text-sm font-black"><Loader2 className="size-5 animate-spin text-[var(--ui-brand)]" />正在加载用户后台…</div></main>;
-  if (core.loadError) return <main className="ui-page grid min-h-dvh place-items-center px-4"><section className="ui-surface w-full max-w-md p-6 text-center"><AlertTriangle className="mx-auto size-10 text-[var(--ui-danger)]" /><h1 className="mt-4 text-xl ui-title">后台暂时无法加载</h1><p className="mt-2 text-sm leading-6 ui-muted">{core.loadError}</p><button type="button" onClick={() => void core.load()} className="ui-button-primary mt-5"><RefreshCcw className="size-4" />重新加载</button></section></main>;
+  if (core.loading) {
+    return (
+      <div className="ui-surface grid min-h-64 place-items-center p-6">
+        <div className="flex items-center gap-3 text-sm font-black">
+          <Loader2 className="size-5 animate-spin text-[var(--ui-brand)]" />
+          正在加载名片
+        </div>
+      </div>
+    );
+  }
 
-  const preview = <PhonePreview variant="public" profileId={core.profile?.id} poweredLogoClickable username={core.profile?.username || "abao"} displayName={core.profile?.display_name || "我的名片"} bio={core.profile?.bio || "填写一句简介，让访客快速了解你"} avatarUrl={core.profile?.avatar_url} links={previewLinks} appearance={{ themeName: core.profile?.theme || "Link168 草木默认", template: (core.profile?.template || "business") as "business" | "creator" | "conversion", customTheme: core.profile?.custom_theme || null, contactVisibility: core.profile?.contact_visibility || "public" }} className="mx-auto max-w-[315px]" />;
+  if (core.loadError) {
+    return (
+      <section className="ui-surface mx-auto max-w-md p-6 text-center">
+        <AlertTriangle className="mx-auto size-10 text-[var(--ui-danger)]" />
+        <h2 className="mt-4 text-xl ui-title">名片暂时无法加载</h2>
+        <p className="mt-2 text-sm leading-6 ui-muted">{core.loadError}</p>
+        <button type="button" onClick={() => void core.load()} className="ui-button-primary mt-5">
+          <RefreshCcw className="size-4" />
+          重新加载
+        </button>
+      </section>
+    );
+  }
 
-  let panel: ReactNode;
-  if (activeTab === "profile") panel = <ProfilePanel profile={core.profile} username={core.username} displayName={core.displayName} bio={core.bio} saveState={core.saveState} uploadingAvatar={core.uploadingAvatar} onUsernameChange={(value) => { core.setUsername(value); core.markDirty(); }} onDisplayNameChange={(value) => { core.setDisplayName(value); core.markDirty(); }} onBioChange={(value) => { core.setBio(value); core.markDirty(); }} onSave={core.saveProfile} onUploadAvatar={(file) => void core.uploadAvatar(file)} onDeleteAvatar={() => void core.deleteAvatar()} />;
-  else if (activeTab === "links") panel = <LinksPanel links={linkState.sortedLinks} isPaid={core.planEntitlements.isPaid} planLabel={core.planEntitlements.planLabel} creating={linkState.creating} busyLinkId={linkState.busyLinkId} onCreate={linkState.createLink} onUpdate={linkState.updateLink} onToggle={linkState.toggleLink} onDelete={linkState.deleteLink} onMove={linkState.moveLink} onCopy={copyText} onUpgrade={onUpgrade} />;
-  else if (activeTab === "appearance") panel = <AppearancePanel theme={core.profile?.theme || "草木原色"} template={core.profile?.template || "business"} customThemes={core.planEntitlements.customThemes} customTheme={core.profile?.custom_theme || null} isPublic={core.profile?.is_public ?? true} language={core.profile?.language || "zh"} contactVisibility={core.profile?.contact_visibility || "public"} saving={core.appearanceSaving} onSave={core.saveAppearance} onSaveCustom={core.saveCustomTheme} onSaveSystem={core.saveProfileSettings} onUpgrade={onUpgrade} />;
-  else if (activeTab === "share") panel = <SharePanel publicUrl={publicUrl} username={core.profile?.username || ""} displayName={core.profile?.display_name || "我的名片"} onCopy={() => copyText(publicUrl)} onShare={openShare} onQr={openQr} />;
-  else if (activeTab === "stats") panel = <StatsPanel username={core.profile?.username || ""} />;
-  else if (activeTab === "account") panel = <AccountPanel user={core.user} planLabel={core.planEntitlements.planLabel} isPaid={core.planEntitlements.isPaid} isLegacyActive={core.planEntitlements.isLegacyActive} isGracePeriod={core.planEntitlements.isGracePeriod} gracePeriodDays={core.planEntitlements.gracePeriodDays} daysRemaining={core.planEntitlements.daysRemaining} currentPeriodEnd={core.planEntitlements.currentPeriodEnd} canUpgrade={core.planEntitlements.canUpgrade} sessions={account.sessions} sessionsLoading={account.sessionsLoading} resendingEmail={account.resendingEmail} passwordSaving={account.passwordSaving} deactivating={core.deactivating} onResendEmail={account.resendEmail} onChangePassword={account.changePassword} onRevokeSession={account.revokeSession} onRevokeOthers={account.revokeOthers} onUpgrade={onUpgrade} onLogout={() => void logout()} onDeactivate={core.deactivateAccount} />;
-  else panel = <HomePanel user={core.user} profile={core.profile} links={linkState.sortedLinks} publicUrl={publicUrl} onNavigate={setActiveTab} onCopy={() => copyText(publicUrl)} onShare={openShare} onQr={openQr} />;
+  const previewAppearance =
+    activeSection === "style" && appearancePreview
+      ? appearancePreview
+      : {
+          themeName: core.profile?.theme || "Link168 草木默认",
+          template: core.profile?.template || "business",
+          customTheme: core.profile?.custom_theme || null,
+        };
+  const previewAvatarUrl = core.profile
+    ? resolvePublicAvatarUrl({
+        avatarUrl: core.profile.avatar_url,
+        avatarModerationStatus: core.profile.avatar_moderation_status,
+        updatedAt: new Date(core.profile.updated_at),
+      })
+    : null;
+  const preview = (
+    <PhonePreview
+      variant="public"
+      renderMode="preview"
+      profileId={core.profile?.id}
+      poweredLogoClickable
+      username={core.profile?.username || ""}
+      displayName={core.profile?.display_name ?? ""}
+      bio={core.profile?.bio}
+      avatarUrl={previewAvatarUrl}
+      company={core.profile?.company}
+      jobTitle={core.profile?.job_title}
+      phone={core.profile?.phone}
+      email={core.profile?.email}
+      wechat={core.profile?.wechat}
+      city={core.profile?.city}
+      address={core.profile?.address}
+      website={core.profile?.website}
+      links={previewLinks}
+      appearance={{
+        themeName: previewAppearance.themeName,
+        template: previewAppearance.template as "business" | "creator" | "conversion",
+        customTheme: previewAppearance.customTheme,
+        contactVisibility: core.profile?.contact_visibility || undefined,
+      }}
+      className="mx-auto max-w-[315px]"
+    />
+  );
 
   return (
     <>
-      <DashboardFrame activeTab={activeTab} setActiveTab={setActiveTab} userEmail={core.user.email} planLabel={core.planEntitlements.planLabel} saveState={core.saveState} onShare={openShare} onLogout={() => void logout()} preview={preview}>
-        {!core.user.emailVerified && emailBannerOpen ? <div className="mb-5 flex flex-col gap-3 rounded-[18px] border border-[var(--ui-accent)]/25 bg-[var(--ui-accent-soft)] p-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-start gap-3"><span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white text-[#8C612E]"><Mail className="size-4" /></span><div><p className="text-sm font-black text-[#8C612E]">邮箱尚未验证</p><p className="mt-1 text-xs leading-5 text-[#8C612E]/80">您的邮箱尚未验证，请在 30 天内完成验证，否则主页将暂停公开展示。</p></div></div><div className="flex items-center gap-2"><button type="button" onClick={() => setActiveTab("account")} className="ui-button-secondary min-h-10">立即验证</button><button type="button" onClick={() => setEmailBannerOpen(false)} className="grid size-10 place-items-center rounded-xl bg-white/70 text-[#8C612E]" aria-label="关闭提醒"><X className="size-4" /></button></div></div> : null}
-        {panel}
+      {!core.user.emailVerified && emailBannerOpen ? (
+        <div className="mb-5 flex flex-col gap-3 rounded-[18px] border border-[var(--ui-accent)]/25 bg-[var(--ui-accent-soft)] p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white text-[#8C612E]">
+              <Mail className="size-4" />
+            </span>
+            <div>
+              <p className="text-sm font-black text-[#8C612E]">邮箱尚未验证</p>
+              <p className="mt-1 text-xs leading-5 text-[#8C612E]/80">
+                这不会阻断创建或发布名片；请稍后在账号页完成验证。
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => router.push("/console/account")} className="ui-button-secondary min-h-10">
+              前往账号
+            </button>
+            <button
+              type="button"
+              onClick={() => setEmailBannerOpen(false)}
+              className="grid size-10 place-items-center rounded-xl bg-white/70 text-[#8C612E]"
+              aria-label="关闭提醒"
+            >
+              <X className="size-4" />
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      <DashboardFrame
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+        saveState={core.saveState}
+        isPublic={core.profile?.is_public ?? false}
+        preview={preview}
+      >
+        {activeSection === "content" ? (
+          <div className="grid gap-8">
+            <ProfilePanel
+              profile={core.profile}
+              username={core.username}
+              displayName={core.displayName}
+              bio={core.bio}
+              saveState={core.saveState}
+              uploadingAvatar={core.uploadingAvatar}
+              onUsernameChange={(value) => {
+                core.setUsername(value);
+                core.markDirty();
+              }}
+              onDisplayNameChange={(value) => {
+                core.setDisplayName(value);
+                core.markDirty();
+              }}
+              onBioChange={(value) => {
+                core.setBio(value);
+                core.markDirty();
+              }}
+              onSave={core.saveProfile}
+              onUploadAvatar={(file) => void core.uploadAvatar(file)}
+              onDeleteAvatar={() => void core.deleteAvatar()}
+            />
+            <div className="border-t border-[var(--ui-line)] pt-8">
+              <LinksPanel
+                links={linkState.sortedLinks}
+                isPaid={core.planEntitlements.isPaid}
+                planLabel={core.planEntitlements.planLabel}
+                creating={linkState.creating}
+                busyLinkId={linkState.busyLinkId}
+                onCreate={linkState.createLink}
+                onUpdate={linkState.updateLink}
+                onToggle={linkState.toggleLink}
+                onDelete={linkState.deleteLink}
+                onMove={linkState.moveLink}
+                onCopy={copyText}
+                onUpgrade={onUpgrade}
+              />
+            </div>
+          </div>
+        ) : activeSection === "style" ? (
+          <AppearancePanel
+            theme={core.profile?.theme || "草木原色"}
+            template={core.profile?.template || "business"}
+            customThemes={core.planEntitlements.customThemes}
+            customTheme={core.profile?.custom_theme || null}
+            isPublic={core.profile?.is_public ?? false}
+            language={core.profile?.language || "zh"}
+            contactVisibility={core.profile?.contact_visibility || "public"}
+            saving={core.appearanceSaving}
+            onSave={core.saveAppearance}
+            onSaveCustom={core.saveCustomTheme}
+            onSaveSystem={core.saveProfileSettings}
+            onPreviewChange={setAppearancePreview}
+            onUpgrade={onUpgrade}
+            showSystemSettings={false}
+          />
+        ) : (
+          <PublicationPanel
+            isPublic={core.profile?.is_public ?? false}
+            firstPublishedAt={core.profile?.first_published_at ?? null}
+            language={core.profile?.language || "zh"}
+            contactVisibility={core.profile?.contact_visibility || "public"}
+            publicUrl={publicUrl}
+            username={core.profile?.username || ""}
+            displayName={core.profile?.display_name || "我的经营名片"}
+            saving={core.appearanceSaving}
+            onSave={core.saveProfileSettings}
+            onCopy={() => copyText(publicUrl)}
+            onShare={openShare}
+            onQr={openQr}
+          />
+        )}
       </DashboardFrame>
-      <ShareModal isOpen={shareOpen} onClose={() => setShareOpen(false)} pageUrl={publicUrl} displayName={core.profile?.display_name || "我的名片"} username={core.profile?.username || ""} onOpenQrCode={() => setQrOpen(true)} />
-      <QrCodeModal isOpen={qrOpen} onClose={() => setQrOpen(false)} pageUrl={publicUrl} displayName={core.profile?.display_name || "我的名片"} username={core.profile?.username || "link168"} />
+
+      <ShareModal
+        isOpen={shareOpen}
+        onClose={() => setShareOpen(false)}
+        pageUrl={publicUrl}
+        displayName={core.profile?.display_name || "我的经营名片"}
+        username={core.profile?.username || ""}
+        onOpenQrCode={() => setQrOpen(true)}
+      />
+      <QrCodeModal
+        isOpen={qrOpen}
+        onClose={() => setQrOpen(false)}
+        pageUrl={publicUrl}
+        displayName={core.profile?.display_name || "我的经营名片"}
+        username={core.profile?.username || "link168"}
+      />
       <UpgradeDialog open={upgradeOpen} onClose={() => setUpgradeOpen(false)} />
-      {toast ? <div className={`fixed bottom-24 left-1/2 z-[80] -translate-x-1/2 rounded-xl px-4 py-3 text-sm font-black text-white shadow-[var(--ui-shadow-md)] lg:bottom-6 ${toast.tone === "error" ? "bg-[var(--ui-danger)]" : "bg-[var(--ui-ink)]"}`}>{toast.message}</div> : null}
+      {toast ? (
+        <div
+          className={`fixed bottom-24 left-1/2 z-[80] -translate-x-1/2 rounded-xl px-4 py-3 text-sm font-black text-white shadow-[var(--ui-shadow-md)] lg:bottom-6 ${
+            toast.tone === "error" ? "bg-[var(--ui-danger)]" : "bg-[var(--ui-ink)]"
+          }`}
+        >
+          {toast.message}
+        </div>
+      ) : null}
     </>
   );
 }

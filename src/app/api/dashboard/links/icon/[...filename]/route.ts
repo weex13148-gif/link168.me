@@ -52,10 +52,10 @@ export async function GET(request: Request, context: RouteContext) {
   }
 
   const uploadDir = getLinkIconUploadDir();
-  const filePath = path.join(uploadDir, relativePath);
+  const filePath = path.join(/* turbopackIgnore: true */ uploadDir, relativePath);
 
-  const resolvedPath = path.resolve(filePath);
-  const resolvedDir = path.resolve(uploadDir);
+  const resolvedPath = path.resolve(/* turbopackIgnore: true */ filePath);
+  const resolvedDir = path.resolve(/* turbopackIgnore: true */ uploadDir);
   if (!resolvedPath.startsWith(resolvedDir + path.sep) && resolvedPath !== resolvedDir) {
     return NextResponse.json({ success: false, error: "无效的文件路径。" }, { status: 400 });
   }
@@ -68,7 +68,7 @@ export async function GET(request: Request, context: RouteContext) {
   }
 
   try {
-    const buffer = await readFile(filePath);
+    const buffer = await readFile(/* turbopackIgnore: true */ filePath);
     const contentType = getLinkIconContentType(fileName);
 
     return new NextResponse(buffer, {

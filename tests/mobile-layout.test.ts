@@ -51,9 +51,23 @@ describe("Mobile layout safety at 360px–430px", () => {
   test("console home uses responsive grid to prevent overflow", () => {
     const pagePath = path.join(srcRoot, "app", "console", "page.tsx");
     const content = fs.readFileSync(pagePath, "utf-8");
-    // Should use sm:grid-cols-2 so that below 640px it collapses to single column
-    expect(content).toContain("sm:grid-cols-2");
+    expect(content).toContain("grid-cols-2");
+    expect(content).toContain("lg:grid-cols-4");
     // Should not have any hardcoded width that exceeds 360px
     expect(content).not.toMatch(/w-\[\d{3,4}px\]/);
+  });
+
+  test("DashboardFrame keeps one responsive save status and stable dashboard columns", () => {
+    const framePath = path.join(
+      srcRoot,
+      "components",
+      "dashboard-v1",
+      "DashboardFrame.tsx",
+    );
+    const content = fs.readFileSync(framePath, "utf-8");
+
+    expect(content.match(/<SaveStatus\b/g)).toHaveLength(1);
+    expect(content).toContain("minmax(0,1fr)");
+    expect(content).toContain("350px");
   });
 });

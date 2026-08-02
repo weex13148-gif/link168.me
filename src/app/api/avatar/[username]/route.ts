@@ -29,27 +29,27 @@ async function findAvatarFile(username: string): Promise<string | null> {
   let newestMtime = 0;
 
   try {
-    const topLevelEntries = await readdir(uploadDir, { withFileTypes: true });
+    const topLevelEntries = await readdir(/* turbopackIgnore: true */ uploadDir, { withFileTypes: true });
     for (const entry of topLevelEntries) {
       if (entry.isDirectory()) {
-        const yearDir = path.join(uploadDir, entry.name);
+        const yearDir = path.join(/* turbopackIgnore: true */ uploadDir, entry.name);
         try {
-          const monthEntries = await readdir(yearDir, { withFileTypes: true });
+          const monthEntries = await readdir(/* turbopackIgnore: true */ yearDir, { withFileTypes: true });
           for (const monthEntry of monthEntries) {
             if (monthEntry.isDirectory()) {
-              const monthDir = path.join(yearDir, monthEntry.name);
+              const monthDir = path.join(/* turbopackIgnore: true */ yearDir, monthEntry.name);
               try {
-                const dayEntries = await readdir(monthDir, { withFileTypes: true });
+                const dayEntries = await readdir(/* turbopackIgnore: true */ monthDir, { withFileTypes: true });
                 for (const dayEntry of dayEntries) {
                   if (dayEntry.isDirectory()) {
-                    const dayDir = path.join(monthDir, dayEntry.name);
+                    const dayDir = path.join(/* turbopackIgnore: true */ monthDir, dayEntry.name);
                     try {
-                      const files = await readdir(dayDir);
+                      const files = await readdir(/* turbopackIgnore: true */ dayDir);
                       const matched = files.filter((f) => f.startsWith(prefix) && isSafeAvatarFileName(f));
                       for (const file of matched) {
-                        const fullPath = path.join(dayDir, file);
+                        const fullPath = path.join(/* turbopackIgnore: true */ dayDir, file);
                         try {
-                          const stats = await stat(fullPath);
+                          const stats = await stat(/* turbopackIgnore: true */ fullPath);
                           if (stats.mtimeMs > newestMtime) {
                             newestMtime = stats.mtimeMs;
                             newestFile = fullPath;
@@ -73,9 +73,9 @@ async function findAvatarFile(username: string): Promise<string | null> {
         }
       } else if (entry.isFile()) {
         if (entry.name.startsWith(prefix) && isSafeAvatarFileName(entry.name)) {
-          const fullPath = path.join(uploadDir, entry.name);
+          const fullPath = path.join(/* turbopackIgnore: true */ uploadDir, entry.name);
           try {
-            const stats = await stat(fullPath);
+            const stats = await stat(/* turbopackIgnore: true */ fullPath);
             if (stats.mtimeMs > newestMtime) {
               newestMtime = stats.mtimeMs;
               newestFile = fullPath;
@@ -97,11 +97,11 @@ async function findAvatarFile(username: string): Promise<string | null> {
   const legacyDirs = getLegacyAvatarDirs();
   for (const dir of legacyDirs) {
     try {
-      const files = await readdir(dir);
+      const files = await readdir(/* turbopackIgnore: true */ dir);
       const matched = files.filter((f) => f.startsWith(prefix) && isSafeAvatarFileName(f));
       if (matched.length > 0) {
         matched.sort().reverse();
-        return path.join(dir, matched[0]);
+        return path.join(/* turbopackIgnore: true */ dir, matched[0]);
       }
     } catch {
       // ignore
@@ -142,8 +142,8 @@ export async function GET(
       const legacyDirs = getLegacyAvatarDirs();
       for (const dir of legacyDirs) {
         try {
-          const filePath = path.join(dir, fileName);
-          const data = await readFile(filePath);
+          const filePath = path.join(/* turbopackIgnore: true */ dir, fileName);
+          const data = await readFile(/* turbopackIgnore: true */ filePath);
           const contentType = getAvatarContentType(fileName);
           return new NextResponse(data, {
             headers: {
@@ -166,7 +166,7 @@ export async function GET(
 
   const fileName = path.basename(avatarFilePath);
   try {
-    const data = await readFile(avatarFilePath);
+    const data = await readFile(/* turbopackIgnore: true */ avatarFilePath);
     const contentType = getAvatarContentType(fileName);
     return new NextResponse(data, {
       headers: {

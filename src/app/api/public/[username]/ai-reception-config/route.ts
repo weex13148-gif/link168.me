@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { canShowPublicProfile, getActiveRestrictions } from "@/lib/auth";
 import { toPublicAiReceptionConfig } from "@/lib/ai/reception-config";
+import { resolvePublicAiRequestContext } from "@/lib/ai/public-request-context";
 import { db } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -17,10 +18,13 @@ function unavailable(status = 404) {
   );
 }
 
-export async function GET(_request: Request, context: RouteContext) {
+export async function GET(request: Request, context: RouteContext) {
   const { username: rawUsername } = await context.params;
   const username = rawUsername.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "");
   if (!username) return unavailable();
+
+  const requestContext = await resolvePublicAiRequestContext(request, username);
+  if (!requestContext.ok) return unavailable(403);
 
   const profile = await db.profile.findUnique({
     where: { username },
@@ -36,17 +40,40 @@ export async function GET(_request: Request, context: RouteContext) {
         },
       },
       links: {
-        where: { type: "ai-chat", isActive: true },
+        where: {
+          type: "ai-chat",
+          isActive: true,
+          workspaceId: requestContext.expectedWorkspaceId,
+        },
         select: { id: true },
         take: 1,
       },
     },
   });
 
-  if (!profile || !profile.isPublic) return unavailable();
+  if (!profile) return unavailable();
+  if (requestContext.expectedWorkspaceId === null && !profile.isPublic) return unavailable();
+  if (requestContext.expectedWorkspaceId !== null) {
+    const workspace = await db.workspace.findUnique({
+      where: { id: requestContext.expectedWorkspaceId },
+      select: {
+        ownerId: true,
+        isActive: true,
+        publicProfiles: {
+          where: { userId: profile.userId, status: "active" },
+          select: { id: true },
+          take: 1,
+        },
+      },
+    });
+    const belongsToWorkspace = Boolean(
+      workspace && (workspace.ownerId === profile.userId || workspace.publicProfiles.length > 0),
+    );
+    if (!workspace?.isActive || !belongsToWorkspace) return unavailable(403);
+  }
   if (!profile.user.emailVerified) return unavailable(403);
   if (!profile.user.aiServiceConfig?.enabled) return unavailable();
-  if (profile.links.length === 0) return unavailable();
+  if (requestContext.expectedWorkspaceId === null && profile.links.length === 0) return unavailable();
 
   try {
     const restrictions = await getActiveRestrictions(profile.userId);

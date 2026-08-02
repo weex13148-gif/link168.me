@@ -16,7 +16,7 @@ const supportRoutes = [
   {
     title: "会员与订单",
     description: "查看当前会员、订单状态、支付结果和权益说明。",
-    href: "/workbench/membership",
+    href: "/console/membership",
     icon: CreditCard,
   },
   {

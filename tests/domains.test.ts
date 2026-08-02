@@ -164,6 +164,22 @@ describe("validateCustomDomainInput", () => {
     expect(result.error).toContain("link168.me");
   });
 
+  test("configured testnet host should be rejected as a custom domain", () => {
+    const previousAppUrl = process.env.NEXT_PUBLIC_APP_URL;
+    process.env.NEXT_PUBLIC_APP_URL = "https://testnet.example.com";
+
+    try {
+      const result = validateCustomDomainInput("testnet.example.com");
+      expect(result.valid).toBe(false);
+    } finally {
+      if (previousAppUrl === undefined) {
+        delete process.env.NEXT_PUBLIC_APP_URL;
+      } else {
+        process.env.NEXT_PUBLIC_APP_URL = previousAppUrl;
+      }
+    }
+  });
+
   test("127.0.0.1 should be rejected", () => {
     const result = validateCustomDomainInput("127.0.0.1");
     expect(result.valid).toBe(false);
@@ -698,6 +714,23 @@ describe("resolveDomain", () => {
     expect(result).toBe(null);
   });
 
+  test("configured testnet host returns null before database lookup", async () => {
+    const previousAppUrl = process.env.NEXT_PUBLIC_APP_URL;
+    process.env.NEXT_PUBLIC_APP_URL = "https://testnet.example.com";
+
+    try {
+      const result = await resolveDomain("testnet.example.com");
+      expect(result).toBe(null);
+      expect(mockDb.domain.findUnique).not.toHaveBeenCalled();
+    } finally {
+      if (previousAppUrl === undefined) {
+        delete process.env.NEXT_PUBLIC_APP_URL;
+      } else {
+        process.env.NEXT_PUBLIC_APP_URL = previousAppUrl;
+      }
+    }
+  });
+
   test("localhost returns null", async () => {
     const result = await resolveDomain("localhost");
     expect(result).toBe(null);
@@ -1146,6 +1179,25 @@ describe("validateWorkspacePublicRequestHost", () => {
     ).resolves.toBeNull();
     expect(mockDb.domain.findUnique).not.toHaveBeenCalled();
     expect(mockDb.workspace.findUnique).not.toHaveBeenCalled();
+  });
+
+  test("configured testnet Host is rejected before database access", async () => {
+    const previousAppUrl = process.env.NEXT_PUBLIC_APP_URL;
+    process.env.NEXT_PUBLIC_APP_URL = "https://link168-test.vercel.app";
+
+    try {
+      await expect(
+        validateWorkspacePublicRequestHost("ws-1", "link168-test.vercel.app:443"),
+      ).resolves.toBeNull();
+      expect(mockDb.domain.findUnique).not.toHaveBeenCalled();
+      expect(mockDb.workspace.findUnique).not.toHaveBeenCalled();
+    } finally {
+      if (previousAppUrl === undefined) {
+        delete process.env.NEXT_PUBLIC_APP_URL;
+      } else {
+        process.env.NEXT_PUBLIC_APP_URL = previousAppUrl;
+      }
+    }
   });
 
   test("unknown Host is rejected before loading Workspace", async () => {

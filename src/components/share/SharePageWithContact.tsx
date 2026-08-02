@@ -2,11 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle, Loader, MessageCircle, X } from "lucide-react";
-import { PublicAiAssistant } from "@/components/share/PublicAiAssistant";
+import { PublicProfileStickyAction } from "@/components/share/PublicProfileStickyAction";
 import { PublicProductsSection, type ProductDto } from "@/components/share/PublicProductsSection";
 import { QrCodeModal } from "@/components/share/QrCodeModal";
 import { ShareModal } from "@/components/share/ShareModal";
 import { SharePageRenderer, type SharePageTemplate } from "@/components/share/SharePageRenderer";
+import { ContactEntryDialog, type PublicContactEntry } from "@/components/share/ContactEntryCard";
+import { CONTACT_ENTRY_TYPE } from "@/lib/contact-entries";
+import type { PublicProfileRenderMode } from "@/components/share/public-profile-types";
 import { sanitizePublicUrl } from "@/lib/public-url-security";
 
 const VISITOR_ID_KEY = "link168_visitor_id";
@@ -48,8 +51,7 @@ type Props = {
   address?: string | null;
   website?: string | null;
   contactVisibility?: string;
-  onQrCodeClick?: () => void;
-  onShareClick?: () => void;
+  renderMode?: PublicProfileRenderMode;
 };
 
 function originalUrlFromPayload(payloadRaw: string | null | undefined) {
@@ -229,6 +231,8 @@ export function SharePageWithContact(props: Props) {
   const [showContact, setShowContact] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [aiAvailable, setAiAvailable] = useState(false);
+  const [activeContactEntry, setActiveContactEntry] = useState<PublicContactEntry | null>(null);
 
   const directLinks = useMemo(() => props.links.map((link) => ({
     ...link,
@@ -242,6 +246,16 @@ export function SharePageWithContact(props: Props) {
     });
   }, [props.links]);
 
+  const contactEntries = useMemo<PublicContactEntry[]>(() => props.links
+    .filter((link) => (link.componentType || link.type || "").toLowerCase() === CONTACT_ENTRY_TYPE)
+    .map((link) => ({
+      id: link.id,
+      title: link.title,
+      description: link.description,
+      payload: link.payload,
+      workspaceId: link.workspaceId,
+    })), [props.links]);
+
   const pageUrl = typeof window === "undefined" ? "" : window.location.href;
 
   const trackContactInteraction = useCallback((linkId: string) => {
@@ -254,6 +268,12 @@ export function SharePageWithContact(props: Props) {
       keepalive: true,
     }).catch(() => undefined);
   }, []);
+
+  const openAiReception = useCallback(() => {
+    const input = Array.from(document.querySelectorAll<HTMLInputElement>("[data-ai-reception-input]"))
+      .find((element) => element.dataset.aiReceptionInput === props.username);
+    input?.focus();
+  }, [props.username]);
 
   useEffect(() => {
     const visitorId = getOrCreateVisitorId();
@@ -294,31 +314,28 @@ export function SharePageWithContact(props: Props) {
         address={props.address}
         website={props.website}
         contactVisibility={props.contactVisibility}
+        renderMode={props.renderMode || "public"}
         onContactInteraction={trackContactInteraction}
+        onAiAvailabilityChange={setAiAvailable}
+        onOpenContact={() => setShowContact(true)}
+        onOpenContactEntry={(entryId) => {
+          const entry = entryId ? contactEntries.find((item) => item.id === entryId) : contactEntries[0];
+          if (entry) setActiveContactEntry(entry);
+          else setShowContact(true);
+        }}
+        stickyAction={(
+          <PublicProfileStickyAction
+            kind={hasAiChatModule && aiAvailable ? "ai" : "contact"}
+            onClick={hasAiChatModule && aiAvailable ? openAiReception : () => setShowContact(true)}
+          />
+        )}
       />
 
       {props.showBrandFoot !== false ? <div className="flex justify-center"><BrandFooter /></div> : null}
       {props.products?.length ? <PublicProductsSection products={props.products} username={props.username} /> : null}
 
-      <button
-        type="button"
-        onClick={() => setShowContact(true)}
-        className="fixed bottom-6 left-5 z-40 flex min-h-12 items-center gap-2 rounded-full border border-[#DCE7D1] bg-white px-4 text-sm font-black text-[#4F6D37] shadow-lg hover:bg-[#F8FBF5]"
-        aria-label="联系主页所有者"
-      >
-        <MessageCircle className="size-5" />
-        联系
-      </button>
-
-      {!hasAiChatModule ? (
-        <PublicAiAssistant
-          username={props.username}
-          displayName={props.displayName}
-          onOpenContact={() => setShowContact(true)}
-        />
-      ) : null}
-
       {showContact ? <ContactForm profileId={props.profileId} username={props.username} products={props.products} interestedProductId={props.interestedProductId} onClose={() => setShowContact(false)} /> : null}
+      {activeContactEntry ? <ContactEntryDialog entry={activeContactEntry} onClose={() => setActiveContactEntry(null)} /> : null}
       <QrCodeModal isOpen={showQrCode} onClose={() => setShowQrCode(false)} pageUrl={pageUrl} displayName={props.displayName} username={props.username} />
       <ShareModal isOpen={showShare} onClose={() => setShowShare(false)} pageUrl={pageUrl} displayName={props.displayName} username={props.username} onOpenQrCode={() => setShowQrCode(true)} />
     </>

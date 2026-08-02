@@ -28,7 +28,7 @@ export function NotificationBell() {
   }
 
   function handleClick() {
-    router.push("/workbench/notifications");
+    router.push("/console/notifications");
   }
 
   return (

@@ -62,6 +62,14 @@ describe("four core MVP metrics", () => {
   const from = new Date("2026-07-01T00:00:00.000Z");
   const to = new Date("2026-08-01T00:00:00.000Z");
 
+  beforeAll(() => {
+    jest.useFakeTimers().setSystemTime(new Date("2026-07-30T08:00:00.000Z"));
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     profileVisits.length = 0;

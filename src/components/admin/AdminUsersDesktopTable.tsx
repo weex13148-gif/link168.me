@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 const PLAN_OPTIONS = [
-  { value: "plus", label: "Plus 会员", credits: 300 },
-  { value: "pro", label: "Pro 会员", credits: 2000 },
-  { value: "enterprise", label: "企业会员", credits: 10000 },
+  { value: "plus", label: "Plus 会员", credits: 800 },
+  { value: "pro", label: "Pro 会员", credits: 3000 },
+  { value: "enterprise", label: "企业会员", credits: 15000 },
   { value: "enterprise_pro", label: "企业专业版", credits: 50000 },
 ] as const;
 
