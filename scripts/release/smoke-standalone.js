@@ -47,6 +47,10 @@ function firstAsset(html, marker) {
   return match ? match[1].replace(/&amp;/g, "&") : null;
 }
 
+function isUnexpectedStandaloneExit(exitCode, signalCode, shutdownRequested) {
+  return !shutdownRequested && (exitCode !== null || signalCode !== null);
+}
+
 async function main() {
   if (!fs.existsSync(serverPath)) {
     throw new Error("Missing .next/standalone/server.js. Run npm run build first.");
@@ -67,8 +71,15 @@ async function main() {
   });
 
   let output = "";
+  let shutdownRequested = false;
+  let unexpectedExit = null;
   child.stdout.on("data", (chunk) => { output += String(chunk); });
   child.stderr.on("data", (chunk) => { output += String(chunk); });
+  child.on("exit", (exitCode, signalCode) => {
+    if (isUnexpectedStandaloneExit(exitCode, signalCode, shutdownRequested)) {
+      unexpectedExit = { exitCode, signalCode };
+    }
+  });
 
   try {
     const homeResponse = await waitUntilReady();
@@ -97,6 +108,7 @@ async function main() {
       `[release:smoke] packaged standalone homepage, static and brand assets passed${requireDatabase ? "; database health passed" : ""}`,
     );
   } finally {
+    shutdownRequested = true;
     child.kill("SIGTERM");
     await new Promise((resolve) => {
       const timer = setTimeout(() => {
@@ -110,12 +122,17 @@ async function main() {
     });
   }
 
-  if (child.exitCode && child.exitCode !== 0 && child.exitCode !== null) {
-    throw new Error(`Standalone server exited unexpectedly (${child.exitCode}). ${output.slice(-500)}`);
+  if (unexpectedExit) {
+    const detail = unexpectedExit.signalCode || unexpectedExit.exitCode;
+    throw new Error(`Standalone server exited unexpectedly (${detail}). ${output.slice(-500)}`);
   }
 }
 
-main().catch((error) => {
-  console.error(`[release:smoke] ERROR: ${error instanceof Error ? error.message : String(error)}`);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(`[release:smoke] ERROR: ${error instanceof Error ? error.message : String(error)}`);
+    process.exit(1);
+  });
+}
+
+module.exports = { isUnexpectedStandaloneExit };
