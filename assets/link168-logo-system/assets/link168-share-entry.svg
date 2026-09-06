@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 168" role="img" aria-labelledby="title desc">
+  <title id="title">Link168 分享页品牌入口</title>
+  <desc id="desc">公开分享页中的 Link168 品牌入口和创建商业主页行动按钮视觉参考。</desc>
+  <defs>
+    <linearGradient id="blue" x1="36" y1="22" x2="1180" y2="144" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0D62E8"/>
+      <stop offset="1" stop-color="#168BFF"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="35" y1="25" x2="142" y2="136" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE5A8"/>
+      <stop offset="0.58" stop-color="#F4BE5F"/>
+      <stop offset="1" stop-color="#D9942D"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="1432" height="160" rx="32" fill="#0A1426" stroke="#243653" stroke-width="2"/>
+  <g transform="translate(34 32) scale(.43)">
+    <path d="M48 178V73c0-25.4 20.6-46 46-46h52c25.4 0 46 20.6 46 46v96c0 25.4-20.6 46-46 46h-20" fill="none" stroke="url(#blue)" stroke-width="13" stroke-linecap="round"/>
+    <path d="M94 59l49 12v61l-49 13z" fill="url(#blue)"/>
+    <path d="M50 181c28-27 69-45 132-55-30 14-51 29-57 45-5 14 2 26 19 35H89c-18-3-31-11-39-25z" fill="url(#gold)"/>
+  </g>
+  <text x="140" y="101" fill="#F8FBFF" font-family="Inter, Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="47" font-weight="700" letter-spacing="-2">Link</text>
+  <text x="237" y="101" fill="#F4BE5F" font-family="Inter, Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="47" font-weight="700" letter-spacing="-2">1</text>
+  <text x="263" y="101" fill="#3B92FF" font-family="Inter, Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="47" font-weight="700" letter-spacing="-2">68</text>
+  <text x="344" y="100" fill="#8394AE" font-family="Inter, Avenir Next, Helvetica Neue, Arial, sans-serif" font-size="25">由 Link168 提供</text>
+  <rect x="979" y="30" width="405" height="108" rx="23" fill="url(#blue)"/>
+  <text x="1020" y="98" fill="#FFFFFF" font-family="Noto Sans SC, PingFang SC, Microsoft YaHei, sans-serif" font-size="31" font-weight="700">用 Link168 创建你的商业主页</text>
+  <path d="M1330 84h31M1348 70l14 14-14 14" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

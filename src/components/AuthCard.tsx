@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
+import { invitationReturnPath } from "@/lib/auth-return";
 
 type AuthMode = "login" | "register";
-type AuthCardProps = { mode: AuthMode; initialHandle?: string };
+type AuthCardProps = { mode: AuthMode; initialHandle?: string; returnTo?: string };
 type AuthResponse = {
   success?: boolean;
   error?: string;
@@ -21,8 +22,9 @@ const registerBenefits = [
   "生成可分享的链接与二维码",
 ];
 
-export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
+export function AuthCard({ mode, initialHandle = "", returnTo }: AuthCardProps) {
   const router = useRouter();
+  const invitationReturn = invitationReturnPath(returnTo);
   const isRegister = mode === "register";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,11 +64,11 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
       if (isRegister) {
         setSuccess(result.meta?.message || "注册成功，正在进入邮箱验证页面…");
         window.setTimeout(() => {
-          router.push(result.redirectTo || `/verify-email?email=${encodeURIComponent(email)}`);
+          router.push(invitationReturn || result.redirectTo || `/verify-email?email=${encodeURIComponent(email)}`);
           router.refresh();
         }, 800);
       } else {
-        router.push(result.redirectTo || "/console");
+        router.push(invitationReturn || result.redirectTo || "/console");
         router.refresh();
       }
     } catch {
@@ -136,7 +138,7 @@ export function AuthCard({ mode, initialHandle = "" }: AuthCardProps) {
 
           <div className="mt-6 max-w-md border-t border-[var(--ui-line)] pt-5 text-center text-sm text-[var(--ui-muted)]">
             {isRegister ? "已经有账号？" : "还没有账号？"}
-            <Link href={isRegister ? "/login" : "/register"} className="font-black text-[var(--ui-brand-hover)]">
+            <Link href={`${isRegister ? "/login" : "/register"}${invitationReturn ? `?next=${encodeURIComponent(invitationReturn)}` : ""}`} className="font-black text-[var(--ui-brand-hover)]">
               {isRegister ? " 去登录" : " 免费注册"}
             </Link>
             {!isRegister ? <span className="mx-2 text-[var(--ui-line)]">|</span> : null}

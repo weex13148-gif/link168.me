@@ -3,6 +3,7 @@ import { requireDashboardUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { isUuid } from "@/lib/contact-entry-domain";
 import { assertWorkspaceMember } from "@/lib/workspace";
+import { workspaceLeadReadWhere } from "@/lib/workspace-lead-access";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -22,16 +23,23 @@ export async function GET(request: Request, context: RouteContext) {
     return NextResponse.json({ success: false, error: access.message, code: access.code }, { status: 403 });
   }
 
+  if (!access.member || !["owner", "admin", "member"].includes(access.member.role)) {
+    return NextResponse.json({ success: false, error: "无权查看团队线索。" }, { status: 403 });
+  }
+
   const { searchParams } = new URL(request.url);
   const assignment = searchParams.get("assignment");
-  const where = {
+  const accessWhere = workspaceLeadReadWhere({
     workspaceId,
-    ...(assignment === "unclaimed"
-      ? { claimedByUserId: null }
-      : assignment === "mine"
-        ? { claimedByUserId: user.id }
-        : {}),
-  };
+    userId: user.id,
+    role: access.member.role as "owner" | "admin" | "member",
+  });
+  const assignmentWhere = assignment === "unclaimed"
+    ? { claimedByUserId: null }
+    : assignment === "mine"
+      ? { claimedByUserId: user.id }
+      : {};
+  const where = { AND: [accessWhere, assignmentWhere] };
 
   const leads = await db.lead.findMany({
     where,

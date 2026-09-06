@@ -10,9 +10,9 @@ export const uiThemes: Array<{
 }> = [
   {
     id: "fresh",
-    label: "A 清爽白绿",
+    label: "A 清爽蓝白",
     shortLabel: "A",
-    description: "白绿 SaaS 风",
+    description: "蓝白 SaaS 风",
   },
   {
     id: "vip",

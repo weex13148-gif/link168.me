@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" role="img" aria-labelledby="title desc">
+  <title id="title">Link168｜链接一路发</title>
+  <desc id="desc">Link168 网站型 App 品牌完整 Logo，适合浅色背景。</desc>
+  <defs>
+    <linearGradient id="blue" x1="44" y1="58" x2="250" y2="263" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#12B8FF"/>
+      <stop offset="0.52" stop-color="#1677FF"/>
+      <stop offset="1" stop-color="#0A4ED7"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="90" y1="190" x2="255" y2="245" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE5A8"/>
+      <stop offset="0.58" stop-color="#F4BE5F"/>
+      <stop offset="1" stop-color="#D9942D"/>
+    </linearGradient>
+  </defs>
+  <path d="M56 239V112c0-30.9 25.1-56 56-56h66c30.9 0 56 25.1 56 56v115c0 30.9-25.1 56-56 56h-25" fill="none" stroke="url(#blue)" stroke-width="15" stroke-linecap="round"/>
+  <path d="M113 95l59 14v73l-59 16z" fill="url(#blue)"/>
+  <path d="M58 243c34-33 83-55 158-67-36 17-61 35-68 54-6 17 3 31 23 42h-67c-22-4-38-14-46-29z" fill="url(#gold)"/>
+
+  <g font-family="Inter, Avenir Next, Helvetica Neue, Arial, sans-serif" font-weight="700" font-size="122" letter-spacing="-6">
+    <text x="308" y="178" fill="#11213A">Link</text>
+    <text x="586" y="178" fill="#D9942D">1</text>
+    <text x="651" y="178" fill="url(#blue)">68</text>
+  </g>
+  <text x="312" y="238" fill="#11213A" font-family="Noto Sans SC, PingFang SC, Microsoft YaHei, sans-serif" font-size="34" font-weight="600" letter-spacing="2">链接一路发</text>
+</svg>

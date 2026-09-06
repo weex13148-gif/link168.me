@@ -1,1 +1,5 @@
-export { default } from "@/app/workbench/short-links/page";
+import { redirect } from "next/navigation";
+
+export default function shortlinksPage() {
+  redirect("/console");
+}

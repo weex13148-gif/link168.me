@@ -57,12 +57,12 @@ export function StatsPanel({ username }: { username: string }) {
     return (
       <div className="grid gap-5">
         <header>
-          <p className="ui-eyebrow">数据中心</p>
+          <p className="ui-eyebrow">主页数据</p>
           <h1 className="mt-1 text-2xl ui-title sm:text-3xl">访问数据概览</h1>
         </header>
-        <div className="ui-surface grid min-h-48 place-items-center p-5 sm:p-6">
+        <div role="status" aria-live="polite" aria-label="正在加载访问数据" className="ui-surface grid min-h-48 place-items-center p-5 sm:p-6">
           <div className="flex items-center gap-3 text-sm font-black text-[var(--ui-muted)]">
-            <Loader2 className="size-5 animate-spin text-[var(--ui-brand)]" />
+            <Loader2 aria-hidden className="size-5 animate-spin text-[var(--ui-brand)]" />
             正在加载数据…
           </div>
         </div>
@@ -74,10 +74,10 @@ export function StatsPanel({ username }: { username: string }) {
     return (
       <div className="grid gap-5">
         <header>
-          <p className="ui-eyebrow">数据中心</p>
+          <p className="ui-eyebrow">主页数据</p>
           <h1 className="mt-1 text-2xl ui-title sm:text-3xl">访问数据概览</h1>
         </header>
-        <div className="ui-surface grid min-h-48 place-items-center p-5 sm:p-6 text-center">
+        <div role="alert" className="ui-surface grid min-h-48 place-items-center p-5 sm:p-6 text-center">
           <p className="text-sm text-[var(--ui-danger)]">{error}</p>
           <button
             type="button"
@@ -112,7 +112,7 @@ export function StatsPanel({ username }: { username: string }) {
   return (
     <div className="grid gap-5">
       <header>
-        <p className="ui-eyebrow">数据中心</p>
+        <p className="ui-eyebrow">主页数据</p>
         <h1 className="mt-1 text-xl ui-title sm:text-2xl">访问数据概览</h1>
         <p className="mt-2 text-xs leading-5 ui-muted sm:text-sm sm:leading-6">
           {username ? `${username} 的公开主页访问统计。` : "你的公开主页访问统计。"}数据每日更新，帮助你了解访客行为。
@@ -120,9 +120,9 @@ export function StatsPanel({ username }: { username: string }) {
       </header>
 
       {!hasData ? (
-        <section className="ui-surface grid min-h-40 place-items-center p-4 sm:min-h-48 sm:p-6 text-center">
+        <section role="status" aria-live="polite" className="ui-surface grid min-h-40 place-items-center p-4 sm:min-h-48 sm:p-6 text-center">
           <div>
-            <BarChart3 className="mx-auto size-8 text-[var(--ui-faint)] sm:size-10" />
+            <BarChart3 aria-hidden className="mx-auto size-8 text-[var(--ui-faint)] sm:size-10" />
             <p className="mt-3 text-base font-black text-[var(--ui-ink)] sm:text-lg">暂无访问数据</p>
             <p className="mt-2 text-xs text-[var(--ui-muted)] sm:text-sm">分享你的主页后，访客数据将在这里展示。</p>
           </div>
@@ -139,7 +139,7 @@ export function StatsPanel({ username }: { username: string }) {
                     className="grid size-10 shrink-0 place-items-center rounded-xl sm:size-11"
                     style={{ background: `color-mix(in srgb, ${card.color} 12%, transparent)`, color: card.color }}
                   >
-                    <Icon className="size-4 sm:size-5" />
+                    <Icon aria-hidden className="size-4 sm:size-5" />
                   </span>
                   <div className="min-w-0">
                     <p className="text-xl font-black text-[var(--ui-ink)] sm:text-2xl">{card.value}</p>
@@ -155,7 +155,7 @@ export function StatsPanel({ username }: { username: string }) {
             <section className="ui-surface p-4 sm:p-6">
               <div className="flex items-center gap-3">
                 <span className="grid size-9 place-items-center rounded-xl bg-[var(--ui-brand-soft)] text-[var(--ui-brand-hover)] sm:size-10">
-                  <TrendingUp className="size-4 sm:size-5" />
+                  <TrendingUp aria-hidden className="size-4 sm:size-5" />
                 </span>
                 <div>
                   <h2 className="text-base font-black sm:text-lg">近7天访问趋势</h2>
@@ -191,7 +191,7 @@ export function StatsPanel({ username }: { username: string }) {
             <section className="ui-surface p-4 sm:p-6">
               <div className="flex items-center gap-3">
                 <span className="grid size-9 place-items-center rounded-xl bg-[var(--ui-info-soft)] text-[var(--ui-info)] sm:size-10">
-                  <Link2 className="size-4 sm:size-5" />
+                  <Link2 aria-hidden className="size-4 sm:size-5" />
                 </span>
                 <div>
                   <h2 className="text-base font-black sm:text-lg">热门链接排行</h2>

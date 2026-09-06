@@ -1,1 +1,5 @@
-export { default } from "@/app/workbench/membership/page";
+import { redirect } from "next/navigation";
+
+export default function membershipPage() {
+  redirect("/console");
+}

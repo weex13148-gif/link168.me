@@ -5,6 +5,7 @@ import { isUuid } from "@/lib/contact-entry-domain";
 import { newId } from "@/lib/dashboard-data";
 import { db } from "@/lib/db";
 import { assertWorkspaceMember, roleAtLeast } from "@/lib/workspace";
+import { workspaceLeadReadWhere } from "@/lib/workspace-lead-access";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,6 +32,9 @@ export async function PATCH(request: Request, context: RouteContext) {
   if (!access.allowed || !access.member) {
     return NextResponse.json({ success: false, error: access.message, code: access.code }, { status: 403 });
   }
+  if (!["owner", "admin", "member"].includes(access.member.role)) {
+    return NextResponse.json({ success: false, error: "无权查看团队线索。" }, { status: 403 });
+  }
 
   let body: Record<string, unknown>;
   try {
@@ -39,7 +43,12 @@ export async function PATCH(request: Request, context: RouteContext) {
     return NextResponse.json({ success: false, error: "请求格式不正确。" }, { status: 400 });
   }
 
-  const lead = await db.lead.findFirst({ where: { id: leadId, workspaceId } });
+  const accessWhere = workspaceLeadReadWhere({
+    workspaceId,
+    userId: user.id,
+    role: access.member.role as "owner" | "admin" | "member",
+  });
+  const lead = await db.lead.findFirst({ where: { AND: [{ id: leadId }, accessWhere] } });
   if (!lead) return NextResponse.json({ success: false, error: "团队线索不存在。" }, { status: 404 });
 
   const action = typeof body.action === "string" ? body.action : "update";
@@ -49,7 +58,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     const nextStatus = lead.status === "new" ? "viewed" : lead.status;
     const claimed = await db.$transaction(async (tx) => {
       const updated = await tx.lead.updateMany({
-        where: { id: lead.id, workspaceId, claimedByUserId: null, status: lead.status },
+        where: { AND: [{ id: lead.id, claimedByUserId: null, status: lead.status }, accessWhere] },
         data: { claimedByUserId: user.id, status: nextStatus, handledAt: new Date() },
       });
       if (!updated.count) return false;
@@ -78,7 +87,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     }
     const released = await db.$transaction(async (tx) => {
       const updated = await tx.lead.updateMany({
-        where: { id: lead.id, workspaceId, claimedByUserId: lead.claimedByUserId },
+        where: { AND: [{ id: lead.id, claimedByUserId: lead.claimedByUserId }, accessWhere] },
         data: { claimedByUserId: null },
       });
       if (!updated.count) return false;
@@ -115,10 +124,11 @@ export async function PATCH(request: Request, context: RouteContext) {
   const updated = await db.$transaction(async (tx) => {
     const changed = await tx.lead.updateMany({
       where: {
-        id: lead.id,
-        workspaceId,
-        status: lead.status,
-        ...(!isManager ? { claimedByUserId: user.id } : {}),
+        AND: [
+          { id: lead.id, status: lead.status },
+          accessWhere,
+          ...(!isManager ? [{ claimedByUserId: user.id }] : []),
+        ],
       },
       data: { status: requestedStatus, handledAt: new Date() },
     });
@@ -131,7 +141,7 @@ export async function PATCH(request: Request, context: RouteContext) {
         newStatus: lead.status === requestedStatus ? null : requestedStatus,
       },
     });
-    return tx.lead.findFirst({ where: { id: lead.id, workspaceId } });
+    return tx.lead.findFirst({ where: { AND: [{ id: lead.id }, accessWhere] } });
   });
 
   if (!updated) {

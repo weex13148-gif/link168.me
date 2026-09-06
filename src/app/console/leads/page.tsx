@@ -1,1 +1,5 @@
-export { default } from "@/app/workbench/leads/page";
+import { redirect } from "next/navigation";
+
+export default function leadsPage() {
+  redirect("/console");
+}

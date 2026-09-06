@@ -9,6 +9,8 @@ import { NextResponse } from "next/server";
 import { requireDashboardUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getOwnedProfile } from "@/lib/dashboard-data";
+import type { Prisma } from "@/generated/prisma/client";
+import { userLeadReadWhere } from "@/lib/workspace-lead-access";
 
 export const runtime = "nodejs";
 
@@ -107,6 +109,7 @@ export async function GET(request: Request) {
       { status: 400 }
     );
   }
+  const accessWhere = await userLeadReadWhere({ userId: user.id, profileId: profile.id });
 
   const { searchParams } = new URL(request.url);
   const statusFilter = searchParams.get("status");
@@ -164,16 +167,18 @@ export async function GET(request: Request) {
           ? ["won", "closed"]
           : null;
 
-  const where = {
-    profileId: profile.id,
-    ...(groupedStatuses
-      ? { status: { in: groupedStatuses } }
-      : normalizedFilter
-        ? { status: normalizedFilter }
-        : {}),
-    ...search,
-    ...dateRange,
-    ...sourceFilterClause,
+  const where: Prisma.LeadWhereInput = {
+    AND: [
+      accessWhere,
+      groupedStatuses
+        ? { status: { in: groupedStatuses } }
+        : normalizedFilter
+          ? { status: normalizedFilter }
+          : {},
+      search,
+      dateRange,
+      sourceFilterClause,
+    ],
   };
 
   // 检查是否为导出请求
@@ -271,18 +276,18 @@ export async function GET(request: Request) {
   // 统计（新状态 + 历史状态分别统计，不破坏性映射）
   const stats = {
     total,
-    new: await db.lead.count({ where: { profileId: profile.id, status: "new" } }),
-    viewed: await db.lead.count({ where: { profileId: profile.id, status: "viewed" } }),
-    following_up: await db.lead.count({ where: { profileId: profile.id, status: "following_up" } }),
-    won: await db.lead.count({ where: { profileId: profile.id, status: "won" } }),
-    closed: await db.lead.count({ where: { profileId: profile.id, status: "closed" } }),
+    new: await db.lead.count({ where: { AND: [accessWhere, { status: "new" }] } }),
+    viewed: await db.lead.count({ where: { AND: [accessWhere, { status: "viewed" }] } }),
+    following_up: await db.lead.count({ where: { AND: [accessWhere, { status: "following_up" }] } }),
+    won: await db.lead.count({ where: { AND: [accessWhere, { status: "won" }] } }),
+    closed: await db.lead.count({ where: { AND: [accessWhere, { status: "closed" }] } }),
     // 历史状态兼容统计（仅计数，不映射）
     historical: {
-      contacted: await db.lead.count({ where: { profileId: profile.id, status: "contacted" } }),
-      following: await db.lead.count({ where: { profileId: profile.id, status: "following" } }),
-      converted: await db.lead.count({ where: { profileId: profile.id, status: "converted" } }),
-      qualified: await db.lead.count({ where: { profileId: profile.id, status: "qualified" } }),
-      lost: await db.lead.count({ where: { profileId: profile.id, status: "lost" } }),
+      contacted: await db.lead.count({ where: { AND: [accessWhere, { status: "contacted" }] } }),
+      following: await db.lead.count({ where: { AND: [accessWhere, { status: "following" }] } }),
+      converted: await db.lead.count({ where: { AND: [accessWhere, { status: "converted" }] } }),
+      qualified: await db.lead.count({ where: { AND: [accessWhere, { status: "qualified" }] } }),
+      lost: await db.lead.count({ where: { AND: [accessWhere, { status: "lost" }] } }),
     },
   };
 

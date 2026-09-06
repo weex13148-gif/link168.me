@@ -1062,3 +1062,348 @@ model EnterpriseQuotaConsumption {
   @@index([workspaceId, userId, createdAt])
   @@map("enterprise_quota_consumptions")
 }
+
+// ============================================
+// CURRENT rebuild-only core/data/domain boundary
+// Legacy tables above remain evidence/compat only.
+// ============================================
+
+model CurrentIdentity {
+  id                  String                    @id @db.Uuid
+  userId              String                    @unique @map("user_id") @db.Uuid
+  username            String                    @unique
+  normalizedUsername  String                    @unique @map("normalized_username")
+  displayName         String?                   @map("display_name")
+  accountStatus       String                    @default("active") @map("account_status")
+  personalWorkspaceId String?                   @unique @map("personal_workspace_id") @db.Uuid
+  createdAt           DateTime                  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime                  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  personalWorkspace   CurrentWorkspace?         @relation("CurrentPersonalWorkspace", fields: [personalWorkspaceId], references: [id], onDelete: SetNull)
+  ownedWorkspaces     CurrentWorkspace[]        @relation("CurrentWorkspaceOwner")
+  defaultLeadFor      CurrentWorkspace[]        @relation("CurrentWorkspaceDefaultLead")
+  memberships         CurrentWorkspaceMember[]
+  ownedPages          CurrentPage[]             @relation("CurrentPageOwner")
+  authoredVersions    CurrentPublishedVersion[] @relation("CurrentPublishedVersionAuthor")
+  switchedPointers    CurrentPublishedPointer[] @relation("CurrentPublishedPointerSwitcher")
+  sourceLeads         CurrentLead[]             @relation("CurrentLeadSourceMember")
+  assignedLeads       CurrentLead[]             @relation("CurrentLeadAssignee")
+  billingOwned        CurrentBillingAccount[]   @relation("CurrentBillingOwnerIdentity")
+  billingContacts     CurrentBillingAccount[]   @relation("CurrentBillingContactIdentity")
+  consentRecords      CurrentConsentRecord[]
+  auditLogs           CurrentAuditLog[]         @relation("CurrentAuditActor")
+
+  @@map("current_identities")
+}
+
+model CurrentWorkspace {
+  id                    String                   @id @db.Uuid
+  kind                  String
+  slug                  String?
+  name                  String
+  ownerIdentityId       String                   @map("owner_identity_id") @db.Uuid
+  defaultLeadIdentityId String?                  @map("default_lead_identity_id") @db.Uuid
+  isActive              Boolean                  @default(true) @map("is_active")
+  createdAt             DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
+  ownerIdentity         CurrentIdentity          @relation("CurrentWorkspaceOwner", fields: [ownerIdentityId], references: [id], onDelete: Restrict)
+  defaultLeadIdentity   CurrentIdentity?         @relation("CurrentWorkspaceDefaultLead", fields: [defaultLeadIdentityId], references: [id], onDelete: SetNull)
+  invitations           CurrentTeamInvitation[]
+  personalIdentity      CurrentIdentity?         @relation("CurrentPersonalWorkspace")
+  members               CurrentWorkspaceMember[]
+  pages                 CurrentPage[]
+  publishedFacts        CurrentPublishedFacts[]
+  leads                 CurrentLead[]
+  billingAccount        CurrentBillingAccount?
+  consentRecords        CurrentConsentRecord[]
+  auditLogs             CurrentAuditLog[]
+
+  @@unique([kind, slug])
+  @@index([ownerIdentityId, kind])
+  @@index([defaultLeadIdentityId])
+  @@map("current_workspaces")
+}
+
+model CurrentWorkspaceMember {
+  id          String           @id @db.Uuid
+  workspaceId String           @map("workspace_id") @db.Uuid
+  identityId  String           @map("identity_id") @db.Uuid
+  role        String
+  status      String
+  invitedAt   DateTime         @default(now()) @map("invited_at") @db.Timestamptz(6)
+  joinedAt    DateTime?        @map("joined_at") @db.Timestamptz(6)
+  disabledAt  DateTime?        @map("disabled_at") @db.Timestamptz(6)
+  removedAt   DateTime?        @map("removed_at") @db.Timestamptz(6)
+  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  workspace   CurrentWorkspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  identity    CurrentIdentity  @relation(fields: [identityId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, identityId])
+  @@index([workspaceId, role, status])
+  @@index([identityId, status])
+  @@map("current_workspace_members")
+}
+
+model CurrentPage {
+  id                         String                    @id @db.Uuid
+  workspaceId                String                    @map("workspace_id") @db.Uuid
+  ownerIdentityId            String                    @map("owner_identity_id") @db.Uuid
+  kind                       String
+  publicIdentity             String                    @map("public_identity")
+  publicIdentityNormalized   String                    @unique @map("public_identity_normalized")
+  status                     String                    @default("draft_only")
+  lastPublishedVersionNumber Int                       @default(0) @map("last_published_version_number")
+  createdAt                  DateTime                  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                  DateTime                  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  workspace                  CurrentWorkspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  ownerIdentity              CurrentIdentity           @relation("CurrentPageOwner", fields: [ownerIdentityId], references: [id], onDelete: Restrict)
+  draft                      CurrentPageDraft?
+  publishedVersions          CurrentPublishedVersion[]
+  publishedPointer           CurrentPublishedPointer?
+  publishedFacts             CurrentPublishedFacts[]
+  leads                      CurrentLead[]
+
+  @@unique([workspaceId, kind, ownerIdentityId])
+  @@index([workspaceId, kind, status])
+  @@index([ownerIdentityId, kind])
+  @@map("current_pages")
+}
+
+model CurrentPageDraft {
+  id                String                    @id @db.Uuid
+  pageId            String                    @unique @map("page_id") @db.Uuid
+  revision          Int                       @default(1)
+  document          Json                      @db.JsonB
+  createdAt         DateTime                  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime                  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  page              CurrentPage               @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  publishedVersions CurrentPublishedVersion[]
+
+  @@map("current_page_drafts")
+}
+
+model CurrentPublishedVersion {
+  id                  String                    @id @db.Uuid
+  pageId              String                    @map("page_id") @db.Uuid
+  draftId             String                    @map("draft_id") @db.Uuid
+  versionNumber       Int                       @map("version_number")
+  idempotencyKey      String                    @map("idempotency_key")
+  snapshotDocument    Json                      @map("snapshot_document") @db.JsonB
+  createdByIdentityId String                    @map("created_by_identity_id") @db.Uuid
+  createdAt           DateTime                  @default(now()) @map("created_at") @db.Timestamptz(6)
+  page                CurrentPage               @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  draft               CurrentPageDraft          @relation(fields: [draftId], references: [id], onDelete: Restrict)
+  createdByIdentity   CurrentIdentity           @relation("CurrentPublishedVersionAuthor", fields: [createdByIdentityId], references: [id], onDelete: Restrict)
+  facts               CurrentPublishedFacts?
+  currentPointer      CurrentPublishedPointer?  @relation("CurrentPointerCurrentVersion")
+  previousPointers    CurrentPublishedPointer[] @relation("CurrentPointerPreviousVersion")
+
+  @@unique([pageId, versionNumber])
+  @@unique([pageId, idempotencyKey])
+  @@index([createdByIdentityId, createdAt])
+  @@map("current_published_versions")
+}
+
+model CurrentPublishedFacts {
+  id                 String                   @id @db.Uuid
+  pageId             String                   @map("page_id") @db.Uuid
+  workspaceId        String                   @map("workspace_id") @db.Uuid
+  versionId          String                   @unique @map("version_id") @db.Uuid
+  publishedAt        DateTime                 @map("published_at") @db.Timestamptz(6)
+  profile            Json                     @db.JsonB
+  sections           Json                     @db.JsonB
+  offerings          Json                     @db.JsonB
+  publicContact      Json?                    @map("public_contact") @db.JsonB
+  responsibleMembers Json                     @map("responsible_members") @db.JsonB
+  page               CurrentPage              @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  workspace          CurrentWorkspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  version            CurrentPublishedVersion  @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  currentPointer     CurrentPublishedPointer? @relation("CurrentPointerCurrentFacts")
+
+  @@index([pageId, publishedAt])
+  @@index([workspaceId, publishedAt])
+  @@map("current_published_facts")
+}
+
+model CurrentPublishedPointer {
+  id                   String                   @id @db.Uuid
+  pageId               String                   @unique @map("page_id") @db.Uuid
+  currentVersionId     String                   @unique @map("current_version_id") @db.Uuid
+  currentFactsId       String                   @unique @map("current_facts_id") @db.Uuid
+  previousVersionId    String?                  @map("previous_version_id") @db.Uuid
+  switchedByIdentityId String                   @map("switched_by_identity_id") @db.Uuid
+  switchedAt           DateTime                 @map("switched_at") @db.Timestamptz(6)
+  page                 CurrentPage              @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  currentVersion       CurrentPublishedVersion  @relation("CurrentPointerCurrentVersion", fields: [currentVersionId], references: [id], onDelete: Cascade)
+  currentFacts         CurrentPublishedFacts    @relation("CurrentPointerCurrentFacts", fields: [currentFactsId], references: [id], onDelete: Cascade)
+  previousVersion      CurrentPublishedVersion? @relation("CurrentPointerPreviousVersion", fields: [previousVersionId], references: [id], onDelete: SetNull)
+  switchedByIdentity   CurrentIdentity          @relation("CurrentPublishedPointerSwitcher", fields: [switchedByIdentityId], references: [id], onDelete: Restrict)
+
+  @@index([switchedAt])
+  @@map("current_published_pointers")
+}
+
+model CurrentLead {
+  id                     String           @id @db.Uuid
+  workspaceId            String           @map("workspace_id") @db.Uuid
+  originPageId           String           @map("origin_page_id") @db.Uuid
+  source                 String
+  status                 String           @default("new")
+  contact                Json             @db.JsonB
+  commercialIntent       String           @map("commercial_intent")
+  conversationId         String?          @map("conversation_id")
+  idempotencyKey         String?          @map("idempotency_key")
+  offeringId             String?          @map("offering_id")
+  sourceMemberIdentityId String?          @map("source_member_identity_id") @db.Uuid
+  assigneeIdentityId     String           @map("assignee_identity_id") @db.Uuid
+  routingReason          String           @map("routing_reason")
+  createdAt              DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  workspace              CurrentWorkspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  originPage             CurrentPage      @relation(fields: [originPageId], references: [id], onDelete: Restrict)
+  sourceMemberIdentity   CurrentIdentity? @relation("CurrentLeadSourceMember", fields: [sourceMemberIdentityId], references: [id], onDelete: SetNull)
+  assigneeIdentity       CurrentIdentity  @relation("CurrentLeadAssignee", fields: [assigneeIdentityId], references: [id], onDelete: Restrict)
+
+  @@unique([workspaceId, idempotencyKey])
+  @@index([workspaceId, status, createdAt])
+  @@index([assigneeIdentityId, status, createdAt])
+  @@index([originPageId, createdAt])
+  @@map("current_leads")
+}
+
+model CurrentBillingAccount {
+  id                       String                      @id @db.Uuid
+  workspaceId              String                      @unique @map("workspace_id") @db.Uuid
+  scope                    String
+  ownerIdentityId          String                      @map("owner_identity_id") @db.Uuid
+  billingContactIdentityId String                      @map("billing_contact_identity_id") @db.Uuid
+  planCode                 String                      @default("free") @map("plan_code")
+  status                   String                      @default("active")
+  graceEndsAt              DateTime?                   @map("grace_ends_at") @db.Timestamptz(6)
+  createdAt                DateTime                    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                DateTime                    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  workspace                CurrentWorkspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  ownerIdentity            CurrentIdentity             @relation("CurrentBillingOwnerIdentity", fields: [ownerIdentityId], references: [id], onDelete: Restrict)
+  billingContactIdentity   CurrentIdentity             @relation("CurrentBillingContactIdentity", fields: [billingContactIdentityId], references: [id], onDelete: Restrict)
+  ledgerEntries            CurrentBillingLedgerEntry[]
+
+  @@index([ownerIdentityId, scope])
+  @@index([billingContactIdentityId])
+  @@map("current_billing_accounts")
+}
+
+model CurrentBillingLedgerEntry {
+  id               String                @id @db.Uuid
+  billingAccountId String                @map("billing_account_id") @db.Uuid
+  entryType        String                @map("entry_type")
+  amount           Int
+  balanceAfter     Int                   @map("balance_after")
+  idempotencyKey   String?               @map("idempotency_key")
+  referenceType    String?               @map("reference_type")
+  referenceId      String?               @map("reference_id")
+  metadata         Json?                 @db.JsonB
+  reason           String?
+  createdAt        DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  billingAccount   CurrentBillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([billingAccountId, idempotencyKey])
+  @@index([billingAccountId, createdAt])
+  @@index([referenceType, referenceId])
+  @@map("current_billing_ledger_entries")
+}
+
+model CurrentLifecycleRecord {
+  id                String    @id @db.Uuid
+  subjectType       String    @map("subject_type")
+  subjectId         String    @map("subject_id")
+  state             String
+  scheduledAt       DateTime  @map("scheduled_at") @db.Timestamptz(6)
+  restoreDeadlineAt DateTime? @map("restore_deadline_at") @db.Timestamptz(6)
+  purgeDeadlineAt   DateTime? @map("purge_deadline_at") @db.Timestamptz(6)
+  legalHoldUntil    DateTime? @map("legal_hold_until") @db.Timestamptz(6)
+  reason            String?
+  metadata          Json?     @db.JsonB
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([subjectType, subjectId, scheduledAt])
+  @@map("current_lifecycle_records")
+}
+
+model CurrentPolicyVersion {
+  id               String                 @id @db.Uuid
+  policyType       String                 @map("policy_type")
+  version          String
+  status           String
+  effectiveAt      DateTime               @map("effective_at") @db.Timestamptz(6)
+  publishedAt      DateTime?              @map("published_at") @db.Timestamptz(6)
+  contentReference String                 @map("content_reference")
+  contentHash      String                 @map("content_hash")
+  createdAt        DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  consentRecords   CurrentConsentRecord[]
+
+  @@unique([policyType, version])
+  @@map("current_policy_versions")
+}
+
+model CurrentConsentRecord {
+  id              String               @id @db.Uuid
+  identityId      String?              @map("identity_id") @db.Uuid
+  workspaceId     String?              @map("workspace_id") @db.Uuid
+  policyVersionId String               @map("policy_version_id") @db.Uuid
+  purpose         String
+  dataCategory    String               @map("data_category")
+  sourceScene     String               @map("source_scene")
+  state           String
+  grantedAt       DateTime             @map("granted_at") @db.Timestamptz(6)
+  withdrawnAt     DateTime?            @map("withdrawn_at") @db.Timestamptz(6)
+  createdAt       DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  identity        CurrentIdentity?     @relation(fields: [identityId], references: [id], onDelete: SetNull)
+  workspace       CurrentWorkspace?    @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  policyVersion   CurrentPolicyVersion @relation(fields: [policyVersionId], references: [id], onDelete: Restrict)
+
+  @@index([identityId, grantedAt])
+  @@index([workspaceId, grantedAt])
+  @@index([policyVersionId, grantedAt])
+  @@map("current_consent_records")
+}
+
+model CurrentAuditLog {
+  id              String            @id @db.Uuid
+  actorIdentityId String?           @map("actor_identity_id") @db.Uuid
+  workspaceId     String?           @map("workspace_id") @db.Uuid
+  action          String
+  targetType      String            @map("target_type")
+  targetId        String            @map("target_id")
+  idempotencyKey  String?           @map("idempotency_key")
+  metadata        Json              @db.JsonB
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  actorIdentity   CurrentIdentity?  @relation("CurrentAuditActor", fields: [actorIdentityId], references: [id], onDelete: SetNull)
+  workspace       CurrentWorkspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+
+  @@index([actorIdentityId, createdAt])
+  @@index([workspaceId, createdAt])
+  @@index([targetType, targetId, createdAt])
+  @@index([idempotencyKey])
+  @@map("current_audit_logs")
+}
+
+model CurrentTeamInvitation {
+  id                   String           @id @db.Uuid
+  workspaceId          String           @map("workspace_id") @db.Uuid
+  createdByIdentityId  String           @map("created_by_identity_id") @db.Uuid
+  createdByRole        String           @map("created_by_role")
+  acceptedByIdentityId String?          @map("accepted_by_identity_id") @db.Uuid
+  tokenHash            String           @unique @map("token_hash")
+  role                 String
+  status               String           @default("pending")
+  expiresAt            DateTime         @map("expires_at") @db.Timestamptz(6)
+  usedAt               DateTime?        @map("used_at") @db.Timestamptz(6)
+  createdAt            DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  workspace            CurrentWorkspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, status])
+  @@map("current_team_invitations")
+}

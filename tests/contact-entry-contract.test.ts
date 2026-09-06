@@ -72,6 +72,26 @@ describe("微信/企业微信图形联系入口", () => {
     expect(leadRoute).toContain("status: lead.status");
   });
 
+  test("团队 Lead 列表和按 ID 操作复用同一套服务端读取权限", () => {
+    const listRoute = source("src/app/api/workspaces/[workspaceId]/leads/route.ts");
+    const detailRoute = source("src/app/api/workspaces/[workspaceId]/leads/[leadId]/route.ts");
+    const access = source("src/lib/workspace-lead-access.ts");
+
+    expect(listRoute).toContain("workspaceLeadReadWhere");
+    expect(detailRoute).toContain("workspaceLeadReadWhere");
+    expect(detailRoute).toContain("AND: [{ id: leadId }, accessWhere]");
+    expect(access).toContain('{ claimedByUserId: params.userId }');
+    expect(access).toContain('{ profile: { userId: params.userId } }');
+    expect(access).toContain('role === "owner" || role === "admin"');
+
+    const compatibilityList = source("src/app/api/workbench/leads/route.ts");
+    const compatibilityDetail = source("src/app/api/workbench/leads/[id]/route.ts");
+    const consolePage = source("src/app/workbench/leads/page.tsx");
+    expect(compatibilityList).toContain("userLeadReadWhere");
+    expect(compatibilityDetail).toContain("userLeadReadWhere");
+    expect(consolePage).toContain("userLeadReadWhere");
+  });
+
   test("AI 转人工会交付对应联系卡并创建结构化线索", () => {
     const agent = source("src/lib/ai/commercial-agent.ts");
     const chat = source("src/components/share/modules/AiChatModule.tsx");

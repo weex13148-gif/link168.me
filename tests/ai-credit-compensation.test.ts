@@ -83,8 +83,8 @@ describe("AI source-aware compensation", () => {
     mockDb.membershipSubscription.findUnique.mockResolvedValue({
       planCode: "plus",
       status: "active",
-      currentPeriodStart: new Date("2026-07-01T00:00:00.000Z"),
-      currentPeriodEnd: new Date("2026-08-01T00:00:00.000Z"),
+      currentPeriodStart: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     });
     mockDb.product.count.mockResolvedValue(0);
     mockDb.knowledgeDoc.count.mockResolvedValue(0);

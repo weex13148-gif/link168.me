@@ -1,1 +1,5 @@
-export { default } from "@/app/workbench/knowledge/page";
+import { redirect } from "next/navigation";
+
+export default function knowledgePage() {
+  redirect("/console");
+}

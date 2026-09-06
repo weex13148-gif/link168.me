@@ -767,6 +767,214 @@ exports.Prisma.EnterpriseQuotaConsumptionScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.CurrentIdentityScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  username: 'username',
+  normalizedUsername: 'normalizedUsername',
+  displayName: 'displayName',
+  accountStatus: 'accountStatus',
+  personalWorkspaceId: 'personalWorkspaceId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CurrentWorkspaceScalarFieldEnum = {
+  id: 'id',
+  kind: 'kind',
+  slug: 'slug',
+  name: 'name',
+  ownerIdentityId: 'ownerIdentityId',
+  defaultLeadIdentityId: 'defaultLeadIdentityId',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CurrentWorkspaceMemberScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  identityId: 'identityId',
+  role: 'role',
+  status: 'status',
+  invitedAt: 'invitedAt',
+  joinedAt: 'joinedAt',
+  disabledAt: 'disabledAt',
+  removedAt: 'removedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CurrentPageScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  ownerIdentityId: 'ownerIdentityId',
+  kind: 'kind',
+  publicIdentity: 'publicIdentity',
+  publicIdentityNormalized: 'publicIdentityNormalized',
+  status: 'status',
+  lastPublishedVersionNumber: 'lastPublishedVersionNumber',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CurrentPageDraftScalarFieldEnum = {
+  id: 'id',
+  pageId: 'pageId',
+  revision: 'revision',
+  document: 'document',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CurrentPublishedVersionScalarFieldEnum = {
+  id: 'id',
+  pageId: 'pageId',
+  draftId: 'draftId',
+  versionNumber: 'versionNumber',
+  idempotencyKey: 'idempotencyKey',
+  snapshotDocument: 'snapshotDocument',
+  createdByIdentityId: 'createdByIdentityId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CurrentPublishedFactsScalarFieldEnum = {
+  id: 'id',
+  pageId: 'pageId',
+  workspaceId: 'workspaceId',
+  versionId: 'versionId',
+  publishedAt: 'publishedAt',
+  profile: 'profile',
+  sections: 'sections',
+  offerings: 'offerings',
+  publicContact: 'publicContact',
+  responsibleMembers: 'responsibleMembers'
+};
+
+exports.Prisma.CurrentPublishedPointerScalarFieldEnum = {
+  id: 'id',
+  pageId: 'pageId',
+  currentVersionId: 'currentVersionId',
+  currentFactsId: 'currentFactsId',
+  previousVersionId: 'previousVersionId',
+  switchedByIdentityId: 'switchedByIdentityId',
+  switchedAt: 'switchedAt'
+};
+
+exports.Prisma.CurrentLeadScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  originPageId: 'originPageId',
+  source: 'source',
+  status: 'status',
+  contact: 'contact',
+  commercialIntent: 'commercialIntent',
+  conversationId: 'conversationId',
+  idempotencyKey: 'idempotencyKey',
+  offeringId: 'offeringId',
+  sourceMemberIdentityId: 'sourceMemberIdentityId',
+  assigneeIdentityId: 'assigneeIdentityId',
+  routingReason: 'routingReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CurrentBillingAccountScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  scope: 'scope',
+  ownerIdentityId: 'ownerIdentityId',
+  billingContactIdentityId: 'billingContactIdentityId',
+  planCode: 'planCode',
+  status: 'status',
+  graceEndsAt: 'graceEndsAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CurrentBillingLedgerEntryScalarFieldEnum = {
+  id: 'id',
+  billingAccountId: 'billingAccountId',
+  entryType: 'entryType',
+  amount: 'amount',
+  balanceAfter: 'balanceAfter',
+  idempotencyKey: 'idempotencyKey',
+  referenceType: 'referenceType',
+  referenceId: 'referenceId',
+  metadata: 'metadata',
+  reason: 'reason',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CurrentLifecycleRecordScalarFieldEnum = {
+  id: 'id',
+  subjectType: 'subjectType',
+  subjectId: 'subjectId',
+  state: 'state',
+  scheduledAt: 'scheduledAt',
+  restoreDeadlineAt: 'restoreDeadlineAt',
+  purgeDeadlineAt: 'purgeDeadlineAt',
+  legalHoldUntil: 'legalHoldUntil',
+  reason: 'reason',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CurrentPolicyVersionScalarFieldEnum = {
+  id: 'id',
+  policyType: 'policyType',
+  version: 'version',
+  status: 'status',
+  effectiveAt: 'effectiveAt',
+  publishedAt: 'publishedAt',
+  contentReference: 'contentReference',
+  contentHash: 'contentHash',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CurrentConsentRecordScalarFieldEnum = {
+  id: 'id',
+  identityId: 'identityId',
+  workspaceId: 'workspaceId',
+  policyVersionId: 'policyVersionId',
+  purpose: 'purpose',
+  dataCategory: 'dataCategory',
+  sourceScene: 'sourceScene',
+  state: 'state',
+  grantedAt: 'grantedAt',
+  withdrawnAt: 'withdrawnAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CurrentAuditLogScalarFieldEnum = {
+  id: 'id',
+  actorIdentityId: 'actorIdentityId',
+  workspaceId: 'workspaceId',
+  action: 'action',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  idempotencyKey: 'idempotencyKey',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CurrentTeamInvitationScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  createdByIdentityId: 'createdByIdentityId',
+  createdByRole: 'createdByRole',
+  acceptedByIdentityId: 'acceptedByIdentityId',
+  tokenHash: 'tokenHash',
+  role: 'role',
+  status: 'status',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -774,6 +982,10 @@ exports.Prisma.SortOrder = {
 
 exports.Prisma.NullableJsonNullValueInput = {
   DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
@@ -838,7 +1050,23 @@ exports.Prisma.ModelName = {
   Workspace: 'Workspace',
   WorkspaceMember: 'WorkspaceMember',
   EnterpriseQuotaPool: 'EnterpriseQuotaPool',
-  EnterpriseQuotaConsumption: 'EnterpriseQuotaConsumption'
+  EnterpriseQuotaConsumption: 'EnterpriseQuotaConsumption',
+  CurrentIdentity: 'CurrentIdentity',
+  CurrentWorkspace: 'CurrentWorkspace',
+  CurrentWorkspaceMember: 'CurrentWorkspaceMember',
+  CurrentPage: 'CurrentPage',
+  CurrentPageDraft: 'CurrentPageDraft',
+  CurrentPublishedVersion: 'CurrentPublishedVersion',
+  CurrentPublishedFacts: 'CurrentPublishedFacts',
+  CurrentPublishedPointer: 'CurrentPublishedPointer',
+  CurrentLead: 'CurrentLead',
+  CurrentBillingAccount: 'CurrentBillingAccount',
+  CurrentBillingLedgerEntry: 'CurrentBillingLedgerEntry',
+  CurrentLifecycleRecord: 'CurrentLifecycleRecord',
+  CurrentPolicyVersion: 'CurrentPolicyVersion',
+  CurrentConsentRecord: 'CurrentConsentRecord',
+  CurrentAuditLog: 'CurrentAuditLog',
+  CurrentTeamInvitation: 'CurrentTeamInvitation'
 };
 
 /**

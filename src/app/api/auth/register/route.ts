@@ -2,6 +2,8 @@ import { randomUUID } from "node:crypto";
 import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
 import { createSession, setSessionCookie } from "@/lib/auth";
+import { currentErrorHttpStatus } from "@/lib/current/bootstrap/http";
+import { ensureCurrentPersonalRuntime } from "@/lib/current/bootstrap/service";
 import { db } from "@/lib/db";
 import { sendVerificationCodeWithPolicy } from "@/lib/mail";
 import { rateLimit } from "@/lib/rate-limit";
@@ -94,6 +96,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "注册失败，请稍后重试。" }, { status: 500 });
   }
 
+  const personalRuntime = await ensureCurrentPersonalRuntime(userId);
+
   const sendResult = await sendVerificationCodeWithPolicy(email, userId, requestIp(request)).catch(() => ({
     ok: false as const,
     reason: "send-error",
@@ -101,12 +105,31 @@ export async function POST(request: Request) {
   }));
 
   const { token, expiresAt } = await createSession(userId, request);
-  const redirectTo = "/onboarding";
+  if (!personalRuntime.ok) {
+    const response = NextResponse.json(
+      {
+        success: false,
+        accountCreated: true,
+        code: personalRuntime.error.code,
+        error: "账号已创建，但 CURRENT personal runtime 初始化失败。",
+        initialization: { ok: false, code: personalRuntime.error.code, error: personalRuntime.error.message },
+        redirectTo: "/console",
+        user: { id: userId, email, emailVerified: false },
+        emailVerificationSent: sendResult.ok,
+      },
+      { status: currentErrorHttpStatus(personalRuntime.error.code) },
+    );
+    setSessionCookie(response, token, expiresAt);
+    return response;
+  }
+
+  const redirectTo = `/console/pages/${personalRuntime.value.pageId}`;
   const response = NextResponse.json({
     success: true,
     redirectTo,
     user: { id: userId, email, emailVerified: false },
     profile: { username: initialUsername },
+    runtime: personalRuntime.value,
     emailVerificationSent: sendResult.ok,
     meta: {
       needVerifyEmail: true,

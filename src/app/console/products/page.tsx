@@ -1,1 +1,5 @@
-export { default } from "@/app/workbench/products/page";
+import { redirect } from "next/navigation";
+
+export default function productsPage() {
+  redirect("/console");
+}

@@ -6,6 +6,7 @@ import { getCurrentUserFromCookies } from "@/lib/auth";
 import { db } from "@/lib/db";
 import WorkbenchShell from "@/components/workbench/WorkbenchShell";
 import LeadsClient from "@/components/workbench/LeadsClient";
+import { userLeadReadWhere } from "@/lib/workspace-lead-access";
 
 const HISTORICAL_STATUSES = ["contacted", "following", "converted", "qualified", "lost"] as const;
 function isHistoricalStatus(status: string): boolean {
@@ -18,10 +19,11 @@ export default async function WorkbenchLeadsPage() {
 
   const profile = await db.profile.findUnique({ where: { userId: user.id } });
   if (!profile) redirect("/console/card");
+  const accessWhere = await userLeadReadWhere({ userId: user.id, profileId: profile.id });
 
   const [leads, stats] = await Promise.all([
     db.lead.findMany({
-      where: { profileId: profile.id },
+      where: accessWhere,
       orderBy: { createdAt: "desc" },
       take: 100,
       include: {
@@ -41,18 +43,18 @@ export default async function WorkbenchLeadsPage() {
       },
     }),
     Promise.all([
-      db.lead.count({ where: { profileId: profile.id } }),
-      db.lead.count({ where: { profileId: profile.id, status: "new" } }),
-      db.lead.count({ where: { profileId: profile.id, status: "viewed" } }),
-      db.lead.count({ where: { profileId: profile.id, status: "following_up" } }),
-      db.lead.count({ where: { profileId: profile.id, status: "won" } }),
-      db.lead.count({ where: { profileId: profile.id, status: "closed" } }),
+      db.lead.count({ where: accessWhere }),
+      db.lead.count({ where: { AND: [accessWhere, { status: "new" }] } }),
+      db.lead.count({ where: { AND: [accessWhere, { status: "viewed" }] } }),
+      db.lead.count({ where: { AND: [accessWhere, { status: "following_up" }] } }),
+      db.lead.count({ where: { AND: [accessWhere, { status: "won" }] } }),
+      db.lead.count({ where: { AND: [accessWhere, { status: "closed" }] } }),
       // 历史状态兼容统计
-      db.lead.count({ where: { profileId: profile.id, status: "contacted" } }),
-      db.lead.count({ where: { profileId: profile.id, status: "following" } }),
-      db.lead.count({ where: { profileId: profile.id, status: "converted" } }),
-      db.lead.count({ where: { profileId: profile.id, status: "qualified" } }),
-      db.lead.count({ where: { profileId: profile.id, status: "lost" } }),
+      db.lead.count({ where: { AND: [accessWhere, { status: "contacted" }] } }),
+      db.lead.count({ where: { AND: [accessWhere, { status: "following" }] } }),
+      db.lead.count({ where: { AND: [accessWhere, { status: "converted" }] } }),
+      db.lead.count({ where: { AND: [accessWhere, { status: "qualified" }] } }),
+      db.lead.count({ where: { AND: [accessWhere, { status: "lost" }] } }),
     ]).then(([total, newCount, viewed, followingUp, won, closed, contacted, following, converted, qualified, lost]) => ({
       total,
       new: newCount,

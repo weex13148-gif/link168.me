@@ -1,1 +1,5 @@
-export { default } from "@/app/workbench/analytics/page";
+import { redirect } from "next/navigation";
+
+export default function analyticsPage() {
+  redirect("/console");
+}

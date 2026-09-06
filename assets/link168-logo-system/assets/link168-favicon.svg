@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Link168 favicon</title>
+  <desc id="desc">Link168 深色数字门户图标。</desc>
+  <defs>
+    <linearGradient id="blue" x1="60" y1="40" x2="440" y2="472" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#12B8FF"/>
+      <stop offset="0.5" stop-color="#1677FF"/>
+      <stop offset="1" stop-color="#0A4ED7"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="130" y1="324" x2="380" y2="430" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE5A8"/>
+      <stop offset="0.58" stop-color="#F4BE5F"/>
+      <stop offset="1" stop-color="#D9942D"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="118" fill="#0A1426"/>
+  <path d="M118 385V168c0-52 42-94 94-94h88c52 0 94 42 94 94v198c0 52-42 94-94 94h-40" fill="none" stroke="url(#blue)" stroke-width="28" stroke-linecap="round"/>
+  <path d="M214 140l98 24v124l-98 26z" fill="url(#blue)"/>
+  <path d="M122 391c56-55 139-91 264-112-60 28-101 58-113 91-10 28 4 52 38 70H200c-36-6-62-22-78-49z" fill="url(#gold)"/>
+</svg>

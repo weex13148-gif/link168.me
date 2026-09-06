@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title desc">
+  <title id="title">Link168 图标</title>
+  <desc id="desc">一个开放的数字门户、蓝色界面和暖金路径组成的 Link168 品牌图标。</desc>
+  <defs>
+    <linearGradient id="markBlue" x1="22" y1="24" x2="208" y2="214" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#12B8FF"/>
+      <stop offset="0.52" stop-color="#1677FF"/>
+      <stop offset="1" stop-color="#0A4ED7"/>
+    </linearGradient>
+    <linearGradient id="markGold" x1="58" y1="154" x2="176" y2="202" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE5A8"/>
+      <stop offset="0.55" stop-color="#F4BE5F"/>
+      <stop offset="1" stop-color="#D9942D"/>
+    </linearGradient>
+  </defs>
+  <path d="M48 178V73c0-25.4 20.6-46 46-46h52c25.4 0 46 20.6 46 46v96c0 25.4-20.6 46-46 46h-20" fill="none" stroke="url(#markBlue)" stroke-width="13" stroke-linecap="round"/>
+  <path d="M94 59l49 12v61l-49 13z" fill="url(#markBlue)"/>
+  <path d="M50 181c28-27 69-45 132-55-30 14-51 29-57 45-5 14 2 26 19 35H89c-18-3-31-11-39-25z" fill="url(#markGold)"/>
+</svg>

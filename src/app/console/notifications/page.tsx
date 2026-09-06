@@ -1,1 +1,5 @@
-export { default } from "@/app/workbench/notifications/page";
+import { redirect } from "next/navigation";
+
+export default function notificationsPage() {
+  redirect("/console");
+}

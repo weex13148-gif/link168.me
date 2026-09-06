@@ -10,6 +10,7 @@ import { requireDashboardUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getOwnedProfile, newId } from "@/lib/dashboard-data";
 import { hasSensitiveContent, sanitizePublicText } from "@/lib/content-safety";
+import { userLeadReadWhere } from "@/lib/workspace-lead-access";
 
 export const runtime = "nodejs";
 
@@ -56,9 +57,10 @@ export async function GET(request: Request, context: RouteContext) {
       { status: 400 }
     );
   }
+  const accessWhere = await userLeadReadWhere({ userId: user.id, profileId: profile.id });
 
   const lead = await db.lead.findFirst({
-    where: { id, profileId: profile.id },
+    where: { AND: [{ id }, accessWhere] },
     include: {
       interestedProduct: {
         select: {
@@ -154,9 +156,10 @@ export async function PATCH(request: Request, context: RouteContext) {
       { status: 400 }
     );
   }
+  const accessWhere = await userLeadReadWhere({ userId: user.id, profileId: profile.id });
 
   const existing = await db.lead.findFirst({
-    where: { id, profileId: profile.id },
+    where: { AND: [{ id }, accessWhere] },
   });
   if (!existing) {
     return NextResponse.json(
@@ -240,10 +243,11 @@ export async function PATCH(request: Request, context: RouteContext) {
   // 执行更新和创建跟进记录（事务保证一致性）
   const updated = await db.$transaction(async (tx) => {
     // 1. 更新线索
-    const leadUpdate = await tx.lead.update({
-      where: { id },
+    const leadUpdate = await tx.lead.updateMany({
+      where: { AND: [{ id }, accessWhere] },
       data: updateData,
     });
+    if (!leadUpdate.count) return null;
 
     // 2. 如果有新的跟进内容，创建独立跟进记录
     if (newNote) {
@@ -251,7 +255,7 @@ export async function PATCH(request: Request, context: RouteContext) {
         data: {
           id: newId(),
           leadId: id,
-          profileId: profile.id,
+          profileId: existing.profileId,
           createdByType: "owner",
           createdByUserId: user.id,
           content: newNote,
@@ -265,7 +269,7 @@ export async function PATCH(request: Request, context: RouteContext) {
         data: {
           id: newId(),
           leadId: id,
-          profileId: profile.id,
+          profileId: existing.profileId,
           createdByType: "owner",
           createdByUserId: user.id,
           content: `状态从「${existing.status}」变更为「${newStatus}」`,
@@ -276,8 +280,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     }
 
     // 4. 获取完整更新后的线索（含关联数据）
-    return tx.lead.findUnique({
-      where: { id },
+    return tx.lead.findFirst({
+      where: { AND: [{ id }, accessWhere] },
       include: {
         interestedProduct: {
           select: {
@@ -295,45 +299,52 @@ export async function PATCH(request: Request, context: RouteContext) {
     });
   });
 
+  if (!updated) {
+    return NextResponse.json(
+      { success: false, error: "线索权限或状态已变化，请刷新后重试。" },
+      { status: 409 },
+    );
+  }
+
   // DTO 转换
   const leadDto = {
-    id: updated!.id,
-    profile_id: updated!.profileId,
-    name: updated!.name,
-    email: updated!.email,
-    phone: updated!.phone,
-    message: updated!.message,
-    source_component: updated!.sourceComponent,
-    source_page: updated!.sourcePage,
-    status: updated!.status,
-    is_historical_status: isHistoricalStatus(updated!.status),
-    handler_note: updated!.handlerNote,
-    handled_at: updated!.handledAt ? updated!.handledAt.toISOString() : null,
-    wechat: updated!.wechat,
-    interested_product_id: updated!.interestedProductId,
-    interested_product_name: updated!.interestedProductName,
-    interested_product_price: updated!.interestedProductPrice,
-    interested_product_category: updated!.interestedProductCategory,
-    conversation_id: updated!.conversationId,
-    notes: updated!.notes,
-    is_legacy_note: !!updated!.notes,
-    created_at: updated!.createdAt.toISOString(),
-    updated_at: updated!.updatedAt.toISOString(),
-    interested_product: updated!.interestedProduct
+    id: updated.id,
+    profile_id: updated.profileId,
+    name: updated.name,
+    email: updated.email,
+    phone: updated.phone,
+    message: updated.message,
+    source_component: updated.sourceComponent,
+    source_page: updated.sourcePage,
+    status: updated.status,
+    is_historical_status: isHistoricalStatus(updated.status),
+    handler_note: updated.handlerNote,
+    handled_at: updated.handledAt ? updated.handledAt.toISOString() : null,
+    wechat: updated.wechat,
+    interested_product_id: updated.interestedProductId,
+    interested_product_name: updated.interestedProductName,
+    interested_product_price: updated.interestedProductPrice,
+    interested_product_category: updated.interestedProductCategory,
+    conversation_id: updated.conversationId,
+    notes: updated.notes,
+    is_legacy_note: !!updated.notes,
+    created_at: updated.createdAt.toISOString(),
+    updated_at: updated.updatedAt.toISOString(),
+    interested_product: updated.interestedProduct
       ? {
-          id: updated!.interestedProduct.id,
-          name: updated!.interestedProduct.name,
-          category: updated!.interestedProduct.category,
-          price_text: updated!.interestedProduct.priceText,
-          is_active: updated!.interestedProduct.isActive,
+          id: updated.interestedProduct.id,
+          name: updated.interestedProduct.name,
+          category: updated.interestedProduct.category,
+          price_text: updated.interestedProduct.priceText,
+          is_active: updated.interestedProduct.isActive,
         }
       : null,
-    product_snapshot_status: updated!.interestedProduct
-      ? (updated!.interestedProduct.isActive ? "active" : "inactive")
-      : updated!.interestedProductId
+    product_snapshot_status: updated.interestedProduct
+      ? (updated.interestedProduct.isActive ? "active" : "inactive")
+      : updated.interestedProductId
         ? "deleted"
         : "none",
-    follow_ups: updated!.followUps.map((fu) => ({
+    follow_ups: updated.followUps.map((fu) => ({
       id: fu.id,
       content: fu.content,
       previous_status: fu.previousStatus,
@@ -341,7 +352,7 @@ export async function PATCH(request: Request, context: RouteContext) {
       created_by_type: fu.createdByType,
       created_at: fu.createdAt.toISOString(),
     })),
-    follow_ups_count: updated!.followUps.length,
+    follow_ups_count: updated.followUps.length,
   };
 
   return NextResponse.json({
